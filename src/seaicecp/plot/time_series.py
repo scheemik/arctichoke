@@ -11,21 +11,24 @@ def plot_time_series(
     save_as: str = None,
     **kwargs,
 ):
-    """ Get the field mean of the dataset.
+    """ Plot a time series of the dataset.
 
-        Use the `cdo` function `fldmean` to take the field mean (the mean over the geographic area) of the given dataset.
+        Plots a time series of the given dataset for the given variable, if applicable.
 
         Parameters
         ----------
         dataset : `str`, `xarray.DataArray`, `xarray.Dataset`
-            The dataset of which to take the field mean.
+            The dataset for which to make a plot.
         variable_id : `str`
             The name of the variable ID to plot.
+        plt_title : `str`, `None`, optional
+            The title to use for the plot.
+            Default is `None`, which uses a default title for the plot.
         save_as : `str`, `None`, optional
             The name of the file to which to save the plot.
             Default is `None`, which doesn't save the plot to a file.
         **kwargs
-            Keyword arguments to pass to `cdo.fldmean()`.
+            Keyword arguments to pass to `xr.DataArray.plot()`.
 
         Returns
         -------
