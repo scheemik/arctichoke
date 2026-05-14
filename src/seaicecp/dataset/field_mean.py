@@ -52,7 +52,7 @@ def get_field_mean(
     fldmean_xr = cdo.fldmean(
         input = dataset,
         returnXDataset = 'field_mean',
-        output = 'save_as',
+        output = save_as,
         **kwargs,
     )
 
