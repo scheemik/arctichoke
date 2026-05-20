@@ -9,6 +9,14 @@ def test_make_example_dataset():
     # Define test cases
     test_cases = [
         {
+            'actual': example_dataset.make_example_dataset(),
+            'keys': ['test_var'],
+            'coords': ['j', 'i', 'longitude', 'latitude'],
+            'sizes': ['j', 'i'],
+            'test_var_size': 100,
+            'n_size': 10,
+        },
+        {
             'actual': example_dataset.make_example_dataset(filepath=test_filepath),
             'keys': ['test_var'],
             'coords': ['j', 'i', 'longitude', 'latitude'],
@@ -55,7 +63,6 @@ def test_make_example_dataset():
         'not_a_dataset.txt',
         1234,
         3.14,
-        None,
         [],
         {},
     ]

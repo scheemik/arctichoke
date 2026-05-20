@@ -4,7 +4,7 @@ import numpy as np
 from seaicecp.verify import verify_path
 
 def make_example_dataset(
-    filepath: str = 'tests/test_dataset/example_dataset.nc',
+    filepath: str = None,
     n : int = 10,
     overwrite: bool = True,
 ):
@@ -14,9 +14,9 @@ def make_example_dataset(
 
         Parameters
         ----------
-        filepath : `str`, optional
+        filepath : `str`, `None`, optional
             The absolute file path to save the example dataset to
-            Default is `tests/test_dataset/example_dataset.nc`.
+            Default is `None`.
         n : `int`, optional
             The number of values in each dimension.
             Default is `10`.
@@ -35,10 +35,11 @@ def make_example_dataset(
         >>> 
     """
     # Verify input arguments
-    if not isinstance(filepath, str):
-        raise TypeError(f"(make_example_dataset) `filepath` must be a string. Got type: {type(filepath)}")
-    if not filepath.endswith('.nc'):
-        raise ValueError(f"(plot_time_series) `filepath` must be a `.nc` filepath. Got: {filepath}")
+    if isinstance(filepath, str):
+        if not filepath.endswith('.nc'):
+            raise ValueError(f"(plot_time_series) `filepath` must be a `.nc` filepath. Got: {filepath}")
+    elif not isinstance(filepath, (str, type(None))):
+        raise TypeError(f"(make_example_dataset) `filepath` must be a string or `None`. Got type: {type(filepath)}")
     if not isinstance(n, int):
         raise TypeError(f"(make_example_dataset) `n` must be an integer. Got type: {type(n)}")
     if not isinstance(overwrite, bool):
@@ -67,20 +68,21 @@ def make_example_dataset(
     test_var = np.reshape(np.arange(n*n, dtype=np.float64), (n,n))
     xr_dataset['test_var'] = (['j','i'],test_var)
 
-    # Check whether the file exists
-    try:
-        verify_path(filepath)
-        if overwrite == False:
-            raise FileExistsError(f"(trim_files) file `{filepath}` exists already. To overwrite this file, set `overwrite` to `True`.")
-        else:
-            print(f"\tOverwriting file `{filepath}`.")
-    except (FileNotFoundError):
-        foo = 2
+    if not isinstance(filepath, type(None)):
+        # Check whether the file exists
+        try:
+            verify_path(filepath)
+            if overwrite == False:
+                raise FileExistsError(f"(trim_files) file `{filepath}` exists already. To overwrite this file, set `overwrite` to `True`.")
+            else:
+                print(f"\tOverwriting file `{filepath}`.")
+        except (FileNotFoundError):
+            foo = 2
 
-    # Save this dataset to a file
-    xr_dataset.to_netcdf(filepath)
+        # Save this dataset to a file
+        xr_dataset.to_netcdf(filepath)
 
-    # Verify that file was save correctly
-    filepath = verify_path(filepath)
+        # Verify that file was save correctly
+        filepath = verify_path(filepath)
 
     return xr_dataset
