@@ -12,6 +12,7 @@ def plot_time_series(
     xlims: [str, str] = None,
     ylims: [float, float] = None,
     save_as: str = None,
+    test: bool = False,
     **kwargs,
 ):
     """ Plot a time series of the dataset.
@@ -39,12 +40,18 @@ def plot_time_series(
         save_as : `str`, `None`, optional
             The name of the file to which to save the plot.
             Default is `None`, which doesn't save the plot to a file.
+        test : `bool`, optional
+            If `True`, the function exists before making a plot for use in testing.
+            Default is `False`.
         **kwargs
             Keyword arguments to pass to `xr.DataArray.plot()`.
 
         Returns
         -------
-        None
+        If `test` == `False`: 
+            `None`
+        If `test` == `True` : 
+            dataset : `xarray.DataArray`
         
         Examples
         --------
@@ -99,6 +106,8 @@ def plot_time_series(
         raise TypeError(f"(plot_time_series) `save_as` must be a string or `None`. Got type: {type(save_as)}")
     elif isinstance(save_as, str) and not '.png' in save_as:
         raise TypeError(f"(plot_time_series) `save_as` must be a `.png` filepath. Got: {save_as}")
+    if not isinstance(test, (type(True))):
+        raise TypeError(f"(plot_time_series) `test` must be a `bool`. Got type: {type(test)}")
     
     # Information to output
     print(f"(plot_time_series) `save_as`: {save_as}")
@@ -114,6 +123,10 @@ def plot_time_series(
     # Get the data array to plot
     if isinstance(dataset, xr.Dataset):
         dataset = dataset[variable_id]
+
+    # If testing, exit before making the plot
+    if test == True:
+        return dataset
 
     # Plot the time series
     dataset.plot(
