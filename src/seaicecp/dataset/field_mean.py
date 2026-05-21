@@ -6,7 +6,7 @@ cdo = Cdo(tempdir='./cdo_tmp/')
 cdo.cleanTempDir()
 
 def get_field_mean(
-    dataset: (str, xr.DataArray, xr.Dataset),
+    dataset: (str, [str], xr.DataArray, xr.Dataset),
     save_as: str = None,
     **kwargs,
 ):
@@ -16,7 +16,7 @@ def get_field_mean(
 
         Parameters
         ----------
-        dataset : `str`, `xarray.DataArray`, `xarray.Dataset`
+        dataset : `str`, list of `str`, `xarray.DataArray`, `xarray.Dataset`
             The dataset of which to take the field mean.
         save_as : `str`, `None`, optional
             The file name to pass to `cdo.fldmean(output=save_as)`.
@@ -38,7 +38,20 @@ def get_field_mean(
         array([1.3731426e+08], dtype=float32)
     """
     # Verify input arguments
-    if not isinstance(dataset, (str, xr.Dataset, xr.DataArray)):
+    if isinstance(dataset, type([])):
+        # Assemble the `cdo` input command
+        input_command = "[ -fldmean :"
+        for datafile in dataset:
+            if not isinstance(datafile, str):
+                raise TypeError(f"(get_field_mean) Each item in `dataset` list must be a string. Got: {type(datafile)}")
+            input_command = f"{input_command} {datafile}"
+        input_command = f"{input_command} ]"
+        print(f"(get_field_mean) `input`: {input_command}")
+        cdo_command = cdo.mergetime
+    elif not isinstance(dataset, (xr.Dataset, xr.DataArray)):
+        input_command = dataset
+        cdo_command = cdo.fldmean
+    else:
         raise TypeError(f"(get_field_mean) `dataset` must be a string, `xr.Dataset`, or `xr.DataArray`. Got type: {type(dataset)}")
     if not isinstance(save_as, (str, type(None))):
         raise TypeError(f"(get_field_mean) `save_as` must be a string or `None`. Got type: {type(save_as)}")
@@ -49,8 +62,8 @@ def get_field_mean(
     print(f"(get_field_mean) `save_as`: {save_as}")
 
     # Use `cdo` to calculate the field mean
-    fldmean_xr = cdo.fldmean(
-        input = dataset,
+    fldmean_xr = cdo_command(
+        input = input_command,
         returnXDataset = 'field_mean',
         output = save_as,
         **kwargs,
