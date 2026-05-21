@@ -1,5 +1,8 @@
 import xarray as xr
 import matplotlib.pyplot as plt
+import matplotlib.cm as mplcm 
+import matplotlib.colors as mplclrs
+import numpy as np
 from datetime import datetime
 
 import seaicecp.params as sps
@@ -11,6 +14,7 @@ def plot_seasonal_cycle(
     plt_title: str = None,
     xlims: [str, str] = None,
     ylims: [float, float] = None,
+    c_map: [mplclrs.ListedColormap] = mplcm.viridis_r,
     save_as: str = None,
     test: bool = False,
     **kwargs,
@@ -37,6 +41,9 @@ def plot_seasonal_cycle(
             The limits to use for the y-axis on the plot in the following format:
                 [y_min, y_max]
             Default is `None`, which expands the y-axis to include all the data.
+        c_map : `matplotlib.colors.ListedColormap`, optional
+            The color map to use for the different lines so their order is clearer.
+            Default is `matplotlib.cm.viridis_r`, the reverse of `viridis`.
         save_as : `str`, `None`, optional
             The name of the file to which to save the plot.
             Default is `None`, which doesn't save the plot to a file.
@@ -102,6 +109,8 @@ def plot_seasonal_cycle(
                     raise TypeError(f"(plot_seasonal_cycle) `ylims[{i}]` must be a number. Got type: {type(ylims[i])}")
     elif not isinstance(ylims, type(None)):
         raise TypeError(f"(plot_seasonal_cycle) `ylims` must be a list or `None`. Got type: {type(ylims)}")
+    if not isinstance(c_map, mplclrs.ListedColormap):
+        raise TypeError(f"(plot_seasonal_cycle) `c_map` must be a `matplotlib.colors.ListedColormap`. Got type: {type(c_map)}")
     if not isinstance(save_as, (str, type(None))):
         raise TypeError(f"(plot_seasonal_cycle) `save_as` must be a string or `None`. Got type: {type(save_as)}")
     elif isinstance(save_as, str) and not '.png' in save_as:
@@ -139,17 +148,29 @@ def plot_seasonal_cycle(
     ## Using `.droplevel(0)` drops the unnecessary variable level and allows for the x-axis to be solely the month number
     data_frame = data_frame.groupby(['Year', 'Month']).mean().unstack().T.droplevel(0)
 
+    # Get the values of the years in the data frame to set the line colors
+    year_values = np.array(data_frame.columns)
+    # Create the normalizer based on the maximum and minimum year values
+    norm = mplclrs.Normalize(vmin=year_values.min(), vmax=year_values.max())
+    # Create the colormapper for the lines
+    cmapper = mplcm.ScalarMappable(norm=norm, cmap=c_map)
+
     # If testing, exit before making the plot
     if test == True:
         return data_frame
 
     # Plot the seasonal cycle
-    data_frame.plot(
+    this_ax = data_frame.plot(
+        color=cmapper.to_rgba(year_values),
         xlim = xlims,
         ylim = ylims,
         **kwargs,
     )
     # Modify the plot
     plt.title(plt_title)
+    # If there are more than 10 lines, remove the legend and replace with a colorbar
+    if len(year_values) > 10:
+        this_ax.get_legend().remove()
+        plt.colorbar(cmapper, ax=this_ax)
 
     return None
