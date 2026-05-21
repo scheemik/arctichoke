@@ -1,6 +1,7 @@
 import os
 import glob
 import warnings
+from datetime import datetime
 
 from seaicecp.verify import verify_path
 
@@ -537,3 +538,94 @@ def list_variable_files(
         data_filepaths = [item for item in data_filepaths if with_modification in item]
 
     return sorted(data_filepaths)
+
+def select_files_by_time(
+    data_filepaths: [str],
+    start: (str, int),
+    end: (str, int),
+    test: bool = False,
+):
+    """ Filter the list to be only the files in the given date range. 
+
+        From the given list of datafiles, find the ones that are in between the given start and end dates and return those in a list.
+
+        Parameters
+        ----------
+        data_filepaths : List of `str`
+            A list, sorted alphabetically, of the filepaths of the variable data files.
+        start : `str`, `int`
+            The start date of the time range, either a string in the format `YYYY-MM-DD` or an integer of a year.
+        end : `str`, `int`
+            The end date of the time range, either a string in the format `YYYY-MM-DD` or an integer of a year.
+        test : `bool`, optional
+            If `True`, the function skips verifying the `data_filepaths` exist for use in testing.
+            Default is `False`.
+
+        Returns
+        -------
+        data_filepaths : List of `str`
+            A list, sorted alphabetically, of the filepaths in the date range.
+        
+        Examples
+        --------
+        >>> from seaicecp.path.find import select_files_by_time
+        >>> select_files_by_time(source_id = 'HadGEM3-GC31-HM', variable_id = 'areacello')
+        ['/seaicecp_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-HM/hist-1950/r1i1p1f1/Ofx/areacello/gn/v20190301/areacello_Ofx_HadGEM3-GC31-HM_hist-1950_r1i1p1f1_gn.nc']
+    """
+    # Verify input arguments
+    if not isinstance(data_filepaths, type([])):
+        raise TypeError(f"(select_files_by_time) `data_filepaths` must be a list. Got type: {type(data_filepaths)}")
+    else:
+        for filepath in data_filepaths:
+            if isinstance(filepath, str):
+                # Verify this is a valid path
+                if test == False:
+                    filepath = verify_path(filepath)
+                if not filepath.endswith('.nc'):
+                    raise ValueError(f"(select_files_by_time) `filepath` must be a `.nc` filepath. Got: {filepath}")
+            else:
+                raise TypeError(f"(select_files_by_time) `filepath` must be a string. Got type: {type(filepath)}")
+    if isinstance(start, str):
+        try:
+            # Check that the date follows the expected format
+            foo = datetime.strptime(start, "%Y-%m-%d")
+            # Get just the year from that date
+            start = foo.year
+        except ValueError as e:
+            raise ValueError(f"(select_files_by_time) `start` must be a date in the format `YYYY-MM-DD`. Got: {start}")
+    if isinstance(start, int):
+        if start < 1950 or start > 3000:
+            raise ValueError(f"(select_files_by_time) `start` must be between 1950 and 3000. Got: {start}")
+    else:
+        raise TypeError(f"(select_files_by_time) `start` must be a string or `int`. Got type: {type(start)}")
+    if isinstance(end, str):
+        try:
+            # Check that the date follows the expected format
+            foo = datetime.strptime(end, "%Y-%m-%d")
+            # Get just the year from that date
+            end = foo.year
+        except ValueError as e:
+            raise ValueError(f"(select_files_by_time) `end` must be a date in the format `YYYY-MM-DD`. Got: {end}")
+    if isinstance(end, int):
+        if end < 1950 or end > 3000:
+            raise ValueError(f"(select_files_by_time) `end` must be between 1950 and 3000. Got: {end}")
+    else:
+        raise TypeError(f"(select_files_by_time) `end` must be a string or `int`. Got type: {type(end)}")
+    if start > end:
+        raise ValueError(f"(select_files_by_time) `start` must be before `end`. Got `start`: {start} and `end`: {end}")
+    if not isinstance(test, (type(True))):
+        raise TypeError(f"(select_files_by_time) `test` must be a `bool`. Got type: {type(test)}")
+
+    data_filepaths_in_date_range = []
+    # Check each file in the list
+    for data_file in data_filepaths:
+        # Get the year of the datafile, assuming the following naming convention:
+        ## `...<experiment_id>_<variant_label>_gn_YYYYMM-YYYYMM.nc`
+        file_years = data_file.split('_')[-1]
+        start_year = int(file_years[0:4])
+        end_year = int(file_years.split('-')[-1][0:4])
+        # If the span of this file crosses the specified date range, include it in the list of files
+        if start_year >= start and end_year <= end:
+            data_filepaths_in_date_range.append(data_file)
+
+    return sorted(data_filepaths_in_date_range)
