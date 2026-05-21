@@ -11,6 +11,7 @@ from seaicecp.verify import verify_path
 def plot_seasonal_cycle(
     dataset: (str, xr.DataArray, xr.Dataset),
     variable_id: str = None,
+    take_mean: bool = False,
     plt_title: str = None,
     xlims: [str, str] = None,
     ylims: [float, float] = None,
@@ -29,6 +30,9 @@ def plot_seasonal_cycle(
             The dataset for which to make a plot.
         variable_id : `str`
             The name of the variable ID to plot.
+        take_mean : `bool`, optional
+            Whether to take the mean for each month across all the years.
+            Default is `False`.
         plt_title : `str`, `None`, optional
             The title to use for the plot.
             Default is `None`, which uses a default title for the plot.
@@ -147,13 +151,24 @@ def plot_seasonal_cycle(
     ## Using `.T` transposes the table to have rows for each month and columns for each year
     ## Using `.droplevel(0)` drops the unnecessary variable level and allows for the x-axis to be solely the month number
     data_frame = data_frame.groupby(['Year', 'Month']).mean().unstack().T.droplevel(0)
+    # Take the mean for each month across the years, if applicable
+    if take_mean == True:
+        data_frame = data_frame.mean(axis=1)
+        plt_title = f"Mean {plt_title}"
 
     # Get the values of the years in the data frame to set the line colors
-    year_values = np.array(data_frame.columns)
-    # Create the normalizer based on the maximum and minimum year values
-    norm = mplclrs.Normalize(vmin=year_values.min(), vmax=year_values.max())
-    # Create the colormapper for the lines
-    cmapper = mplcm.ScalarMappable(norm=norm, cmap=c_map)
+    try:
+        year_values = np.array(data_frame.columns)
+    except:
+        year_values = [np.nan]
+    if len(year_values) > 2:
+        # Create the normalizer based on the maximum and minimum year values
+        norm = mplclrs.Normalize(vmin=year_values.min(), vmax=year_values.max())
+        # Create the colormapper for the lines
+        cmapper = mplcm.ScalarMappable(norm=norm, cmap=c_map)
+        cmapper_to_plot = cmapper.to_rgba(year_values)
+    else: 
+        cmapper_to_plot = None
 
     # If testing, exit before making the plot
     if test == True:
@@ -161,7 +176,7 @@ def plot_seasonal_cycle(
 
     # Plot the seasonal cycle
     this_ax = data_frame.plot(
-        color=cmapper.to_rgba(year_values),
+        color=cmapper_to_plot,
         xlim = xlims,
         ylim = ylims,
         **kwargs,
