@@ -8,6 +8,7 @@ from seaicecp.path.model_paths import get_model_path, list_available_models
 def list_available_variables(
     source_id: str,
     experiment_id: str = None,
+    list_var_mods = False,
     **kwargs,
 ):
     """ List the names of the variables available for the specified model.
@@ -23,6 +24,9 @@ def list_available_variables(
             The name of the experiment ID in which to search for available variables.
             If `None` is given, all available experiments are included.
             Default is `None`.
+        list_var_mods : `bool`, optional
+            Whether to include information about modifications made to the datafiles.
+            Default is `False`.
         **kwargs
             Keyword arguments to pass to `get_model_path()`.
 
@@ -63,6 +67,8 @@ def list_available_variables(
         raise TypeError(f"(list_available_variables) `source_id` must be a string. Got type: {type(source_id)}")
     if not isinstance(experiment_id, (str, type(None))):
         raise TypeError(f"(list_available_variables) `experiment_id` must be a string or `None`. Got type: {type(experiment_id)}")
+    if not isinstance(list_var_mods, bool):
+        raise TypeError(f"(list_available_variables) `list_var_mods` must be a `bool`. Got type: {type(list_var_mods)}")
     
     # Get the path of the model
     model_paths = get_model_path(source_id, **kwargs)
@@ -106,8 +112,27 @@ def list_available_variables(
                 for table_id in table_ids:
                     # Verify the table path exists and add it to the list of table paths
                     table_paths.append(verify_path(f"{variant_path}/{table_id}"))
-                # Get the variable names using nested iterations to avoid a list of lists
-                avail_var_dict[short_model_path][this_experiment_id][variant_label] = [var_name for path in table_paths for var_name in next(os.walk(path))[1]]
+                if list_var_mods == False:
+                    # Get the variable names using nested iterations to avoid a list of lists
+                    avail_var_dict[short_model_path][this_experiment_id][variant_label] = [var_name for path in table_paths for var_name in next(os.walk(path))[1]]
+                else:
+                    # Set up the dictionary to hold the table information
+                    avail_var_dict[short_model_path][this_experiment_id][variant_label] = {table_id: None for table_id in table_ids}
+                    # Loop across the table paths
+                    for table_id in table_ids:
+                        # Get the variable names
+                        variable_ids = next(os.walk(f"{variant_path}/{table_id}"))[1]
+                        # Set up the dictionary to hold the variable information
+                        avail_var_dict[short_model_path][this_experiment_id][variant_label][table_id] = {variable_id: None for variable_id in variable_ids}
+                        var_mod_dicts = []
+                        for variable_id in variable_ids:
+                            # Verify the variable path exists
+                            variable_path = f"{variant_path}/{table_id}/{variable_id}"
+                            # Get the dictionary list of modifications for this variable path
+                            var_mod_dicts.append(list_variable_modifications(variable_path))
+                            var_mod_dict = list_variable_modifications(variable_path)
+                            # Add that dictionary of modifications to the variable dictionary
+                            avail_var_dict[short_model_path][this_experiment_id][variant_label][table_id][variable_id] = var_mod_dict
 
     return avail_var_dict
 
