@@ -246,46 +246,25 @@ def list_variable_modifications(
 
         Parameters
         ----------
-        source_id : `str`
-            The name of the source ID (model) for which to find the variable paths.
-        experiment_id : `str` or `None`, optional
-            The name of the experiment ID in which to search for available variables.
-            If `None` is given, all available experiments are included.
-            Default is `None`.
-        **kwargs
-            Keyword arguments to pass to `get_model_path()`.
+        variable_path : `str`
+            The filepath to the variable in question.
+            Expected format: `data/project/activity_id/institution_id/source_id/experiment_id/variant_label/table_id/variable_id`.
+        list_filenames : `bool`, optional
+            Whether to list all the file names for each modification or to give the number of files.
+            Default is `False`, which gives the number of files.
 
         Returns
         -------
-        avail_var_dict : `dict`
-            A dictionary of experiment ID's whose keys are dictionaries of variant labels whose keys are lists of available variables.
+        var_mod_dict : `dict`
+            A dictionary of modification prefixes, the values of which are either the number of files under that modification or a list all the files under that modification.
         
         Examples
         --------
         >>> from seaicecp.path.find_data import list_variable_modifications 
-        >>> list_variable_modifications(source_id = 'HadGEM3-GC31-HM')
-        {'MOHC/HadGEM3-GC31-HM': {
-            'control-1950': {
-                'r1i1p1f1': ['areacello']},
-            'highres-future': {
-                'r1i1p1f1': ['areacello', 'siu', 'siv', 'sithick', 'siconc', 'siage'],
-                'r1i3p1f1': ['siconc', 'siage', 'siv', 'sithick', 'siu']},
-            'hist-1950': {
-                'r1i1p1f1': ['areacello', 'siage', 'siv', 'siu', 'siconc', 'sithick'],
-                'r1i3p1f1': ['siconc', 'sithick', 'siu', 'siage', 'siv']}},
-        'NERC/HadGEM3-GC31-HM': {
-            'highres-future': {
-                'r1i2p1f1': ['siv', 'siu', 'siconc', 'sithick', 'siage']},
-            'hist-1950': {
-                'r1i2p1f1': ['siconc', 'siu', 'sithick', 'siv', 'siage']}}}
-        >>> list_variable_modifications(source_id = 'HadGEM3-GC31-HM', experiment_id = 'hist-1950')
-        {'MOHC/HadGEM3-GC31-HM': {
-            'hist-1950': {
-                'r1i1p1f1': ['areacello', 'siage', 'siv', 'siu', 'siconc', 'sithick'],
-                'r1i3p1f1': ['siconc', 'sithick', 'siu', 'siage', 'siv']}},
-        'NERC/HadGEM3-GC31-HM': {
-            'hist-1950': {
-                'r1i2p1f1': ['siconc', 'siu', 'sithick', 'siv', 'siage']}}}
+        >>> list_variable_modifications(variable_path = '/seaicecp_data/bergybits/data/CMIP6/HighResMIP/AWI/AWI-CM-1-1-HR/hist-1950/r1i1p1f2/Ofx/areacello', list_filenames = True)
+        {'': ['areacello_Ofx_AWI-CM-1-1-HR_hist-1950_r1i1p1f2_gn.nc']}
+        >>> list_variable_modifications(variable_path = '/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r2i1p2f1/SImon/siconc')
+        {'': 65, 'trim_NWP_': 65}
     """
     # Verify input arguments
     if not isinstance(variable_path, str):
@@ -339,58 +318,3 @@ def list_variable_modifications(
             var_mod_dict[mod_prefix] = len(these_data_filepaths)
 
     return var_mod_dict
-
-    # Filter files based on modification
-    if isinstance(with_modification, type(None)):
-        # Filter out files with any modification prefixes
-        data_filepaths = [item for item in data_filepaths if not 'trim' in item]
-    else:
-        # Filter to just files with the modification prefix
-        data_filepaths = [item for item in data_filepaths if with_modification in item]
-    
-    # Get the path of the model
-    model_paths = get_model_path(source_id, **kwargs)
-    # Verify this model path exists
-    for i in range(len(model_paths)):
-        model_paths[i] = verify_path(model_paths[i])
-
-    # Make a dictionary to store resulting available variables
-    avail_var_dict = {f"{model_path.split('/')[-2]}/{model_path.split('/')[-1]}": None for model_path in sorted(model_paths)}
-
-    # Loop across the model paths
-    for model_path in model_paths:
-        short_model_path = f"{model_path.split('/')[-2]}/{model_path.split('/')[-1]}"
-        
-        # Get the experiment ID's 
-        if isinstance(experiment_id, type(None)):
-            experiment_ids = next(os.walk(model_path))[1]
-        else:
-            experiment_ids = [experiment_id]
-        
-        # Make a dictionary to store resulting available variables
-        avail_var_dict[short_model_path] = {experiment_id: None for experiment_id in sorted(experiment_ids)}
-
-        # Get the variant labels (ensemble members) for each experiment ID
-        for this_experiment_id in experiment_ids:
-            # Verify the experiment ID path exists
-            experiment_path = verify_path(f"{model_path}/{this_experiment_id}")
-            # Get the variant labels
-            variant_labels = next(os.walk(experiment_path))[1]
-            # Add the variant labels as a dictionary to the available variable dictionary
-            avail_var_dict[short_model_path][this_experiment_id] = {variant_label: [] for variant_label in sorted(variant_labels)}
-
-            # Get the variables available for each variant label
-            for variant_label in variant_labels:
-                # Verify the variant path exists
-                variant_path = verify_path(f"{experiment_path}/{variant_label}")
-                # Get the table ID's
-                table_ids = next(os.walk(variant_path))[1]
-                # Get the variables available for each table ID
-                table_paths = []
-                for table_id in table_ids:
-                    # Verify the table path exists and add it to the list of table paths
-                    table_paths.append(verify_path(f"{variant_path}/{table_id}"))
-                # Get the variable names using nested iterations to avoid a list of lists
-                avail_var_dict[short_model_path][this_experiment_id][variant_label] = [var_name for path in table_paths for var_name in next(os.walk(path))[1]]
-
-    return avail_var_dict
