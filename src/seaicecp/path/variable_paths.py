@@ -262,7 +262,7 @@ def get_variable_path(
 def list_variable_modifications(
     variable_path: str,
     list_filenames: bool = False,
-    **kwargs,
+    verbose: bool = False,
 ):
     """ List the modifications made to variable files in the specified path.
 
@@ -277,6 +277,9 @@ def list_variable_modifications(
         list_filenames : `bool`, optional
             Whether to list all the file names for each modification or to give the number of files.
             Default is `False`, which gives the number of files.
+        verbose : `bool`, optional
+            Whether to output additional information while the function is running.
+            Default is `False`.
 
         Returns
         -------
@@ -300,7 +303,8 @@ def list_variable_modifications(
     variable_id = variable_path.split('/')[-1]
 
     # Information to output
-    print(f"(list_variable_modifications) `variable_id`: {variable_id}")
+    if verbose == True:
+        print(f"(list_variable_modifications) `variable_id`: {variable_id}")
 
     # Use glob to get a file path list down to the `data_file` depth
     data_filepaths = glob.glob(f"{variable_path}/*/*/*")
