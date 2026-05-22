@@ -5,6 +5,8 @@ cdo = Cdo()
 cdo = Cdo(tempdir='./cdo_tmp/')
 cdo.cleanTempDir()
 
+from seaicecp.verify import verify_path
+
 def get_field_mean(
     dataset: (str, [str], xr.DataArray, xr.Dataset),
     save_as: str = None,
@@ -38,19 +40,28 @@ def get_field_mean(
         array([1.3731426e+08], dtype=float32)
     """
     # Verify input arguments
-    if isinstance(dataset, type([])):
+    if isinstance(dataset, str):
+        # Wrap that string into a list
+        dataset = [dataset]
+    if isinstance(dataset, (xr.Dataset, xr.DataArray)):
+        input_command = dataset
+        cdo_command = cdo.fldmean
+    elif isinstance(dataset, type([])):
+        if len(dataset) < 1:
+            raise ValueError(f"(get_field_mean) `dataset` must have at least one item. Got: {dataset}")
         # Assemble the `cdo` input command
         input_command = "[ -fldmean :"
         for datafile in dataset:
             if not isinstance(datafile, str):
                 raise TypeError(f"(get_field_mean) Each item in `dataset` list must be a string. Got: {type(datafile)}")
+            # Verify this is a valid path
+            datafile = verify_path(datafile)
+            if not datafile.endswith('.nc'):
+                raise TypeError(f"(plot_time_series) `datafile` must be a `.nc` filepath. Got: {datafile}")
             input_command = f"{input_command} {datafile}"
         input_command = f"{input_command} ]"
         print(f"(get_field_mean) `input`: {input_command}")
         cdo_command = cdo.mergetime
-    elif not isinstance(dataset, (xr.Dataset, xr.DataArray)):
-        input_command = dataset
-        cdo_command = cdo.fldmean
     else:
         raise TypeError(f"(get_field_mean) `dataset` must be a string, `xr.Dataset`, or `xr.DataArray`. Got type: {type(dataset)}")
     if not isinstance(save_as, (str, type(None))):
