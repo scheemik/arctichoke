@@ -485,3 +485,75 @@ def test_get_variable_path():
                 assert True, f"`get_variable_path` raised an exception on invalid `variant_label`: {e}"
             else:
                 assert False, f"`get_variable_path` did not raise an exception on invalid `variant_label` {invalid_string}"
+
+def test_list_variable_modifications():
+    """Test the `list_variable_modifications` function."""
+    # Define test cases
+    ## Note: The expected output of these test cases is manually kept up to date
+    test_cases = [
+        {
+            'variable_path': '/seaicecp_data/bergybits/data/CMIP6/HighResMIP/AWI/AWI-CM-1-1-HR/hist-1950/r1i1p1f2/Ofx/areacello',
+            'list_filenames': True,
+            'expected_dict': {
+                '': ['areacello_Ofx_AWI-CM-1-1-HR_hist-1950_r1i1p1f2_gn.nc'],
+            },
+        },
+        {
+            'variable_path': '/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r2i1p2f1/SImon/siconc',
+            'list_filenames': False,
+            'expected_dict': {
+                '': 65,
+                'trim_NWP_': 65,
+            },
+        },
+    ]
+    for test_case in test_cases:
+        actual = path.list_variable_modifications(
+            variable_path=test_case['variable_path'], 
+            list_filenames=test_case['list_filenames'],
+        )
+        assert actual == test_case['expected_dict'], f"`list_variable_modifications` failed on test case: {test_case}."
+
+    # Define invalid test cases
+    invalid_test_cases = [
+        {
+            'variable_path': 'src',
+        },
+    ]
+    for invalid_test_case in invalid_test_cases:
+        try:
+            actual = path.list_variable_modifications(
+                variable_path = invalid_test_case['variable_path'],
+            )
+        except (FileNotFoundError, ValueError) as e:
+            assert True, f"`list_variable_modifications` raised an exception on invalid test case: {e}"
+        else:
+            assert False, f"`list_variable_modifications` did not raise an exception on invalid test case {invalid_test_case}"
+    
+    # Define a list of invalid strings
+    invalid_strings = [
+        1234,
+        3.14,
+        None,
+        [],
+        {}
+    ]
+    for invalid_string in invalid_strings:
+        # Test with `variable_path`
+        try:
+            actual = path.list_variable_modifications(
+                variable_path = invalid_string,
+            )
+        except (TypeError) as e:
+            assert True, f"`list_variable_modifications` raised an exception on invalid `variable_path`: {e}"
+        else:
+            assert False, f"`list_variable_modifications` did not raise an exception on invalid `variable_path` {invalid_string}"
+        # Test with `list_filenames`
+        try:
+            actual = path.list_variable_modifications(
+                list_filenames = invalid_string,
+            )
+        except (TypeError) as e:
+            assert True, f"`list_variable_modifications` raised an exception on invalid `list_filenames`: {e}"
+        else:
+            assert False, f"`list_variable_modifications` did not raise an exception on invalid `list_filenames` {invalid_string}"
