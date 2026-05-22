@@ -233,3 +233,164 @@ def get_variable_path(
     else:
         # If there is only one file path remaining, return it
         return full_variable_id_filepath_list[0]
+
+def list_variable_modifications(
+    variable_path: str,
+    list_filenames: bool = False,
+    **kwargs,
+):
+    """ List the modifications made to variable files in the specified path.
+
+        Search the given directory of data files and return a dictionary indicating whether any modifications have been made and how many files in each modification category exist.
+        This assumes modifications are made to files by adding a prefix to the file name.
+
+        Parameters
+        ----------
+        source_id : `str`
+            The name of the source ID (model) for which to find the variable paths.
+        experiment_id : `str` or `None`, optional
+            The name of the experiment ID in which to search for available variables.
+            If `None` is given, all available experiments are included.
+            Default is `None`.
+        **kwargs
+            Keyword arguments to pass to `get_model_path()`.
+
+        Returns
+        -------
+        avail_var_dict : `dict`
+            A dictionary of experiment ID's whose keys are dictionaries of variant labels whose keys are lists of available variables.
+        
+        Examples
+        --------
+        >>> from seaicecp.path.find_data import list_variable_modifications 
+        >>> list_variable_modifications(source_id = 'HadGEM3-GC31-HM')
+        {'MOHC/HadGEM3-GC31-HM': {
+            'control-1950': {
+                'r1i1p1f1': ['areacello']},
+            'highres-future': {
+                'r1i1p1f1': ['areacello', 'siu', 'siv', 'sithick', 'siconc', 'siage'],
+                'r1i3p1f1': ['siconc', 'siage', 'siv', 'sithick', 'siu']},
+            'hist-1950': {
+                'r1i1p1f1': ['areacello', 'siage', 'siv', 'siu', 'siconc', 'sithick'],
+                'r1i3p1f1': ['siconc', 'sithick', 'siu', 'siage', 'siv']}},
+        'NERC/HadGEM3-GC31-HM': {
+            'highres-future': {
+                'r1i2p1f1': ['siv', 'siu', 'siconc', 'sithick', 'siage']},
+            'hist-1950': {
+                'r1i2p1f1': ['siconc', 'siu', 'sithick', 'siv', 'siage']}}}
+        >>> list_variable_modifications(source_id = 'HadGEM3-GC31-HM', experiment_id = 'hist-1950')
+        {'MOHC/HadGEM3-GC31-HM': {
+            'hist-1950': {
+                'r1i1p1f1': ['areacello', 'siage', 'siv', 'siu', 'siconc', 'sithick'],
+                'r1i3p1f1': ['siconc', 'sithick', 'siu', 'siage', 'siv']}},
+        'NERC/HadGEM3-GC31-HM': {
+            'hist-1950': {
+                'r1i2p1f1': ['siconc', 'siu', 'sithick', 'siv', 'siage']}}}
+    """
+    # Verify input arguments
+    if not isinstance(variable_path, str):
+        raise TypeError(f"(list_variable_modifications) `variable_path` must be a string. Got type: {type(variable_path)}")
+    variable_path = verify_path(variable_path)
+
+    # Get the variable name
+    variable_id = variable_path.split('/')[-1]
+
+    # Information to output
+    print(f"(list_variable_modifications) `variable_id`: {variable_id}")
+
+    # Use glob to get a file path list down to the `data_file` depth
+    data_filepaths = glob.glob(f"{variable_path}/*/*/*")
+
+    # Filter to just netCDF files
+    data_filepaths = [item for item in data_filepaths if '.nc' in item]
+    if len(data_filepaths) < 1:
+        raise FileNotFoundError(f"(list_variable_modifications) No `.nc` files found in `variable_path`: {variable_path}/*/*/*")
+    
+    # Get just the file names, removing the directory paths
+    data_filepaths = [item.split('/')[-1] for item in data_filepaths]
+
+    # Get just the modification prefixes, removing the file names
+    modification_prefixes = [item.split(variable_id)[0] for item in data_filepaths]
+    # Get just the unique prefixes
+    modification_prefixes = list(set(modification_prefixes))
+    # Make a dictionary to store resulting lists of files
+    var_mod_dict = {mod_prefix: None for mod_prefix in sorted(modification_prefixes)}
+
+    # For each modification prefix, get the list of relevant files
+    for mod_prefix in modification_prefixes:
+        # For modification prefixes, list the items which contain that prefix
+        if mod_prefix != '':
+            these_data_filepaths = [item for item in data_filepaths if item.startswith(mod_prefix)]
+        # For unmodified files, use process of elimination
+        else:
+            # Make a list of all prefixes except for `''`
+            temp_list = modification_prefixes.copy()
+            temp_list.remove('')
+            # If there are any prefixes left, loop through them
+            if len(temp_list) > 0:
+                these_data_filepaths = [item for item in data_filepaths if not item.startswith(temp_list[0])]
+                for i in range(1, len(modification_prefixes)):
+                    these_data_filepaths = [item for item in these_data_filepaths if not item.startswith(temp_list[0])]
+            else:
+                these_data_filepaths = data_filepaths
+        if list_filenames:
+            var_mod_dict[mod_prefix] = sorted(these_data_filepaths)
+        else:
+            var_mod_dict[mod_prefix] = len(these_data_filepaths)
+
+    return var_mod_dict
+
+    # Filter files based on modification
+    if isinstance(with_modification, type(None)):
+        # Filter out files with any modification prefixes
+        data_filepaths = [item for item in data_filepaths if not 'trim' in item]
+    else:
+        # Filter to just files with the modification prefix
+        data_filepaths = [item for item in data_filepaths if with_modification in item]
+    
+    # Get the path of the model
+    model_paths = get_model_path(source_id, **kwargs)
+    # Verify this model path exists
+    for i in range(len(model_paths)):
+        model_paths[i] = verify_path(model_paths[i])
+
+    # Make a dictionary to store resulting available variables
+    avail_var_dict = {f"{model_path.split('/')[-2]}/{model_path.split('/')[-1]}": None for model_path in sorted(model_paths)}
+
+    # Loop across the model paths
+    for model_path in model_paths:
+        short_model_path = f"{model_path.split('/')[-2]}/{model_path.split('/')[-1]}"
+        
+        # Get the experiment ID's 
+        if isinstance(experiment_id, type(None)):
+            experiment_ids = next(os.walk(model_path))[1]
+        else:
+            experiment_ids = [experiment_id]
+        
+        # Make a dictionary to store resulting available variables
+        avail_var_dict[short_model_path] = {experiment_id: None for experiment_id in sorted(experiment_ids)}
+
+        # Get the variant labels (ensemble members) for each experiment ID
+        for this_experiment_id in experiment_ids:
+            # Verify the experiment ID path exists
+            experiment_path = verify_path(f"{model_path}/{this_experiment_id}")
+            # Get the variant labels
+            variant_labels = next(os.walk(experiment_path))[1]
+            # Add the variant labels as a dictionary to the available variable dictionary
+            avail_var_dict[short_model_path][this_experiment_id] = {variant_label: [] for variant_label in sorted(variant_labels)}
+
+            # Get the variables available for each variant label
+            for variant_label in variant_labels:
+                # Verify the variant path exists
+                variant_path = verify_path(f"{experiment_path}/{variant_label}")
+                # Get the table ID's
+                table_ids = next(os.walk(variant_path))[1]
+                # Get the variables available for each table ID
+                table_paths = []
+                for table_id in table_ids:
+                    # Verify the table path exists and add it to the list of table paths
+                    table_paths.append(verify_path(f"{variant_path}/{table_id}"))
+                # Get the variable names using nested iterations to avoid a list of lists
+                avail_var_dict[short_model_path][this_experiment_id][variant_label] = [var_name for path in table_paths for var_name in next(os.walk(path))[1]]
+
+    return avail_var_dict
