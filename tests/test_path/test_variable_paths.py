@@ -11,6 +11,7 @@ def test_list_available_variables():
         {
             'source_id': 'AWI-CM-1-1-HR',
             'experiment_id': None,
+            'list_var_mods': False,
             'expected_var_dict': {
                 'AWI/AWI-CM-1-1-HR': {
                     'control-1950': {'r1i1p1f2': ['areacello']},
@@ -20,8 +21,21 @@ def test_list_available_variables():
             },
         },
         {
+            'source_id': 'AWI-CM-1-1-HR',
+            'experiment_id': None,
+            'list_var_mods': True,
+            'expected_var_dict': {
+                'AWI/AWI-CM-1-1-HR': {
+                    'control-1950': {'r1i1p1f2': {'Ofx': {'areacello': {'': 1}}}},
+                    'hist-1950': {'r1i1p1f2': {'Ofx': {'areacello': {'': 1}}}},
+                    'spinup-1950': {'r1i1p1f2': {'Ofx': {'areacello': {'': 1}}}},
+                },
+            },
+        },
+        {
             'source_id': 'BCC-CSM2-HR',
             'experiment_id': None,
+            'list_var_mods': False,
             'expected_var_dict': {
                 'BCC/BCC-CSM2-HR': {
                     'hist-1950': {'r1i1p1f1': ['areacello']},
@@ -31,6 +45,7 @@ def test_list_available_variables():
         {
             'source_id': 'CESM1-CAM5-SE-HR',
             'experiment_id': None,
+            'list_var_mods': False,
             'expected_var_dict': {
                 'NCAR/CESM1-CAM5-SE-HR': {
                     'highres-future': {'r1i1p1f1': ['areacello']},
@@ -41,6 +56,7 @@ def test_list_available_variables():
         {
             'source_id': 'EC-Earth3P-HR',
             'experiment_id': None,
+            'list_var_mods': False,
             'expected_var_dict': {
                 'EC-Earth-Consortium/EC-Earth3P-HR': {
                     'highres-future': {
@@ -59,6 +75,7 @@ def test_list_available_variables():
         {
             'source_id': 'HadGEM3-GC31-HM',
             'experiment_id': None,
+            'list_var_mods': False,
             'expected_var_dict': {
                 'MOHC/HadGEM3-GC31-HM': {
                     'control-1950': {
@@ -85,7 +102,11 @@ def test_list_available_variables():
         },
     ]
     for test_case in test_cases:
-        actual = path.list_available_variables(source_id=test_case['source_id'], experiment_id=test_case['experiment_id'])
+        actual = path.list_available_variables(
+            source_id=test_case['source_id'], 
+            experiment_id=test_case['experiment_id'],
+            list_var_mods=test_case['list_var_mods'], 
+        )
         assert actual == test_case['expected_var_dict'], f"`list_available_variables` failed on test case: {test_case}. \nActual: {actual}\nExpected: {test_case['expected_var_dict']}\nHas the expected list in `tests/test_path/test_find_data.py` been updated?"
 
     # Define invalid test cases
@@ -169,6 +190,16 @@ def test_list_available_variables():
                 assert True, f"`list_available_variables` raised an exception on invalid `experiment_id`: {e}"
             else:
                 assert False, f"`list_available_variables` did not raise an exception on invalid `experiment_id` {invalid_string}"
+        # Test with `list_var_mods`
+        try:
+            actual = path.list_available_variables(
+                source_id = 'EC-Earth3P-HR',
+                list_var_mods = invalid_string,
+            )
+        except (TypeError) as e:
+            assert True, f"`list_available_variables` raised an exception on invalid `list_var_mods`: {e}"
+        else:
+            assert False, f"`list_available_variables` did not raise an exception on invalid `list_var_mods` {invalid_string}"
         # Test with `data_dir`
         try:
             actual = path.list_available_variables(
