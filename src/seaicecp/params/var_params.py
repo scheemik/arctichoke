@@ -20,3 +20,15 @@ sea_ice_vars = {
         'plot_range': None,
     },
 }
+
+# Meta variables used to structure the data
+# These will appear in the lists of `data_vars`, but are not the actual variable of the file
+meta_vars = [
+    'time_bnds', 
+    'vertices_latitude', 
+    'vertices_longitude', 
+    'latitude_bnds', 
+    'longitude_bnds',
+    'lat_bnds',
+    'lon_bnds',
+]

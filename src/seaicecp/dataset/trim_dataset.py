@@ -9,6 +9,7 @@ cdo.cleanTempDir()
 
 import seaicecp.params as sps
 from seaicecp.verify import verify_path
+from seaicecp.params.var_params import meta_vars
 
 def trim_latlon(
     xr_data: xr.Dataset,
@@ -80,8 +81,8 @@ def trim_latlon(
     
     # Get the list of data variables
     data_vars = list(xr_data_trimmed.data_vars.keys())
-    print('data_vars:', data_vars)
-    for meta_var in ['time_bnds', 'vertices_latitude', 'vertices_longitude', 'latitude_bnds', 'longitude_bnds']:
+    # print('data_vars:', data_vars)
+    for meta_var in meta_vars:
         if meta_var in data_vars:
             data_vars.remove(meta_var)
 
