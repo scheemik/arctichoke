@@ -44,7 +44,7 @@ def test_get_grid_type():
         actual = get_variable.get_grid_type(
             dataset = test_case['dataset']
         )
-        assert actual == test_case['expected_grid_type'], f"`get_grid_type` failed on test case: {test_case}.\nExpected variable name: {test_case['expected_grid_type']}\nActual variable name: {actual}"
+        assert actual == test_case['expected_grid_type'], f"`get_grid_type` failed on test case: {test_case}.\nExpected: {test_case['expected_grid_type']}\nActual: {actual}"
 
     # Define invalid test cases
     invalid_example_dataset = make_example_dataset()

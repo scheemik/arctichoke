@@ -54,7 +54,7 @@ def test_plot_time_series():
             test = True,
         )
         # Check the data variables
-        assert actual.name == test_case['name'], f"`plot_time_series` returned a dataset with the variables: {actual.name}.\nExpected variables: {test_case['name']}"
+        assert actual.name == test_case['name'], f"`plot_time_series` failed on test case: {test_case} \nExpected: {test_case['name']} \nActual: {actual.name}"
 
     # Define invalid test cases
     invalid_test_cases = [

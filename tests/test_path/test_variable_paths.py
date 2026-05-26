@@ -391,7 +391,7 @@ def test_get_variable_path():
             experiment_id=test_case['experiment_id'],
             variant_label=test_case['variant_label'],
         )
-        assert actual == test_case['expected_path'], f"`get_variable_path` failed on test case: {test_case}."
+        assert actual == test_case['expected_path'], f"`get_variable_path` failed on test case: {test_case}. \nExpected: {test_case['expected_path']} \nActual: {actual}"
 
     # Define test cases that should raise warnings
     ## Note: The expected output of these test cases is manually kept up to date
@@ -543,7 +543,7 @@ def test_list_variable_modifications():
             variable_path=test_case['variable_path'], 
             list_filenames=test_case['list_filenames'],
         )
-        assert actual == test_case['expected_dict'], f"`list_variable_modifications` failed on test case: {test_case}."
+        assert actual == test_case['expected_dict'], f"`list_variable_modifications` failed on test case: {test_case}. \nExpected: {test_case['expected_dict']} \nActual: {actual}"
 
     # Define invalid test cases
     invalid_test_cases = [

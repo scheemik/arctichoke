@@ -44,7 +44,7 @@ def test_get_variable_name():
         actual = get_variable.get_variable_name(
             dataset = test_case['dataset']
         )
-        assert actual == test_case['expected_var_name'], f"`get_variable_name` failed on test case: {test_case}.\nExpected variable name: {test_case['expected_var_name']}\nActual variable name: {actual}"
+        assert actual == test_case['expected_var_name'], f"`get_variable_name` failed on test case: {test_case}.\nExpected : {test_case['expected_var_name']}\nActual: {actual}"
 
     # Define invalid test cases
     invalid_example_dataset = make_example_dataset()

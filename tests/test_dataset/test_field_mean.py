@@ -43,7 +43,7 @@ def test_get_field_mean():
     ]
     for test_case in test_cases:
         actual = list(dataset.get_field_mean(test_case['dataset'])[test_case['variable_id']].values.flatten())
-        assert actual == test_case['expected_means'], f"`get_field_mean` failed on test case: {test_case}.\nExpected means: {test_case['expected_means']}\nActual means: {actual}"
+        assert actual == test_case['expected_means'], f"`get_field_mean` failed on test case: {test_case}.\nExpected: {test_case['expected_means']}\nActual: {actual}"
     # Clean up test files that were created
     remove_non_empty_directory(test_file_dir)
 

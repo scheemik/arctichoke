@@ -193,7 +193,7 @@ def test_get_model_path():
     ]
     for test_case in test_cases:
         actual = path.get_model_path(source_id=test_case['source_id'])
-        assert actual == test_case['expected_path'], f"`get_model_path` failed on test case: {test_case}."
+        assert actual == test_case['expected_path'], f"`get_model_path` failed on test case: {test_case}. \nExpected: {test_case['expected_path']} \nActual: {actual}"
 
     # Define invalid test cases
     invalid_test_cases = [

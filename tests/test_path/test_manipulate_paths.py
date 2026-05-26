@@ -64,9 +64,9 @@ def test_make_file_path():
     ]
     for case in test_cases:
         actual = manipulate_paths.make_file_path(case['input'])
-        assert actual == case['expected'], f"Expected {case['expected']}, but got {actual}"
+        assert actual == case['expected'], f"`make_file_path` failed on test case: {test_case}. \nExpected: {case['expected']}\nActual: {actual}"
         # Confirm the directory actually exists
-        assert os.path.exists(case['expected']), f"Directory {case['expected']} was not found."
+        assert os.path.exists(case['expected']), f"`make_file_path` failed on test case: {test_case}.Directory {case['expected']} was not found."
         # Clean up by removing the created directory
         base_dir = case['input'].split('/')[0]
         manipulate_paths.remove_non_empty_directory(base_dir)
