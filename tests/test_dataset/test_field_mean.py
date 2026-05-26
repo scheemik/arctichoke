@@ -1,6 +1,6 @@
 from cdo import CDOException
 
-from seaicecp.dataset import field_mean
+from seaicecp import dataset
 from seaicecp.path.manipulate_paths import remove_non_empty_directory, make_file_path
 from seaicecp.dataset.example_dataset import make_example_dataset
 
@@ -42,7 +42,7 @@ def test_get_field_mean():
         },
     ]
     for test_case in test_cases:
-        actual = list(field_mean.get_field_mean(test_case['dataset'])[test_case['variable_id']].values.flatten())
+        actual = list(dataset.get_field_mean(test_case['dataset'])[test_case['variable_id']].values.flatten())
         assert actual == test_case['expected_means'], f"`get_field_mean` failed on test case: {test_case}.\nExpected means: {test_case['expected_means']}\nActual means: {actual}"
     # Clean up test files that were created
     remove_non_empty_directory(test_file_dir)
@@ -55,7 +55,7 @@ def test_get_field_mean():
     ]
     for invalid_test_case in invalid_test_cases:
         try:
-            actual = field_mean.get_field_mean(
+            actual = dataset.get_field_mean(
                 dataset = invalid_test_case['dataset'],
             )
         except (FileNotFoundError) as e:
@@ -74,7 +74,7 @@ def test_get_field_mean():
     for invalid_string in invalid_strings:
         # Test with `dataset`
         try:
-            actual = field_mean.get_field_mean(
+            actual = dataset.get_field_mean(
                 dataset = invalid_string,
             )
         except (TypeError, ValueError) as e:
@@ -84,7 +84,7 @@ def test_get_field_mean():
         # Test with `save_as`
         if not isinstance(invalid_string, type(None)):
             try:
-                actual = field_mean.get_field_mean(
+                actual = dataset.get_field_mean(
                     dataset = test_cases[0]['dataset'],
                     save_as = invalid_string,
                 )

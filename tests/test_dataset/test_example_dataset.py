@@ -1,6 +1,6 @@
 import os
 
-from seaicecp.dataset import example_dataset
+from seaicecp import dataset
 
 def test_make_example_dataset():
     """Test the `make_example_dataset` function."""
@@ -9,7 +9,7 @@ def test_make_example_dataset():
     # Define test cases
     test_cases = [
         {
-            'actual': example_dataset.make_example_dataset(),
+            'actual': dataset.make_example_dataset(),
             'keys': ['test_var'],
             'coords': ['j', 'i', 'longitude', 'latitude'],
             'sizes': ['j', 'i'],
@@ -17,7 +17,7 @@ def test_make_example_dataset():
             'n_size': 10,
         },
         {
-            'actual': example_dataset.make_example_dataset(save_as=test_filepath),
+            'actual': dataset.make_example_dataset(save_as=test_filepath),
             'keys': ['test_var'],
             'coords': ['j', 'i', 'longitude', 'latitude'],
             'sizes': ['j', 'i'],
@@ -25,7 +25,7 @@ def test_make_example_dataset():
             'n_size': 10,
         },
         {
-            'actual': example_dataset.make_example_dataset(save_as=test_filepath, n=5),
+            'actual': dataset.make_example_dataset(save_as=test_filepath, n=5),
             'keys': ['test_var'],
             'coords': ['j', 'i', 'longitude', 'latitude'],
             'sizes': ['j', 'i'],
@@ -48,7 +48,7 @@ def test_make_example_dataset():
     
     # Test setting overwrite to `False`
     try:
-        actual = example_dataset.make_example_dataset(
+        actual = dataset.make_example_dataset(
             save_as=test_filepath,
             overwrite = False,
         )
@@ -68,7 +68,7 @@ def test_make_example_dataset():
     ]
     for invalid_value in invalid_values:
         try:
-            actual = example_dataset.make_example_dataset(
+            actual = dataset.make_example_dataset(
                 save_as = invalid_value,
             )
         except (TypeError, ValueError) as e:
@@ -85,7 +85,7 @@ def test_make_example_dataset():
     ]
     for invalid_value in invalid_values:
         try:
-            actual = example_dataset.make_example_dataset(
+            actual = dataset.make_example_dataset(
                 save_as=test_filepath,
                 n = invalid_value,
             )
@@ -104,7 +104,7 @@ def test_make_example_dataset():
     ]
     for invalid_value in invalid_values:
         try:
-            actual = example_dataset.make_example_dataset(
+            actual = dataset.make_example_dataset(
                 save_as=test_filepath,
                 overwrite = invalid_value,
             )
