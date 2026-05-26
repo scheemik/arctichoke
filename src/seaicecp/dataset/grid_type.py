@@ -52,3 +52,51 @@ def get_grid_type(
     else:
         return 'other'
 
+def summarize_grid_types(
+    datasets: [(str, xr.DataArray, xr.Dataset)],
+):
+    """ Summarizes the types of grids for the datasets.
+
+        Uses the `get_grid_type()` function on each dataset in the list and reports the number of datasets with the grid types `'regular'`, `'irregular'`, or `'other'`.
+
+        Parameters
+        ----------
+        datasets : List of `str`, `xarray.DataArray`, `xarray.Dataset`
+            The list of datasets for which to summarize the grid types.
+
+        Returns
+        -------
+        grid_type_dict : `dict`
+            A dictionary showing the number of datasets with the grid types `'regular'`, `'irregular'`, or `'other'`.
+        
+        Examples
+        --------
+        >>> from seaicecp.path import list_variable_files
+        >>> this_list = list_variable_files(source_id='EC-Earth3P-HR', variable_id='siconc', variant_label='r2i1p2f1')
+        >>> from seaicecp.dataset.grid_type import summarize_grid_types
+        >>> summarize_grid_types(this_list)
+        {'total': 65, 'irregular': 65}
+        >>> this_list = list_variable_files(source_id='HadGEM3-GC31-MM', variable_id='siconc', experiment_id='highres-future', variant_label='r1i1p1f1')
+        {'total': 36, 'regular': 36}
+    """
+    # Verify input arguments
+    if not isinstance(datasets, type([])):
+        raise TypeError(f"(summarize_grid_types) `datasets` must be a list. Got type: {type(datasets)}")
+    # Each element in `datasets` is verified by `get_grid_type()`
+    
+    # Get the grid type of each dataset
+    grid_types = []
+    for dataset in datasets:
+        grid_types.append(get_grid_type(dataset))
+    
+    # Get the grid types present
+    unique_grid_types = list(set(grid_types))
+    
+    # Make a grid types summary dictionary
+    grid_type_dict = {
+        'total': len(datasets)
+    }
+    for this_grid_type in unique_grid_types:
+        grid_type_dict[this_grid_type] = sum(1 for g_type in grid_types if g_type == this_grid_type)
+    
+    return grid_type_dict
