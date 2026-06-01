@@ -1,5 +1,5 @@
 # Build with the following command
-# podman build -f .devcontainer/Containerfile -t seaicecp_2 . | tee .devcontainer/build_container_try_7.txt
+# podman build -f .devcontainer/Containerfile -t <image_name> . | tee .devcontainer/<log_file_name>.log
 
 # ---- Stage 1: get uv image ----
 FROM ghcr.io/astral-sh/uv:trixie-slim@sha256:5cbec7ab7753a6c763c6dda6a38f085c8c585ec9f53cfb4e7368b79ca30bc881 AS uv
