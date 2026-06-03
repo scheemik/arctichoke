@@ -75,7 +75,7 @@ For this project, I decided to use [`uv`](https://docs.astral.sh/uv/) instead.
 From the instructions for [Installing `uv`](https://docs.astral.sh/uv/getting-started/installation/), I used Homebrew.
 I've truncated the output below for brevity. 
 ```console
-$ brew install uv
+Grey@Audron:~$ brew install uv
 ==> Auto-updating Homebrew...
 Adjust how often this is run with `$HOMEBREW_AUTO_UPDATE_SECS` or disable with
 `$HOMEBREW_NO_AUTO_UPDATE=1`. Hide these hints with `$HOMEBREW_NO_ENV_HINTS=1` (see `man brew`).
@@ -91,7 +91,7 @@ Updated 2 taps (homebrew/core and homebrew/cask).
 
 I then ensured that I had the most up-to-date version of `uv` installed.
 ```console
-$ brew upgrade uv
+Grey@Audron:~$ brew upgrade uv
 Warning: uv 0.11.6 already installed
 ```
 
@@ -111,13 +111,14 @@ To start a project, I simply need to use `uv` to initiate one, following the [Wo
 I chose the name `seaicecp` to stand for "Sea Ice Choke Points," trying to balance brevity and descriptiveness.
 First, I navigated to the directory in which I want my project to be, `<absolute/path/to/project>`, then used the `uv init` command with the name for the project and the `--package` flag.
 ```console
-$ uv init seaicecp --package
+Grey@Audron:~$ cd /<absolute/path/to/project>
+Grey@Audron:/<absolute/path/to/project>$ uv init seaicecp --package
 Initialized project `seaicecp` at `/<absolute/path/to/project>/seaicecp`
 ```
 
 This creates a very simple directory structure for the project.
 ```console
-$ tree seaicecp
+Grey@Audron:/<absolute/path/to/project>$ tree seaicecp
 ├── .gitignore
 ├── .python-version
 ├── README.md
@@ -141,6 +142,9 @@ By using `uvx`, you don't need to commit to actually installing `cookiecutter` o
 First, I created and went into a temporary directory, `tmp_dir`, then generated the package structure.
 This is to ensure I didn't accidentally overwrite the structure I made with `uv init` earlier.
 ```console
+Grey@Audron:seaicecp$ mkdir tmp_dir
+Grey@Audron:seaicecp$ cd tmp_dir
+Grey@Audron:tmp_dir$ git branch -m master main
 $ uvx cookiecutter https://github.com/py-pkgs/py-pkgs-cookiecutter.git
 Installed 21 packages in 137ms
   [1/7] author_name (Monty Python): Mikhail Schee
@@ -166,7 +170,7 @@ Installed 21 packages in 137ms
 
 This generates a directory with the chosen package name (in this case, `seaicecp`) and fill it with all the boiler-plate files you would expect in a Python Package.
 ```console
-$ tree seaicecp/
+Grey@Audron:tmp_dir$ tree seaicecp/
 seaicecp/
 ├── CHANGELOG.md
 ├── CONDUCT.md
@@ -255,8 +259,7 @@ Grey@Audron:seaicecp$ rm -rf tmp_dir/
 
 Following [Py-Pkgs Section 3.3. Put your package under version control](https://py-pkgs.org/03-how-to-package-a-python#put-your-package-under-version-control), I initiated `git` for my new repository.
 ```console
-$ cd seaicecp/
-$ git init
+Grey@Audron:seaicecp$ git init
 Initialized empty Git repository in /<absolute/path/to/project>/seaicecp/.git/
 ```
 
