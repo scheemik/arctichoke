@@ -42,30 +42,17 @@ If you are proposing a feature:
 
 Ready to contribute? Here's how to set up `seaicecp` for local development.
 
-1. Download a copy of `seaicecp` locally.
+1. Follow the [Installation](https://seaicecp.readthedocs.io/en/latest/docs_setup/installation.html) instructions.
 
-2. Create and activate a conda environment for `seaicecp`:
-
-    ```console
-    $ conda create -n seaicecp python=3.14.1
-    $ conda activate seaicecp
-    ```
-
-3. Install `seaicecp` using `poetry`:
-
-    ```console
-    $ poetry install
-    ```
-
-4. Use `git` (or similar) to create a branch for local development and make your changes:
+2. Use `git` (or similar) to create a branch for local development and make your changes:
 
     ```console
     $ git checkout -b name-of-your-bugfix-or-feature
     ```
 
-5. When you're done making changes, check that your changes conform to any code formatting requirements and pass any tests.
+3. When you're done making changes, check that your changes conform to any code formatting requirements and pass any tests.
 
-6. Commit your changes and open a pull request.
+4. Commit your changes and open a pull request.
 
 ## Pull Request Guidelines
 
