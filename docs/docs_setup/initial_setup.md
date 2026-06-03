@@ -151,7 +151,7 @@ Installed 21 packages in 137ms
   [2/7] package_name (mypkg): seaicecp
   [3/7] package_short_description (A package for doing great things!): Investigate sea ice choke points in the Canadian Arctic Archipelago using high-resolution models.
   [4/7] package_version (0.1.0): 
-  [5/7] python_version (3.12): 3.14.1
+  [5/7] python_version (3.12): 3.13.5
   [6/7] Select open_source_license
     1 - MIT
     2 - Apache License 2.0
@@ -228,7 +228,7 @@ authors = [
 ]
 license = "MIT"
 readme = "README.md"
-requires-python = ">=3.14"
+requires-python = ">=3.13"
 dependencies = [
     
 ]
