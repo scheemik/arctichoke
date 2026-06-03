@@ -1,10 +1,11 @@
 <a id='top'></a>
 # Initial Setup
 
-This page is under construction.
+This guide details how the architecture of this project was developed.
+For streamlined instructions on how to install and start using this project, see the {doc}`Installation <installation>` page.
 
-Much of what follows comes from the incredibly helpful guide, [Python Packages](https://py-pkgs.org/welcome).
-Link to the {doc}`README <../index>`.
+The structure of this project is based on the incredibly helpful guide, [Python Packages](https://py-pkgs.org/welcome).
+Several of the sections below are summarizations of parts of that guide, with details of the changes I made for this specific setup. 
 
 ## Contents
 
