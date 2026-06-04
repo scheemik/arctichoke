@@ -2012,32 +2012,14 @@ print(seaicecp.__version__)
 0.1.0
 ```
 
-
-### old
-
-Great, now I'm able to generate a plot with the following code, from within the container:
-
-```python
-import xarray as xr
-xr_areacello = xr.open_dataset("data/areacello_Ofx_EC-Earth3P-HR_highres-future_r2i1p2f1_gn.nc")
-
-import hvplot.xarray
-import xarray as xr, cartopy.crs as crs
-
-test_plot = xr_areacello.areacello.hvplot.quadmesh(
-    'longitude', 'latitude', projection=crs.Orthographic(-90, 77), project=True,
-    global_extent=True, cmap='viridis', coastline=True
-)
-test_plot
-```
-
-
 <a id='esgpull'></a>
 [back to top](#top)
 
 ### Adding `esgpull`
 
-I want to try downloading more datasets to see whether they are all like this. I found the project [esgpull](https://esgf.github.io/esgf-download/quickstart/) which offers a command line interface for searching and downloading, which I think would be nice as searching on the [ESGF Federated Nodes](https://esgf-node.ornl.gov/search) is a bit tedious with the GUI. 
+Data from the CMIP6 HighResMIP models can be downloaded from the [ESGF Federated Nodes](https://esgf-node.ornl.gov/search) webportal, which has great search functionality but tedious manual downloading, or through Globus, which augments the webportal through an application you can install on your system.
+However, I decided to use [`esgpull`](https://esgf.github.io/esgf-download/quickstart/) for this project, which offers a command line interface for searching and downloading.
+For detailed reasoning on choosing `esgpull`, see the {doc}`Downloading model data with esgpull <esgpull_downloads>` guide. 
 
 I'll add `esgpull` as a dependency in my project following the [installation guide](https://esgf.github.io/esgf-download/installation/) which has an example using `uv` which is great.
 
