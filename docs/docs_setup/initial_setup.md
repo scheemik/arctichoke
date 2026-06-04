@@ -4,7 +4,7 @@
 This guide details how the architecture of this project was developed.
 For streamlined instructions on how to install and start using this project, see the {doc}`Installation <installation>` page.
 
-The structure of this project is based on the incredibly helpful guide, [Python Packages](https://py-pkgs.org/welcome).
+The structure of this project is based on the incredibly helpful guide, [Py-Pkgs](https://py-pkgs.org/welcome).
 Several of the sections below are summarizations of parts of that guide, with details of the changes I made for this specific setup. 
 
 ## Contents
@@ -77,7 +77,7 @@ I do, however, place the section on the [virtual environment and installing pack
 
 ## The `uv` Package Manager
 
-In [Python Packages Chapter 2](https://py-pkgs.org/02-setup), they suggest to use Miniconda to create an environment and use [`poetry`](https://python-poetry.org/) to manage dependencies. 
+In [Py-Pkgs Chapter 2](https://py-pkgs.org/02-setup), they suggest to use Miniconda to create an environment and use [`poetry`](https://python-poetry.org/) to manage dependencies. 
 For this project, I decided to use [`uv`](https://docs.astral.sh/uv/) instead. 
 From the instructions for [Installing `uv`](https://docs.astral.sh/uv/getting-started/installation/), I used Homebrew.
 I've truncated the output below for brevity. 
@@ -802,7 +802,7 @@ The setup of a container is defined by a scripted that is named `Containerfile` 
 A good way to start a container is to load an existing minimal distribution.
 I chose the `trixie-slim` version of Debian as it is lightweight and [uses Python 3.13 by default](https://packages.debian.org/trixie/python3).
 
-In [Python Packages Chapter 2](https://py-pkgs.org/02-setup), they suggest using Miniconda to create an environment and the [`poetry`](https://python-poetry.org/) package to manage dependencies. 
+In [Py-Pkgs Chapter 2](https://py-pkgs.org/02-setup), they suggest using Miniconda to create an environment and the [`poetry`](https://python-poetry.org/) package to manage dependencies. 
 For this project, I decided to use [`uv`](https://docs.astral.sh/uv/) instead as it has the ability to manage tools and add ephemeral packages when testing out builds.
 
 I can create a minimal `Containerfile` to test running `trixie-slim` with Python 3.13 and `uv` installed.
@@ -2703,7 +2703,7 @@ print(seaicecp.__version__)
 
 ### Building documentation
 
-Adding necessary packages as shown in [3.8.4. Building documentation](https://py-pkgs.org/03-how-to-package-a-python#building-documentation).
+Adding necessary packages as shown in [Py-Pkgs 3.8.4. Building documentation](https://py-pkgs.org/03-how-to-package-a-python#building-documentation).
 ```console
 Grey@Audron:seaicecp$ source .venv/bin/activate
 (seaicecp) Grey@Audron:seaicecp$ uv add --dev myst-nb sphinx-autoapi sphinx-rtd-theme
@@ -2807,7 +2807,7 @@ The test webpage seems like it rendered properly.
 
 ### Hosting documentation
 
-Following [3.8.5. Hosting documentation online](https://py-pkgs.org/03-how-to-package-a-python#hosting-documentation-online).
+Following [Py-Pkgs 3.8.5. Hosting documentation online](https://py-pkgs.org/03-how-to-package-a-python#hosting-documentation-online).
 
 First, a few changes need to be made to the `.yaml` file to ensure the documentation can successfully be hosted. 
 Upon generating the `cookiecutter` files, the configuration for Read the Docs looked like this:
