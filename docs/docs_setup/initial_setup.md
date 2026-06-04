@@ -50,11 +50,11 @@ Several of the sections below are summarizations of parts of that guide, with de
         - [Packages for testing](#venv_dependencies_test)
         - [Packages for documentation](#venv_dependencies_docs)
     - [The `.pyproject.toml` file](#venv_pyproject_toml)
+    - [Building the package](#venv_build_pkg)
     - [Adding `esgpull`](#esgpull)
         - [Adding `esgpull` install on an external drive](#esgpull_ext_HD)
     - [Using a Jupyter notebook](#jupyter_notebook)
     - [Adding `cdo`](#cdo_install)
-- [Building the package](#build_pkg)
 - [Documentation](#docs)
     - [Building documentation](#build_docs)
     - [Hosting documentation](#host_docs)
@@ -1933,6 +1933,72 @@ After adding all the above packages as dependencies, the `pyproject.toml` file n
 ```
 When new packages are added to the project, they will be cached the next time the container is run.
 
+<a id='venv_build_pkg'></a>
+[back to top](#top)
+
+### Building the package
+
+As shown in the [Build systems](https://docs.astral.sh/uv/concepts/projects/config/#build-systems) documentation for `uv`, I had used the `--package` flag when [initializing the repository with `uv`](#uv_init). 
+In the [Building your package](https://docs.astral.sh/uv/guides/package/#building-your-package) section, I used the 
+
+```console
+Grey@Audron:seaicecp$ podman exec -it 89a2a5684ba1 /bin/sh
+# bash 
+root@89a2a5684ba1:/workspace# source .cvenv/bin/activate
+(seaicecp) root@89a2a5684ba1:/workspace# uv sync
+Resolved 200 packages in 550ms
+      Built seaicecp @ file:///workspace
+Prepared 1 package in 53ms
+Installed 1 package in 12ms
+ + seaicecp==0.1.0 (from file:///workspace)
+(seaicecp) root@89a2a5684ba1:/workspace# uv lock
+Resolved 200 packages in 21ms
+```
+
+```console
+(seaicecp) root@89a2a5684ba1:/workspace# uv build
+Building source distribution (uv build backend)...
+Building wheel from source distribution (uv build backend)...
+Successfully built dist/seaicecp-0.1.0.tar.gz
+Successfully built dist/seaicecp-0.1.0-py3-none-any.whl
+```
+
+
+
+```console
+(seaicecp) root@89a2a5684ba1:/workspace# uv version
+seaicecp 0.1.0
+```
+
+I can now import the package in the Python interpreter.
+```console
+(seaicecp) root@89a2a5684ba1:/workspace# python
+Python 3.13.5 (main, Jun 25 2025, 18:55:22) [GCC 14.2.0] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import seaicecp
+>>> print(seaicecp.__version__)
+0.1.0
+```
+
+
+### old
+
+Great, now I'm able to generate a plot with the following code, from within the container:
+
+```python
+import xarray as xr
+xr_areacello = xr.open_dataset("data/areacello_Ofx_EC-Earth3P-HR_highres-future_r2i1p2f1_gn.nc")
+
+import hvplot.xarray
+import xarray as xr, cartopy.crs as crs
+
+test_plot = xr_areacello.areacello.hvplot.quadmesh(
+    'longitude', 'latitude', projection=crs.Orthographic(-90, 77), project=True,
+    global_extent=True, cmap='viridis', coastline=True
+)
+test_plot
+```
+
 
 <a id='esgpull'></a>
 [back to top](#top)
@@ -2656,49 +2722,6 @@ CDI file types: srv ext ieg grb1 grb2 nc1 nc2 nc4 nc4c nc5 nczarr
     FILE library version : 1.9.1
 ```
 
-
-<a id='build_pkg'></a>
-[back to top](#top)
-
-## Building the package
-
-As shown in the [Build systems](https://docs.astral.sh/uv/concepts/projects/config/#build-systems) documentation for `uv`, I had used the `--package` flag when [initializing the repository with `uv`](#uv_init). 
-In the [Building your package](https://docs.astral.sh/uv/guides/package/#building-your-package) section, I used the 
-
-```console
-$ uv sync
-Resolved 78 packages in 550ms
-      Built seaicecp @ file:///Users/Grey/Documents/Research/Postdoc_Projects/York_U_sea_ice/seaicecp
-Prepared 1 package in 53ms
-Installed 1 package in 12ms
- + seaicecp==0.1.0 (from file:///Users/Grey/Documents/Research/Postdoc_Projects/York_U_sea_ice/seaicecp)
-(seaicecp) Grey@Audron:seaicecp$ uv lock
-Resolved 78 packages in 21ms
-```
-
-```console
-(seaicecp) Grey@Audron:seaicecp$ uv build
-Building source distribution (uv build backend)...
-Building wheel from source distribution (uv build backend)...
-Successfully built dist/seaicecp-0.1.0.tar.gz
-Successfully built dist/seaicecp-0.1.0-py3-none-any.whl
-```
-
-
-
-```console
-(seaicecp) Grey@Audron:seaicecp$ uv version
-seaicecp 0.1.0
-```
-
-I can now import the package in a Jupyter notebook.
-```python
-import seaicecp 
-print(seaicecp.__version__)
-```
-```console
-0.1.0
-```
 
 <a id='docs'></a>
 [back to top](#top)
