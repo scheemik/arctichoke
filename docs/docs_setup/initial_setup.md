@@ -1837,7 +1837,7 @@ Installed 21 packages in 2.54s
 
 #### Packages for testing
 
-In order to run tests, following [Py-Pkgs Section ???](https://py-pkgs.org/02-setup#install-packaging-software), I installed `pytest` and `pytest-cov` as development dependencies by specifying the `--dev` group.
+In order to run tests, following [Py-Pkgs Section 3.7.2. Running tests](https://py-pkgs.org/03-how-to-package-a-python#running-tests) and [Py-Pkgs Section 3.7.3. Code coverage](https://py-pkgs.org/03-how-to-package-a-python#code-coverage), I installed `pytest` and `pytest-cov` as development dependencies by specifying the `--dev` group.
 This means that, if someone where to install `seaicecp` as a package for their own purposes, the packages in the `--dev` group would not be installed by default.
 ```console
 root@183f42d448cd:/workspace# uv add --dev pytest
