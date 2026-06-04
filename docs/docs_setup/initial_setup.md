@@ -9,7 +9,7 @@ Several of the sections below are summarizations of parts of that guide, with de
 
 ## Contents
 
-- [The Order of Operations](#order_of_operations)
+- [The order of operations](#order_of_operations)
 - [The `uv` package manager](#uv_manager)
 - [Creating a package structure](#pkg_structure)
     - [Using `uv init`](#uv_init)
@@ -22,15 +22,15 @@ Several of the sections below are summarizations of parts of that guide, with de
     - [Testing Podman](#podman_test)
     - [Pod Manager extension for VSCodium](#pod_manager_extension)
     - [Building a simple container](#podman_simple_container)
-    - [The Containerfile](#podman_containerfile)
+    - [The `Containerfile`](#podman_containerfile)
         - [Pinning the versions of `uv` and `trixie-slim`](#podman_containerfile_pin_versions)
         - [Defining environment variables](#podman_containerfile_env_vars)
         - [Installing system and scientific dependencies](#podman_containerfile_apt-get)
-        - [Preparing Python, `uv`, and working directory](#podman_containerfile_misc_prep)
+        - [Preparing Python, `uv`, and the working directory](#podman_containerfile_misc_prep)
         - [`uv` dependencies and Jupyter kernel](#podman_containerfile_uv_jupyter)
-        - [Download commonly used Natural Earth shapefiles](#podman_containerfile_natural_earth)
-        - [Set up `esgpull` install](#podman_containerfile_esgpull)
-        - [Set up the Jupyter server](#podman_containerfile_jupyter_server)
+        - [Downloading commonly used Natural Earth shapefiles](#podman_containerfile_natural_earth)
+        - [Setting up `esgpull` install](#podman_containerfile_esgpull)
+        - [Setting up the Jupyter server](#podman_containerfile_jupyter_server)
     - [The `start_container` script](#podman_start_container)
         - [Set the script to fail on common errors](#podman_start_container_pipefail)
         - [Ensure the virtual machine is running](#podman_start_container_machine_status)
@@ -49,6 +49,7 @@ Several of the sections below are summarizations of parts of that guide, with de
         - [Packages for external tools](#venv_dependencies_ext_tools)
         - [Packages for testing](#venv_dependencies_test)
         - [Packages for documentation](#venv_dependencies_docs)
+    - [The `.pyproject.toml` file](#venv_pyproject_toml)
     - [Adding `esgpull`](#esgpull)
         - [Adding `esgpull` install on an external drive](#esgpull_ext_HD)
     - [Using a Jupyter notebook](#jupyter_notebook)
@@ -64,7 +65,7 @@ Several of the sections below are summarizations of parts of that guide, with de
 <a id='order_of_operations'></a>
 [back to top](#top)
 
-## The Order of Operations
+## The order of operations
 
 When initially setting up this project, I installed the [`uv` package manager](#uv_manager), [created the package structure](#pkg_structure) of the project, and [installed Python dependencies in a virtual environment](#venv) all before writing the [Podman](#podman) container.
 It is likely that one could avoid installing `uv` on their host system by first setting up the container and, once inside the container, create the package structure.
@@ -75,7 +76,7 @@ I do, however, place the section on the [virtual environment and installing pack
 <a id='uv_manager'></a>
 [back to top](#top)
 
-## The `uv` Package Manager
+## The `uv` package manager
 
 In [Py-Pkgs Chapter 2](https://py-pkgs.org/02-setup), they suggest to use Miniconda to create an environment and use [`poetry`](https://python-poetry.org/) to manage dependencies. 
 For this project, I decided to use [`uv`](https://docs.astral.sh/uv/) instead. 
@@ -1126,7 +1127,7 @@ The packages installed in this block are:
 <a id='podman_containerfile_misc_prep'></a>
 [back to top](#top)
 
-#### Preparing Python, `uv`, and working directory
+#### Preparing Python, `uv`, and the working directory
 
 - `RUN ln -s /usr/bin/python3.13 /usr/bin/python`
     - This command creates a symlink such that using the command `python` calls Python 3.13.
@@ -1164,7 +1165,7 @@ Then, it starts a kernel for using the Python virtual environment in Jupyter not
 <a id='podman_containerfile_natural_earth'></a>
 [back to top](#top)
 
-#### Download commonly used Natural Earth shapefiles
+#### Downloading commonly used Natural Earth shapefiles
 
 When making maps, it is often useful to plot coastlines or other shapes to give context. 
 A common way of doing this in Python is from Natural Earth shape files.
@@ -1187,7 +1188,7 @@ If this is not present in the image, the following warning occurs when making a 
 <a id='podman_containerfile_esgpull'></a>
 [back to top](#top)
 
-#### Set up `esgpull` install
+#### Setting up `esgpull` install
 
 This project uses the `esgpull` tool to download HighResMIP data files.
 This next block sets up an install of `esgpull` on an external volume.
@@ -1209,7 +1210,7 @@ The `.devcontainer/esgpull_entrypoint.sh` script assumes that the directory in w
 <a id='podman_containerfile_jupyter_server'></a>
 [back to top](#top)
 
-#### Set up the Jupyter server
+#### Setting up the Jupyter server
 
 The last block of the `Containerfile` exposes port 8888 of the container and sets up the Jupyter server to run on that port with no password or identity token.
 
