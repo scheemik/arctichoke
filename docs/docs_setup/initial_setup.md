@@ -42,6 +42,13 @@ Several of the sections below are summarizations of parts of that guide, with de
 - [Virtual environment and packages](#venv)
     - [Activating the virtual environment](#venv_activate)
     - [Adding package dependencies](#venv_dependencies)
+        - [Packages for datasets](#venv_dependencies_datasets)
+        - [Packages for making plots](#venv_dependencies_plots)
+        - [Packages for saving plots](#venv_dependencies_plots_save)
+        - [Packages for Jupyter notebooks](#venv_dependencies_jupyter)
+        - [Packages for external tools](#venv_dependencies_ext_tools)
+        - [Packages for testing](#venv_dependencies_test)
+        - [Packages for documentation](#venv_dependencies_docs)
     - [Adding `esgpull`](#esgpull)
         - [Adding `esgpull` install on an external drive](#esgpull_ext_HD)
     - [Using a Jupyter notebook](#jupyter_notebook)
@@ -1110,6 +1117,11 @@ The packages installed in this block are:
     - For using Python in a virtual environment.
 - `python3-pip`
     - For installing packages that `uv` cannot handle natively.
+- `chromium`
+    - For taking "screenshots" of `html` maps to produce `.png` images.
+- `chromium-driver`
+    - For taking "screenshots" of `html` maps to produce `.png` images.
+- `fonts-liberation`
 
 <a id='podman_containerfile_misc_prep'></a>
 [back to top](#top)
@@ -1491,24 +1503,429 @@ In running that command, I got a pop-up in VSCodium asking: "We noticed a new en
 I notice from the list above that `xarray` is not installed. I'll go ahead and add that as well.
 
 ```console
-Grey@Audron:seaicecp$ uv add xarray
+
+<a id='venv'></a>
+[back to top](#top)
+
+## Virtual environment and packages
+
+<a id='venv_activate'></a>
+[back to top](#top)
+
+### Activating the virtual environment
+
+When initializing the project, `uv` automatically creates a virtual environment in `.venv/`.
+That environment can be used outside the container. 
+In the section [Defining environment variables](#podman_containerfile_env_vars), I noted that I changed the default virtual environment location for `uv` to be `.cvenv` inside the container.
+I can easily activate it by first starting a terminal inside the container.
+```console
+podman exec -it f6df1af96ed1 /bin/sh
+
+The default interactive shell is now zsh.
+To update your account to use zsh, please run `chsh -s /bin/zsh`.
+For more details, please visit https://support.apple.com/kb/HT208050.
+Grey@Audron:seaicecp$ podman exec -it f6df1af96ed1 /bin/sh
+# 
+```
+Then, I activate `bash` and source the virtual environment directory.
+```console
+# bash
+root@f6df1af96ed1:/workspace# source .cvenv/bin/activate
+(seaicecp) root@f6df1af96ed1:/workspace# 
+```
+Note that the virtual environment's name `(seaicecp)` is now at the beginning of the command prompt.
+
+<a id='venv_dependencies'></a>
+[back to top](#top)
+
+### Adding package dependencies
+
+Using `uv` to add dependencies works similarly to `poetry` as described in [Py-Pkgs 3.6. Adding dependencies to your package](https://py-pkgs.org/03-how-to-package-a-python). 
+When a `uv add <package>` command is run, that package is automatically added to [the `pyproject.toml` file](#venv_pyproject_toml).
+See `uv` docs for [The project environment](https://docs.astral.sh/uv/concepts/projects/layout/#the-project-environment) for more information.
+
+<a id='venv_dependencies_datasets'></a>
+[back to top](#top)
+
+#### Packages for datasets
+
+I use `xarray` as the main workhorse to handle datasets.
+```console
+(seaicecp) root@f6df1af96ed1:/workspace# uv add xarray
 Resolved 48 packages in 343ms
 Prepared 1 package in 318ms
 Installed 1 package in 11ms
  + xarray==2026.4.0
 ```
-
 In order to load data from NetCDF files into an `xarray` dataset, I also need to add the `netcdf4` package.
-
 ```console
-Grey@Audron:seaicecp$ source .venv/bin/activate
-(seaicecp) Grey@Audron:seaicecp$ uv add netcdf4
+(seaicecp) root@f6df1af96ed1:/workspace# uv add netcdf4
 Resolved 78 packages in 716ms
 Prepared 2 packages in 3.74s
 Installed 2 packages in 13ms
  + cftime==1.6.5
  + netcdf4==1.7.4
 ```
+I also specifically added `dask` so that I can take advantage of lazy loading with `xarray.open_dataset()`. 
+This allows me to filter a large dataset before actually loading the entire file into memory.
+```console
+(seaicecp) root@ea50d4a8fafe:/workspace# uv add dask
+Resolved 198 packages in 708ms
+      Built seaicecp @ file:///workspace
+Prepared 1 package in 18ms
+Uninstalled 1 package in 13ms
+Installed 7 packages in 2.48s
+ + cloudpickle==3.1.2
+ + dask==2026.3.0
+ + fsspec==2026.4.0
+ + locket==1.0.0
+ + partd==1.4.2
+ ~ seaicecp==0.1.0 (from file:///workspace)
+ + toolz==1.1.0
+```
+
+<a id='venv_dependencies_plots'></a>
+[back to top](#top)
+
+#### Packages for making plots
+
+For plots, I added the `hvplot` package to be able to make `html` maps of irregular gridded data without interpolating onto a regular grid first.
+```console
+(seaicecp) root@ffb09d078027:/workspace# uv add hvplot
+Resolved 170 packages in 2.70s
+      Built seaicecp @ file:///workspace
+Prepared 16 packages in 6.01s
+Uninstalled 1 package in 14ms
+Installed 16 packages in 18.01s
+ + bokeh==3.9.0
+ + colorcet==3.2.1
+ + contourpy==1.3.3
+ + holoviews==1.22.1
+ + hvplot==0.12.2
+ + linkify-it-py==2.1.0
+ + markdown==3.10.2
+ + narwhals==2.20.0
+ + panel==1.8.10
+ + param==2.3.3
+ + pillow==12.2.0
+ + pyviz-comms==3.0.6
+ ~ seaicecp==0.1.0 (from file:///workspace)
+ + tqdm==4.67.3
+ + uc-micro-py==2.0.0
+ + xyzservices==2026.3.0
+```
+Then, I added `cartopy` to have access to map projections through the submodule `cartopy.crs`.
+```console
+(seaicecp) root@ffb09d078027:/workspace# uv add cartopy
+Resolved 178 packages in 1.40s
+      Built seaicecp @ file:///workspace
+Prepared 9 packages in 6.54s
+Uninstalled 1 package in 10ms
+Installed 9 packages in 5.07s
+ + cartopy==0.25.0
+ + cycler==0.12.1
+ + fonttools==4.62.1
+ + kiwisolver==1.5.0
+ + matplotlib==3.10.9
+ + pyproj==3.7.2
+ + pyshp==3.0.3
+ ~ seaicecp==0.1.0 (from file:///workspace)
+ + shapely==2.1.2
+```
+I also added the `geoviews` package for handling physical features on maps.
+```console
+(seaicecp) root@ffb09d078027:/workspace# uv add geoviews
+Resolved 179 packages in 643ms
+      Built seaicecp @ file:///workspace
+Prepared 2 packages in 503ms
+Uninstalled 1 package in 13ms
+Installed 2 packages in 859ms
+ + geoviews==1.15.1
+ ~ seaicecp==0.1.0 (from file:///workspace)
+```
+When tyring to plot data from the HadGEM3-GC models over time, I got the following error.
+```console
+ImportError: Plotting of arrays of cftime.datetime objects or arrays indexed by cftime.datetime objects requires the optional `nc-time-axis` (v1.2.0 or later) package.
+```
+It turns out that these models use the type `cftime.Datetime360Day` instead of `numpy.datetime64`, which causes issues for `matplotlib` when using time values on one of the axes.
+In the GitHub issue [How to convert cftime.Datetime360Day() object to python datetime?](https://github.com/Unidata/cftime/issues/111), one of the maintainers of `xarray` mentioned that:
+> "We [fixed this very recently](https://github.com/pydata/xarray/pull/2665) in xarray by adding an optional dependency on [nc-time-axis](https://github.com/SciTools/nc-time-axis), a package that enables plotting cftime dates in matplotlib. The changes will take effect in the next version, which has yet to be released (version 0.12.0)."
+
+Adding `nc-time-axis` indeed fixed the issue. 
+```console
+uv add nc-time-axis
+```
+I had tried to use [`xarray.convert_calendar()`](https://docs.xarray.dev/en/stable/generated/xarray.Dataset.convert_calendar.html) instead of installing `nc-time-axis`, but with no luck. 
+They have notes in the documentation about how to deal with "360_day" calendars.
+However, I still found that some dates being dropped or set to the missing value, even though all the dates are the 16th of each month.
+I'm sticking with just using `nc-time-axis` as my solution.
+
+<a id='venv_dependencies_plots_save'></a>
+[back to top](#top)
+
+#### Packages for saving plots
+
+The `html` plots that are made with `hvplot` cannot be directly saved to a `png` file. 
+As a workaround, I added the packages `chromium` and `chromium-driver` to the [`Containerfile`](#podman_containerfile) in order to open an `html` plot in a browser within the container, take a "screenshot", and save that as a `png` image.
+In order for that process to work, I added the `selenium` and `bokeh` packages.
+```console
+(seaicecp) root@ffb09d078027:/workspace# uv add selenium
+Resolved 187 packages in 910ms
+      Built seaicecp @ file:///workspace
+Prepared 9 packages in 1.64s
+Uninstalled 1 package in 31ms
+Installed 9 packages in 2.54s
+ + outcome==1.3.0.post0
+ + pysocks==1.7.1
+ ~ seaicecp==0.1.0 (from file:///workspace)
+ + selenium==4.43.0
+ + sniffio==1.3.1
+ + sortedcontainers==2.4.0
+ + trio==0.33.0
+ + trio-websocket==0.12.2
+ + wsproto==1.3.2
+(seaicecp) root@ffb09d078027:/workspace# uv add bokeh
+Resolved 187 packages in 323ms
+      Built seaicecp @ file:///workspace
+Prepared 1 package in 18ms
+Uninstalled 1 package in 14ms
+Installed 1 package in 45ms
+ ~ seaicecp==0.1.0 (from file:///workspace)
+```
+I also added the `pillow` package for additional `png` manipulation tools.
+```console
+(seaicecp) root@ffb09d078027:/workspace# uv add pillow
+Resolved 187 packages in 331ms
+      Built seaicecp @ file:///workspace
+Prepared 1 package in 20ms
+Uninstalled 1 package in 14ms
+Installed 1 package in 60ms
+ ~ seaicecp==0.1.0 (from file:///workspace)
+```
+
+<a id='venv_dependencies_jupyter'></a>
+[back to top](#top)
+
+#### Packages for Jupyter notebooks
+
+In order to use Jupyter notebooks with the `.cvenv` virtual environment, I added `ipykernel` and `jupyter`.
+```console
+(seaicecp) root@5eee334aadfd:/workspace# uv add ipykernel jupyter
+Resolved 134 packages in 1.15s
+      Built seaicecp @ file:///workspace
+Prepared 51 packages in 3.38s
+Uninstalled 1 package in 19ms
+Installed 51 packages in 14.63s
+ + anyio==4.13.0
+ + argon2-cffi==25.1.0
+ + argon2-cffi-bindings==25.1.0
+ + arrow==1.4.0
+ + async-lru==2.3.0
+ + beautifulsoup4==4.14.3
+ + bleach==6.3.0
+ + cffi==2.0.0
+ + defusedxml==0.7.1
+ + fqdn==1.5.1
+ + h11==0.16.0
+ + httpcore==1.0.9
+ + httpx==0.28.1
+ + ipywidgets==8.1.8
+ + isoduration==20.11.0
+ + json5==0.14.0
+ + jsonpointer==3.1.1
+ + jupyter==1.1.1
+ + jupyter-console==6.6.3
+ + jupyter-events==0.12.1
+ + jupyter-lsp==2.3.1
+ + jupyter-server==2.17.0
+ + jupyter-server-terminals==0.5.4
+ + jupyterlab==4.5.6
+ + jupyterlab-pygments==0.3.0
+ + jupyterlab-server==2.28.0
+ + jupyterlab-widgets==3.0.16
+ + lark==1.3.1
+ + mistune==3.2.0
+ + nbconvert==7.17.1
+ + notebook==7.5.5
+ + notebook-shim==0.2.4
+ + pandocfilters==1.5.1
+ + prometheus-client==0.25.0
+ + pycparser==3.0
+ + python-json-logger==4.1.0
+ + rfc3339-validator==0.1.4
+ + rfc3986-validator==0.1.1
+ + rfc3987-syntax==1.1.0
+ ~ seaicecp==0.1.0 (from file:///workspace)
+ + send2trash==2.1.0
+ + setuptools==82.0.1
+ + soupsieve==2.8.3
+ + terminado==0.18.1
+ + tinycss2==1.4.0
+ + tzdata==2026.2
+ + uri-template==1.3.0
+ + webcolors==25.10.0
+ + webencodings==0.5.1
+ + websocket-client==1.9.0
+ + widgetsnbextension==4.0.15
+```
+
+<a id='venv_dependencies_ext_tools'></a>
+[back to top](#top)
+
+#### Packages for external tools
+
+I added the Python package for `cdo` to be able to call it's functions from Python scripts. 
+Note that this requires that the `cdo` CLI is installed, which is done in the `Containerfile`.
+```console
+(seaicecp) root@94822df4851d:/workspace# uv add cdo
+Resolved 199 packages in 2.61s
+      Built seaicecp @ file:///workspace
+Prepared 2 packages in 177ms
+Uninstalled 1 package in 17ms
+Installed 2 packages in 68ms
+ + cdo==1.6.1
+ ~ seaicecp==0.1.0 (from file:///workspace)
+(seaicecp) root@94822df4851d:/workspace# python
+Python 3.13.5 (main, Jun 25 2025, 18:55:22) [GCC 14.2.0] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import cdo
+>>> print(cdo.__version__)
+1.6.0
+```
+Next, I added the `esgpull` package to be able to download HighResMIP data.
+I specify the source with `git+https://github.com/ESGF/esgf-download` in order to get the latest release of the package to resolve an issue I was encountering.
+```console
+root@7f8e8a9c32da:/workspace# uv add git+https://github.com/ESGF/esgf-download
+Resolved 198 packages in 1.07s
+      Built seaicecp @ file:///workspace
+    Updated https://github.com/ESGF/esgf-download (726ef1166114eadd085c24c6e1542ec0be052e03)
+      Built esgpull @ git+https://github.com/ESGF/esgf-download@726ef1166114eadd085c24c6e1542ec0be052e03
+Prepared 21 packages in 3.08s
+Uninstalled 1 package in 13ms
+Installed 21 packages in 2.54s
+ + aiofiles==25.1.0
+ + aiostream==0.7.1
+ + alembic==1.18.4
+ + annotated-types==0.7.0
+ + cattrs==26.1.0
+ + click-params==0.5.0
+ + cryptography==48.0.0
+ + deprecated==1.3.1
+ + esgpull==0.9.6 (from git+https://github.com/ESGF/esgf-download@726ef1166114eadd085c24c6e1542ec0be052e03)
+ + mako==1.3.12
+ + pydantic==2.13.4
+ + pydantic-core==2.46.4
+ + pydantic-settings==2.14.0
+ + pyopenssl==26.2.0
+ + python-dotenv==1.2.2
+ + rich==15.0.0
+ ~ seaicecp==0.1.0 (from file:///workspace)
+ + tomlkit==0.14.0
+ + typing-inspection==0.4.2
+ + validators==0.22.0
+ + wrapt==2.1.2
+```
+
+<a id='venv_dependencies_test'></a>
+[back to top](#top)
+
+#### Packages for testing
+
+In order to run tests, following [Py-Pkgs Section ???](https://py-pkgs.org/02-setup#install-packaging-software), I installed `pytest` and `pytest-cov` as development dependencies by specifying the `--dev` group.
+This means that, if someone where to install `seaicecp` as a package for their own purposes, the packages in the `--dev` group would not be installed by default.
+```console
+root@183f42d448cd:/workspace# uv add --dev pytest
+Resolved 190 packages in 2.15s
+      Built seaicecp @ file:///workspace
+Prepared 4 packages in 210ms
+Uninstalled 1 package in 14ms
+Installed 4 packages in 499ms
+ + iniconfig==2.3.0
+ + pluggy==1.6.0
+ + pytest==9.0.3
+ ~ seaicecp==0.1.0 (from file:///workspace)
+root@183f42d448cd:/workspace# uv add --dev pytest-cov
+Resolved 192 packages in 512ms
+      Built seaicecp @ file:///workspace
+Prepared 3 packages in 181ms
+Uninstalled 1 package in 16ms
+Installed 3 packages in 337ms
+ + coverage==7.13.5
+ + pytest-cov==7.1.0
+ ~ seaicecp==0.1.0 (from file:///workspace)
+```
+<!-- ```console
+root@183f42d448cd:/workspace# uv add --dev debugpy   
+Resolved 192 packages in 165ms
+      Built seaicecp @ file:///workspace
+Prepared 1 package in 20ms
+Uninstalled 1 package in 14ms
+Installed 1 package in 69ms
+ ~ seaicecp==0.1.0 (from file:///workspace)
+root@183f42d448cd:/workspace# 
+``` -->
+
+<a id='venv_dependencies_docs'></a>
+[back to top](#top)
+
+#### Packages for documentation
+
+Following [Py-Pkgs 3.8.4. Building documentation](https://py-pkgs.org/03-how-to-package-a-python#building-documentation), I added the packages necessary to build the documentation you are reading to the `--dev` group.
+```console
+(seaicecp) root@f6df1af96ed1:/workspace# uv add --dev myst-nb sphinx-autoapi sphinx-rtd-theme
+Resolved 112 packages in 1.08s
+      Built seaicecp @ file:///workspace
+Prepared 31 packages in 3.20s
+Uninstalled 1 package in 8ms
+Installed 35 packages in 317ms
+ + alabaster==1.0.0
+ + astroid==4.1.2
+ + attrs==26.1.0
+ + babel==2.18.0
+ + click==8.3.2
+ + docutils==0.22.4
+ + fastjsonschema==2.21.2
+ + greenlet==3.4.0
+ + imagesize==2.0.0
+ + importlib-metadata==9.0.0
+ + jsonschema==4.26.0
+ + jsonschema-specifications==2025.9.1
+ + jupyter-cache==1.0.1
+ + myst-nb==1.4.0
+ + myst-parser==5.0.0
+ + nbclient==0.10.4
+ + nbformat==5.10.4
+ + referencing==0.37.0
+ + roman-numerals==4.1.0
+ + rpds-py==0.30.0
+ ~ seaicecp==0.1.0 (from file:///workspace)
+ + snowballstemmer==3.0.1
+ + sphinx==9.1.0
+ + sphinx-autoapi==3.8.0
+ + sphinx-rtd-theme==3.1.0
+ + sphinxcontrib-applehelp==2.0.0
+ + sphinxcontrib-devhelp==2.0.0
+ + sphinxcontrib-htmlhelp==2.1.0
+ + sphinxcontrib-jquery==4.1
+ + sphinxcontrib-jsmath==1.0.1
+ + sphinxcontrib-qthelp==2.0.0
+ + sphinxcontrib-serializinghtml==2.0.0
+ + sqlalchemy==2.0.49
+ + tabulate==0.10.0
+ + zipp==3.23.1
+```
+
+<a id='venv_pyproject_toml'></a>
+[back to top](#top)
+
+### The `pyproject.toml` file
+
+After adding all the above packages as dependencies, the `pyproject.toml` file now appears as below.
+```{literalinclude} ../../pyproject.toml
+:language: toml
+```
+When new packages are added to the project, they will be cached the next time the container is run.
+
 
 <a id='esgpull'></a>
 [back to top](#top)
