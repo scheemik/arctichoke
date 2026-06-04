@@ -2661,7 +2661,7 @@ CDI file types: srv ext ieg grb1 grb2 nc1 nc2 nc4 nc4c nc5 nczarr
 
 ## Building the package
 
-As shown in the [Build systems](https://docs.astral.sh/uv/concepts/projects/config/#build-systems) documentation for `uv`, I used the `--package` flag when initializing the repository. 
+As shown in the [Build systems](https://docs.astral.sh/uv/concepts/projects/config/#build-systems) documentation for `uv`, I had used the `--package` flag when [initializing the repository with `uv`](#uv_init). 
 In the [Building your package](https://docs.astral.sh/uv/guides/package/#building-your-package) section, I used the 
 
 ```console
