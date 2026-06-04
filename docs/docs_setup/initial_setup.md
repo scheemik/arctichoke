@@ -1238,7 +1238,7 @@ Note that port 8888 in the container will be set to connect to a different port 
 ### The `start_container` script
 
 [The `Containerfile`](#podman_containerfile) defines how the image for this project should be built.
-I created a script called `start_container.sh` which ultimately starts the container from that image, but first checkes to make sure the Podman virtual machine is running and whether the image exists already.
+I created a script called `start_container.sh` which ultimately starts the container from that image, but first checks to make sure the Podman virtual machine is running and whether the image exists already.
 The script is shown below:
 
 ```{literalinclude} ../../start_container.sh
@@ -1267,17 +1267,34 @@ Install config added to /root/.config/esgpull/installs.json
       Built seaicecp @ file:///workspace
 Uninstalled 1 package in 13ms
 Installed 1 package in 62ms
-[I 2026-06-03 23:49:58.897 ServerApp] jupyter_lsp | extension was successfully linked.
-[I 2026-06-03 23:49:58.907 ServerApp] jupyter_server_terminals | extension was successfully linked.
-[I 2026-06-03 23:49:58.924 ServerApp] jupyterlab | extension was successfully linked.
-[I 2026-06-03 23:49:58.940 ServerApp] notebook | extension was successfully linked.
-[I 2026-06-03 23:49:58.945 ServerApp] Writing Jupyter server cookie secret to /root/.local/share/jupyter/runtime/jupyter_cookie_secret
-[I 2026-06-03 23:50:00.562 ServerApp] notebook_shim | extension was successfully linked.
-[I 2026-06-03 23:50:00.563 ServerApp] panel.io.jupyter_server_extension | extension was successfully linked.
+[I 2026-06-04 18:23:25.915 ServerApp] jupyter_lsp | extension was successfully linked.
+[I 2026-06-04 18:23:25.925 ServerApp] jupyter_server_terminals | extension was successfully linked.
+[I 2026-06-04 18:23:25.934 ServerApp] jupyterlab | extension was successfully linked.
+[I 2026-06-04 18:23:25.946 ServerApp] notebook | extension was successfully linked.
+[I 2026-06-04 18:23:25.948 ServerApp] Writing Jupyter server cookie secret to /root/.local/share/jupyter/runtime/jupyter_cookie_secret
+[I 2026-06-04 18:23:27.822 ServerApp] notebook_shim | extension was successfully linked.
+[I 2026-06-04 18:23:27.823 ServerApp] panel.io.jupyter_server_extension | extension was successfully linked.
+[W 2026-06-04 18:23:27.959 ServerApp] All authentication is disabled.  Anyone who can connect to this server will be able to run code.
+[I 2026-06-04 18:23:27.960 ServerApp] notebook_shim | extension was successfully loaded.
+[I 2026-06-04 18:23:27.966 ServerApp] jupyter_lsp | extension was successfully loaded.
+[I 2026-06-04 18:23:27.968 ServerApp] jupyter_server_terminals | extension was successfully loaded.
+[I 2026-06-04 18:23:28.012 LabApp] JupyterLab extension loaded from /workspace/.cvenv/lib/python3.13/site-packages/jupyterlab
+[I 2026-06-04 18:23:28.012 LabApp] JupyterLab application directory is /workspace/.cvenv/share/jupyter/lab
+[I 2026-06-04 18:23:28.017 LabApp] Extension Manager is 'pypi'.
+[I 2026-06-04 18:23:28.366 ServerApp] jupyterlab | extension was successfully loaded.
+[I 2026-06-04 18:23:28.403 ServerApp] notebook | extension was successfully loaded.
+[I 2026-06-04 18:23:28.404 ServerApp] panel.io.jupyter_server_extension | extension was successfully loaded.
+[I 2026-06-04 18:23:28.406 ServerApp] Serving notebooks from local directory: /workspace
+[I 2026-06-04 18:23:28.406 ServerApp] Jupyter Server 2.17.0 is running at:
+[I 2026-06-04 18:23:28.406 ServerApp] http://e343a4f95781:8888/lab
+[I 2026-06-04 18:23:28.406 ServerApp]     http://127.0.0.1:8888/lab
+[I 2026-06-04 18:23:28.406 ServerApp] Use Control-C to stop this server and shut down all kernels (twice to skip confirmation).
+[I 2026-06-04 18:23:28.620 ServerApp] Skipped non-installed server(s): basedpyright, bash-language-server, dockerfile-language-server-nodejs, javascript-typescript-langserver, jedi-language-server, julia-language-server, pyrefly, pyright, python-language-server, python-lsp-server, r-languageserver, sql-language-server, texlab, typescript-language-server, unified-language-server, vscode-css-languageserver-bin, vscode-html-languageserver-bin, vscode-json-languageserver-bin, yaml-language-server
 ...
 ```
 Leave this terminal running to have access to the Jupyter server and see relevant updates.
 The output that continues to appear in this terminal as the Jupyter server is being used can be very helpful in debugging Jupyter-related issues.
+The instructions above on how to start the container are also shown on the {doc}`Starting the Container <start_container>` page.
 
 I'll explain each section of the `start_container.sh` script in detail below.
 
