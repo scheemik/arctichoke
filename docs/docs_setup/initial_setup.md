@@ -2813,10 +2813,9 @@ The test webpage seems like it rendered properly.
 
 ### Hosting documentation
 
-Following [Py-Pkgs 3.8.5. Hosting documentation online](https://py-pkgs.org/03-how-to-package-a-python#hosting-documentation-online).
-
-First, a few changes need to be made to the `.yaml` file to ensure the documentation can successfully be hosted. 
-Upon generating the `cookiecutter` files, the configuration for Read the Docs looked like this:
+Following [Py-Pkgs section 3.8.5. Hosting documentation online](https://py-pkgs.org/03-how-to-package-a-python#hosting-documentation-online) to be able to have the documentation you are reading hosted on [Read the Docs](https://about.readthedocs.com).
+First, a few changes need to be made to the `.readthedocs.yml` file to ensure the documentation can successfully be hosted. 
+Upon generating the `cookiecutter` files, the configuration looked like this:
 ```yaml
 # .readthedocs.yaml
 # Read the Docs configuration file
@@ -2829,7 +2828,7 @@ version: 2
 build:
   os: ubuntu-22.04
   tools:
-    python: "3.14.1"
+    python: "3.13.5"
   jobs:
     post_create_environment:
       # Install poetry
@@ -2844,37 +2843,12 @@ sphinx:
 ```
 
 Two changes need to be made here. 
-The first is to specify the version of Python as `3.14` instead of `3.14.1` as Read the Docs only recognizes up to the minor version number, not the patch number.
+The first is to specify the version of Python as `3.13` instead of `3.13.5` as Read the Docs only recognizes up to the minor version number, not the patch number.
 Second, the `jobs` section needs to be changed to use `uv` instead of `poetry`.
-I followed an example shown in [Issue #11289, Support uv](https://github.com/readthedocs/readthedocs.org/issues/11289) posted on the Read the Docs GitHub page. 
-```yaml
-# .readthedocs.yaml
-# Read the Docs configuration file
-# See https://docs.readthedocs.io/en/stable/config-file/v2.html for details
-
-# Required
-version: 2
-
-# Set the OS, Python version and other tools you might need
-build:
-  os: ubuntu-22.04
-  tools:
-    python: "3.14.1"
-  jobs:
-    pre_create_environment:
-      - asdf plugin add uv
-      - asdf install uv latest
-      - asdf global uv latest
-    create_environment:
-      - uv venv $READTHEDOCS_VIRTUALENV_PATH
-    install:
-      # Use a cache dir in the same mount to halve the install time
-      - VIRTUAL_ENV=$READTHEDOCS_VIRTUALENV_PATH uv pip install --cache-dir $READTHEDOCS_VIRTUALENV_PATH/../../uv_cache -r docs/requirements.txt
-
-# Build documentation in the "docs/" directory with Sphinx
-sphinx:
-  configuration: docs/conf.py
-
+I followed an example shown in the GitHub issue for Read the Docs [#11289, Support uv](https://github.com/readthedocs/readthedocs.org/issues/11289). 
+The `.readthedocs.yml` file now reads as follows.
+```{literalinclude} ../../.readthedocs.yml
+:language: yaml
 ```
 
 Next, I went to [Read the Docs](https://readthedocs.org/) and logged in. 
@@ -2889,7 +2863,7 @@ On the next page, I selected "Configure manually" then filled in this informatio
 - Language
     - English
 
-Then, I clicked "Next" and confirmed that the file `.readthedocs.yaml` exists (from using the `cookiecutter` when initializing the repository) and clicked "This file exists."
+Then, I clicked "Next" and confirmed that the file `.readthedocs.yaml` exists already.
 Upon building, I was greeted with confirmation that the build succeeded. 
 ```
 Version latest / Builds / #32314755 
@@ -2906,8 +2880,8 @@ Version latest / Builds / #32314755
 	python -m sphinx -T -j auto -b html -d _build/doctrees -D language=en . $READTHEDOCS_OUTPUT/html
 ```
 
-Now, the documentation for this project is live and available to view at https://seaicecp.readthedocs.io/en/latest/.
-I put that URL in the "About" section of the GitHub repository under "Website."
+Now, the documentation for this project is live and available to view at [https://seaicecp.readthedocs.io/en/latest/](https://seaicecp.readthedocs.io/en/latest/).
+I put that URL in the "About" section of the GitHub repository under "Website" to make it more visible to people who find the project.
 
 <a id='latex_syntax'></a>
 [back to top](#top)
@@ -2921,7 +2895,7 @@ myst_enable_extensions = [
     "amsmath"
 ]
 ```
-
+This allows me to render mathematical syntax, such as a speed of `$\sim$ 1 km day$^{−1}$` which renders as $\sim$ 1 km day$^{−1}$. 
 See the MyST-Parser documentation page on [Syntax Extensions](https://myst-parser.readthedocs.io/en/latest/syntax/optional.html)
 
 <a id='doi_links'></a>
@@ -2929,7 +2903,11 @@ See the MyST-Parser documentation page on [Syntax Extensions](https://myst-parse
 
 ### Enabling easy DOI links
 
-Added to `docs/conf.py`:
+When making citations in the documentation, it can be cumbersome to link to a DOI.
+For example, to cite the EC-Earth3P-HR model, I would type out the link `[doi:10.22033/ESGF/CMIP6.2323](https://doi.org/10.22033/ESGF/CMIP6.2323)` which renders as [doi:10.22033/ESGF/CMIP6.2323](https://doi.org/10.22033/ESGF/CMIP6.2323).
+In the documentation of my {doc}`HighResMIP Choices <HighResMIP_choices>`, I make around 50 citations.
+
+To set up a URL scheme that makes DOI links shorter, I added the following to `docs/conf.py`:
 ```python
 myst_url_schemes = {
     "http": None,
@@ -2943,5 +2921,5 @@ myst_url_schemes = {
     },
 }
 ```
-
-See the MyST-Parser documentation page on [Customizing external URL resolution](https://myst-parser.readthedocs.io/en/latest/syntax/cross-referencing.html#customising-external-url-resolution)
+Now, I can simply type out `<doi:10.22033/ESGF/CMIP6.2323>` which renders as <doi:10.22033/ESGF/CMIP6.2323>, the same link but with many fewer characters.
+See the MyST-Parser documentation page on [Customizing external URL resolution](https://myst-parser.readthedocs.io/en/latest/syntax/cross-referencing.html#customising-external-url-resolution) for more information.
