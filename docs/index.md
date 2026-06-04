@@ -18,6 +18,7 @@ docs_setup/initial_setup.md
 docs_setup/start_container.md
 docs_setup/jupyter_test.md
 docs_setup/esgpull_downloads.md
+docs_setup/globus_downloads.md
 docs_setup/HighResMIP_choices.md
 ```
 
