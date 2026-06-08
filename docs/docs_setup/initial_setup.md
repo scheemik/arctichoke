@@ -1904,6 +1904,24 @@ Installed 21 packages in 2.54s
  + validators==0.22.0
  + wrapt==2.1.2
 ```
+The `esgpull` maintainer `svenrdz` replied to [the issue that I posted on the `esgpull` GitHub](https://github.com/ESGF/esgf-download/issues/148). 
+He found a fix, which was to put in a short sleep timer before trying to make a new `httpx.AsyncClient`.
+This fix can be seen in `.cvenv/lib/python3.13/site-packages/esgpull/context.py`:
+```python
+...
+    async def _fetch_one(self, result: RT) -> RT:
+        host = result.request.url.host
+        semaphore = self.get_or_create_semaphore(host)
+
+        # The bridge API tends to produce non-standard errors when too many
+        # new connections open in a short time span. With no sleep, the 4th
+        # connection is always where it breaks. 50ms sleep seems to fix that.
+        if self.client is None:
+            await asyncio.sleep(0.005)
+...
+```
+This should be included in future updates to `esgpull` which should make it unnecessary to specify the exact commit when adding it with `uv` as shown above.
+
 Using `esgpull` requires additional steps [as noted on the Installation page](https://esgf.github.io/esgf-download/installation/#setup).
 I detail how I managed that set up in the [Initializing `esgpull`](#esgpull_init) section later in this guide.
 
