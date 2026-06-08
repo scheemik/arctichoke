@@ -54,8 +54,7 @@ Several of the sections below are summarizations of parts of that guide, with de
     - [Using a Jupyter notebook in the container](#jupyter_notebook)
     - [Initializing `esgpull`](#esgpull_init)
         - [Creating an `esgpull` install](#esgpull_init_install)
-        - [Adding `esgpull` install on an external drive](#esgpull_ext_HD)
-    - [Adding `cdo`](#cdo_install)
+        - [Configuring the `esgpull` install](#esgpull_init_config)
 - [Documentation](#docs)
     - [Building documentation](#build_docs)
     - [Hosting documentation](#host_docs)
@@ -2099,244 +2098,60 @@ $ rm -rf /workspace/.esgpull
 (seaicecp) root@c11f20a93021:/workspace# 
 ```
 
-```console
-(seaicecp) Grey@Audron:seaicecp$ esgpull config
-──────────────── /Users/Grey/Documents/Research/Postdoc_Projects/York_U_sea_ice/seaicecp/.esgpull/config.toml ────────────────
-[paths]
-data = "/Users/Grey/Documents/Research/Postdoc_Projects/York_U_sea_ice/seaicecp/.esgpull/data"
-db = "/Users/Grey/Documents/Research/Postdoc_Projects/York_U_sea_ice/seaicecp/.esgpull/db"
-log = "/Users/Grey/Documents/Research/Postdoc_Projects/York_U_sea_ice/seaicecp/.esgpull/log"
-tmp = "/Users/Grey/Documents/Research/Postdoc_Projects/York_U_sea_ice/seaicecp/.esgpull/tmp"
-plugins = "/Users/Grey/Documents/Research/Postdoc_Projects/York_U_sea_ice/seaicecp/.esgpull/plugins"
-
-[credentials]
-filename = "credentials.toml"
-
-[cli]
-page_size = 20
-
-[db]
-filename = "esgpull.db"
-
-[download]
-chunk_size = 67108864
-http_timeout = 20
-max_concurrent = 5
-disable_ssl = false
-disable_checksum = false
-show_filename = false
-
-[api]
-index_node = "esgf-node.ipsl.upmc.fr"
-http_timeout = 20
-max_concurrent = 5
-page_limit = 50
-default_query_id = ""
-use_custom_distribution_algorithm = false
-
-[api.default_options]
-distrib = "true"
-latest = "true"
-replica = "none"
-retracted = "false"
-
-[plugins]
-enabled = false
-```
-
-So, that was the issue. I changed the index node to be the one recommended for the USA region:
-
-```console
-(seaicecp) Grey@Audron:seaicecp$ esgpull config api.index_node esgf-node.ornl.gov/esgf-1-5-bridge
-[api]
-index_node = "esgf-node.ornl.gov/esgf-1-5-bridge"
-
-👍 New config file created at /Users/Grey/Documents/Research/Postdoc_Projects/York_U_sea_ice/seaicecp/.esgpull/config.toml.
-```
-
-Then, I was finally able to search:
-```console
-(seaicecp) Grey@Audron:seaicecp$ esgpull search
-Found 14423347 datasets.
- id │                               dataset                               │ #  │   size    
-════╪═════════════════════════════════════════════════════════════════════╪════╪═══════════
-  0 │ cmip5.output.CCCma.CanCM4.decadal1967.mon.land.r7i1p1.v20130331     │ 11 │  56.4 MiB 
-  1 │ cmip5.output.CCCma.CanCM4.decadal1967.mon.landIce.r5i1p1.v20130331  │  6 │  22.6 MiB 
-  2 │ cmip5.output.CCCma.CanCM4.decadal1982.mon.landIce.r2i1p1.v20130331  │  6 │  22.6 MiB 
-  3 │ cmip5.output.CCCma.CanCM4.decadal1982.mon.landIce.r7i1p1.v20130331  │  6 │  22.6 MiB 
-  4 │ cmip5.output.CCCma.CanCM4.decadal1982.mon.ocean.r5i1p1.v20130331    │ 32 │   6.6 GiB 
-  5 │ cmip5.output.CCCma.CanCM4.decadal1983.day.atmos.r4i1p1.v20130331    │ 23 │   2.6 GiB 
-  6 │ cmip5.output.CCCma.CanCM4.decadal1983.day.landIce.r8i1p1.v20130331  │  2 │ 228.3 MiB 
-  7 │ cmip5.output.CCCma.CanCM4.decadal1983.mon.atmos.r2i1p1.v20130331    │ 47 │   1.1 GiB 
-  8 │ cmip5.output.CCCma.CanCM4.decadal1983.mon.land.r5i1p1.v20130331     │ 11 │  56.4 MiB 
-  9 │ cmip5.output.CCCma.CanCM4.decadal1983.mon.landIce.r2i1p1.v20130331  │  6 │  22.6 MiB 
- 10 │ cmip5.output.CCCma.CanCM4.decadal1983.mon.ocean.r8i1p1.v20130331    │ 32 │   6.6 GiB 
- 11 │ cmip5.output.CCCma.CanCM4.decadal1984.day.atmos.r2i1p1.v20130331    │ 23 │   2.6 GiB 
- 12 │ cmip5.output.CCCma.CanCM4.decadal1984.day.landIce.r10i1p1.v20130331 │  2 │ 228.3 MiB 
- 13 │ cmip5.output.CCCma.CanCM4.decadal1984.day.seaIce.r3i1p1.v20130331   │  4 │ 456.6 MiB 
- 14 │ cmip5.output.CCCma.CanCM4.decadal1980.mon.ocean.r7i1p1.v20130331    │ 96 │  19.8 GiB 
- 15 │ cmip5.output.CCCma.CanCM4.decadal1980.mon.ocean.r8i1p1.v20130331    │ 96 │  19.8 GiB 
- 16 │ cmip5.output.CCCma.CanCM4.decadal1990.day.atmos.r10i2p1.v20130331   │ 23 │   2.6 GiB 
- 17 │ cmip5.output.CCCma.CanCM4.decadal1990.day.atmos.r4i1p1.v20130331    │ 23 │   2.6 GiB 
- 18 │ cmip5.output.CCCma.CanCM4.decadal1990.day.atmos.r6i1p1.v20130331    │ 23 │   2.6 GiB 
- 19 │ cmip5.output.CCCma.CanCM4.decadal1990.day.land.r5i2p1.v20130331     │  3 │ 342.5 MiB
-```
-
-[esgpull download guide](https://esgf.github.io/esgf-download/download/)
-
-<a id='esgpull_ext_HD'></a>
+<a id='esgpull_init_config'></a>
 [back to top](#top)
 
-#### Adding `esgpull` install on an external drive
+#### Configuring the `esgpull` install
 
-The location chosen for the install is where the data files will be stored. 
-My computer's internal hard drive is not large enough to store all the data I will be working with.
-To avoid filling up my hard drive, I created a separate `esgpull` install on my external disk. 
-
-First, I confirmed the location of the install I had already done.
+The first time I tried to search with `esgpull`, I got the following error.
 ```console
-Grey@Audron:seaicecp$ esgpull self choose
-Install locations                                                                                
- *  /Users/Grey/Documents/Research/Postdoc_Projects/York_U_sea_ice/seaicecp/.esgpull  seaicecp
+(seaicecp) root@c11f20a93021:/workspace# uv run esgpull search
+(
+    'fetch',
+    [
+        HTTPStatusError("Server error '500 500' for url 
+'https://esgf-node.ipsl.upmc.fr/esg-search/search?type=File&offset=0&limit=0&format=applicatio
+n%2Fsolr%2Bjson&fields=instance_id&distrib=true&latest=true&replica=true&retracted=false'\nFor
+ more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500")
+    ]
+)
+ERROR 'esgf-node.ipsl.upmc.fr' is not responding
+Aborted!
 ```
+This clearly indicates that the French node is not responding currently.
+However, in an older version of `esgpull`, the error was more cryptic.
+<details>
 
-I could not figure out how to input absolute file paths when creating a new `esgpull` install, so I first navigated my terminal to the location in which I wanted it to be.
-```console
-Grey@Audron:seaicecp$ cd /Volumes/BERGY_BITS/seaicecp_data/
-```
+<summary>Expand for an older version of the error message</summary>
 
-Then, I created a new install, giving it a memorable name
 ```console
-Grey@Audron:seaicecp_data$ esgpull self install
-──────────────────────────────────────────── esgpull installation ────────────────────────────────────────────
-Install location (/Users/Grey/.esgpull): .esgpull
-Name (optional): bergybits
-Creating install directory and files at /Volumes/BERGY_BITS/seaicecp_data/.esgpull
-Install config added to /Users/Grey/Library/Application Support/esgpull/installs.json
-```
-
-Now, I can navigate back to the home directory and check which install I have chosen currently.
-```console
-Grey@Audron:seaicecp_data$ cd ~/Documents/Research/Postdoc_Projects/York_U_sea_ice/seaicecp/
-Grey@Audron:seaicecp$ esgpull self choose
-Install locations                                                                               
-    /Users/Grey/Documents/Research/Postdoc_Projects/York_U_sea_ice/seaicecp/.esgpull  seaicecp  
- *  /Volumes/BERGY_BITS/seaicecp_data/.esgpull 
-```
-
-I can confirm what data I've downloaded to each install by using the `show` command.
-```console
-Grey@Audron:seaicecp$ esgpull self choose -n bergybits
-Grey@Audron:seaicecp$ esgpull self choose
-Install locations                                                                               
-    /Users/Grey/Documents/Research/Postdoc_Projects/York_U_sea_ice/seaicecp/.esgpull  seaicecp  
- *  /Volumes/BERGY_BITS/seaicecp_data/.esgpull                                        bergybits 
-Grey@Audron:seaicecp$ esgpull show
-Grey@Audron:seaicecp$ esgpull self choose -n seaicecp
-Grey@Audron:seaicecp$ esgpull self choose
-Install locations                                                                               
- *  /Users/Grey/Documents/Research/Postdoc_Projects/York_U_sea_ice/seaicecp/.esgpull  seaicecp  
-    /Volumes/BERGY_BITS/seaicecp_data/.esgpull                                        bergybits 
-Grey@Audron:seaicecp$ esgpull show
-<1a5a3a>
-│ added    2026-04-14T23:07:27Z
-│ updated  2026-04-14T23:11:11Z
-└── distrib:       True               
-    latest:        True               
-    replica:       None               
-    retracted:     False              
-    activity_id:   HighResMIP         
-    experiment_id: hist-1950          
-    project:       CMIP6              
-    source_id:     CESM1-CAM5-SE-HR   
-    variable_id:   areacello          
-    files:         1 / 1              
-    datasets:      1 / 1              
-    size:          63.1 MiB / 63.1 MiB
-<b1c448>
-│ added    2026-04-15T14:44:20Z
-│ updated  2026-04-15T14:45:09Z
-└── distrib:       True                 
-    latest:        True                 
-    replica:       None                 
-    retracted:     False                
-    activity_id:   HighResMIP           
-    experiment_id: hist-1950            
-    project:       CMIP6                
-    variable_id:   areacello            
-    files:         7 / 7                
-    datasets:      7 / 7                
-    size:          419.4 MiB / 419.4 MiB
-```
-
-I tried a search:
-```console
-Grey@Audron:seaicecp$ bash esgpull_searches/HRMIP_hist_areacello.sh 
-[2026-04-17 13:58:13]  ERROR     root
+(seaicecp) root@c11f20a93021:/workspace# uv run esgpull search
+[2026-04-14 18:33:45]  ERROR     root
 
   + Exception Group Traceback (most recent call last):
-  |   File "/Users/Grey/.local/share/uv/tools/esgpull/lib/python3.14/site-packages/esgpull/tui.py", line 191, in logging
-  |     yield
-  |   File "/Users/Grey/.local/share/uv/tools/esgpull/lib/python3.14/site-packages/esgpull/cli/search.py", line 102, in search
-  |     esg.context.probe()
-  |     ~~~~~~~~~~~~~~~~~^^
-  |   File "/Users/Grey/.local/share/uv/tools/esgpull/lib/python3.14/site-packages/esgpull/context.py", line 815, in probe
-  |     _ = self.hits(
-  |         Query(),
-  |         file=True,
-  |         index_node=index_node or self.config.api.index_node,
-  |     )
-  |   File "/Users/Grey/.local/share/uv/tools/esgpull/lib/python3.14/site-packages/esgpull/context.py", line 667, in hits
-  |     return self._sync(self._hits(*results))
-  |            ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
-  |   File "/Users/Grey/.local/share/uv/tools/esgpull/lib/python3.14/site-packages/esgpull/context.py", line 642, in _sync
-  |     return sync(self._with_client(coro))
-  |   File "/Users/Grey/.local/share/uv/tools/esgpull/lib/python3.14/site-packages/esgpull/utils.py", line 17, in sync
-  |     result = asyncio.run(coro)
-  |   File "/Users/Grey/.local/share/uv/python/cpython-3.14.1-macos-x86_64-none/lib/python3.14/asyncio/runners.py", line 204, in run
-  |     return runner.run(main)
-  |            ~~~~~~~~~~^^^^^^
-  |   File "/Users/Grey/.local/share/uv/python/cpython-3.14.1-macos-x86_64-none/lib/python3.14/asyncio/runners.py", line 127, in run
-  |     return self._loop.run_until_complete(task)
-  |            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
-  |   File "/Users/Grey/.local/share/uv/python/cpython-3.14.1-macos-x86_64-none/lib/python3.14/asyncio/base_events.py", line 719, in run_until_complete
-  |     return future.result()
-  |            ~~~~~~~~~~~~~^^
-  |   File "/Users/Grey/.local/share/uv/tools/esgpull/lib/python3.14/site-packages/esgpull/context.py", line 631, in _with_client
-  |     return await coro
-  |            ^^^^^^^^^^
-  |   File "/Users/Grey/.local/share/uv/tools/esgpull/lib/python3.14/site-packages/esgpull/context.py", line 551, in _hits
-  |     async for result in self._fetch(*results):
-  |     ...<4 lines>...
-  |             hits.append(0)
-  |   File "/Users/Grey/.local/share/uv/tools/esgpull/lib/python3.14/site-packages/esgpull/context.py", line 547, in _fetch
-  |     raise group
-  | ExceptionGroup: fetch (1 sub-exception)
-  +-+---------------- 1 ----------------
-    | Traceback (most recent call last):
-    |   File "/Users/Grey/.local/share/uv/tools/esgpull/lib/python3.14/site-packages/esgpull/context.py", line 518, in _fetch_one
-    |     resp.raise_for_status()
-    |     ~~~~~~~~~~~~~~~~~~~~~^^
-    |   File "/Users/Grey/.local/share/uv/tools/esgpull/lib/python3.14/site-packages/httpx/_models.py", line 829, in raise_for_status
+  ...
     |     raise HTTPStatusError(message, request=request, response=self)
     | httpx.HTTPStatusError: Server error '500 500' for url 'https://esgf-node.ipsl.upmc.fr/esg-search/search?type=File&offset=0&limit=0&format=application%2Fsolr%2Bjson&fields=instance_id&distrib=true&latest=true&retracted=false'
     | For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500
     +------------------------------------
 ExceptionGroup: fetch (1 sub-exception)
-See /Volumes/BERGY_BITS/seaicecp_data/.esgpull/log/esgpull-search-2026-04-17_17-58-12.log for error log.
+See /workspace/bergybits/log/esgpull-search-2026-04-14_22-33-44.log for error log.
 Aborted!
 ```
+The line with `Server error '500 500' for url 'https://esgf-node.ipsl.upmc.fr/...` led me to be confused as to why it would be checking a French web domain.
 
-I took a look at the config:
+</details>
+
+I checked the configuration for this `esgpull` install.
 ```console
-Grey@Audron:seaicecp$ esgpull config
-─────────────────────────── /Volumes/BERGY_BITS/seaicecp_data/.esgpull/config.toml ───────────────────────────
+(seaicecp) root@c11f20a93021:/workspace# uv run esgpull config
+──────────────────────────── /seaicecp_data/bergybits/config.toml ────────────────────────────
 [paths]
-data = "/Volumes/BERGY_BITS/seaicecp_data/.esgpull/data"
-db = "/Volumes/BERGY_BITS/seaicecp_data/.esgpull/db"
-log = "/Volumes/BERGY_BITS/seaicecp_data/.esgpull/log"
-tmp = "/Volumes/BERGY_BITS/seaicecp_data/.esgpull/tmp"
-plugins = "/Volumes/BERGY_BITS/seaicecp_data/.esgpull/plugins"
+data = "/seaicecp_data/bergybits/data"
+db = "/seaicecp_data/bergybits/db"
+log = "/seaicecp_data/bergybits/log"
+tmp = "/seaicecp_data/bergybits/tmp"
+plugins = "/seaicecp_data/bergybits/plugins"
 
 [credentials]
 filename = "credentials.toml"
@@ -2372,26 +2187,78 @@ retracted = "false"
 [plugins]
 enabled = false
 ```
-
-I changed the index node:
+This confirms install I created has `index_node = "esgf-node.ipsl.upmc.fr"`.
+I can check the status of the available nodes.
+This information should also be available at the [ESGF Nodes Status Summary page](https://metagrid.esgf-west.org/nodes/), however that site is currently not working.
 ```console
-Grey@Audron:seaicecp$ esgpull config api.index_node esgf-node.ornl.gov/esgf-1-5-bridge
+(seaicecp) root@c11f20a93021:/workspace# uv run esgpull index-nodes
+                node                │   status    
+════════════════════════════════════╪═════════════
+ esgf-node.ornl.gov/esgf-1-5-bridge │          OK 
+                           us-index │ no response 
+                    esgf.ceda.ac.uk │          OK 
+                    esgf.nci.org.au │ no response 
+             esgf-node.ipsl.upmc.fr │ no response 
+                  esgf-data.dkrz.de │          OK
+```
+And here's the problem.
+The French node is indeed not responding.
+I changed the index node to be the one recommended for the USA region.
+```console
+(workspace) root@454194a5d693:/seaicecp_data# uv run esgpull config api.index_node esgf-node.ornl.gov/esgf-1-5-bridge
 [api]
 index_node = "esgf-node.ornl.gov/esgf-1-5-bridge"
 
-👍 New config file created at /Volumes/BERGY_BITS/seaicecp_data/.esgpull/config.toml.
+👍 New config file created at /seaicecp_data/bergybits/config.toml.
 ```
 
-I confirmed the config changed.
+Then, I was able to perform a search:
 ```console
-Grey@Audron:seaicecp$ esgpull config
-─────────────────────────── /Volumes/BERGY_BITS/seaicecp_data/.esgpull/config.toml ───────────────────────────
+(workspace) root@185e23f0ab22:/workspace# uv run esgpull search project:CMIP6 activity_id:HighResMIP
+Found 66629 datasets.
+ id │                                 dataset                                 │ #  │    size     │     data_node      
+════╪═════════════════════════════════════════════════════════════════════════╪════╪═════════════╪════════════════════
+  0 │ CMIP6.HighResMIP.NCAR.CESM1-CAM5-SE-HR.control-1950.r1i1p1f1.CFmon.clt… │ 10 │     2.9 GiB │ esgf-data.ucar.edu 
+  1 │ CMIP6.HighResMIP.NCAR.CESM1-CAM5-SE-HR.control-1950.r1i1p1f1.Lmon.mrro… │ 10 │ 1,002.9 MiB │ esgf-data.ucar.edu 
+  2 │ CMIP6.HighResMIP.NCAR.CESM1-CAM5-SE-HR.control-1950.r1i1p1f1.Lmon.tsl.… │ 10 │     9.9 GiB │ esgf-node.ornl.gov 
+  3 │ CMIP6.HighResMIP.NCAR.CESM1-CAM5-SE-HR.control-1950.r1i1p1f1.Omon.soga… │ 99 │     2.8 MiB │ esgf-node.ornl.gov 
+  4 │ CMIP6.HighResMIP.NCAR.CESM1-CAM5-SE-HR.highres-future.r1i1p1f1.Amon.ta… │  1 │   719.4 MiB │ esgf-data.ucar.edu 
+  5 │ CMIP6.HighResMIP.NCAR.CESM1-CAM5-SE-HR.highres-future.r1i1p1f1.Amon.ta… │  1 │   738.9 MiB │ esgf-node.ornl.gov 
+  6 │ CMIP6.HighResMIP.NCAR.CESM1-CAM5-SE-HR.highres-future.r1i1p1f1.Amon.ta… │  1 │   752.3 MiB │ esgf-node.ornl.gov 
+  7 │ CMIP6.HighResMIP.NCAR.CESM1-CAM5-SE-HR.highres-future.r1i1p1f1.CFmon.c… │  1 │    36.0 GiB │ esgf-data.ucar.edu 
+  8 │ CMIP6.HighResMIP.NCAR.CESM1-CAM5-SE-HR.highres-future.r1i1p1f1.CFmon.c… │  1 │   980.0 MiB │ esgf-node.ornl.gov 
+  9 │ CMIP6.HighResMIP.NCAR.CESM1-CAM5-SE-HR.highres-future.r1i1p1f1.CFmon.c… │  1 │   964.7 MiB │ esgf-data.ucar.edu 
+ 10 │ CMIP6.HighResMIP.NCAR.CESM1-CAM5-SE-HR.highres-future.r1i1p1f1.CFmon.p… │  1 │   985.8 MiB │ esgf-data.ucar.edu 
+ 11 │ CMIP6.HighResMIP.NCAR.CESM1-CAM5-SE-HR.highres-future.r1i1p1f1.CFmon.p… │  1 │   985.8 MiB │ esgf-node.ornl.gov 
+ 12 │ CMIP6.HighResMIP.NCAR.CESM1-CAM5-SE-HR.highres-future.r1i1p1f1.Emon.mr… │  1 │     3.2 GiB │ eagle.alcf.anl.gov 
+ 13 │ CMIP6.HighResMIP.NCAR.CESM1-CAM5-SE-HR.highres-future.r1i1p1f1.Emon.ps… │  1 │   711.3 MiB │ eagle.alcf.anl.gov 
+ 14 │ CMIP6.HighResMIP.NCAR.CESM1-CAM5-SE-HR.highres-future.r1i1p1f1.Lmon.mr… │  1 │   324.7 MiB │ eagle.alcf.anl.gov 
+ 15 │ CMIP6.HighResMIP.NCAR.CESM1-CAM5-SE-HR.highres-future.r1i1p1f1.Lmon.tr… │  1 │   310.3 MiB │ esgf-node.ornl.gov 
+ 16 │ CMIP6.HighResMIP.NCAR.CESM1-CAM5-SE-HR.highres-future.r1i1p1f1.Omon.so… │ 36 │     1.0 MiB │ esgf-node.ornl.gov 
+ 17 │ CMIP6.HighResMIP.NCAR.CESM1-CAM5-SE-HR.highres-future.r1i1p1f1.Omon.to… │ 36 │     1.0 MiB │ esgf-data.ucar.edu 
+ 18 │ CMIP6.HighResMIP.NCAR.CESM1-CAM5-SE-HR.highres-future.r1i1p1f1.SImon.s… │  1 │    59.9 kiB │ eagle.alcf.anl.gov 
+ 19 │ CMIP6.HighResMIP.NCAR.CESM1-CAM5-SE-HR.highres-future.r1i1p1f1.SImon.s… │  1 │     1.6 GiB │ eagle.alcf.anl.gov
+```
+
+I also set the `replica` option to `true`.
+```console
+(workspace) root@185e23f0ab22:/workspace# uv run esgpull config api.default_options.replica true
+[api.default_options]
+replica = "true"
+
+Previous value: none
+```
+I'm not certain this step is strictly necessary, but it works.
+Here is what the configuration for my `esgpull` install looks like.
+```console
+(seaicecp) root@c11f20a93021:/workspace# uv run esgpull config
+──────────────────────────── /seaicecp_data/bergybits/config.toml ────────────────────────────
 [paths]
-data = "/Volumes/BERGY_BITS/seaicecp_data/.esgpull/data"
-db = "/Volumes/BERGY_BITS/seaicecp_data/.esgpull/db"
-log = "/Volumes/BERGY_BITS/seaicecp_data/.esgpull/log"
-tmp = "/Volumes/BERGY_BITS/seaicecp_data/.esgpull/tmp"
-plugins = "/Volumes/BERGY_BITS/seaicecp_data/.esgpull/plugins"
+data = "/seaicecp_data/bergybits/data"
+db = "/seaicecp_data/bergybits/db"
+log = "/seaicecp_data/bergybits/log"
+tmp = "/seaicecp_data/bergybits/tmp"
+plugins = "/seaicecp_data/bergybits/plugins"
 
 [credentials]
 filename = "credentials.toml"
@@ -2421,279 +2288,12 @@ use_custom_distribution_algorithm = false
 [api.default_options]
 distrib = "true"
 latest = "true"
-replica = "none"
+replica = "true"
 retracted = "false"
 
 [plugins]
 enabled = false
 ```
-
-Great, it changed. 
-Then I tried a search again.
-```console
-Grey@Audron:seaicecp$ bash esgpull_searches/HRMIP_hist_areacello.sh 
-Found 16 datasets.
- id │                              dataset                               │ # │   size    │     data_node      
-════╪════════════════════════════════════════════════════════════════════╪═══╪═══════════╪════════════════════
-  0 │ CMIP6.HighResMIP.AWI.AWI-CM-1-1-LR.hist-1950.r1i1p1f2.Ofx.areacel… │ 1 │  23.4 MiB │ eagle.alcf.anl.gov 
-  1 │ CMIP6.HighResMIP.MOHC.HadGEM3-GC31-HM.hist-1950.r1i1p1f1.Ofx.area… │ 1 │  31.6 MiB │ eagle.alcf.anl.gov 
-  2 │ CMIP6.HighResMIP.MOHC.HadGEM3-GC31-MM.hist-1950.r1i1p1f1.Ofx.area… │ 1 │  31.6 MiB │ esgf-node.ornl.gov 
-  3 │ CMIP6.HighResMIP.NCAR.CESM1-CAM5-SE-HR.hist-1950.r1i1p1f1.Ofx.are… │ 1 │  63.1 MiB │ eagle.alcf.anl.gov 
-  4 │ CMIP6.HighResMIP.AWI.AWI-CM-1-1-HR.hist-1950.r1i1p1f2.Ofx.areacel… │ 1 │ 256.9 MiB │ eagle.alcf.anl.gov 
-  5 │ CMIP6.HighResMIP.AWI.AWI-CM-1-1-LR.hist-1950.r1i1p1f2.Ofx.areacel… │ 1 │  23.4 MiB │ esgf-node.ornl.gov 
-  6 │ CMIP6.HighResMIP.MOHC.HadGEM3-GC31-HM.hist-1950.r1i1p1f1.Ofx.area… │ 1 │  31.6 MiB │ esgf-node.ornl.gov 
-  7 │ CMIP6.HighResMIP.BCC.BCC-CSM2-HR.hist-1950.r1i1p1f1.Ofx.areacello… │ 1 │  11.4 MiB │    cmip.bcc.cma.cn 
-  8 │ CMIP6.HighResMIP.NCAR.CESM1-CAM5-SE-HR.hist-1950.r1i1p1f1.Ofx.are… │ 1 │  63.1 MiB │ esgf-node.ornl.gov 
-  9 │ CMIP6.HighResMIP.AWI.AWI-CM-1-1-HR.hist-1950.r1i1p1f2.Ofx.areacel… │ 1 │ 256.9 MiB │ esgf-node.ornl.gov 
- 10 │ CMIP6.HighResMIP.BCC.BCC-CSM2-HR.hist-1950.r1i1p1f1.Ofx.areacello… │ 1 │  11.4 MiB │ esgf-node.ornl.gov 
- 11 │ CMIP6.HighResMIP.BCC.BCC-CSM2-HR.hist-1950.r1i1p1f1.Ofx.areacello… │ 1 │  11.4 MiB │ eagle.alcf.anl.gov 
- 12 │ CMIP6.HighResMIP.MOHC.HadGEM3-GC31-LL.hist-1950.r1i1p1f1.Ofx.area… │ 1 │   1.4 MiB │ esgf-node.ornl.gov 
- 13 │ CMIP6.HighResMIP.MOHC.HadGEM3-GC31-LL.hist-1950.r1i1p1f1.Ofx.area… │ 1 │   1.4 MiB │ eagle.alcf.anl.gov 
- 14 │ CMIP6.HighResMIP.MOHC.HadGEM3-GC31-MM.hist-1950.r1i1p1f1.Ofx.area… │ 1 │  31.6 MiB │ eagle.alcf.anl.gov 
- 15 │ CMIP6.HighResMIP.NCAR.CESM1-CAM5-SE-HR.hist-1950.r1i1p1f1.Ofx.are… │ 1 │  63.1 MiB │ esgf-data.ucar.edu
-```
-
-#### Adding `esgpull` to the package
-
-After doing the above, I noticed that `esgpull` had not been added to the `.toml` file.
-I added it with the `uv add esgpull` command as shown below.
-I'm not sure whether it would be possible to just do this instead of the `uv tool install` command I did above.
-
-```console
-(seaicecp) Grey@Audron:seaicecp$ uv add esgpull
-Resolved 137 packages in 1.73s
-      Built seaicecp @ file:///Users/Grey/Documents/Research/Postdoc_Projects/York_U_sea_ice/seaicecp
-Prepared 4 packages in 669ms
-Uninstalled 1 package in 7ms
-Installed 28 packages in 162ms
- + aiofiles==25.1.0
- + aiostream==0.7.1
- + alembic==1.18.4
- + annotated-types==0.7.0
- + anyio==4.13.0
- + cattrs==26.1.0
- + cffi==2.0.0
- + click-params==0.5.0
- + cryptography==46.0.7
- + deprecated==1.3.1
- + esgpull==0.9.6
- + h11==0.16.0
- + httpcore==1.0.9
- + httpx==0.28.1
- + mako==1.3.11
- + pycparser==3.0
- + pydantic==2.13.3
- + pydantic-core==2.46.3
- + pydantic-settings==2.14.0
- + pyopenssl==26.0.0
- + python-dotenv==1.2.2
- + rich==15.0.0
- ~ seaicecp==0.1.0 (from file:///Users/Grey/Documents/Research/Postdoc_Projects/York_U_sea_ice/seaicecp)
- + setuptools==82.0.1
- + tomlkit==0.14.0
- + typing-inspection==0.4.2
- + validators==0.22.0
- + wrapt==2.1.2
-(seaicecp) Grey@Audron:seaicecp$ esgpull --version
-esgpull, version 0.9.6
-```
-
-<a id='cdo_install'></a>
-[back to top](#top)
-
-### Adding `cdo`
-
-I also added `cdo` (Climate Data Operators) to be able to interpolate the irregular grid of the model data onto a regular grid for plotting.
-
-```console
-(seaicecp) Grey@Audron:seaicecp$ uv add cdo
-Resolved 138 packages in 469ms
-      Built seaicecp @ file:///Users/Grey/Documents/Research/Postdoc_Projects/York_U_sea_ice/seaicecp
-Prepared 2 packages in 113ms
-Uninstalled 1 package in 1ms
-Installed 2 packages in 7ms
- + cdo==1.6.1
- ~ seaicecp==0.1.0 (from file:///Users/Grey/Documents/Research/Postdoc_Projects/York_U_sea_ice/seaicecp)
-(seaicecp) Grey@Audron:seaicecp$ cdo --version
-bash: cdo: command not found
-```
-
-As it turns out, the command I used above only installed the Python package `cdo`, but not the actual `cdo` command line tool which is required for the Python package to work.
-On the [`cdo` installation page for MacOS](https://code.mpimet.mpg.de/projects/cdo/wiki/MacOS_Platform), they show using Homebrew to install `cdo`.
-```console
-(seaicecp) Grey@Audron:seaicecp$ brew install cdo
-```
-
-<details>
-
-<summary>Output from the above command</summary>
-
-```console
-==> Auto-updating Homebrew...
-Adjust how often this is run with `$HOMEBREW_AUTO_UPDATE_SECS` or disable with
-`$HOMEBREW_NO_AUTO_UPDATE=1`. Hide these hints with `$HOMEBREW_NO_ENV_HINTS=1` (see `man brew`).
-==> Auto-updated Homebrew!
-Updated 2 taps (homebrew/core and homebrew/cask).
-==> New Formulae
-cc-connect: Bridges local AI coding agents to messaging platforms
-openssl@4: Cryptography and SSL/TLS Toolkit
-==> New Casks
-cavalry: Procedural motion design and animation software
-font-bjcree
-font-estedad
-mujoco: General purpose physics engine
-openin: Route links, emails, and files to your preferred apps
-t3-code@nightly: Minimal GUI for AI code agents
-
-You have 112 outdated formulae installed.
-
-==> Fetching downloads for: cdo
-✔︎ Bottle Manifest cdo (2.6.0)                                                           Downloaded   30.2KB/ 30.2KB
-✔︎ Bottle Manifest isl (0.27)                                                            Downloaded   14.5KB/ 14.5KB
-✔︎ Bottle isl (0.27)                                                                     Downloaded    1.8MB/  1.8MB
-✔︎ Bottle Manifest mpfr (4.2.2)                                                          Downloaded   12.7KB/ 12.7KB
-✔︎ Bottle mpfr (4.2.2)                                                                   Downloaded    1.1MB/  1.1MB
-✔︎ Bottle Manifest libmpc (1.4.1)                                                        Downloaded   12.0KB/ 12.0KB
-✔︎ Bottle libmpc (1.4.1)                                                                 Downloaded  164.3KB/164.3KB
-✔︎ Bottle Manifest xz (5.8.3)                                                            Downloaded   11.8KB/ 11.8KB
-✔︎ Bottle xz (5.8.3)                                                                     Downloaded  752.9KB/752.9KB
-✔︎ Bottle Manifest zstd (1.5.7_1)                                                        Downloaded   13.2KB/ 13.2KB
-✔︎ Bottle zstd (1.5.7_1)                                                                 Downloaded  929.3KB/929.3KB
-✔︎ Bottle Manifest gcc (15.2.0_1)                                                        Downloaded   23.5KB/ 23.5KB
-✔︎ Bottle Manifest libaec (1.1.6)                                                        Downloaded    7.2KB/  7.2KB
-✔︎ Bottle libaec (1.1.6)                                                                 Downloaded   49.9KB/ 49.9KB
-✔︎ Bottle Manifest libpng (1.6.58)                                                       Downloaded    8.6KB/  8.6KB
-✔︎ Bottle libpng (1.6.58)                                                                Downloaded  455.9KB/455.9KB
-✔︎ Bottle Manifest hdf5 (2.1.1)                                                          Downloaded   20.7KB/ 20.7KB
-✔︎ Bottle Manifest netcdf (4.10.0)                                                       Downloaded   24.4KB/ 24.4KB
-✔︎ Bottle netcdf (4.10.0)                                                                Downloaded    1.3MB/  1.3MB
-✔︎ Bottle Manifest jpeg-turbo (3.1.4.1)                                                  Downloaded    8.4KB/  8.4KB
-✔︎ Bottle jpeg-turbo (3.1.4.1)                                                           Downloaded    1.2MB/  1.2MB
-✔︎ Bottle Manifest libtiff (4.7.1_1)                                                     Downloaded   12.6KB/ 12.6KB
-✔︎ Bottle Manifest little-cms2 (2.18)                                                    Downloaded   12.2KB/ 12.2KB
-✔︎ Bottle little-cms2 (2.18)                                                             Downloaded  426.1KB/426.1KB
-✔︎ Bottle Manifest openjpeg (2.5.4)                                                      Downloaded   14.0KB/ 14.0KB
-✔︎ Bottle Manifest eccodes (2.46.0)                                                      Downloaded   32.8KB/ 32.8KB
-✔︎ Bottle libtiff (4.7.1_1)                                                              Downloaded    1.9MB/  1.9MB
-✔︎ Bottle Manifest proj (9.8.1)                                                          Downloaded   20.1KB/ 20.1KB
-✔︎ Bottle openjpeg (2.5.4)                                                               Downloaded    2.3MB/  2.3MB
-✔︎ Bottle cdo (2.6.0)                                                                    Downloaded    3.7MB/  3.7MB
-✔︎ Bottle hdf5 (2.1.1)                                                                   Downloaded    9.0MB/  9.0MB
-✔︎ Bottle eccodes (2.46.0)                                                               Downloaded   11.1MB/ 11.1MB
-✔︎ Bottle gcc (15.2.0_1)                                                                 Downloaded  161.9MB/161.9MB
-✔︎ Bottle proj (9.8.1)                                                                   Downloaded  800.1MB/800.1MB
-==> Installing dependencies for cdo: isl, mpfr, libmpc, xz, zstd, gcc, libaec, libpng, hdf5, netcdf, jpeg-turbo, libtiff, little-cms2, openjpeg, eccodes and proj
-==> Installing cdo dependency: isl
-==> Pouring isl--0.27.sequoia.bottle.tar.gz
-🍺  /usr/local/Cellar/isl/0.27: 74 files, 8MB
-==> Installing cdo dependency: mpfr
-==> Pouring mpfr--4.2.2.sequoia.bottle.tar.gz
-🍺  /usr/local/Cellar/mpfr/4.2.2: 31 files, 3.3MB
-==> Installing cdo dependency: libmpc
-==> Pouring libmpc--1.4.1.sequoia.bottle.tar.gz
-🍺  /usr/local/Cellar/libmpc/1.4.1: 14 files, 512.1KB
-==> Installing cdo dependency: xz
-==> Pouring xz--5.8.3.sequoia.bottle.tar.gz
-🍺  /usr/local/Cellar/xz/5.8.3: 96 files, 2.5MB
-==> Installing cdo dependency: zstd
-==> Pouring zstd--1.5.7_1.sequoia.bottle.tar.gz
-🍺  /usr/local/Cellar/zstd/1.5.7_1: 32 files, 2.5MB
-==> Installing cdo dependency: gcc
-==> Pouring gcc--15.2.0_1.sequoia.bottle.tar.gz
-🍺  /usr/local/Cellar/gcc/15.2.0_1: 1,715 files, 499.7MB
-==> Installing cdo dependency: libaec
-==> Pouring libaec--1.1.6.sonoma.bottle.tar.gz
-Warning: These files were overwritten during the `brew link` step:
-/usr/local/include/szlib.h
-/usr/local/lib/libsz.2.dylib
-/usr/local/lib/libsz.a
-/usr/local/lib/libsz.dylib
-
-They have been backed up to: /Users/Grey/Library/Caches/Homebrew/Backup
-==> Summary
-🍺  /usr/local/Cellar/libaec/1.1.6: 23 files, 176.1KB
-==> Installing cdo dependency: libpng
-==> Pouring libpng--1.6.58.sonoma.bottle.tar.gz
-🍺  /usr/local/Cellar/libpng/1.6.58: 28 files, 1.3MB
-==> Installing cdo dependency: hdf5
-==> Pouring hdf5--2.1.1.sonoma.bottle.tar.gz
-🍺  /usr/local/Cellar/hdf5/2.1.1: 271 files, 20.7MB
-==> Installing cdo dependency: netcdf
-==> Pouring netcdf--4.10.0.sonoma.bottle.tar.gz
-🍺  /usr/local/Cellar/netcdf/4.10.0: 34 files, 4.0MB
-==> Installing cdo dependency: jpeg-turbo
-==> Pouring jpeg-turbo--3.1.4.1.sonoma.bottle.tar.gz
-Warning: These files were overwritten during the `brew link` step:
-/usr/local/bin/cjpeg
-/usr/local/bin/djpeg
-/usr/local/bin/jpegtran
-/usr/local/bin/rdjpgcom
-/usr/local/bin/wrjpgcom
-/usr/local/include/jconfig.h
-/usr/local/include/jerror.h
-/usr/local/include/jmorecfg.h
-/usr/local/include/jpeglib.h
-/usr/local/share/man/man1/cjpeg.1
-/usr/local/share/man/man1/djpeg.1
-/usr/local/share/man/man1/jpegtran.1
-/usr/local/share/man/man1/rdjpgcom.1
-/usr/local/share/man/man1/wrjpgcom.1
-/usr/local/lib/libjpeg.a
-/usr/local/lib/libjpeg.dylib
-/usr/local/lib/pkgconfig/libjpeg.pc
-
-They have been backed up to: /Users/Grey/Library/Caches/Homebrew/Backup
-==> Summary
-🍺  /usr/local/Cellar/jpeg-turbo/3.1.4.1: 47 files, 4.4MB
-==> Installing cdo dependency: libtiff
-==> Pouring libtiff--4.7.1_1.sonoma.bottle.tar.gz
-🍺  /usr/local/Cellar/libtiff/4.7.1_1: 488 files, 8.2MB
-==> Installing cdo dependency: little-cms2
-==> Pouring little-cms2--2.18.sonoma.bottle.tar.gz
-🍺  /usr/local/Cellar/little-cms2/2.18: 23 files, 1.2MB
-==> Installing cdo dependency: openjpeg
-==> Pouring openjpeg--2.5.4.sonoma.bottle.tar.gz
-🍺  /usr/local/Cellar/openjpeg/2.5.4: 512 files, 14.6MB
-==> Installing cdo dependency: eccodes
-==> Pouring eccodes--2.46.0.sonoma.bottle.tar.gz
-🍺  /usr/local/Cellar/eccodes/2.46.0: 23,096 files, 56.7MB
-==> Installing cdo dependency: proj
-==> Pouring proj--9.8.1.sonoma.bottle.tar.gz
-🍺  /usr/local/Cellar/proj/9.8.1: 530 files, 834.3MB
-==> Installing cdo
-==> Pouring cdo--2.6.0.sonoma.bottle.tar.gz
-🍺  /usr/local/Cellar/cdo/2.6.0: 9 files, 11.2MB
-==> Running `brew cleanup cdo`...
-Disable this behaviour by setting `HOMEBREW_NO_INSTALL_CLEANUP=1`.
-Hide these hints with `HOMEBREW_NO_ENV_HINTS=1` (see `man brew`).
-```
-
-</details>
-
-Then, I can check to make sure `cdo` is installed by checking the version.
-```console
-(seaicecp) Grey@Audron:seaicecp$ cdo --version
-Climate Data Operators version 2.6.0 (https://mpimet.mpg.de/cdo)
-System: x86_64-apple-darwin23.6.0
-CXX Compiler: clang++ -std=gnu++11 -std=gnu++20 -g -O2  -pthread
-CXX version : Apple clang version 16.0.0 (clang-1600.0.26.6)
-CXX library :
-C Compiler: clang -g -O2  -pthread -pthread
-C version : Apple clang version 16.0.0 (clang-1600.0.26.6)
-F77 Compiler: gfortran -g -O2
-F77 version : GNU Fortran (Homebrew GCC 15.2.0_1) 15.2.0
-Features: 32GB 8threads c++20 Fortran pthreads HDF5 NC4/HDF5 dap sz proj sse4_2
-Libraries: yac/3.13.1 NetCDF/4.10.0 HDF5/2.1.1(h2.0.0) proj/9.7.1
-CDI data types: SizeType=size_t
-CDI file types: srv ext ieg grb1 grb2 nc1 nc2 nc4 nc4c nc5 nczarr 
-     CDI library version : 2.6.0
- cgribex library version : 2.3.1
- ecCodes library version : 2.46.0
-  NetCDF library version : 4.10.0 of Feb 25 2026 17:25:46 $
-    exse library version : 2.0.0
-    FILE library version : 1.9.1
-```
-
 
 <a id='docs'></a>
 [back to top](#top)
