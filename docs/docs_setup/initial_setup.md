@@ -39,6 +39,8 @@ Several of the sections below are summarizations of parts of that guide, with de
         - [Set up access to external volumes](#podman_start_container_external_vol)
         - [Create the list of volumes](#podman_start_container_list_vol)
         - [Run the container](#podman_start_container_run)
+    - [Testing the container](#podman_test_container)
+    - [Cleaning up old images](#podman_start_container_cleanup)
 - [Virtual environment and packages](#venv)
     - [Activating the virtual environment](#venv_activate)
     - [Adding package dependencies](#venv_dependencies)
@@ -1470,6 +1472,56 @@ The arguments of the command are, similar to [Building a simple container](#podm
     - "Working directory inside the container. The default working directory for running binaries within a container is the root directory (`/`). The image developer can set a different default with the `WORKDIR` instruction. The operator can override the working directory by using the `-w` option."
 - `"$IMAGE"`
     - The name of the image to use for this container.
+
+<a id='podman_test_container'></a>
+[back to top](#top)
+
+### Testing the container
+
+With the container running, I can test to make sure things were installed correctly. 
+First, I'll check the versions of various packages, starting with `uv`.
+```console
+Grey@Audron:seaicecp$ podman exec -it c11f20a93021 /bin/sh
+# bash
+root@c11f20a93021:/workspace# uv --version
+uv 0.11.8 (x86_64-unknown-linux-musl)
+```
+Next, I'll check `cdo`.
+```console
+root@c11f20a93021:/workspace# cdo --version
+Climate Data Operators version 2.5.1 (https://mpimet.mpg.de/cdo)
+System: x86_64-pc-linux-gnu
+CXX Compiler: g++ -std=gnu++20 -g -O2 -ffile-prefix-map=/build/reproducible-path/cdo-2.5.1=. -fstack-protector-strong -fstack-clash-protection -Wformat -Werror=format-security -fcf-protection -fopenmp -pthread
+CXX version : g++ (Debian 14.2.0-19) 14.2.0
+CXX library :
+C Compiler: gcc -g -O2 -Werror=implicit-function-declaration -ffile-prefix-map=/build/reproducible-path/cdo-2.5.1=. -fstack-protector-strong -fstack-clash-protection -Wformat -Werror=format-security -fcf-protection -Wall -pedantic -fPIC -fopenmp -pthread -pthread
+C version : gcc (Debian 14.2.0-19) 14.2.0
+F77 Compiler: f77 -g -O2 -ffile-prefix-map=/build/reproducible-path/cdo-2.5.1=. -fstack-protector-strong -fstack-clash-protection -fcf-protection
+F77 version : GNU Fortran (Debian 14.2.0-19) 14.2.0
+Features: 1GB 4threads c++20 OpenMP45 Fortran pthreads HDF5 NC4/HDF5/threadsafe OPeNDAP sz udunits2 proj xml2 magics curl fftw3 hirlam_extensions sse2
+Libraries: yac/3.4.0 NetCDF/4.9.3 HDF5/1.14.5 proj/9.6.0 xml2/2.9.14 curl/8.14.1(h8.13.0-rc3) magics/4.15.5
+CDI data types: SizeType=size_t
+CDI file types: srv ext ieg grb1 grb2 nc1 nc2 nc4 nc4c nc5 nczarr 
+     CDI library version : 2.5.1
+ ecCodes library version : 2.41.0
+  NetCDF library version : 4.9.3 of Feb 14 2025 11:24:29 $
+    exse library version : 2.0.0
+    FILE library version : 1.9.1
+```
+To check `nco`, I'll check the version of `ncks` (NetCDF Kitchen Sink).
+root@c11f20a93021:/workspace# 
+```console
+root@c11f20a93021:/workspace# ncks --version
+NCO netCDF Operators version 5.3.3 "Sea Shanty" built by sbuild on sbuild at Mar 29 2025 05:28:49
+ncks version 5.3.3
+```
+Then, I can check Python.
+```console
+root@c11f20a93021:/workspace# python
+Python 3.13.5 (main, Jun 25 2025, 18:55:22) [GCC 14.2.0] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> exit()
+```
 
 <a id='podman_clean_images'></a>
 [back to top](#top)
