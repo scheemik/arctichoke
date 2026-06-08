@@ -33,7 +33,8 @@ def quadmesh_map(
             Default is 'NorthPolarStereo'.
         map_bbox : Array of `float`, optional
             An array of coordinates defining the bounding box of the map in the following format:
-                [LAT_MAX, LAT_MIN, LON_MAX, LON_MIN]
+                - [LAT_MAX, LAT_MIN, LON_MAX, LON_MIN]
+                
             Default is `seaicecp.params.latlon_params.NWP_BBOX`.
         **kwargs
             Keyword arguments to pass to `hvplot.quadmesh()` and `seaicecp.plot.limit_extent.get_limited_extent()`

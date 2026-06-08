@@ -26,7 +26,8 @@ def trim_latlon(
             The dataset to plot.
         map_bbox : Array of `float`, optional
             An array of coordinates defining the bounding box of the map in the following format:
-                [LAT_MAX, LAT_MIN, LON_MAX, LON_MIN]
+                - [LAT_MAX, LAT_MIN, LON_MAX, LON_MIN]
+                
             Default is `seaicecp.params.latlon_params.NWP_BBOX`.
         save_as : `str`, `None`, optional
             The file name to pass to `seaicecp.plot.save_hvplots.save_hvplot()`.

@@ -18,7 +18,8 @@ def get_limited_extent(
             The coordinate reference system from `cartopy` onto which the bounding box will be projected.
         map_bbox : Array of `float`, optional
             An array of coordinates defining the bounding box of the map in the following format:
-                [LAT_MAX, LAT_MIN, LON_MAX, LON_MIN]
+                - [LAT_MAX, LAT_MIN, LON_MAX, LON_MIN]
+                
             Default is `seaicecp.params.latlon_params.NWP_BBOX`.
         n_sample : `int`, optional
             The number of samples to take along the edges of the bounding box.

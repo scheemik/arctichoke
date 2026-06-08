@@ -30,12 +30,14 @@ def plot_time_series(
             Default is `None`, which uses a default title for the plot.
         xlims : List of `float`, optional
             The limits to use for the x-axis on the plot in the following format:
-                [x_min, x_max]
+                - [x_min, x_max]
+
             where `x_min` and `x_max` are strings in the format `YYYY-MM-DD`
             Default is `None`, which expands the x-axis to include all the data.
         ylims : List of `float`, optional
             The limits to use for the y-axis on the plot in the following format:
-                [y_min, y_max]
+                - [y_min, y_max]
+                
             Default is `None`, which expands the y-axis to include all the data.
         save_as : `str`, `None`, optional
             The name of the file to which to save the plot.
