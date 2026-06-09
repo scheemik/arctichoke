@@ -1,7 +1,7 @@
+import numpy as np
 import xarray as xr 
 
 from seaicecp.verify import verify_path
-from seaicecp.dataset.get_variable import get_variable_name
 
 def get_latlon_names(
     dataset: (str, xr.DataArray, xr.Dataset),
@@ -93,9 +93,9 @@ def determine_lon_type(
         IDL_centered
     """
     # Verify input arguments
-    if not isinstance(lon_min, (int, float)):
+    if not isinstance(lon_min, (int, float, np.float32)):
         raise TypeError(f"(determine_lon_type) `lon_min` must be `int` or `float`. Got type: {type(lon_min)}")
-    if not isinstance(lon_max, (int, float)):
+    if not isinstance(lon_max, (int, float, np.float32)):
         raise TypeError(f"(determine_lon_type) `lon_max` must be `int` or `float`. Got type: {type(lon_max)}")
     if lon_min > lon_max:
         raise ValueError(f"(determine_lon_type) `lon_min` must be less than `lon_max`. Got `lon_min`: {lon_min}, `lon_max`: {lon_max}")
@@ -127,3 +127,52 @@ def determine_lon_type(
         lon_type = 'other'
     return lon_type
 
+def get_lon_type(
+    dataset: (str, xr.DataArray, xr.Dataset),
+):
+    """ Get the longitude type of the dataset.
+
+        Opens the given dataset, checks the coordinates, and determines the type of longitude: Prime Meridian centered (0 to 360), International Date Line centered (-180 to 180), or other.
+
+        Parameters
+        ----------
+        dataset : `str`, `xarray.DataArray`, `xarray.Dataset`
+            The dataset for which to determine the longitude type.
+
+        Returns
+        -------
+        lon_type : `str`
+            The type of longitude that the dataset has which will be `'PM_centered'`, `'IDL_centered'`, or `'other'`.
+        
+        Examples
+        --------
+        >>> from seaicecp.dataset.grid_type import get_lon_type
+        >>> get_lon_type('/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/siconc/gn/v20181212/siconc_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_201401-201412.nc')
+        IDL_centered
+    """
+    # Verify input arguments
+    if not isinstance(dataset, (str, xr.Dataset, xr.DataArray)):
+        raise TypeError(f"(get_lon_type) `dataset` must be a string, `xr.Dataset`, or `xr.DataArray`. Got type: {type(dataset)}")
+    if isinstance(dataset, str):
+        # Verify this is a valid path
+        dataset = verify_path(dataset)
+        if not dataset.endswith('.nc'):
+            raise TypeError(f"(get_lon_type) `dataset` must be a `.nc` filepath. Got: {dataset}")
+        # Open the dataset
+        dataset = xr.open_dataset(dataset)
+    
+    # Get the latitude and longitude coordinate names
+    lat_var, lon_var = get_latlon_names(dataset)
+    
+    # Get the longitude values of this dataset
+    lon_vals = dataset[lon_var].values.flatten()
+    # Get the maximum and minimum longitude values
+    lon_max = max(lon_vals)
+    lon_min = min(lon_vals)
+
+    # Determine the type of longitude values the dataset has
+    lon_type = determine_lon_type(
+        lon_min,
+        lon_max,
+    )
+    return lon_type
