@@ -96,3 +96,69 @@ def test_get_latlon_names():
         else:
             assert False, f"`get_latlon_names` did not raise an exception on invalid `dataset` {invalid_string}"
 
+
+def test_determine_lon_type():
+    """Test the `determine_lon_type` function."""
+    # Define test cases
+    test_cases = [
+        {
+            'lon_min': 0,
+            'lon_max': 0,
+            'expected_lon_type': 'other',
+        },
+        {
+            'lon_min': 3.14,
+            'lon_max': 3.14,
+            'expected_lon_type': 'other',
+        },
+        {
+            'lon_min': 0,
+            'lon_max': 360,
+            'expected_lon_type': 'PM_centered',
+        },
+        {
+            'lon_min': -180,
+            'lon_max': 180,
+            'expected_lon_type': 'IDL_centered',
+        },
+    ]
+    for test_case in test_cases:
+        actual = latlon_type.determine_lon_type(
+            lon_min = test_case['lon_min'],
+            lon_max = test_case['lon_max']
+        )
+        assert actual == test_case['expected_lon_type'], f"`determine_lon_type` failed on test case: {test_case}.\nExpected: {test_case['expected_lon_type']}\nActual: {actual}"
+    
+    # Define a list of invalid longitudes
+    invalid_lons = [
+        '180',
+        '0',
+        1234,
+        361,
+        -181,
+        None,
+        [],
+        {}
+    ]
+    for invalid_lon in invalid_lons:
+        # Test with `lon_min`
+        try:
+            actual = latlon_type.determine_lon_type(
+                lon_min = invalid_lon,
+                lon_max = 0,
+            )
+        except (TypeError, ValueError) as e:
+            assert True, f"`determine_lon_type` raised an exception on invalid `lon_min`: {e}"
+        else:
+            assert False, f"`determine_lon_type` did not raise an exception on invalid `lon_min` {invalid_lon}"
+        # Test with `lon_max`
+        try:
+            actual = latlon_type.determine_lon_type(
+                lon_min = 0,
+                lon_max = invalid_lon,
+            )
+        except (TypeError, ValueError) as e:
+            assert True, f"`determine_lon_type` raised an exception on invalid `lon_max`: {e}"
+        else:
+            assert False, f"`determine_lon_type` did not raise an exception on invalid `lon_max` {invalid_lon}"
+
