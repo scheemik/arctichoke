@@ -63,3 +63,67 @@ def get_latlon_names(
         raise ValueError(f"(quadmesh_map) `xr_data` must have a longitude coordinate. Got coordinates: {xr_coords}")
     
     return lat_var, lon_var
+
+def determine_lon_type(
+    lon_min: (int, float),
+    lon_max: (int, float),
+):
+    """ Determine the longitude type based on the minimum and maximum values.
+
+        Given the minimum and maximum longitude values of a dataset, tries to determines the type of longitude: Prime Meridian centered (0 to 360), International Date Line centered (-180 to 180), or other.
+
+        Parameters
+        ----------
+        lon_min : `int`, `float`
+            The minimum longitude value.
+        lon_max : `int`, `float`
+            The maximum longitude value.
+
+        Returns
+        -------
+        lon_type : `str`
+            The type of longitude that the dataset has which will be `'PM_centered'`, `'IDL_centered'`, or `'other'`.
+        
+        Examples
+        --------
+        >>> from seaicecp.dataset.grid_type import determine_lon_type
+        >>> determine_lon_type(lon_min = 0, lon_max = 360)
+        PM_centered
+        >>> determine_lon_type(lon_min = -180, lon_max = 180)
+        IDL_centered
+    """
+    # Verify input arguments
+    if not isinstance(lon_min, (int, float)):
+        raise TypeError(f"(determine_lon_type) `lon_min` must be `int` or `float`. Got type: {type(lon_min)}")
+    if not isinstance(lon_max, (int, float)):
+        raise TypeError(f"(determine_lon_type) `lon_max` must be `int` or `float`. Got type: {type(lon_max)}")
+    if lon_min > lon_max:
+        raise ValueError(f"(determine_lon_type) `lon_min` must be less than `lon_max`. Got `lon_min`: {lon_min}, `lon_max`: {lon_max}")
+    if lon_min < -180 or lon_max < -180:
+        raise ValueError(f"(determine_lon_type) `lon_min` and `lon_max` cannot be less than -180. Got `lon_min`: {lon_min}, `lon_max`: {lon_max}")
+    if lon_min > 360 or lon_max > 360:
+        raise ValueError(f"(determine_lon_type) `lon_min` and `lon_max` cannot be greater than 360. Got `lon_min`: {lon_min}, `lon_max`: {lon_max}")
+    
+    if lon_min == lon_max:
+        lon_type = 'other'
+    elif lon_min == 0 or lon_max == 0:
+        if lon_min < 0:
+            lon_type = 'IDL_centered'
+        elif lon_max > 180:
+            lon_type = 'PM_centered'
+        else:
+            lon_type = 'other'
+    elif lon_min <= 0:
+        if lon_max <= 180:
+            lon_type = 'IDL_centered'
+        else:
+            lon_type = 'other'
+    elif lon_min > 0:
+        if lon_max > 180:
+            lon_type = 'PM_centered'
+        else:
+            lon_type = 'other'
+    else:
+        lon_type = 'other'
+    return lon_type
+
