@@ -13,7 +13,6 @@ def plot_seasonal_cycle(
     datasets: [(str, xr.DataArray, xr.Dataset)],
     variable_id: str = None,
     take_mean: bool = False,
-    fig: matplotlib.figure.Figure = None,
     ax: matplotlib.axes.Axes = None,
     plt_title: str = None,
     line_labels: [str] = None,
@@ -252,4 +251,4 @@ def plot_seasonal_cycle(
             label = c_map_label,
         )
 
-    return fig, ax
+    return ax
