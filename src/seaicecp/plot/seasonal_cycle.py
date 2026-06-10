@@ -211,7 +211,8 @@ def plot_seasonal_cycle(
             # Add the specified label as the name of the resulting data series
             data_frame.name = line_label
             # Modify the plot title
-            plt_title = f"Mean {plt_title}"
+            if not plt_title.startswith('Mean'):
+                plt_title = f"Mean {plt_title}"
 
         # Get the values of the years in the data frame to set the line colors
         try:
