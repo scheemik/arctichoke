@@ -223,9 +223,9 @@ def trim_files(
                 warnings.warn(f"(trim_files) file `{new_filepath}` exists already. To overwrite this file, set `overwrite` to `True`.", UserWarning)
                 continue
             else:
-                print(f"\tOverwriting file `{new_filepath}`.")
+                print(f"\t(trim_files) Overwriting file `{new_filepath}`.")
         except (FileNotFoundError):
-            foo = 2
+            print(f"\t(trim_files) Writing file `{new_filepath}`.")
         # Load this file with `xarray`
         this_xr = xr.open_dataset(filepath)
         # Trim the dataset and save to file
