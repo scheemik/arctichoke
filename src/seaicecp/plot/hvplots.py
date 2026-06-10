@@ -4,6 +4,7 @@ import cartopy.crs as crs
 
 from seaicecp.plot.save_hvplots import save_hvplot
 from seaicecp.plot.limit_extent import get_limited_extent
+from seaicecp.dataset.latlon_type import get_latlon_names
 import seaicecp.params as sps
 
 def quadmesh_map(
@@ -93,11 +94,14 @@ def quadmesh_map(
         map_projection = crs.NorthPolarStereo(central_longitude = box_lon_cent)
         # Get the extent to which to limit the map plot
         map_extent = get_limited_extent(map_projection)
+    
+    # Get the latitude and longitude coordinate names
+    lat_var, lon_var = get_latlon_names(xr_data)
 
     # Make the plot
     qm_map_plot = xr_data[var].hvplot.quadmesh(
-        'longitude', 
-        'latitude', 
+        lon_var, 
+        lat_var, 
         projection=map_projection, 
         project=True,
         global_extent=False, 
