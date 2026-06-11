@@ -1142,7 +1142,11 @@ The webpage I found for it is out of date: https://ncar.github.io/CAM_SciDoc/doc
         - `sivol`
     - `tas`
 - Resolution information
-    - Not evaluated
+    - "atmos: MetUM-HadGEM3-GA7.1 (N512; 1024 x 768 longitude/latitude; 85 levels; top level 85 km)"
+    - "ocean: NEMO-HadGEM3-GO6.0 (eORCA12 tripolar primarily 1/12 deg; 4320 x 3604 longitude/latitude; 75 levels; top grid cell 0-1 m)"
+    - "seaIce: CICE-HadGEM3-GSI8 (eORCA12 tripolar primarily 1/12 deg; 4320 x 3604 longitude/latitude)"
+        - This is the irregular grid used for `siage`, `siconc`, `sithick`, `siu`, and `siv`.
+        - Dimensions: (`j`: 3604, `i`: 4320)
 - Evaluation of how well the model reproduces the observed trend in Arctic sea ice area
     - Not evaluated
 - Evaluation of how well the model resolves the CAA
@@ -1209,7 +1213,13 @@ The webpage I found for it is out of date: https://ncar.github.io/CAM_SciDoc/doc
         - `sivol`
     - `tas`
 - Resolution information
-    - Not evaluated
+    - "atmos: MetUM-HadGEM3-GA7.1 (N512; 1024 x 768 longitude/latitude; 85 levels; top level 85 km)"
+        - This is the regular grid used for the `siconc` datafiles.
+        - Dimensions: (`lat`: 768, `lon`: 1024)
+    - "ocean: NEMO-HadGEM3-GO6.0 (eORCA025 tripolar primarily 0.25 deg; 1440 x 1205 longitude/latitude; 75 levels; top grid cell 0-1 m)"
+    - "seaIce: CICE-HadGEM3-GSI8 (eORCA025 tripolar primarily 0.25 deg; 1440 x 1205 longitude/latitude)"
+        - This is the irregular grid used for `siage`, `sithick`, `siu`, and `siv`.
+        - Dimensions: (`j`: 1205, `i`: 1440)
 - Evaluation of how well the model reproduces the observed trend in Arctic sea ice area
     - Not evaluated
 - Evaluation of how well the model resolves the CAA
@@ -1423,7 +1433,13 @@ The webpage I found for it is out of date: https://ncar.github.io/CAM_SciDoc/doc
         - `sivol`
     - `tas`
 - Resolution information
-    - Not evaluated
+    - "atmos: MetUM-HadGEM3-GA7.1 (N216; 432 x 324 longitude/latitude; 85 levels; top level 85 km)"
+        - This is the regular grid used for the `siconc` datafiles.
+        - Dimensions: (`lat`: 324, `lon`: 432)
+    - "ocean: NEMO-HadGEM3-GO6.0 (eORCA025 tripolar primarily 0.25 deg; 1440 x 1205 longitude/latitude; 75 levels; top grid cell 0-1 m)"
+    - "seaIce: CICE-HadGEM3-GSI8 (eORCA025 tripolar primarily 0.25 deg; 1440 x 1205 longitude/latitude)"
+        - This is the irregular grid used for `siage`, `sithick`, `siu`, and `siv`.
+        - Dimensions: (`j`: 1205, `i`: 1440)
 - Evaluation of how well the model reproduces the observed trend in Arctic sea ice area
     - Not evaluated
 - Evaluation of how well the model resolves the CAA
