@@ -2094,7 +2094,7 @@ print(seaicecp.__version__)
 
 Data from the CMIP6 HighResMIP models can be downloaded from the [ESGF Federated Nodes](https://esgf-node.ornl.gov/search) webportal, which has great search functionality but tedious manual downloading, or through Globus, which augments the webportal through an application you can install on your system.
 However, I decided to use [`esgpull`](https://esgf.github.io/esgf-download/quickstart/) for this project, which offers a command line interface for searching and downloading.
-For detailed reasoning on choosing `esgpull`, see the {doc}`Downloading model data with esgpull <esgpull_downloads>` guide. 
+For detailed reasoning on choosing `esgpull`, see the {doc}`Downloading model data with esgpull <../docs_data/esgpull_downloads>` guide. 
 
 <a id='esgpull_init_install'></a>
 [back to top](#top)
@@ -2377,7 +2377,7 @@ enabled = false
 
 In the section, [Packages for documentation](#venv_dependencies_docs), I added the `myst-nb` `sphinx-autoapi` and `sphinx-rtd-theme` packages to the development group of the project. 
 To build the documentation, activate the virtual environment, go into the `docs/` directory, and run the `make` command.
-This will produce a lot of output, so I have hidden most of it.
+This will produce a lot of output, especially the first time running, so I have hidden most of it.
 ```console
 (seaicecp) root@<container_id>:/workspace# cd docs
 (seaicecp) root@<container_id>:/workspace/docs# make html
@@ -2492,6 +2492,13 @@ The HTML pages are in _build/html.
 Then, I went into the `docs/html/index.html` in VSCodium, hit the preview button, then the top right menu to open the page in a browser.
 The test webpage seems like it rendered properly. 
 
+When troubleshooting, it can be helpful to try making the `html` directory clean and recreating those documents, in case some cached data is causing issues.
+```console
+(seaicecp) root@<container_id>:/workspace/docs# make clean
+Removing everything under '_build'...
+```
+Then, run the `make html` command again.
+
 <a id='host_docs'></a>
 [back to top](#top)
 
@@ -2589,7 +2596,7 @@ See the MyST-Parser documentation page on [Syntax Extensions](https://myst-parse
 
 When making citations in the documentation, it can be cumbersome to link to a DOI.
 For example, to cite the EC-Earth3P-HR model, I would type out the link `[doi:10.22033/ESGF/CMIP6.2323](https://doi.org/10.22033/ESGF/CMIP6.2323)` which renders as [doi:10.22033/ESGF/CMIP6.2323](https://doi.org/10.22033/ESGF/CMIP6.2323).
-In the documentation of my {doc}`HighResMIP Choices <HighResMIP_choices>`, I make around 50 citations.
+In the documentation of my {doc}`HighResMIP Choices <../docs_data/HighResMIP_choices>`, I make around 50 citations.
 
 To set up a URL scheme that makes DOI links shorter, I added the following to `docs/conf.py`:
 ```python

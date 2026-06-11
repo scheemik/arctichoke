@@ -24,9 +24,9 @@ docs_setup/jupyter_test.md
 :hidden:
 :caption: Data
 
-docs_setup/esgpull_downloads.md
-docs_setup/globus_downloads.md
-docs_setup/HighResMIP_choices.md
+docs_data/esgpull_downloads.md
+docs_data/globus_downloads.md
+docs_data/HighResMIP_choices.md
 ```
 
 ```{toctree}
