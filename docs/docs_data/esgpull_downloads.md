@@ -2,7 +2,7 @@
 # Downloading model data with `esgpull`
 
 The instructions below show how to use `esgpull` within the container to download CMIP6 HighResMIP model data.
-For more details on how the architecture of this project was developed, see the {doc}`Initial Setup <initial_setup>` guide. 
+For more details on how the architecture of this project was developed, see the {doc}`Initial Setup <../data_setup/initial_setup>` guide. 
 
 ## Contents
 

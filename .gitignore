@@ -2,7 +2,7 @@
 data/*
 
 # Extra images
-docs/docs_setup/HighResMIP_choices-img/Extra_images/*
+docs/docs_data/HighResMIP_choices-img/Extra_images/*
 
 # Outputs
 outputs/*
