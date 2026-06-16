@@ -18,6 +18,15 @@ def test_make_example_dataset():
             'n_size': 10,
         },
         {
+            'actual': dataset.make_example_dataset(test_var_name='new_test_var'),
+            'keys': ['new_test_var'],
+            'coords': ['j', 'i', 'longitude', 'latitude'],
+            'sizes': ['j', 'i'],
+            'test_var_size': 100,
+            'test_latlon_size': 100,
+            'n_size': 10,
+        },
+        {
             'actual': dataset.make_example_dataset(save_as=test_filepath),
             'keys': ['test_var'],
             'coords': ['j', 'i', 'longitude', 'latitude'],
@@ -52,7 +61,8 @@ def test_make_example_dataset():
         assert list(test_case['actual'].coords) == test_case['coords'], f"`make_example_dataset` created a dataset with the coordinates: {list(test_case['actual'].coords)}.\nExpected coordinates: {test_case['coords']}"
         # Check the sizes
         assert list(test_case['actual'].sizes) == test_case['sizes'], f"`make_example_dataset` created a dataset with the sizes: {list(test_case['actual'].sizes)}.\nExpected sizes: {test_case['sizes']}"
-        assert test_case['actual']['test_var'].size == test_case['test_var_size'], f"`make_example_dataset` created a dataset with a variable size: {test_case['actual']['test_var'].size}.\nExpected variable size: {test_case['test_var_size']}"
+        for this_var in test_case['keys']:
+            assert test_case['actual'][this_var].size == test_case['test_var_size'], f"`make_example_dataset` created a dataset with a variable size: {test_case['actual'][this_var].size}.\nExpected variable size: {test_case['test_var_size']}"
         assert test_case['actual']['longitude'].size == test_case['test_latlon_size'], f"`make_example_dataset` created a dataset with a longitude size: {test_case['actual']['longitude'].size}.\nExpected variable size: {test_case['test_latlon_size']}"
         assert test_case['actual']['latitude'].size == test_case['test_latlon_size'], f"`make_example_dataset` created a dataset with a latitude size: {test_case['actual']['latitude'].size}.\nExpected variable size: {test_case['test_latlon_size']}"
         assert test_case['actual']['i'].size == test_case['n_size'], f"`make_example_dataset` created a dataset with a variable size: {test_case['actual']['i'].size}.\nExpected variable size: {test_case['n_size']}"
@@ -87,7 +97,25 @@ def test_make_example_dataset():
             assert True, f"`make_example_dataset` raised an exception on invalid `save_as`: {e}"
         else:
             assert False, f"`make_example_dataset` did not raise an exception on invalid `save_as` {invalid_value}"
-    
+    # Test for `test_var_name`
+    invalid_values = [
+        False,
+        3.14,
+        None,
+        [],
+        {},
+    ]
+    for invalid_value in invalid_values:
+        for invalid_value in invalid_values:
+            try:
+                actual = dataset.make_example_dataset(
+                    save_as=test_filepath,
+                    test_var_name=invalid_value,
+                )
+            except (TypeError, ValueError) as e:
+                assert True, f"`make_example_dataset` raised an exception on invalid `test_var_name`: {e}"
+            else:
+                assert False, f"`make_example_dataset` did not raise an exception on invalid `test_var_name` {invalid_value}"
     invalid_values = [
         'not_a_value',
         3.14,
