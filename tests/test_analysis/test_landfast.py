@@ -29,12 +29,12 @@ def test_find_packed_ice():
                 test_var_name='siconc',
             ),
             'packed_threshold': 3,
-            'expected_sum': 5,
+            'expected_sum': 6,
         },
         {
             'dataset': test_file_names,
             'packed_threshold': 3,
-            'expected_sum': 30,
+            'expected_sum': 36,
         },
     ]
     for test_case in test_cases:

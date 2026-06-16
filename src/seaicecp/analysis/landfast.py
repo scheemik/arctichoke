@@ -108,15 +108,15 @@ def find_packed_ice(
     if verbose:
         print(f"(find_packed_ice) `save_as`: {save_as}")
 
-    # Get the minimum possible integer to cover all reasonable values of `siconc`
-    numpy_int32_min = np.iinfo(np.int32).min
+    # Get the maximum possible integer to cover all reasonable values of `siconc`
+    numpy_int32_max = np.iinfo(np.int32).max
 
     # Assemble the string to specify the range and the output values
-    range_min = numpy_int32_min
-    range_max = packed_threshold
-    val_outside_range = 0
+    range_min = packed_threshold
+    range_max = numpy_int32_max
     val_inside_range = 1
-    range_string = f"{numpy_int32_min},{packed_threshold},{val_outside_range},{val_inside_range}"
+    val_outside_range = 0
+    range_string = f"{range_min},{range_max},{val_inside_range},{val_outside_range}"
 
     # Create a new dataset for `sipacked`, packed ice
     if isinstance(dataset, (xr.Dataset, xr.DataArray)):
