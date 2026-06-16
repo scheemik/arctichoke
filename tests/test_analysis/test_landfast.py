@@ -7,17 +7,21 @@ from seaicecp.dataset.example_dataset import make_example_dataset
 def test_find_packed_ice():
     """Test the `find_packed_ice` function."""
     # Create multiple example test files
-    # test_file_dir = 'tests/test_dataset/example_datasets'
-    # make_file_path(test_file_dir)
-    # test_file_names = [
-    #     f"{test_file_dir}/example_dataset_0.nc",
-    #     f"{test_file_dir}/example_dataset_1.nc",
-    #     f"{test_file_dir}/example_dataset_2.nc",
-    # ]
-    # for test_file in test_file_names:
-    #     make_example_dataset(save_as=test_file, n=10)
+    test_file_dir = 'tests/test_analysis/example_datasets'
+    make_file_path(test_file_dir)
+    test_file_names = [
+        f"{test_file_dir}/example_dataset_0.nc",
+        f"{test_file_dir}/example_dataset_1.nc",
+        f"{test_file_dir}/example_dataset_2.nc",
+    ]
+    for test_file in test_file_names:
+        make_example_dataset(
+            n=3,
+            test_var_name='siconc',
+            time_axis=True,
+            save_as=test_file,
+        )
     # Define test cases
-    ## Note: The expected output of some of these test cases must be manually kept up to date
     test_cases = [
         {
             'dataset': make_example_dataset(
@@ -25,36 +29,23 @@ def test_find_packed_ice():
                 test_var_name='siconc',
             ),
             'packed_threshold': 3,
-            'expected_sums': [
-                5,
-                ],
+            'expected_sum': 5,
         },
-        # {
-        #     'dataset': test_file_names,
-        #     'variable_id': 'test_var',
-        #     'expected_means': [
-        #         49.49999999999998,
-        #         ],
-        # },
-        # {
-        #     'dataset': 'data/NWP_cdo_CLI_areacello_Ofx_EC-Earth3P-HR_highres-future_r2i1p2f1_gn.nc',
-        #     'variable_id': 'areacello',
-        #     'expected_means': [
-        #         1.3731426e+08,
-        #         ],
-        # },
+        {
+            'dataset': test_file_names,
+            'packed_threshold': 3,
+            'expected_sum': 30,
+        },
     ]
     for test_case in test_cases:
-        actual_datasets = analysis.find_packed_ice(
+        actual_dataset = analysis.find_packed_ice(
             dataset = test_case['dataset'],
             packed_threshold = test_case['packed_threshold'],
         )
-        for i in range(len(actual_datasets)):
-            actual_dataset = actual_datasets#[i]
-            actual_sum = actual_dataset['sipacked'].sum(skipna=True).values
-            assert actual_sum == test_case['expected_sums'][i], f"`find_packed_ice` failed on test case: {test_case} for index i={i}.\nExpected: {test_case['expected_sums']}\nActual: {actual_sum}"
+        actual_sum = actual_dataset['sipacked'].sum(skipna=True).values
+        assert actual_sum == test_case['expected_sum'], f"`find_packed_ice` failed on test case: {test_case}.\nExpected: {test_case['expected_sum']}\nActual: {actual_sum}"
     # Clean up test files that were created
-    # remove_non_empty_directory(test_file_dir)
+    remove_non_empty_directory(test_file_dir)
 
     # Define invalid test cases
     invalid_test_cases = [
