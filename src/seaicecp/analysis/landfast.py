@@ -13,11 +13,12 @@ def find_packed_ice(
     dataset: (str, [str], xr.DataArray, xr.Dataset),
     packed_threshold = 85, 
     save_as: str = None,
+    verbose: bool = False,
     **kwargs,
 ):
     """ Calculate where packed ice is from the dataset.
 
-        Verify the dataset contains the `siconc` variable, and adds a variable `sipacked` which is 1 where `siconc` is greater than 85 percent and 0 elsewhere.
+        Verify the dataset contains the `siconc` variable, and adds a variable `sipacked` which is 1 where `siconc` is greater than 85 percent (or the given threshold) and 0 elsewhere.
 
         Parameters
         ----------
@@ -29,6 +30,9 @@ def find_packed_ice(
         save_as : `str`, `None`, optional
             The file name to pass to `cdo.fldmean(output=save_as)`.
             Default is `None`, which doesn't save the dataset to a file.
+        verbose : `bool`, optional
+            Whether to verbosely output information as the function executes.
+            Default is `False`.
         **kwargs
             Keyword arguments to pass to `cdo.fldmean()`.
 
@@ -101,7 +105,8 @@ def find_packed_ice(
             raise TypeError(f"(find_packed_ice) `get_variable_name` returned something other than a string or list: {var_name}")
     
     # Information to output
-    print(f"(find_packed_ice) `save_as`: {save_as}")
+    if verbose:
+        print(f"(find_packed_ice) `save_as`: {save_as}")
 
     # Get the minimum possible integer to cover all reasonable values of `siconc`
     numpy_int32_min = np.iinfo(np.int32).min
@@ -115,7 +120,8 @@ def find_packed_ice(
 
     # Create a new dataset for `sipacked`, packed ice
     if isinstance(dataset, (xr.Dataset, xr.DataArray)):
-        print(f"(find_packed_ice) `input_command`: cdo setrtoc2,{range_string} dataset")
+        if verbose:
+            print(f"(find_packed_ice) `input_command`: cdo setrtoc2,{range_string} dataset")
         # If only processing one `xr.Dataset`, the `input` argument cannot include the range string
         packedice_xr = cdo_command(
             range_string,
@@ -125,7 +131,8 @@ def find_packed_ice(
     else:
         # Assemble the `cdo` input command to pass to `mergetime`
         input_command = f"{input_command_prefix}{range_string}{input_command_files}"
-        print(f"(find_packed_ice) `input_command`: {input_command}")
+        if verbose:
+            print(f"(find_packed_ice) `input_command`: {input_command}")
         packedice_xr = cdo_command(
             input = input_command,
             returnXDataset = 'sipacked',
