@@ -26,15 +26,15 @@ def find_packed_ice(
             The dataset of which to find the locations of packed ice.
         packed_threshold : `int`, `float`, optional
             The threshold above which to mark packed ice.
-            Default is `85`, following Laliberté et al. 2018.
+            Default is `85` percent, following Laliberté et al. 2018.
         save_as : `str`, `None`, optional
-            The file name to pass to `cdo.fldmean(output=save_as)`.
+            The file name to pass to `cdo.setrtoc2(output=save_as)`.
             Default is `None`, which doesn't save the dataset to a file.
         verbose : `bool`, optional
             Whether to verbosely output information as the function executes.
             Default is `False`.
         **kwargs
-            Keyword arguments to pass to `cdo.fldmean()`.
+            Keyword arguments to pass to `cdo.setrtoc2()`.
 
         Returns
         -------
@@ -159,15 +159,15 @@ def find_slow_ice(
             The dataset of which to find the locations of slow ice.
         slow_threshold : `int`, `float`, optional
             The threshold above which to mark slow ice.
-            Default is `85`, following Laliberté et al. 2018.
+            Default is `0.01` m/s, following Laliberté et al. 2018.
         save_as : `str`, `None`, optional
-            The file name to pass to `cdo.fldmean(output=save_as)`.
+            The file name to pass to `cdo.setrtoc2(output=save_as)`.
             Default is `None`, which doesn't save the dataset to a file.
         verbose : `bool`, optional
             Whether to verbosely output information as the function executes.
             Default is `False`.
         **kwargs
-            Keyword arguments to pass to `cdo.fldmean()`.
+            Keyword arguments to pass to `cdo.setrtoc2()`.
 
         Returns
         -------
