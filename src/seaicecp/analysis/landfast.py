@@ -53,7 +53,7 @@ def find_packed_ice(
         >>> dataset_sipacked = find_packed_ice(dataset, packed_threshold=4)
         >>> dataset_sipacked['sipacked'].values
         array([[0., 0., 0.],
-               [0., 0., 1.],
+               [0., 1., 1.],
                [1., 1., 1.]])
     """
     # Verify input arguments
@@ -185,9 +185,9 @@ def find_slow_ice(
         >>> from seaicecp.analysis.landfast import find_slow_ice
         >>> dataset_sislow = find_slow_ice(dataset, slow_threshold=4)
         >>> dataset_sislow['sislow'].values
-        array([[0., 0., 0.],
-               [0., 0., 1.],
-               [1., 1., 1.]])
+        array([[1., 1., 1.],
+               [1., 1., 0.],
+               [0., 0., 0.]])
     """
     # Verify input arguments
     if isinstance(dataset, str):
