@@ -6,6 +6,7 @@ from seaicecp.verify import verify_path
 def make_example_dataset(
     save_as: str = None,
     n: int = 10,
+    test_var_name: str = 'test_var',
     time_axis: bool = False,
     overwrite: bool = True,
 ):
@@ -21,6 +22,9 @@ def make_example_dataset(
         n : `int`, optional
             The number of values in each dimension.
             Default is `10`.
+        test_var_name : `str`, optional
+            The name to give the test variable.
+            Default is `test_var`.
         time_axis : `bool`, optional
             Whether to include a time axis in the example dataset.
             Default is `False`.
@@ -46,6 +50,8 @@ def make_example_dataset(
         raise TypeError(f"(make_example_dataset) `save_as` must be a string or `None`. Got type: {type(save_as)}")
     if not isinstance(n, int):
         raise TypeError(f"(make_example_dataset) `n` must be an integer. Got type: {type(n)}")
+    if not isinstance(test_var_name, str):
+        raise TypeError(f"(make_example_dataset) `test_var_name` must be a string. Got type: {type(test_var_name)}")
     if not isinstance(time_axis, bool):
         raise TypeError(f"(make_example_dataset) `time_axis` must be `bool`. Got type: {type(time_axis)}")
     if not isinstance(overwrite, bool):
@@ -72,7 +78,7 @@ def make_example_dataset(
 
     # Add a test variable
     test_var = np.reshape(np.arange(n*n, dtype=np.float64), (n,n))
-    xr_dataset['test_var'] = (['j','i'],test_var)
+    xr_dataset[test_var_name] = (['j','i'],test_var)
 
     # Add time dimension, if applicable
     if time_axis == True:

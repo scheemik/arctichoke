@@ -57,8 +57,8 @@ def quadmesh_map(
         <class 'holoviews.core.overlay.Overlay'>
     """
     # Verify input arguments
-    if not isinstance(xr_data, (xr.Dataset, xr.DataArray)):
-        raise TypeError(f"(quadmesh_map) `xr_data` must be `xr.Dataset` or `xr.DataArray`. Got type: {type(xr_data)}")
+    if not isinstance(xr_data, xr.Dataset):
+        raise TypeError(f"(quadmesh_map) `xr_data` must be `xr.Dataset`. Got type: {type(xr_data)}")
     if not isinstance(var, str):
         raise TypeError(f"(quadmesh_map) `var` must be a string. Got type: {type(var)}")
     if var not in xr_data.data_vars:
