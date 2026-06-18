@@ -8,6 +8,7 @@ cdo = Cdo(tempdir='./cdo_tmp/')
 cdo.cleanTempDir()
 
 from seaicecp.dataset.get_variable import get_variable_name
+from seaicecp.dataset.trim_dataset import trim_latlon
 from seaicecp.path.manipulate_paths import make_file_path
 import seaicecp.params as sps
 from seaicecp.verify import verify_path
@@ -495,6 +496,16 @@ def make_landfast_files(
         # Assemble the landfast filename
         landfast_filepath = siconc_filepath.replace(replace_this_version_ID, version_id)
         landfast_filepath = landfast_filepath.replace('siconc', 'silandfast')
+        # Add trimming prefix, if applicable
+        if not isinstance(map_bbox, type(None)):
+            if map_bbox == sps.CAA_BBOX:
+                trim_prefix = 'trim_CAA_'
+            elif map_bbox == sps.NWP_BBOX:
+                trim_prefix = 'trim_NWP_'
+            else:
+                trim_prefix = 'trim_'
+            landfast_filename = landfast_filepath.split('/')[-1]
+            landfast_filepath = landfast_filepath.replace(landfast_filename, f"{trim_prefix}{landfast_filename}")
         # Make sure the directory exists
         make_file_path(landfast_filepath)
         # Check whether the file exists
