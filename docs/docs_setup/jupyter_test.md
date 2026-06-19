@@ -1,18 +1,16 @@
-<a id='top'></a>
 # Jupyter Notebook Test
 
 This guide details how to test whether the Jupyter notebook server is running correctly after {doc}`Starting the Container <start_container>`.
 
 ## Contents
 
-- [Testing the container's Jupyter server](#test_jupyter_server)
+- [Testing the container's Jupyter server](#testing-the-containers-jupyter-server)
 - [Troubleshooting](#troubleshooting)
 
 ---
-<a id='test_jupyter_server'></a>
-[back to top](#top)
 
 ## Testing the container's Jupyter server
+[back to top](#jupyter-notebook-test)
 
 Once the container has been started and the Jupyter server is running, open the `jupyter_test.ipynb` notebook in VSCodium.
 That notebook has instructions on how to run it, however more details are given below.
@@ -60,10 +58,9 @@ Click "Don't Save."
 Now, upon opening any other notebook, you should be able to select the same kernel as the one that you just tested.
 
 ---
-<a id='troubleshooting'></a>
-[back to top](#top)
 
 ## Troubleshooting
+[back to top](#jupyter-notebook-test)
 
 If you click "Run All" in the notebook and nothing happens try restarting the container:
 - Close the notebook, selecting "Don't save" when prompted.

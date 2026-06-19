@@ -7,7 +7,7 @@ def make_example_dataset(
     save_as: str = None,
     n: int = 10,
     test_var_name: str = 'test_var',
-    time_axis: bool = False,
+    time_axis: (bool, int) = False,
     overwrite: bool = True,
 ):
     """ Create an example dataset for testing.
@@ -25,8 +25,9 @@ def make_example_dataset(
         test_var_name : `str`, optional
             The name to give the test variable.
             Default is `test_var`.
-        time_axis : `bool`, optional
+        time_axis : `bool`, `int`, optional
             Whether to include a time axis in the example dataset.
+            If an integer is given, that will be used as the year for the datetimes.
             Default is `False`.
         overwrite : `bool`, optional
             Whether to overwrite an existing file at the given filepath in `save_as`.
@@ -52,8 +53,8 @@ def make_example_dataset(
         raise TypeError(f"(make_example_dataset) `n` must be an integer. Got type: {type(n)}")
     if not isinstance(test_var_name, str):
         raise TypeError(f"(make_example_dataset) `test_var_name` must be a string. Got type: {type(test_var_name)}")
-    if not isinstance(time_axis, bool):
-        raise TypeError(f"(make_example_dataset) `time_axis` must be `bool`. Got type: {type(time_axis)}")
+    if not isinstance(time_axis, (bool, int)):
+        raise TypeError(f"(make_example_dataset) `time_axis` must be `bool` or an integer. Got type: {type(time_axis)}")
     if not isinstance(overwrite, bool):
         raise TypeError(f"(make_example_dataset) `overwrite` must be `bool`. Got type: {type(overwrite)}")
 
@@ -81,9 +82,14 @@ def make_example_dataset(
     xr_dataset[test_var_name] = (['j','i'],test_var)
 
     # Add time dimension, if applicable
-    if time_axis == True:
+    if time_axis:
+        # Check whether a year was given
+        if isinstance(time_axis, bool):
+            this_year = '2026'
+        else:
+            this_year = str(time_axis)
         # Create an array of dates, one per month ('M')
-        time_arr = np.arange('2026-01', '2026-03', dtype='datetime64[M]')
+        time_arr = np.arange(f'{this_year}-01', f'{this_year}-03', dtype='datetime64[M]')
         # Set the date format to `[ns]`
         time_arr = time_arr.astype('datetime64[ns]')
         # Add 15 days to each date to match monthly average datetimes

@@ -8,7 +8,7 @@ from seaicecp.path.model_paths import get_model_path, list_available_models
 def list_available_variables(
     source_id: str,
     experiment_id: str = None,
-    list_var_mods = False,
+    list_var_mods: bool = False,
     **kwargs,
 ):
     """ List the names of the variables available for the specified model.

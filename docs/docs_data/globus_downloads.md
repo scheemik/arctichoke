@@ -1,4 +1,3 @@
-<a id='top'></a>
 # Downloading model data with Globus
 
 For this project, I ultimately decided to {doc}`download model data with esgpull <esgpull_downloads>` instead of Globus. 

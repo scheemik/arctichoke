@@ -36,6 +36,7 @@ myst_url_schemes = {
         "classes": ["github"],
     },
 }
+myst_heading_anchors = 4
 autoapi_dirs = ["../src"]
 
 # List of patterns, relative to source directory, that match files and

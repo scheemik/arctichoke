@@ -1,23 +1,22 @@
-<a id='top'></a>
 # Downloading model data with `esgpull`
 
 The instructions below show how to use `esgpull` within the container to download CMIP6 HighResMIP model data.
-For more details on how the architecture of this project was developed, see the {doc}`Initial Setup <../data_setup/initial_setup>` guide. 
+For more details on how the architecture of this project was developed, see the {doc}`Initial Setup <../docs_setup/initial_setup>` guide. 
 
 ## Contents
 
-- [Why `esgpull`?](#esgpull_why)
-- [Searching for data](#esgpull_search)
-    - [Search filtering](#esgpull_search_filter)
-- [Add, track, and update queries](#esgpull_queries)
-- [Downloading data](#esgpull_download)
-    - [Retrying failed downloads](#esgpull_download_retry)
+- [Why `esgpull`?](#why-esgpull)
+- [Searching for data](#searching-for-data)
+    - [Search filtering](#search-filtering)
+- [Add, track, and update queries](#add-track-and-update-queries)
+- [Downloading data](#downloading-data)
+    - [Retrying failed downloads](#retrying-failed-downloads)
+
 
 ---
-<a id='esgpull_why'></a>
-[back to top](#top)
 
 ## Why `esgpull`?
+[back to top](#downloading-model-data-with-esgpull)
 
 Data from the CMIP6 HighResMIP models are available to download from the [ESGF Federated Nodes](https://esgf-node.ornl.gov/search) webportal.
 The search functionality on that site is excellent, making it easy to see what data is available across the federated nodes.
@@ -47,10 +46,9 @@ To get an idea of what the file structure created by `esgpull` looks like, below
 ```
 
 ---
-<a id='esgpull_search'></a>
-[back to top](#top)
 
 ## Searching for data
+[back to top](#downloading-model-data-with-esgpull)
 
 The `esgpull` documentation page for [Data discovery](https://esgf.github.io/esgf-download/search/#free-text-search) gives examples of how to perform searches.
 Basically, it amounts to running the `esgpull search` command followed by arguments to filter the results.
@@ -110,10 +108,9 @@ Found 14217502 datasets.
  19 │ CMIP6.CMIP.EC-Earth-Consortium.EC-Earth3.historical.r132i1p1f1.day.rs… │ 45 │   6.0 GiB
 ```
 
-<a id='esgpull_search_filter'></a>
-[back to top](#top)
 
 ### Search filtering
+[back to top](#downloading-model-data-with-esgpull)
 
 While the [ESGF webportal](https://esgf-node.ornl.gov/search) can be tedious for downloading data, I find it incredibly useful for crafting search filters. 
 On the left side, I can select CMIP6 as the project, then I am presented with various was to filter the data under the heading "Filter with Facets."
@@ -184,10 +181,9 @@ Found 46 datasets.
  19 │ CMIP6.HighResMIP.MOHC.HadGEM3-GC31-MM.spinup-1950… │ 1 │  31.6 MiB │ eagle.alcf.anl.gov
 ```
 
-<a id='esgpull_queries'></a>
-[back to top](#top)
 
 ## Add, track, and update queries
+[back to top](#downloading-model-data-with-esgpull)
 
 Once you have a search that returns the data you want, the next steps are to add, track, then update that query as described in the [`esgpull` documentation](https://esgf.github.io/esgf-download/download/).
 
@@ -250,12 +246,11 @@ Link to query and send to download queue? [y/n/show]: y
 ```
 If you have more queries that you want to add to the queue before downloading, repeat the above steps for each.
 
-<a id='esgpull_download'></a>
-[back to top](#top)
 
 ## Downloading data
+[back to top](#downloading-model-data-with-esgpull)
 
-In the [`esgpull` "Download" documentation](https://esgf.github.io/esgf-download/download/), it is fairly straight-forward to start the download process after [adding, tracking, and updating queries](#esgpull_queries).
+In the [`esgpull` "Download" documentation](https://esgf.github.io/esgf-download/download/), it is fairly straight-forward to start the download process after [adding, tracking, and updating queries](#add-track-and-update-queries).
 Before starting the download, I recommend checking the download queue.
 ```console
 (seaicecp) root@c11f20a93021:/workspace# uv run esgpull show
@@ -322,10 +317,9 @@ After it completes, I can check the queue again and see that the files are downl
 If you were to try and download again, `esgpull` would see all the files in the queue that have been downloaded already and skip those.
 This means, if you add a new query that includes data files that you've already downloaded, `esgpull` won't download them again, reducing the chance of accidentally filling up your storage with redundant data files.
 
-<a id='esgpull_download_retry'></a>
-[back to top](#top)
 
 ### Retrying failed downloads
+[back to top](#downloading-model-data-with-esgpull)
 
 Sometimes, `esgpull` will fail to download certain files, especially when downloading a large number of them.
 This could be due to a number of factors, but likely due to a lapse in network connection.

@@ -1,4 +1,3 @@
-<a id='top'></a>
 # HighResMIP Choices
 
 In this project, we will use data from high-resolution models that participate in HighResMIP.
@@ -7,70 +6,71 @@ From the [HighResMIP website](https://highresmip.org/):
 
 ## Contents
 
-- [Model selection criteria](#selection_criteria)
-- [Table of HighResMIP models](#model_table)
+- [Model selection criteria](#model-selection-criteria)
+- [Table of HighResMIP models](#table-of-highresmip-models)
 - [Models](#models)
-    - [AWI-CM](#AWI-CM)
-        - [AWI-CM-1-1-HR](#AWI-CM-1-1-HR)
-        - [AWI-CM-1-1-LR](#AWI-CM-1-1-LR)
-    - [BCC-CSM2](#BCC-CSM2)
-        - [BCC-CSM2-HR](#BCC-CSM2-HR)
-    - [BESM](#BESM)
-    - [CAM5](#CAM5)
-        - [CESM1-CAM5-SE-HR](#CESM1-CAM5-SE-HR)
-        - [CESM1-CAM5-SE-LR](#CESM1-CAM5-SE-LR)
-    - [CAM6](#CAM6)
-    - [CMCC](#CMCC)
-        - [CMCC-CM2-HR4](#CMCC-CM2-HR4)
-        - [CMCC-CM2-VHR4](#CMCC-CM2-VHR4)
-    - [CAMS](#CAMS)
-        - [CAMS-CSM1-0](#CAMS-CSM1-0)
-    - [CNRM](#CNRM)
-        - [CNRM-CM6-1](#CNRM-CM6-1)
-        - [CNRM-CM6-1-HR](#CNRM-CM6-1-HR)
-    - [EC-Earth](#EC-Earth)
-        - [EC-Earth3P](#EC-Earth3P)
-        - [EC-Earth3P-HR](#EC-Earth3P-HR)
-    - [ECMWF-IFS](#ECMWF-IFS)
-        - [ECMWF-IFS-HR](#ECMWF-IFS-HR)
-        - [ECMWF-IFS-LR](#ECMWF-IFS-LR)
-        - [ECMWF-IFS-MR](#ECMWF-IFS-MR)
-    - [FGOALS](#FGOALS)
-        - [FGOALS-f3-H](#FGOALS-f3-H)
-        - [FGOALS-f3-L](#FGOALS-f3-L)
-    - [GFDL](#GFDL)
-        - [GFDL-CM4C192](#GFDL-CM4C192)
-    - [HadGEM3-GC3](#HadGEM3-GC3)
-        - [HadGEM3-GC3.1-HH](#HadGEM3-GC3.1-HH)
-        - [HadGEM3-GC3.1-HM](#HadGEM3-GC3.1-HM)
-        - [HadGEM3-GC3.1-LL](#HadGEM3-GC3.1-LL)
-        - [HadGEM3-GC3.1-LM](#HadGEM3-GC3.1-LM)
-        - [HadGEM3-GC3.1-MH](#HadGEM3-GC3.1-MH)
-        - [HadGEM3-GC3.1-MM](#HadGEM3-GC3.1-MM)
-    - [HiRAM-SIT](#HiRAM-SIT)
-        - [HiRAM-SIT-HR](#HiRAM-SIT-HR)
-        - [HiRAM-SIT-LR](#HiRAM-SIT-LR)
-    - [IPSL-CM6A](#IPSL-CM6A)
-    - [MPAS-CAM](#MPAS-CAM)
-        - [CAM-MPAS-HR](#CAM-MPAS-HR)
-        - [CAM-MPAS-LR](#CAM-MPAS-LR)
-    - [MIROC6-CGCM](#MIROC6-CGCM)
-    - [NICAM](#NICAM)
-        - [NICAM16](#NICAM16)
-    - [MPI-ESM](#MPI-ESM)
-        - [MPI-ESM1-2-HR](#MPI-ESM1-2-HR)
-        - [MPI-ESM1-2-XR](#MPI-ESM1-2-XR)
-    - [MRI-AGCM3](#MRI-AGCM3)
-        - [MRI-AGCM3-2-H](#MRI-AGCM3-2-H)
-        - [MRI-AGCM3-2-S](#MRI-AGCM3-2-S)
-    - [NorESM](#NorESM)
+    - [AWI-CM](#awi-cm)
+        - [AWI-CM-1-1-HR](#awi-cm-1-1-hr)
+        - [AWI-CM-1-1-LR](#awi-cm-1-1-lr)
+    - [BCC-CSM2](#bcc-csm2)
+        - [BCC-CSM2-HR](#bcc-csm2-hr)
+    - [BESM](#besm)
+    - [CAM5](#cam5)
+        - [CESM1-CAM5-SE-HR](#cesm1-cam5-se-hr)
+        - [CESM1-CAM5-SE-LR](#cesm1-cam5-se-lr)
+    - [CAM6](#cam6)
+    - [CMCC](#cmcc)
+        - [CMCC-CM2-HR4](#cmcc-cm2-hr4)
+        - [CMCC-CM2-VHR4](#cmcc-cm2-vhr4)
+    - [CAMS](#cams)
+        - [CAMS-CSM1-0](#cams-csm1-0)
+    - [CNRM](#cnrm)
+        - [CNRM-CM6-1](#cnrm-cm6-1)
+        - [CNRM-CM6-1-HR](#cnrm-cm6-1-hr)
+    - [EC-Earth](#ec-earth)
+        - [EC-Earth3P](#ec-earth3p)
+        - [EC-Earth3P-HR](#ec-earth3p-hr)
+    - [ECMWF-IFS](#ecmwf-ifs)
+        - [ECMWF-IFS-HR](#ecmwf-ifs-hr)
+        - [ECMWF-IFS-LR](#ecmwf-ifs-lr)
+        - [ECMWF-IFS-MR](#ecmwf-ifs-mr)
+    - [FGOALS](#fgoals)
+        - [FGOALS-f3-H](#fgoals-f3-h)
+        - [FGOALS-f3-L](#fgoals-f3-l)
+    - [GFDL](#gfdl)
+        - [GFDL-CM4C192](#gfdl-cm4c192)
+    - [HadGEM3-GC3](#hadgem3-gc3)
+        - [HadGEM3-GC3.1-HH](#hadgem3-gc31-hh)
+        - [HadGEM3-GC3.1-HM](#hadgem3-gc31-hm)
+        - [HadGEM3-GC3.1-LL](#hadgem3-gc31-ll)
+        - [HadGEM3-GC3.1-LM](#hadgem3-gc31-lm)
+        - [HadGEM3-GC3.1-MH](#hadgem3-gc31-mh)
+        - [HadGEM3-GC3.1-MM](#hadgem3-gc31-mm)
+    - [HiRAM-SIT](#hiram-sit)
+        - [HiRAM-SIT-HR](#hiram-sit-hr)
+        - [HiRAM-SIT-LR](#hiram-sit-lr)
+    - [INM-CM](#inm-cm)
+        - [INM-CM5-H](#inm-cm5-h)
+    - [IPSL-CM6A](#ipsl-cm6a)
+    - [MPAS-CAM](#mpas-cam)
+        - [CAM-MPAS-HR](#cam-mpas-hr)
+        - [CAM-MPAS-LR](#cam-mpas-lr)
+    - [MIROC6-CGCM](#miroc6-cgcm)
+    - [NICAM](#nicam)
+        - [NICAM16](#nicam16)
+    - [MPI-ESM](#mpi-esm)
+        - [MPI-ESM1-2-HR](#mpi-esm1-2-hr)
+        - [MPI-ESM1-2-XR](#mpi-esm1-2-xr)
+    - [MRI-AGCM3](#mri-agcm3)
+        - [MRI-AGCM3-2-H](#mri-agcm3-2-h)
+        - [MRI-AGCM3-2-S](#mri-agcm3-2-s)
+    - [NorESM](#noresm)
 - [References](#references)
 
 ---
-<a id='selection_criteria'></a>
-[back to top](#top)
 
 ## Model selection criteria
+[back to top](#highresmip-choices)
 
 <!-- > "We use data from four high‐resolution coupled climate models (Table S1 in Supporting Information S1) participating in HighResMIP (Haarsma et al. 2016[^Haarsma2016]), a MIP endorsed by CMIP6 (Eyring et al., 2016). The model data cover the period 1950–2050, corresponding to the hist‐1950 experiment with historic forcing from 1950 to 2014 and the highres‐future experiment with SSP5‐8.5 forcing from 2015 to 2050 (Haarsma et al. 2016[^Haarsma2016]). The model variables we use are described in the Sea Ice Model Intercomparison Project (SIMIP, Notz et al. 2016); they include sea ice concentration (SIMIP variable `siconc`), sea ice volume per area of the grid cell (`sivol`; hereafter ice thickness), sea ice velocity components (`siu` and `siv`) and near‐surface air temperature (`tas`). For all variables we use monthly data, except for sea ice velocity components for which we use daily data." [^Saenko2025] (on page 2) -->
 
@@ -126,44 +126,42 @@ I will evaluate the HighResMIP models using criteria similar to Saenko et al. 20
     - What specific channels would be necessary to resolve for this project?
 
 ---
-<a id='model_table'></a>
-[back to top](#top)
 
 ## Table of HighResMIP models
+[back to top](#highresmip-choices)
 
 The following table is adapted from Haarsma et al. 2016[^Haarsma2016]. 
 <!-- "Appendix A: Participating models in HighResMIP.  Table A1. Model details from groups expressing intention to participate in at least Tier 1 simulations, together with the potential model resolutions (if known/available, blank if not)." [^Haarsma2016] (on page 16 / 4200) -->
 
 | Model name | Contact institute | Atmosphere resolution (STD/HI) <br>mid-latitude (km) | Ocean resolution <br>(HI) | Including in this project | Historical and Future <br>experiments? | Priority variables available <br>(`siage`, `siconc`, `sithick`, `siu`, `siv`) |
 | --- | --- | --- | --- | --- | --- | --- |
-| [AWI-CM](#AWI-CM) | Alfred Wegener Institute | T127 ($∼100$ km) <br>T255 ($∼ 50$ km) | 1–$\frac{1}{4}^\circ$ <br>0.05–1$^\circ$ | No, lacks `siage` variable | `hist-1950` | `siconc`, `sithick`, `siu`, `siv` |
-| [BCC-CSM2-HR](#BCC-CSM2-HR) | Beijing Climate Center | T106 ($∼ 110$ km) <br>T266 ($∼ 45$ km) | $\frac{1}{3}$–1$^\circ$ | No, lacks `siage` variable | `hist-1950` | `siconc`, `sithick`, `siu`, `siv` |
-| [BESM](#BESM) | INPE | T126 ($∼ 100$ km) <br>T233 ($∼ 60$ km) | 0.25$^\circ$ | No, not available through ESGF data portal | N/A | N/A |
-| [CAM5](#CAM5) | Lawrence Berkeley National Laboratory | 100 km <br>25 km | | [CESM1-CAM5-ES-LR](#CESM1-CAM5-SE-LR): No, does not resolve any islands in CAA <br>[CESM1-CAM5-SE-HR](#CESM1-CAM5-SE-HR): In consideration, has low-res land mask | `hist-1950`, <br>`highres-future` | `siage`, `siconc`, `sithick`, `siu`, `siv` |
-| [CAM6](#CAM6) | NCAR | 100 km <br>28 km | | No, not available through ESGF data portal | N/A | N/A |
-| [CAMS](#CAMS) | Chinese Academy of Meteorological <br>Sciences |  |  | No, lacks `hist-1950` experiment and priority variables | Neither | None, but has `siconca` |
-| [CMCC](#CMCC) | Centro Euro-Mediterraneo sui <br>Cambiamenti Climatici | 100 km <br>25 km | 0.25$^\circ$ | No, lacks most priority variables | `hist-1950`, <br>`highres-future` | `siconc` |
-| [CNRM-CM6](#CNRM-CM6) | CERFACS | T127 ($∼ 100$ km) <br>T359 ($∼ 35$ km) | 1$^\circ$ <br>0.25$^\circ$ | In consideration pending evaluation of CAA resolution | `hist-1950`, <br>`highres-future` | `siage` (not in HR), `siconc`, `sithick`, <br>`siu`, `siv` |
-| [EC-Earth](#EC-Earth) | SMHI, KNMI, BSC, CNR, and 23 other <br>institutes | T255 ($∼ 80$ km) <br>T511/T799 ($∼ 40$/25 km) | 1$^\circ$ <br>0.25$^\circ$ | [EC-Earth3P-HR](#EC-Earth3P-HR): Yes <br>[EC-Earth3P](#EC-Earth3P): In consideration pending evaluation of CAA resolution | `hist-1950`, <br>`highres-future` | `siage`, `siconc`, `sithick`, `siu`, `siv` |
-| [ECMWF-IFS](#ECMWF-IFS) | ECMWF |  |  | No, lacks `siage` variable | `hist-1950` | `siconc`, `sithick`, `siu`, `siv` |
-| [FGOALS](#FGOALS) | LASG, IAP, CAS | 100 km <br>25 km | 0.1–0.25$^\circ$ | No, lacks all sea ice variables | `hist-1950`, <br>`highres-future` (H only) | None |
-| [GFDL](#GFDL) | GFDL | 200 km <br>- | | No, lacks `siage` variable | `hist-1950` | `siconc`, `sithick`, `siu`, `siv` |
-| [HadGEM3-GC3](#HadGEM3-GC3) | Met Office Hadley Centre | 60 km <br>25 km | 0.25$^\circ$ | [HadGEM3-GC3.1-HH](#HadGEM3-GC3.1-HH): Yes <br>[HadGEM3-GC3.1-HM](#HadGEM3-GC3.1-HM): Yes <br>[HadGEM3-GC3.1-LL](#HadGEM3-GC3.1-LL): In consideration pending evaluation of CAA resolution <br>[HadGEM3-GC3.1-LM](#HadGEM3-GC3.1-LM): No, lacks variables `siage`, `siu`, and `siv` <br>[HadGEM3-GC3.1-MH](#HadGEM3-GC3.1-MH): No, lacks sea ice variables in `hist-1950` experiment <br>[HadGEM3-GC3.1-MM](#HadGEM3-GC3.1-MM): Yes | HH, HM, LL, MM: <br>`hist-1950`, <br>`highres-future` <br>LM: Neither <br>MH: `hist-1950` | HH, HM, LL, MH, MM: <br>`siage`, `siconc`, `sithick`, `siu`, `siv` <br> LM: `siconc`, `sithick` |
-| [HiRAM-SIT](#HiRAM-SIT) | AS-RCEC |  |  | No, lacks all sea ice variables | `hist-1950`, <br>`highres-future` | None |
-| [INMCM-5H](#INM-CM5-H) | Institute of Numerical Mathematics | – <br>0.3 $\times$ 0.4$^\circ$ | 0.25 $\times$ 0.5$\circ$ <br>$\frac{1}{6}\times\frac{1}{8}^\circ$ | No, lacks most priority variables | `hist-1950` | `siconc` |
-| [IPSL-CM6](#IPSL-CM6A) | IPSL | 0.25$^\circ$ | | No, lacks all sea ice variables | Neither | None |
-| [MPAS-CAM](#MPAS-CAM) | Pacific Northwest National Laboratory | – <br>30–50 km | 0.25$^\circ$ | No, lacks all sea ice variables | Neither | None |
-| [MIROC6-CGCM](#MIROC6-CGCM) | AORI, Univ. of Tokyo/JAMSTEC/National <br>Institute for Environmental Studies (NIES) | – <br>T213 | 0.25$^\circ$ | No, not available through ESGF data portal | N/A | N/A |
-| [NICAM](#NICAM) | JAMSTEC/AORI/ The Univ. of <br>Tokyo/RIKEN/AICS | 56–28 km <br>14 km (short term) | | No, lacks most priority variables | Neither | `siconc` |
-| [MPI-ESM](#MPI-ESM) | Max Planck Institute for Meteorology | T127 ($∼ 100$ km) <br>T255 ($∼ 50$ km) | 0.4$^\circ$ | No, lacks `siage` variable | `hist-1950`, <br>`highres-future` | `siconc`, `sithick`, `siu`, `siv` |
-| [MRI-AGCM3](#MRI-AGCM3) | Meteorological Research Institute | TL159 ($∼ 120$ km) <br>TL959 ($∼ 20$ km) | | No, lacks most priority variables | Neither | `siconc` |
-| [NorESM](#NorESM) | Norwegian Climate Service Centre | 2$^\circ$ <br>0.25$^\circ$ | 0.25$^\circ$ | No, not available through ESGF data portal | N/A | N/A |
+| [AWI-CM](#awi-cm) | Alfred Wegener Institute | T127 ($∼100$ km) <br>T255 ($∼ 50$ km) | 1–$\frac{1}{4}^\circ$ <br>0.05–1$^\circ$ | No, lacks `siage` variable | `hist-1950` | `siconc`, `sithick`, `siu`, `siv` |
+| [BCC-CSM2-HR](#bcc-csm2-hr) | Beijing Climate Center | T106 ($∼ 110$ km) <br>T266 ($∼ 45$ km) | $\frac{1}{3}$–1$^\circ$ | No, lacks `siage` variable | `hist-1950` | `siconc`, `sithick`, `siu`, `siv` |
+| [BESM](#besm) | INPE | T126 ($∼ 100$ km) <br>T233 ($∼ 60$ km) | 0.25$^\circ$ | No, not available through ESGF data portal | N/A | N/A |
+| [CAM5](#cam5) | Lawrence Berkeley National Laboratory | 100 km <br>25 km | | [CESM1-CAM5-ES-LR](#cesm1-cam5-se-lr): No, does not resolve any islands in CAA <br>[CESM1-CAM5-SE-HR](#cesm1-cam5-se-hr): In consideration, has low-res land mask | `hist-1950`, <br>`highres-future` | `siage`, `siconc`, `sithick`, `siu`, `siv` |
+| [CAM6](#cam6) | NCAR | 100 km <br>28 km | | No, not available through ESGF data portal | N/A | N/A |
+| [CAMS](#cams) | Chinese Academy of Meteorological <br>Sciences |  |  | No, lacks `hist-1950` experiment and priority variables | Neither | None, but has `siconca` |
+| [CMCC](#cmcc) | Centro Euro-Mediterraneo sui <br>Cambiamenti Climatici | 100 km <br>25 km | 0.25$^\circ$ | No, lacks most priority variables | `hist-1950`, <br>`highres-future` | `siconc` |
+| [CNRM-CM6](#cnrm) | CERFACS | T127 ($∼ 100$ km) <br>T359 ($∼ 35$ km) | 1$^\circ$ <br>0.25$^\circ$ | In consideration pending evaluation of CAA resolution | `hist-1950`, <br>`highres-future` | `siage` (not in HR), `siconc`, `sithick`, <br>`siu`, `siv` |
+| [EC-Earth](#ec-earth) | SMHI, KNMI, BSC, CNR, and 23 other <br>institutes | T255 ($∼ 80$ km) <br>T511/T799 ($∼ 40$/25 km) | 1$^\circ$ <br>0.25$^\circ$ | [EC-Earth3P-HR](#ec-earth3p-hr): Yes <br>[EC-Earth3P](#ec-earth3p): In consideration pending evaluation of CAA resolution | `hist-1950`, <br>`highres-future` | `siage`, `siconc`, `sithick`, `siu`, `siv` |
+| [ECMWF-IFS](#ecmwf-ifs) | ECMWF |  |  | No, lacks `siage` variable | `hist-1950` | `siconc`, `sithick`, `siu`, `siv` |
+| [FGOALS](#fgoals) | LASG, IAP, CAS | 100 km <br>25 km | 0.1–0.25$^\circ$ | No, lacks all sea ice variables | `hist-1950`, <br>`highres-future` (H only) | None |
+| [GFDL](#gfdl) | GFDL | 200 km <br>- | | No, lacks `siage` variable | `hist-1950` | `siconc`, `sithick`, `siu`, `siv` |
+| [HadGEM3-GC3](#hadgem3-gc3) | Met Office Hadley Centre | 60 km <br>25 km | 0.25$^\circ$ | [HadGEM3-GC3.1-HH](#hadgem3-gc31-hh): Yes <br>[HadGEM3-GC3.1-HM](#hadgem3-gc31-hm): Yes <br>[HadGEM3-GC3.1-LL](#hadgem3-gc31-ll): In consideration pending evaluation of CAA resolution <br>[HadGEM3-GC3.1-LM](#hadgem3-gc31-lm): No, lacks variables `siage`, `siu`, and `siv` <br>[HadGEM3-GC3.1-MH](#hadgem3-gc31-mh): No, lacks sea ice variables in `hist-1950` experiment <br>[HadGEM3-GC3.1-MM](#hadgem3-gc31-mm): Yes | HH, HM, LL, MM: <br>`hist-1950`, <br>`highres-future` <br>LM: Neither <br>MH: `hist-1950` | HH, HM, LL, MH, MM: <br>`siage`, `siconc`, `sithick`, `siu`, `siv` <br> LM: `siconc`, `sithick` |
+| [HiRAM-SIT](#hiram-sit) | AS-RCEC |  |  | No, lacks all sea ice variables | `hist-1950`, <br>`highres-future` | None |
+| [INMCM-5H](#inm-cm5-h) | Institute of Numerical Mathematics | – <br>0.3 $\times$ 0.4$^\circ$ | 0.25 $\times$ 0.5$\circ$ <br>$\frac{1}{6}\times\frac{1}{8}^\circ$ | No, lacks most priority variables | `hist-1950` | `siconc` |
+| [IPSL-CM6](#ipsl-cm6a) | IPSL | 0.25$^\circ$ | | No, lacks all sea ice variables | Neither | None |
+| [MPAS-CAM](#mpas-cam) | Pacific Northwest National Laboratory | – <br>30–50 km | 0.25$^\circ$ | No, lacks all sea ice variables | Neither | None |
+| [MIROC6-CGCM](#miroc6-cgcm) | AORI, Univ. of Tokyo/JAMSTEC/National <br>Institute for Environmental Studies (NIES) | – <br>T213 | 0.25$^\circ$ | No, not available through ESGF data portal | N/A | N/A |
+| [NICAM](#nicam) | JAMSTEC/AORI/ The Univ. of <br>Tokyo/RIKEN/AICS | 56–28 km <br>14 km (short term) | | No, lacks most priority variables | Neither | `siconc` |
+| [MPI-ESM](#mpi-esm) | Max Planck Institute for Meteorology | T127 ($∼ 100$ km) <br>T255 ($∼ 50$ km) | 0.4$^\circ$ | No, lacks `siage` variable | `hist-1950`, <br>`highres-future` | `siconc`, `sithick`, `siu`, `siv` |
+| [MRI-AGCM3](#mri-agcm3) | Meteorological Research Institute | TL159 ($∼ 120$ km) <br>TL959 ($∼ 20$ km) | | No, lacks most priority variables | Neither | `siconc` |
+| [NorESM](#noresm) | Norwegian Climate Service Centre | 2$^\circ$ <br>0.25$^\circ$ | 0.25$^\circ$ | No, not available through ESGF data portal | N/A | N/A |
 
 ---
-<a id='models'></a>
-[back to top](#top)
 
 ## Models
+[back to top](#highresmip-choices)
 
 Evaluation of each HighResMIP model is presented below with the following information:
 - Citation of the model
@@ -195,15 +193,13 @@ Evaluation of each HighResMIP model is presented below with the following inform
                 - Style: Solid
 
 ---
-<a id='AWI-CM'></a>
-[back to top](#top)
 
 ### AWI-CM
+[back to top](#highresmip-choices)
 
-<a id='AWI-CM-1-1-HR'></a>
-[back to top](#top)
 
 #### AWI-CM-1-1-HR
+[back to top](#highresmip-choices)
 
 - Citation of the model
     - Semmler, Tido; Danilov, Sergey; Rackow, Thomas; Sidorenko, Dmitry; Hegewald, Jan; Sein, Dmitri; Wang, Qiang; Jung, Thomas (2017). AWI AWI-CM 1.1 HR model output prepared for CMIP6 HighResMIP. Version YYYYMMDD.Earth System Grid Federation. <doi:10.22033/ESGF/CMIP6.1202>
@@ -250,10 +246,9 @@ Evaluation of each HighResMIP model is presented below with the following inform
 - Decision
     - This model lacks the `siage` variable. For now, I will exclude this model from the project, but I may revisit this decision if `siage` turns out to not be necessary.
 
-<a id='AWI-CM-1-1-LR'></a>
-[back to top](#top)
 
 #### AWI-CM-1-1-LR
+[back to top](#highresmip-choices)
 
 - Citation of the model
     - Semmler, Tido; Danilov, Sergey; Rackow, Thomas; Sidorenko, Dmitry; Hegewald, Jan; Sein, Dmitri; Wang, Qiang; Jung, Thomas (2017). AWI AWI-CM 1.1 LR model output prepared for CMIP6 HighResMIP. Version YYYYMMDD.Earth System Grid Federation. <doi:10.22033/ESGF/CMIP6.1209>
@@ -301,15 +296,13 @@ Evaluation of each HighResMIP model is presented below with the following inform
     - This model lacks the `siage` variable. For now, I will exclude this model from the project, but I may revisit this decision if `siage` turns out to not be necessary.
 
 ---
-<a id='BCC-CSM2'></a>
-[back to top](#top)
 
 ### BCC-CSM2
+[back to top](#highresmip-choices)
 
-<a id='BCC-CSM2-HR'></a>
-[back to top](#top)
 
 #### BCC-CSM2-HR
+[back to top](#highresmip-choices)
 
 - Citation of the model
     - Wu, T., Yu, R., Lu, Y., Jie, W., Fang, Y., Zhang, J., Zhang, L., Xin, X., Li, L., Wang, Z., Liu, Y., Zhang, F., Wu, F., Chu, M., Li, J., Li, W., Zhang, Y., Shi, X., Zhou, W., Yao, J., Liu, X., Zhao, H., Yan, J., Wei, M., Xue, W., Huang, A., Zhang, Y., Zhang, Y., Shu, Q., and Hu, A.: BCC-CSM2-HR: a high-resolution version of the Beijing Climate Center Climate System Model, Geosci. Model Dev., 14, 2977–3006, <doi:10.5194/gmd-14-2977-2021>, 2021. 
@@ -344,10 +337,9 @@ Evaluation of each HighResMIP model is presented below with the following inform
 ![Panoply_map_areacello_Ofx_BCC-CSM2-HR_hist-1950](HighResMIP_choices-img/Panoply_map_areacello_Ofx_BCC-CSM2-HR_hist-1950.png)
 
 ---
-<a id='BESM'></a>
-[back to top](#top)
 
 ### BESM
+[back to top](#highresmip-choices)
 
 I do not see this model as available through the ESGF data portal.
 Here's a citation I found for something related: Veiga, S. F., Nobre, P., Giarolla, E., Capistrano, V., Baptista Jr., M., Marquez, A. L., Figueroa, S. N., Bonatti, J. P., Kubota, P., and Nobre, C. A.: The Brazilian Earth System Model ocean–atmosphere (BESM-OA) version 2.5: evaluation of its CMIP5 historical simulation, Geosci. Model Dev., 12, 1613–1642, <doi:10.5194/gmd-12-1613-2019>, 2019. 
@@ -355,15 +347,13 @@ Here's a citation I found for something related: Veiga, S. F., Nobre, P., Giarol
     - This model is not available through the ESGF data portal, so I will exclude it from the project.
 
 ---
-<a id='CAM5'></a>
-[back to top](#top)
 
 ### CAM5
+[back to top](#highresmip-choices)
 
-<a id='CESM1-CAM5-SE-HR'></a>
-[back to top](#top)
 
 #### CESM1-CAM5-SE-HR
+[back to top](#highresmip-choices)
 
 - Citation of the model
     - Hurrel, James; Holland, Marika; Gent, Peter; Ghan, Steven; Kay, Jennifer; Kushner, Paul; Lamarque, Jean-Francois; Large, William G.; Lawrence, David; Lindsay, Keith; Lipscomb, William; Long, Matthew; Mahowald, Natalie M.; Marsh, Daniel; Neale, Richard; Rasch, Philip J.; Vavrus, Stephen J.; Vertenstein, Mariana; Bader, David C.; Collins, William D.; Hack, James J.; Kiehl, Jeff; Marshall, Shawn (2020). NCAR CESM1-CAM5-SE-HR model output prepared for CMIP6 HighResMIP. Version YYYYMMDD.Earth System Grid Federation. <doi:10.22033/ESGF/CMIP6.14220>
@@ -431,10 +421,9 @@ Here's a citation I found for something related: Veiga, S. F., Nobre, P., Giarol
 
 ![Panoply_map_areacello_Ofx_CESM1-CAM5-ES-HR_hist-1950](HighResMIP_choices-img/Panoply_map_areacello_Ofx_CESM1-CAM5-ES-HR_hist-1950.png)
 
-<a id='CESM1-CAM5-SE-LR'></a>
-[back to top](#top)
 
 #### CESM1-CAM5-SE-LR
+[back to top](#highresmip-choices)
 
 - Citation of the model
     - Hurrel, James; Holland, Marika; Gent, Peter; Ghan, Steven; Kay, Jennifer; Kushner, Paul; Lamarque, Jean-Francois; Large, William G.; Lawrence, David; Lindsay, Keith; Lipscomb, William; Long, Matthew; Mahowald, Natalie M.; Marsh, Daniel; Neale, Richard; Rasch, Philip J.; Vavrus, Stephen J.; Vertenstein, Mariana; Bader, David C.; Collins, William D.; Hack, James J.; Kiehl, Jeff; Marshall, Shawn (2020). NCAR CESM1-CAM5-SE-LR model output prepared for CMIP6 HighResMIP. Version YYYYMMDD.Earth System Grid Federation. <doi:10.22033/ESGF/CMIP6.14262>
@@ -502,10 +491,9 @@ Here's a citation I found for something related: Veiga, S. F., Nobre, P., Giarol
 ![Panoply_map_areacello_Ofx_CESM1-CAM5-ES-LR_control-1950](HighResMIP_choices-img/Panoply_map_areacello_Ofx_CESM1-CAM5-ES-LR_control-1950.png)
 
 ---
-<a id='CAM6'></a>
-[back to top](#top)
 
 ### CAM6
+[back to top](#highresmip-choices)
 
 I do not see this model as available through the ESGF data portal.
 Seems like this might not have been completed yet?
@@ -514,15 +502,13 @@ The webpage I found for it is out of date: https://ncar.github.io/CAM_SciDoc/doc
     - This model is not available through the ESGF data portal, so I will exclude it from the project.
 
 ---
-<a id='CAMS'></a>
-[back to top](#top)
 
 ### CAMS
+[back to top](#highresmip-choices)
 
-<a id='CAMS-CSM1-0'></a>
-[back to top](#top)
 
 #### CAMS-CSM1-0
+[back to top](#highresmip-choices)
 
 - Citation of the model
     - Rong, Xinyao (2019). CAMS CAMS-CSM1.0 model output prepared for CMIP6 ScenarioMIP. Version YYYYMMDD.Earth System Grid Federation. <doi:10.22033/ESGF/CMIP6.11004>
@@ -545,15 +531,13 @@ The webpage I found for it is out of date: https://ncar.github.io/CAM_SciDoc/doc
     - Excluded from analysis due to lack of necessary variables (e.g. `siconc`, `siu`, `siv`, `siage`).
 
 ---
-<a id='CMCC'></a>
-[back to top](#top)
 
 ### CMCC
+[back to top](#highresmip-choices)
 
-<a id='CMCC-CM2-HR4'></a>
-[back to top](#top)
 
 #### CMCC-CM2-HR4
+[back to top](#highresmip-choices)
 
 - Citation of the model
     - Scoccimarro, Enrico; Bellucci, Alessio; Peano, Daniele (2017). CMCC CMCC-CM2-HR4 model output prepared for CMIP6 HighResMIP. Version YYYYMMDD.Earth System Grid Federation. <doi:10.22033/ESGF/CMIP6.1359>
@@ -582,10 +566,9 @@ The webpage I found for it is out of date: https://ncar.github.io/CAM_SciDoc/doc
 - Decision
     - Excluded from analysis due to lack of necessary variables (e.g. `siu`, `siv`, `siage`).
 
-<a id='CMCC-CM2-VHR4'></a>
-[back to top](#top)
 
 #### CMCC-CM2-VHR4
+[back to top](#highresmip-choices)
 
 - Citation of the model
     - Scoccimarro, Enrico; Bellucci, Alessio; Peano, Daniele (2017). CMCC CMCC-CM2-VHR4 model output prepared for CMIP6 HighResMIP. Version YYYYMMDD.Earth System Grid Federation. <doi:10.22033/ESGF/CMIP6.1367>
@@ -615,15 +598,13 @@ The webpage I found for it is out of date: https://ncar.github.io/CAM_SciDoc/doc
     - Excluded from analysis due to lack of necessary variables (e.g. `siu`, `siv`, `siage`).
 
 ---
-<a id='CNRM'></a>
-[back to top](#top)
 
 ### CNRM
+[back to top](#highresmip-choices)
 
-<a id='CNRM-CM6-1'></a>
-[back to top](#top)
 
 #### CNRM-CM6-1
+[back to top](#highresmip-choices)
 
 - Citation of the model
     - Voldoire, A., Saint-Martin, D., Sénési, S., Decharme, B., Alias, A., Chevallier, M., et al. (2019). Evaluation of CMIP6 DECK experiments with CNRM-CM6-1. Journal of Advances in Modeling Earth Systems, 11, 2177–2213. <doi:10.1029/2019MS001683>
@@ -715,10 +696,9 @@ The webpage I found for it is out of date: https://ncar.github.io/CAM_SciDoc/doc
 - Decision
     - In consideration for inclusion in the project. This model has the necessary variables, but I am unsure about how well it resolves the CAA as it does not have `areacello` or any fixed-frequency variables available.
 
-<a id='CNRM-CM6-1-HR'></a>
-[back to top](#top)
 
 #### CNRM-CM6-1-HR
+[back to top](#highresmip-choices)
 
 - Citation of the model
     - Voldoire, Aurore (2019). CNRM-CERFACS CNRM-CM6-1-HR model output prepared for CMIP6 HighResMIP. Version YYYYMMDD.Earth System Grid Federation. <doi:10.22033/ESGF/CMIP6.1387>
@@ -768,15 +748,13 @@ The webpage I found for it is out of date: https://ncar.github.io/CAM_SciDoc/doc
     - In consideration for inclusion in the project. This model has the necessary variables, but I am unsure about how well it resolves the CAA as it does not have `areacello` or any fixed-frequency variables available.
 
 ---
-<a id='EC-Earth'></a>
-[back to top](#top)
 
 ### EC-Earth
+[back to top](#highresmip-choices)
 
-<a id='EC-Earth3P'></a>
-[back to top](#top)
 
 #### EC-Earth3P
+[back to top](#highresmip-choices)
 
 - Citation of the model
     - Haarsma, R., Acosta, M., Bakhshi, R., Bretonnière, P.-A., Caron, L.-P., Castrillo, M., Corti, S., Davini, P., Exarchou, E., Fabiano, F., Fladrich, U., Fuentes Franco, R., García-Serrano, J., von Hardenberg, J., Koenigk, T., Levine, X., Meccia, V. L., van Noije, T., van den Oord, G., Palmeiro, F. M., Rodrigo, M., Ruprich-Robert, Y., Le Sager, P., Tourigny, E., Wang, S., van Weele, M., and Wyser, K.: HighResMIP versions of EC-Earth: EC-Earth3P and EC-Earth3P-HR – description, model computational performance and basic validation, Geosci. Model Dev., 13, 3507–3527, <doi:10.5194/gmd-13-3507-2020>, 2020.
@@ -819,10 +797,9 @@ The webpage I found for it is out of date: https://ncar.github.io/CAM_SciDoc/doc
 
 ![Panoply_map_areacello_Ofx_EC-Earth3P_highres_future](HighResMIP_choices-img/Panoply_map_areacello_Ofx_EC-Earth3P_highres_future.png)
 
-<a id='EC-Earth3P-HR'></a>
-[back to top](#top)
 
 #### EC-Earth3P-HR
+[back to top](#highresmip-choices)
 
 - Citation of the model
     - EC-Earth Consortium (EC-Earth) (2018). EC-Earth-Consortium EC-Earth3P-HR model output prepared for CMIP6 HighResMIP. Version YYYYMMDD.Earth System Grid Federation. <doi:10.22033/ESGF/CMIP6.2323>
@@ -865,15 +842,13 @@ The webpage I found for it is out of date: https://ncar.github.io/CAM_SciDoc/doc
 ![Panoply_map_areacello_Ofx_EC-Earth3P-HR_highres_future](HighResMIP_choices-img/Panoply_map_areacello_Ofx_EC-Earth3P-HR_highres_future.png)
 
 ---
-<a id='ECMWF-IFS'></a>
-[back to top](#top)
 
 ### ECMWF-IFS
+[back to top](#highresmip-choices)
 
-<a id='ECMWF-IFS-HR'></a>
-[back to top](#top)
 
 #### ECMWF-IFS-HR
+[back to top](#highresmip-choices)
 
 - Citation of the model
     - Roberts, Christopher David; Senan, Retish; Molteni, Franco; Boussetta, Souhail; Keeley, Sarah (2017). ECMWF ECMWF-IFS-HR model output prepared for CMIP6 HighResMIP. Version YYYYMMDD.Earth System Grid Federation. <doi:10.22033/ESGF/CMIP6.2461>
@@ -909,10 +884,9 @@ The webpage I found for it is out of date: https://ncar.github.io/CAM_SciDoc/doc
 
 ![Panoply_map_sftlf_fx_ECMWF-IFS-HR_hist_1950](HighResMIP_choices-img/Panoply_map_sftlf_fx_ECMWF-IFS-HR_hist_1950.png)
 
-<a id='ECMWF-IFS-LR'></a>
-[back to top](#top)
 
 #### ECMWF-IFS-LR
+[back to top](#highresmip-choices)
 
 - Citation of the model
     - Roberts, Christopher David; Senan, Retish; Molteni, Franco; Boussetta, Souhail; Keeley, Sarah (2017). ECMWF ECMWF-IFS-LR model output prepared for CMIP6 HighResMIP. Version YYYYMMDD.Earth System Grid Federation. <doi:10.22033/ESGF/CMIP6.2463>
@@ -947,10 +921,9 @@ The webpage I found for it is out of date: https://ncar.github.io/CAM_SciDoc/doc
 
 ![Panoply_map_sftlf_fx_ECMWF-IFS-LR_hist_1950](HighResMIP_choices-img/Panoply_map_sftlf_fx_ECMWF-IFS-LR_hist_1950.png)
 
-<a id='ECMWF-IFS-MR'></a>
-[back to top](#top)
 
 #### ECMWF-IFS-MR
+[back to top](#highresmip-choices)
 
 - Citation of the model
     - Roberts, Christopher David; Senan, Retish; Molteni, Franco; Boussetta, Souhail; Keeley, Sarah (2017). ECMWF ECMWF-IFS-LR model output prepared for CMIP6 HighResMIP. Version YYYYMMDD.Earth System Grid Federation. <doi:10.22033/ESGF/CMIP6.2463>
@@ -983,15 +956,13 @@ The webpage I found for it is out of date: https://ncar.github.io/CAM_SciDoc/doc
     - This model lacks the `siage` variable. For now, I will exclude this model from the project, but I may revisit this decision if `siage` turns out to not be necessary.
 
 ---
-<a id='FGOALS'></a>
-[back to top](#top)
 
 ### FGOALS
+[back to top](#highresmip-choices)
 
-<a id='FGOALS-f3-H'></a>
-[back to top](#top)
 
 #### FGOALS-f3-H
+[back to top](#highresmip-choices)
 
 - Citation of the model
     - BAO, Q., LIU, Y., WU, G., HE, B., LI, J., WANG, L., … ZHANG, X. (2020). CAS FGOALS-f3-H and CAS FGOALS-f3-L outputs for the high-resolution model intercomparison project simulation of CMIP6. Atmospheric and Oceanic Science Letters, 13(6), 576–581. <doi:10.1080/16742834.2020.1814675>
@@ -1017,10 +988,9 @@ The webpage I found for it is out of date: https://ncar.github.io/CAM_SciDoc/doc
 - Decision
     - Excluded from analysis due to lack of necessary variables (e.g. `siconc`, `siu`, `siv`, `siage`).
 
-<a id='FGOALS-f3-L'></a>
-[back to top](#top)
 
 #### FGOALS-f3-L
+[back to top](#highresmip-choices)
 
 - Citation of the model
     - BAO, Q., LIU, Y., WU, G., HE, B., LI, J., WANG, L., … ZHANG, X. (2020). CAS FGOALS-f3-H and CAS FGOALS-f3-L outputs for the high-resolution model intercomparison project simulation of CMIP6. Atmospheric and Oceanic Science Letters, 13(6), 576–581. <doi:10.1080/16742834.2020.1814675>
@@ -1044,15 +1014,13 @@ The webpage I found for it is out of date: https://ncar.github.io/CAM_SciDoc/doc
     - Excluded from analysis due to lack of necessary variables (e.g. `siconc`, `siu`, `siv`, `siage`).
 
 ---
-<a id='GFDL'></a>
-[back to top](#top)
 
 ### GFDL
+[back to top](#highresmip-choices)
 
-<a id='GFDL-CM4C192'></a>
-[back to top](#top)
 
 #### GFDL-CM4C192
+[back to top](#highresmip-choices)
 
 - Citation of the model
     - Zhao, Ming; Blanton, Chris; John, Jasmin G; Radhakrishnan, Aparna; Zadeh, Niki T.; McHugh, Colleen; Rand, Kristopher; Vahlenkamp, Hans; Wilson, Chandin; Ginoux, Paul; Malyshev, Sergey; Wyman, Bruce; Guo, Huan; Balaji, V; Held, Isaac M; Dunne, John P.; Winton, Michael; Adcroft, Alistair; Milly, P.C.D; Shevliakova, Elena; Knutson, Thomas; Ploshay, Jeffrey; Zeng, Yujin (2018). NOAA-GFDL GFDL-CM4C192 model output prepared for CMIP6 HighResMIP highresSST-future. Version YYYYMMDD.Earth System Grid Federation. <doi:10.22033/ESGF/CMIP6.8563>
@@ -1089,15 +1057,13 @@ The webpage I found for it is out of date: https://ncar.github.io/CAM_SciDoc/doc
     - This model lacks the `siage` variable. For now, I will exclude this model from the project, but I may revisit this decision if `siage` turns out to not be necessary.
 
 ---
-<a id='HadGEM3-GC3'></a>
-[back to top](#top)
 
 ### HadGEM3-GC3
+[back to top](#highresmip-choices)
 
-<a id='HadGEM3-GC3.1-HH'></a>
-[back to top](#top)
 
 #### HadGEM3-GC3.1-HH
+[back to top](#highresmip-choices)
 
 - Citation of the model
     - Roberts, Malcolm (2018). MOHC HadGEM3-GC31-HH model output prepared for CMIP6 HighResMIP. Version YYYYMMDD.Earth System Grid Federation. <doi:10.22033/ESGF/CMIP6.445>
@@ -1151,16 +1117,15 @@ The webpage I found for it is out of date: https://ncar.github.io/CAM_SciDoc/doc
     - Not evaluated
 - Evaluation of how well the model resolves the CAA
     - In the plot below of `areacello` in Panoply, the model's land mask (in grey) appears to resolve the CAA well. The land mask matches well both the `Earth.cno` (red dashed line) and `MWDB_Coasts_1.cnob` (black solid line) overlays, which represent the coastlines of the CAA. In particular, the Parry Channel seems to be well-resolved.
-    - I suspect this might indeed be the same `areacello` as was used for [EC-Earth3P-HR](#EC-Earth3P-HR). The only difference I can see is a gray line along approximately the 107$^\circ$E line of longitude. This line appears to be an artifact, however it is unclear to me whether this would be an artifact in the model data or an artifact of plotting it in Panoply.
+    - I suspect this might indeed be the same `areacello` as was used for [EC-Earth3P-HR](#ec-earth3p-hr). The only difference I can see is a gray line along approximately the 107$^\circ$E line of longitude. This line appears to be an artifact, however it is unclear to me whether this would be an artifact in the model data or an artifact of plotting it in Panoply.
 - Decision
     - Included in analysis.
 
 ![Panoply_map_areacello_Ofx_HadGEM3-GC31-HH_control-1950](HighResMIP_choices-img/Panoply_map_areacello_Ofx_HadGEM3-GC31-HH_control-1950.png)
 
-<a id='HadGEM3-GC3.1-HM'></a>
-[back to top](#top)
 
 #### HadGEM3-GC3.1-HM
+[back to top](#highresmip-choices)
 
 - Citation of the model
     - Roberts, Malcolm (2017). MOHC HadGEM3-GC31-HM model output prepared for CMIP6 HighResMIP. Version YYYYMMDD.Earth System Grid Federation. <doi:10.22033/ESGF/CMIP6.446>
@@ -1223,14 +1188,13 @@ The webpage I found for it is out of date: https://ncar.github.io/CAM_SciDoc/doc
 - Evaluation of how well the model reproduces the observed trend in Arctic sea ice area
     - Not evaluated
 - Evaluation of how well the model resolves the CAA
-    - The `areacello` plot for HadGEM3-GC3.1-HM seems to be identical to the `areacello` plot for [HadGEM3-GC3.1-HH](#HadGEM3-GC3.1-HH), and therefore I won't reproduce it here. 
+    - The `areacello` plot for HadGEM3-GC3.1-HM seems to be identical to the `areacello` plot for [HadGEM3-GC3.1-HH](#hadgem3-gc31-hh), and therefore I won't reproduce it here. 
 - Decision
     - Included in analysis.
 
-<a id='HadGEM3-GC3.1-LL'></a>
-[back to top](#top)
 
 #### HadGEM3-GC3.1-LL
+[back to top](#highresmip-choices)
 
 - Citation of the model
     - Ridley, Jeff; Menary, Matthew; Kuhlbrodt, Till; Andrews, Martin; Andrews, Tim (2019). MOHC HadGEM3-GC31-LL model output prepared for CMIP6 CMIP historical. Version YYYYMMDD.Earth System Grid Federation. <doi:10.22033/ESGF/CMIP6.6109>
@@ -1287,16 +1251,15 @@ The webpage I found for it is out of date: https://ncar.github.io/CAM_SciDoc/doc
     - Not evaluated
 - Evaluation of how well the model resolves the CAA
     - In the plot below of `areacello` in Panoply, the model's land mask (in grey) does an okay job of resolving the CAA. The land mask captures the majority of the islands of the CAA, however in many circumstances, groups of individual islands have been grouped together. The Parry Channel is mostly clear, however may be too narrow on the eastern end and lacks several straits along the northern side.
-    - I suspect this might indeed be the same `areacello` as was used for [EC-Earth3P](#EC-Earth3P). The only difference I can see is a gray line along approximately the 107$^\circ$E line of longitude. This line appears to be an artifact, however it is unclear to me whether this would be an artifact in the model data or an artifact of plotting it in Panoply.
+    - I suspect this might indeed be the same `areacello` as was used for [EC-Earth3P](#ec-earth3p). The only difference I can see is a gray line along approximately the 107$^\circ$E line of longitude. This line appears to be an artifact, however it is unclear to me whether this would be an artifact in the model data or an artifact of plotting it in Panoply.
 - Decision
     - In consideration for inclusion in the project. This model has the necessary variables, but does not resolve the CAA as well as others. Further investigation needed to determine whether the resolution is high enough.
 
 ![Panoply_map_areacello_Ofx_HadGEM3-GC31-LL_hist-1950](HighResMIP_choices-img/Panoply_map_areacello_Ofx_HadGEM3-GC31-LL_hist-1950.png)
 
-<a id='HadGEM3-GC3.1-LM'></a>
-[back to top](#top)
 
 #### HadGEM3-GC3.1-LM
+[back to top](#highresmip-choices)
 
 - Citation of the model
     - None found
@@ -1320,10 +1283,9 @@ The webpage I found for it is out of date: https://ncar.github.io/CAM_SciDoc/doc
 - Decision
     - Excluded from analysis due to lack of necessary variables (e.g. `siu`, `siv`, `siage`).
 
-<a id='HadGEM3-GC3.1-MH'></a>
-[back to top](#top)
 
 #### HadGEM3-GC3.1-MH
+[back to top](#highresmip-choices)
 
 - Citation of the model
     - None found
@@ -1376,10 +1338,9 @@ The webpage I found for it is out of date: https://ncar.github.io/CAM_SciDoc/doc
 - Decision
     - Excluded from analysis as no sea ice variables are available in the `hist-1950` experiment.
 
-<a id='HadGEM3-GC3.1-MM'></a>
-[back to top](#top)
 
 #### HadGEM3-GC3.1-MM
+[back to top](#highresmip-choices)
 
 - Citation of the model
     - Ridley, Jeff; Menary, Matthew; Kuhlbrodt, Till; Andrews, Martin; Andrews, Tim (2019). MOHC HadGEM3-GC31-MM model output prepared for CMIP6 CMIP historical. Version YYYYMMDD.Earth System Grid Federation. <doi:10.22033/ESGF/CMIP6.6112>
@@ -1443,20 +1404,18 @@ The webpage I found for it is out of date: https://ncar.github.io/CAM_SciDoc/doc
 - Evaluation of how well the model reproduces the observed trend in Arctic sea ice area
     - Not evaluated
 - Evaluation of how well the model resolves the CAA
-    - The `areacello` plot for HadGEM3-GC3.1-MM seems to be identical to the `areacello` plot for [HadGEM3-GC3.1-HH](#HadGEM3-GC3.1-HH), and therefore I won't reproduce it here.
+    - The `areacello` plot for HadGEM3-GC3.1-MM seems to be identical to the `areacello` plot for [HadGEM3-GC3.1-HH](#hadgem3-gc31-hh), and therefore I won't reproduce it here.
 - Decision
     - Included in analysis.
 
 ---
-<a id='HiRAM-SIT'></a>
-[back to top](#top)
 
 ### HiRAM-SIT
+[back to top](#highresmip-choices)
 
-<a id='HiRAM-SIT-HR'></a>
-[back to top](#top)
 
 #### HiRAM-SIT-HR
+[back to top](#highresmip-choices)
 
 - Citation of the model
     - Tu, Chia-Ying (2020). AS-RCEC HiRAM-SIT-HR model output prepared for CMIP6 HighResMIP. Version YYYYMMDD.Earth System Grid Federation. <doi:10.22033/ESGF/CMIP6.13301>
@@ -1481,10 +1440,9 @@ The webpage I found for it is out of date: https://ncar.github.io/CAM_SciDoc/doc
 - Decision
     - Excluded from analysis due to lack of any sea ice variables.
 
-<a id='HiRAM-SIT-LR'></a>
-[back to top](#top)
 
 #### HiRAM-SIT-LR
+[back to top](#highresmip-choices)
 
 - Citation of the model
     - Tu, Chia-Ying (2020). AS-RCEC HiRAM-SIT-LR model output prepared for CMIP6 HighResMIP. Version YYYYMMDD.Earth System Grid Federation. <doi:10.22033/ESGF/CMIP6.13303>
@@ -1510,15 +1468,13 @@ The webpage I found for it is out of date: https://ncar.github.io/CAM_SciDoc/doc
     - Excluded from analysis due to lack of any sea ice variables.
     
 ---
-<a id='INM-CM'></a>
-[back to top](#top)
 
 ### INM-CM
+[back to top](#highresmip-choices)
 
-<a id='INM-CM5-H'></a>
-[back to top](#top)
 
 #### INM-CM5-H
+[back to top](#highresmip-choices)
 
 - Citation of the model
     - Volodin, Evgeny; Mortikov, Evgeny; Gritsun, Andrey; Lykossov, Vasily; Galin, Vener; Diansky, Nikolay; Gusev, Anatoly; Kostrykin, Sergey; Iakovlev, Nikolay; Shestakova, Anna; Emelina, Svetlana (2019). INM INM-CM5-0 model output prepared for CMIP6 ScenarioMIP. Version YYYYMMDD.Earth System Grid Federation. <doi:10.22033/ESGF/CMIP6.12322>
@@ -1544,10 +1500,9 @@ The webpage I found for it is out of date: https://ncar.github.io/CAM_SciDoc/doc
     - Excluded from analysis due to lack of necessary variables (e.g. `siu`, `siv`, `siage`).
     
 ---
-<a id='IPSL-CM6A'></a>
-[back to top](#top)
 
 ### IPSL-CM6A
+[back to top](#highresmip-choices)
 
 - This evaluation applies to all of the following models:
     - IPSL-CM6A-ATM-ICO-LR
@@ -1577,15 +1532,13 @@ The webpage I found for it is out of date: https://ncar.github.io/CAM_SciDoc/doc
     - Excluded from analysis due to lack of necessary variables (e.g. `siconc`, `siu`, `siv`, `siage`).
     
 ---
-<a id='MPAS-CAM'></a>
-[back to top](#top)
 
 ### MPAS-CAM
+[back to top](#highresmip-choices)
 
-<a id='CAM-MPAS-HR'></a>
-[back to top](#top)
 
 #### CAM-MPAS-HR
+[back to top](#highresmip-choices)
 
 - Citation of the model
     - Pacific Northwest National Laboratory (PNNL) (2025). PNNL-WACCEM CAM-MPAS-HR model output prepared for CMIP6 HighResMIP highresSST-future. Version YYYYMMDD.Earth System Grid Federation. <doi:10.22033/ESGF/CMIP6.14090>
@@ -1608,10 +1561,9 @@ The webpage I found for it is out of date: https://ncar.github.io/CAM_SciDoc/doc
 - Decision
     - Excluded from analysis due to lack of necessary variables (e.g. `siconc`, `siu`, `siv`, `siage`).
 
-<a id='CAM-MPAS-LR'></a>
-[back to top](#top)
 
 #### CAM-MPAS-LR
+[back to top](#highresmip-choices)
 
 - Citation of the model
     - Pacific Northwest National Laboratory (PNNL) (2025). PNNL-WACCEM CAM-MPAS-LR model output prepared for CMIP6 HighResMIP highresSST-future. Version YYYYMMDD.Earth System Grid Federation. <doi:10.22033/ESGF/CMIP6.14767>
@@ -1635,25 +1587,22 @@ The webpage I found for it is out of date: https://ncar.github.io/CAM_SciDoc/doc
     - Excluded from analysis due to lack of necessary variables (e.g. `siconc`, `siu`, `siv`, `siage`).
     
 ---
-<a id='MIROC6-CGCM'></a>
-[back to top](#top)
 
 ### MIROC6-CGCM
+[back to top](#highresmip-choices)
 
 I do not see this model as available through the ESGF data portal. Here's a citation I found for something related: Shiogama, Hideo; Abe, Manabu; Tatebe, Hiroaki (2019). MIROC MIROC6 model output prepared for CMIP6 ScenarioMIP. Version YYYYMMDD.Earth System Grid Federation. <doi:10.22033/ESGF/CMIP6.898>
 - Decision
     - This model is not available through the ESGF data portal, so I will exclude it from analysis.
     
 ---
-<a id='NICAM'></a>
-[back to top](#top)
 
 ### NICAM
+[back to top](#highresmip-choices)
 
-<a id='NICAM16'></a>
-[back to top](#top)
 
 #### NICAM16
+[back to top](#highresmip-choices)
 
 - This evaluation applies to all of the following models:
     - `NICAM16-7S`
@@ -1684,15 +1633,13 @@ I do not see this model as available through the ESGF data portal. Here's a cita
     - Excluded from analysis due to lack of necessary variables (e.g. `siu`, `siv`, `siage`).
 
 ---
-<a id='MPI-ESM'></a>
-[back to top](#top)
 
 ### MPI-ESM
+[back to top](#highresmip-choices)
 
-<a id='MPI-ESM1-2-HR'></a>
-[back to top](#top)
 
 #### MPI-ESM1-2-HR
+[back to top](#highresmip-choices)
 
 - Citation of the model
     - von Storch, Jin-Song; Putrasahan, Dian; Lohmann, Katja; Gutjahr, Oliver; Jungclaus, Johann; Bittner, Matthias; Haak, Helmuth; Wieners, Karl-Hermann; Giorgetta, Marco; Reick, Christian; Esch, Monika; Gayler, Veronika; de Vrese, Philipp; Raddatz, Thomas; Mauritsen, Thorsten; Behrens, Jörg; Brovkin, Victor; Claussen, Martin; Crueger, Traute; Fast, Irina; Fiedler, Stephanie; Hagemann, Stefan; Hohenegger, Cathy; Jahns, Thomas; Kloster, Silvia; Kinne, Stefan; Lasslop, Gitta; Kornblueh, Luis; Marotzke, Jochem; Matei, Daniela; Meraner, Katharina; Mikolajewicz, Uwe; Modali, Kameswarrao; Müller, Wolfgang; Nabel, Julia; Notz, Dirk; Peters-von Gehlen, Karsten; Pincus, Robert; Pohlmann, Holger; Pongratz, Julia; Rast, Sebastian; Schmidt, Hauke; Schnur, Reiner; Schulzweida, Uwe; Six, Katharina; Stevens, Bjorn; Voigt, Aiko; Roeckner, Erich (2017). MPI-M MPIESM1.2-HR model output prepared for CMIP6 HighResMIP. Version YYYYMMDD.Earth System Grid Federation. <doi:10.22033/ESGF/CMIP6.762>
@@ -1756,10 +1703,9 @@ I do not see this model as available through the ESGF data portal. Here's a cita
 
 ![Panoply_map_volcello_Ofx_MPI-ESM1-2-HR-hist-1950](HighResMIP_choices-img/Panoply_map_volcello_Ofx_MPI-ESM1-2-HR-hist-1950.png)
 
-<a id='MPI-ESM1-2-XR'></a>
-[back to top](#top)
 
 #### MPI-ESM1-2-XR
+[back to top](#highresmip-choices)
 
 - Citation of the model
     - von Storch, Jin-Song; Putrasahan, Dian; Lohmann, Katja; Gutjahr, Oliver; Jungclaus, Johann; Bittner, Matthias; Haak, Helmuth; Wieners, Karl-Hermann; Giorgetta, Marco; Reick, Christian; Esch, Monika; Gayler, Veronika; de Vrese, Philipp; Raddatz, Thomas; Mauritsen, Thorsten; Behrens, Jörg; Brovkin, Victor; Claussen, Martin; Crueger, Traute; Fast, Irina; Fiedler, Stephanie; Hagemann, Stefan; Hohenegger, Cathy; Jahns, Thomas; Kloster, Silvia; Kinne, Stefan; Lasslop, Gitta; Kornblueh, Luis; Marotzke, Jochem; Matei, Daniela; Meraner, Katharina; Mikolajewicz, Uwe; Modali, Kameswarrao; Müller, Wolfgang; Nabel, Julia; Notz, Dirk; Peters-von Gehlen, Karsten; Pincus, Robert; Pohlmann, Holger; Pongratz, Julia; Rast, Sebastian; Schmidt, Hauke; Schnur, Reiner; Schulzweida, Uwe; Six, Katharina; Stevens, Bjorn; Voigt, Aiko; Roeckner, Erich (2017). MPI-M MPI-ESM1.2-XR model output prepared for CMIP6 HighResMIP. Version YYYYMMDD.Earth System Grid Federation. <doi:10.22033/ESGF/CMIP6.10290>
@@ -1817,20 +1763,18 @@ I do not see this model as available through the ESGF data portal. Here's a cita
 - Evaluation of how well the model reproduces the observed trend in Arctic sea ice area
     - Not evaluated
 - Evaluation of how well the model resolves the CAA
-    - The `volcello` plot for MPI-ESM1-2-XR seems to be identical to the areacello plot for [MPI-ESM1-2-HR](#MPI-ESM1-2-HR), and therefore I won't reproduce it here.
+    - The `volcello` plot for MPI-ESM1-2-XR seems to be identical to the areacello plot for [MPI-ESM1-2-HR](#mpi-esm1-2-hr), and therefore I won't reproduce it here.
 - Decision
     - This model lacks the `siage` variable. For now, I will exclude this model from the project, but I may revisit this decision if `siage` turns out to not be necessary.
 
 ---
-<a id='MRI-AGCM3'></a>
-[back to top](#top)
 
 ### MRI-AGCM3
+[back to top](#highresmip-choices)
 
-<a id='MRI-AGCM3-2-H'></a>
-[back to top](#top)
 
 #### MRI-AGCM3-2-H
+[back to top](#highresmip-choices)
 
 - Citation of the model
     - Mizuta, Ryo; Yoshimura, Hiromasa; Ose, Tomoaki; Hosaka, Masahiro; Yukimoto, Seiji (2019). MRI MRI-AGCM3-2-H model output prepared for CMIP6 HighResMIP. Version YYYYMMDD.Earth System Grid Federation. <doi:10.22033/ESGF/CMIP6.10942>
@@ -1853,10 +1797,9 @@ I do not see this model as available through the ESGF data portal. Here's a cita
 - Decision
     - This model lacks the `hist-1950` experiment as well as the variables `siu`, `siv`, and `siage`. Therefore, I will exclude this model from the project.
 
-<a id='MRI-AGCM3-2-S'></a>
-[back to top](#top)
 
 #### MRI-AGCM3-2-S
+[back to top](#highresmip-choices)
 
 - Citation of the model
     - Mizuta, Ryo; Yoshimura, Hiromasa; Ose, Tomoaki; Hosaka, Masahiro; Yukimoto, Seiji (2019). MRI MRI-AGCM3-2-S model output prepared for CMIP6 HighResMIP. Version YYYYMMDD.Earth System Grid Federation. <doi:10.22033/ESGF/CMIP6.1625>
@@ -1880,10 +1823,9 @@ I do not see this model as available through the ESGF data portal. Here's a cita
     - This model lacks the `hist-1950` experiment as well as the variables `siu`, `siv`, and `siage`. Therefore, I will exclude this model from the project.
 
 ---
-<a id='NorESM'></a>
-[back to top](#top)
 
 ### NorESM
+[back to top](#highresmip-choices)
 
 I do not see this model as available through the ESGF data portal. Here's a citation I found for something related: Bentsen, Mats; Oliviè, Dirk Jan Leo; Seland, Øyvind; Toniazzo, Thomas; Gjermundsen, Ada; Graff, Lise Seland; Debernard, Jens Boldingh; Gupta, Alok Kumar; He, Yanchun; Kirkevåg, Alf; Schwinger, Jörg; Tjiputra, Jerry; Aas, Kjetil Schanke; Bethke, Ingo; Fan, Yuanchao; Griesfeller, Jan; Grini, Alf; Guo, Chuncheng; Ilicak, Mehmet; Karset, Inger Helene Hafsahl; Landgren, Oskar Andreas; Liakka, Johan; Moseid, Kine Onsum; Nummelin, Aleksi; Spensberger, Clemens; Tang, Hui; Zhang, Zhongshi; Heinze, Christoph; Iversen, Trond; Schulz, Michael (2019). NCC NorESM2-MM model output prepared for CMIP6 ScenarioMIP. Version YYYYMMDD.Earth System Grid Federation. <doi:10.22033/ESGF/CMIP6.608>
 
@@ -1891,10 +1833,9 @@ I do not see this model as available through the ESGF data portal. Here's a cita
     - This model is not available through the ESGF data portal, so I will exclude it from the project.
 
 ---
-<a id='references'></a>
-[back to top](#top)
 
 ## References
+[back to top](#highresmip-choices)
 
 [^Cook2024]: Cook, A.J., J. Dawson, S.E.L. Howell, J.E. Holloway, M. Brady (2024)), "Sea ice choke points reduce the length of the shipping season in the Northwest Passage", _Communications Earth & Environment_, 5(1):1-11, <doi:10.1038/s43247-024-01477-6>
 

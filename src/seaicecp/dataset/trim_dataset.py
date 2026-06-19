@@ -16,7 +16,7 @@ from seaicecp.dataset.latlon_type import get_latlon_names, get_lon_type
 def trim_latlon(
     xr_data: xr.Dataset,
     map_bbox: [float, float, float, float] = sps.NWP_BBOX,
-    precise_trim: bool = True,
+    precise_trim: bool = False,
     save_as: str = None,
     verbose: bool = False,
 ):
@@ -35,10 +35,10 @@ def trim_latlon(
             Default is `seaicecp.params.latlon_params.NWP_BBOX`.
         precise_trim : `bool`, optional
             Whether to precisely trim an irregular grid to the bounding box, making all values outside the bounding box null.
-            Default is `True`.
+            Default is `False`.
         save_as : `str`, `None`, optional
-            The file name to pass to `seaicecp.plot.save_hvplots.save_hvplot()`.
-            Default is `None`, which doesn't save the plot to a file.
+            The file name to which to save the modified dataset.
+            Default is `None`, which doesn't save the dataset to a file.
         verbose : `bool`, optional
             Whether to verbosely output information as the function executes.
             Default is `False`.
@@ -212,6 +212,8 @@ def trim_files(
         name_prefix = f"{name_prefix}_"
     # Replace any spaces in `name_prefix` with underscores
     name_prefix = name_prefix.replace(" ", "_")
+    if not isinstance(overwrite, bool):
+        raise TypeError(f"(trim_files) `overwrite` must be a `bool`. Got type: {type(overwrite)}")
     
     # Information to output
     print(f"(trim_files) `name_prefix`: {name_prefix}")

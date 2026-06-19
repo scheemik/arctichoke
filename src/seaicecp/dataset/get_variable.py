@@ -5,7 +5,6 @@ from seaicecp.params.var_params import meta_vars
 
 def get_variable_name(
     dataset: (str, xr.DataArray, xr.Dataset),
-
 ):
     """ Get the variable name of the dataset.
 

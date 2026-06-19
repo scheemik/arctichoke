@@ -1,3 +1,4 @@
+import numpy as np
 import os
 
 from seaicecp import dataset
@@ -52,6 +53,17 @@ def test_make_example_dataset():
             'test_var_size': 200,
             'test_latlon_size': 100,
             'n_size': 10,
+            'unique_years': [2026],
+        },
+        {
+            'actual': dataset.make_example_dataset(time_axis=2025),
+            'keys': ['test_var'],
+            'coords': ['time', 'j', 'i', 'longitude', 'latitude'],
+            'sizes': ['time', 'j', 'i'],
+            'test_var_size': 200,
+            'test_latlon_size': 100,
+            'n_size': 10,
+            'unique_years': [2025],
         },
     ]
     for test_case in test_cases:
@@ -67,6 +79,10 @@ def test_make_example_dataset():
         assert test_case['actual']['latitude'].size == test_case['test_latlon_size'], f"`make_example_dataset` created a dataset with a latitude size: {test_case['actual']['latitude'].size}.\nExpected variable size: {test_case['test_latlon_size']}"
         assert test_case['actual']['i'].size == test_case['n_size'], f"`make_example_dataset` created a dataset with a variable size: {test_case['actual']['i'].size}.\nExpected variable size: {test_case['n_size']}"
         assert test_case['actual']['j'].size == test_case['n_size'], f"`make_example_dataset` created a dataset with a variable size: {test_case['actual']['j'].size}.\nExpected variable size: {test_case['n_size']}"
+        if 'time' in test_case['coords']:
+            # Check the years present on the time axis
+            actual_years = np.unique(test_case['actual']['time'].dt.year.values)
+            assert actual_years == test_case['unique_years'], f"`make_example_dataset` created a dataset with the unique years: {actual_years}.\nExpected unique years: {test_case['unique_years']}"
     
     # Test setting overwrite to `False`
     try:

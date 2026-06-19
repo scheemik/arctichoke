@@ -1,4 +1,3 @@
-<a id='top'></a>
 # Installation
 
 The instructions below show how to get this project set up and running on a new system.
@@ -6,24 +5,22 @@ For more details on how the architecture of this project was developed, see the 
 
 ## Contents
 
-- [Installing Podman](#podman_install)
-- [Clone the repository](#git_clone)
-- [Specify the file paths](#specify_fpaths)
-- [Start the container](#start_container)
+- [Installing Podman](#installing-podman)
+- [Clone the repository](#clone-the-repository)
+- [Specify file paths](#specify-file-paths)
+- [Start the container](#start-the-container)
 
 ---
-<a id='podman_install'></a>
-[back to top](#top)
 
 ## Installing Podman
+[back to top](#installation)
 
 Install `podman` following the relevant version of the [Podman Installation Instructions](https://podman.io/docs/installation) for your system.
 If running on macOS or Windows, this will necessitate the use of the Podman virtual machine which needs to be active before a container can be run.
 
-<a id='git_clone'></a>
-[back to top](#top)
 
 ## Clone the repository
+[back to top](#installation)
 
 Choose a location in which to clone the repository for this project.
 ```console
@@ -31,10 +28,9 @@ user@local:~$ cd /<absolute/path/to/project>
 user@local:/<absolute/path/to/project>$ git clone git@github.com:scheemik/seaicecp.git
 ```
 
-<a id='specify_fpaths'></a>
-[back to top](#top)
 
 ## Specify file paths
+[back to top](#installation)
 
 In the `start_container.sh` script, it is important to modify the following lines.
 ```bash
@@ -51,10 +47,9 @@ Error: vfkit exited unexpectedly with exit code 1
 ```
 If connecting the external drive does not solve that error, check the GitHub issue [Error: vfkit exited unexpectedly with exit code 1 on M4 MacMini #25046](https://github.com/podman-container-tools/podman/issues/25046) for more details.
 
-<a id='start_container'></a>
-[back to top](#top)
 
 ## Start the container
+[back to top](#installation)
 
 Run the `start_container.sh` script to start the container.
 The first time this is done, it might take quite a while as it builds the image.

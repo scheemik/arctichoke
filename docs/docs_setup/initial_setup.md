@@ -1,4 +1,3 @@
-<a id='top'></a>
 # Initial Setup
 
 This guide details how the architecture of this project was developed.
@@ -9,76 +8,74 @@ Several of the sections below are summarizations of parts of that guide, with de
 
 ## Contents
 
-- [The order of operations](#order_of_operations)
-- [The `uv` package manager](#uv_manager)
-- [Creating a package structure](#pkg_structure)
-    - [Using `uv init`](#uv_init)
-    - [Using a `cookiecutter` template](#cookiecutter)
-    - [Combining `uv` and `cookiecutter` structures](#uv_and_cookiecutter)
-- [Version control and GitHub](#version_control)
-    - [Setting the default branch](#default_branch)
+- [The order of operations](#the-order-of-operations)
+- [The `uv` package manager](#the-uv-package-manager)
+- [Creating a package structure](#creating-a-package-structure)
+    - [Using `uv init`](#using-uv-init)
+    - [Using a `cookiecutter` template](#using-a-cookiecutter-template)
+    - [Combining `uv` and `cookiecutter` structures](#combining-uv-and-cookiecutter-structures)
+- [Version control and GitHub](#version-control-and-github)
+    - [Setting the default branch](#setting-the-default-branch)
 - [Podman](#podman)
-    - [Installing Podman](#podman_install)
-    - [Testing Podman](#podman_test)
-    - [Pod Manager extension for VSCodium](#pod_manager_extension)
-    - [Building a simple container](#podman_simple_container)
-    - [The `Containerfile`](#podman_containerfile)
-        - [Pinning the versions of `uv` and `trixie-slim`](#podman_containerfile_pin_versions)
-        - [Defining environment variables](#podman_containerfile_env_vars)
-        - [Installing system and scientific dependencies](#podman_containerfile_apt-get)
-        - [Preparing Python, `uv`, and the working directory](#podman_containerfile_misc_prep)
-        - [`uv` dependencies and Jupyter kernel](#podman_containerfile_uv_jupyter)
-        - [Downloading commonly used Natural Earth shapefiles](#podman_containerfile_natural_earth)
-        - [Setting up `esgpull` install](#podman_containerfile_esgpull)
-        - [Setting up the Jupyter server](#podman_containerfile_jupyter_server)
-    - [The `start_container` script](#podman_start_container)
-        - [Set the script to fail on common errors](#podman_start_container_pipefail)
-        - [Ensure the virtual machine is running](#podman_start_container_machine_status)
-        - [Set the parameters](#podman_start_container_params)
-        - [Check existing containers and images](#podman_start_container_cleanup)
-        - [Set up access to external volumes](#podman_start_container_external_vol)
-        - [Create the list of volumes](#podman_start_container_list_vol)
-        - [Run the container](#podman_start_container_run)
-    - [Testing the container](#podman_test_container)
-    - [Cleaning up old images](#podman_start_container_cleanup)
-- [Virtual environment and packages](#venv)
-    - [Activating the virtual environment](#venv_activate)
-    - [Adding package dependencies](#venv_dependencies)
-        - [Packages for datasets](#venv_dependencies_datasets)
-        - [Packages for making plots](#venv_dependencies_plots)
-        - [Packages for saving plots](#venv_dependencies_plots_save)
-        - [Packages for Jupyter notebooks](#venv_dependencies_jupyter)
-        - [Packages for external tools](#venv_dependencies_ext_tools)
-        - [Packages for testing](#venv_dependencies_test)
-        - [Packages for documentation](#venv_dependencies_docs)
-    - [The `.pyproject.toml` file](#venv_pyproject_toml)
-    - [Building the package](#venv_build_pkg)
-    - [Using a Jupyter notebook in the container](#jupyter_notebook)
-    - [Initializing `esgpull`](#esgpull_init)
-        - [Creating an `esgpull` install](#esgpull_init_install)
-        - [Configuring the `esgpull` install](#esgpull_init_config)
-- [Documentation](#docs)
-    - [Building documentation](#build_docs)
-    - [Hosting documentation](#host_docs)
-    - [Enabling $\LaTeX$ math syntax](#latex_syntax)
-    - [Enabling easy DOI links](#doi_links)
+    - [Installing Podman](#installing-podman)
+    - [Testing Podman](#testing-podman)
+    - [Pod Manager extension for VSCodium](#pod-manager-extension-for-vscodium)
+    - [Building a simple container](#building-a-simple-container)
+    - [The `Containerfile`](#the-containerfile)
+        - [Pinning the versions of `uv` and `trixie-slim`](#pinning-the-versions-of-uv-and-trixie-slim)
+        - [Defining environment variables](#defining-environment-variables)
+        - [Installing system and scientific dependencies](#installing-system-and-scientific-dependencies)
+        - [Preparing Python, `uv`, and the working directory](#preparing-python-uv-and-the-working-directory)
+        - [`uv` dependencies and Jupyter kernel](#uv-dependencies-and-jupyter-kernel)
+        - [Downloading commonly used Natural Earth shapefiles](#downloading-commonly-used-natural-earth)
+        - [Setting up `esgpull` install](#setting-up-esgpull-install)
+        - [Setting up the Jupyter server](#setting-up-the-jupyter-server)
+    - [The `start_container` script](#the-start_container-script)
+        - [Set the script to fail on common errors](#set-the-script-to-fail-on-common-errors)
+        - [Ensure the virtual machine is running](#ensure-the-virtual-machine-is-running)
+        - [Set the parameters](#set-the-parameters)
+        - [Check existing containers and images](#check-existing-containers-and-images)
+        - [Set up access to external volumes](#set-up-access-to-external-volumes)
+        - [Create the list of volumes](#create-the-list-of-volumes)
+        - [Run the container](#run-the-container)
+    - [Testing the container](#testing-the-container)
+    - [Cleaning up old images](#cleaning-up-old-images)
+- [Virtual environment and packages](#virtual-environment-and-packages)
+    - [Activating the virtual environment](#activating-the-virtual-environment)
+    - [Adding package dependencies](#adding-package-dependencies)
+        - [Packages for datasets](#packages-for-datasets)
+        - [Packages for making plots](#packages-for-making-plots)
+        - [Packages for saving plots](#packages-for-saving-plots)
+        - [Packages for Jupyter notebooks](#packages-for-jupyter-notebooks)
+        - [Packages for external tools](#packages-for-external-tools)
+        - [Packages for testing](#packages-for-testing)
+        - [Packages for documentation](#packages-for-documentation)
+    - [The `.pyproject.toml` file](#the-pyprojecttoml-file)
+    - [Building the package](#building-the-package)
+    - [Using a Jupyter notebook in the container](#using-a-jupyter-notebook-in-the-container)
+    - [Initializing `esgpull`](#initializing-esgpull)
+        - [Creating an `esgpull` install](#creating-an-esgpull-install)
+        - [Configuring the `esgpull` install](#configuring-the-esgpull-install)
+- [Documentation](#documentation)
+    - [Building documentation](#building-documentation)
+    - [Hosting documentation](#hosting-documentation)
+    - [Enabling $\LaTeX$ math syntax](#enabling--math-syntax)
+    - [Enabling easy DOI links](#enabling-easy-doi-links)
 
 ---
-<a id='order_of_operations'></a>
-[back to top](#top)
 
 ## The order of operations
+[back to top](#initial-setup)
 
-When initially setting up this project, I installed the [`uv` package manager](#uv_manager), [created the package structure](#pkg_structure) of the project, and [installed Python dependencies in a virtual environment](#venv) all before writing the [Podman](#podman) container.
+When initially setting up this project, I installed the [`uv` package manager](#the-uv-package-manager), [created the package structure](#creating-a-package-structure) of the project, and [added Python package dependencies](#adding-package-dependencies) all before writing the [Podman](#podman) container.
 It is likely that one could avoid installing `uv` on their host system by first setting up the container and, once inside the container, create the package structure.
 However, I present those steps first as I have not tested that possibility and thus present them in the manner I followed, outside the container.
-I do, however, place the section on the [virtual environment and installing package dependencies](#venv) after creating the container in this document because I have confirmed that adding packages with `uv` inside the container works.
+I do, however, place the section on the [virtual environment and installing package dependencies](#virtual-environment-and-packages) after creating the container in this document because I have confirmed that adding packages with `uv` inside the container works.
 
 ---
-<a id='uv_manager'></a>
-[back to top](#top)
 
 ## The `uv` package manager
+[back to top](#initial-setup)
 
 In [Py-Pkgs Chapter 2](https://py-pkgs.org/02-setup), they suggest to use Miniconda to create an environment and use [`poetry`](https://python-poetry.org/) to manage dependencies. 
 For this project, I decided to use [`uv`](https://docs.astral.sh/uv/) instead. 
@@ -107,15 +104,13 @@ Warning: uv 0.11.6 already installed
 
 
 ---
-<a id='pkg_structure'></a>
-[back to top](#top)
 
 ## Creating a package structure
+[back to top](#initial-setup)
 
-<a id='uv_init'></a>
-[back to top](#top)
 
 ### Using `uv init`
+[back to top](#initial-setup)
 
 To start a project, I simply need to use `uv` to initiate one, following the [Working on projects](https://docs.astral.sh/uv/guides/projects/) guide.
 I chose the name `seaicecp` to stand for "Sea Ice Choke Points," trying to balance brevity and descriptiveness.
@@ -136,10 +131,9 @@ user@local:/<absolute/path/to/project>$ tree seaicecp
 └── pyproject.toml
 ```
 
-<a id='cookiecutter'></a>
-[back to top](#top)
 
 ### Using a `cookiecutter` template
+[back to top](#initial-setup)
 
 In [Py-Pkgs Section 2.2.2](https://py-pkgs.org/02-setup#install-packaging-software), they suggest installing `cookiecutter` to create a package from a pre-made template. 
 This package is then actually used in [Section 3.2.2](https://py-pkgs.org/03-how-to-package-a-python#creating-a-package-structure). 
@@ -208,10 +202,9 @@ seaicecp/
 5 directories, 18 files
 ```
 
-<a id='uv_and_cookiecutter'></a>
-[back to top](#top)
 
 ### Combining `uv` and `cookiecutter` structures
+[back to top](#initial-setup)
 
 Below are the files that are shared across both structures I generated and what changes I needed to make.
 - The `src/` directory
@@ -262,10 +255,9 @@ user@local:tmp_dir$ cd ..
 user@local:seaicecp$ rm -rf tmp_dir/
 ```
 
-<a id='version_control'></a>
-[back to top](#top)
 
 ## Version control and GitHub
+[back to top](#initial-setup)
 
 Following [Py-Pkgs Section 3.3. Put your package under version control](https://py-pkgs.org/03-how-to-package-a-python#put-your-package-under-version-control), I initiated `git` for my new repository.
 ```console
@@ -276,10 +268,9 @@ Initialized empty Git repository in /<absolute/path/to/project>/seaicecp/.git/
 I then added and committed the initial structure and pushed to a new [GitHub repository for the project](https://github.com/scheemik/seaicecp).
 I am working in VSCodium, which I'd already set up to [connect to my GitHub account](https://github.com/VSCodium/vscodium/blob/master/docs/usage.md#signin-github), so the process was as simple as pressing the "push" button in the GUI.
 
-<a id='default_branch'></a>
-[back to top](#top)
 
 ### Setting the default branch
+[back to top](#initial-setup)
 
 For the version of `git` I have, it still sets the default branch as `master` instead of `main`. 
 I'm following the guide from Geeks for Geeks on [How to Change Git Default Branch From Master?](https://www.geeksforgeeks.org/git/how-to-change-git-default-branch-from-master/)
@@ -311,20 +302,18 @@ To https://github.com/scheemik/seaicecp.git
 Since the repository had not been cloned anywhere else at this point, that was all I needed to do.
 
 ---
-<a id='podman'></a>
-[back to top](#top)
 
 ## Podman
+[back to top](#initial-setup)
 
 [Podman](https://podman.io/) is an open-source tool by [Red Hat](https://www.redhat.com/en0) for creating and managing containers, similar to [Docker](https://www.docker.com/).
 [Containerization](https://en.wikipedia.org/wiki/Containerization_(computing)) allows the creation of isolated, reproducible computing environments, making it easier to ensure code will run the same way across different systems.
 While virtual environments for Python, such as [`venv`](https://docs.python.org/3/library/venv.html) or [`conda`](https://www.anaconda.com/download), create reproducible environments for Python packages, containers create reproducible environments for an entire operating system.
 This allows the inclusion and management of non-Python software in a project, such as the `cdo` and `esgpull` tools used in this project.
 
-<a id='podman_install'></a>
-[back to top](#top)
 
 ### Installing Podman
+[back to top](#initial-setup)
 <!-- See GPBS_Log 2026/04/28 -->
 
 I installed `podman` on my MacBook following the [Podman Installation Instructions](https://podman.io/docs/installation). 
@@ -590,12 +579,11 @@ drwxr-xr-x  3 <user>  staff   96 Apr 28 10:55 podman
 -rw-r--r--  1 <user>  staff  440 Apr 28 10:57 podman-connections.json
 -rw-r--r--  1 <user>  staff    0 Apr 28 10:57 podman-connections.json.lock
 ```
-<a id='podman_test'></a>
-[back to top](#top)
 
 ---
 
 ### Testing Podman
+[back to top](#initial-setup)
 
 Next, I followed the [Basic Setup and Use of Podman](https://github.com/containers/podman/blob/main/docs/tutorials/podman_tutorial.md) guide.
 To start, I ran the sample `nginx` container, calling it `basic_httpd`.
@@ -736,12 +724,10 @@ user@local:~$ podman ps -a
 CONTAINER ID  IMAGE       COMMAND     CREATED     STATUS      PORTS       NAMES
 ```
 
-<a id='pod_manager_extension'></a>
-[back to top](#top)
-
 ---
 
 ### Pod Manager extension for VSCodium
+[back to top](#initial-setup)
 
 I went to VSCodium and installed the "Pod Manager" extension from user `dreamcatcher45`. 
 When I first went into the extension, I got the following error:
@@ -755,7 +741,7 @@ After I restarted VSCodium, both the `podman version` command and the Pod Manage
 In the sidebar of VSCodium, I clicked on the Pod Manger icon, which looks like a stylized seal.
 Currently, the dropdown for "Containers" is empty because I remove the ones I was testing above.
 However, under the "Images" dropdown, I see "docker.io/library/nginx:latest (7aaca76c508f)."
-This is the image that was built when [Testing Podman](#podman_test).
+This is the image that was built when [Testing Podman](#testing-podman).
 
 Containers get added to the list in the Pod Manager sidebar when they start running. 
 I can start the `basic_httpd` container again.
@@ -792,12 +778,10 @@ CONTAINER ID  IMAGE       COMMAND     CREATED     STATUS      PORTS       NAMES
 ```
 If any terminals had been left open inside the container, they will have automatically exited when the container is removed.
 
-<a id='podman_simple_container'></a>
-[back to top](#top)
-
 ---
 
 ### Building a simple container
+[back to top](#initial-setup)
 
 Above, I downloaded an existing image `docker.io/nginx` from a repository. 
 For this project, I want to define my own.
@@ -1030,10 +1014,9 @@ With this working, the next step is to build out the `Containerfile` to set up t
 
 ---
 
-<a id='podman_containerfile'></a>
-[back to top](#top)
 
 ### The `Containerfile`
+[back to top](#initial-setup)
 
 Below is the current `Containerfile` used to build the image for this project.
 
@@ -1041,7 +1024,7 @@ Below is the current `Containerfile` used to build the image for this project.
 :language: dockerfile
 ```
 
-Note that this is meant to be executed via the [`start_container.sh` script](#podman_start_container).
+Note that this is meant to be executed via [the `start_container.sh` script](#the-start_container-script).
 However, if testing a new build, it can be useful to pipe the output of `podman build` to a log file using `tee`.
 ```console
 user@local:seaicecp$ podman build -f .devcontainer/Containerfile -t <image_name> . | tee .devcontainer/<log_file_name>.log
@@ -1049,13 +1032,12 @@ user@local:seaicecp$ podman build -f .devcontainer/Containerfile -t <image_name>
 
 I'll explain each section of the `Containerfile` in detail below.
 
-<a id='podman_containerfile_pin_versions'></a>
-[back to top](#top)
 
 #### Pinning the versions of `uv` and `trixie-slim`
+[back to top](#initial-setup)
 
 For reproducibility purposes, I decided to pin the exact versions of `uv` and `trixie-slim` that my container uses. 
-After [Building a simple container](#podman_simple_container), I now see the following images in the Pod Manger sidebar:
+After [Building a simple container](#building-a-simple-container), I now see the following images in the Pod Manger sidebar:
 - `ghcr.io/astral-sh/uv:latest`
 - `docker.io/library/debian:trixie-slim`
 
@@ -1067,24 +1049,22 @@ user@local:seaicecp$ podman image inspect ghcr.io/astral-sh/uv --format '{{.Dige
 sha256:5cbec7ab7753a6c763c6dda6a38f085c8c585ec9f53cfb4e7368b79ca30bc881
 ```
 
-<a id='podman_containerfile_env_vars'></a>
-[back to top](#top)
 
 #### Defining environment variables
+[back to top](#initial-setup)
 
 The `Containerfile` defines a few environment variables to facilitate building the image.
 - `DEBIAN_FRONTEND=noninteractive`
     - According to the askUbuntu post [DEBIAN_FRONTEND environment variable](https://askubuntu.com/questions/972516/debian-frontend-environment-variable), this prevents installations from getting stuck on interactive processes, such as when the user is asked to confirm or select something.
 - `ENV UV_PROJECT_ENVIRONMENT=/workspace/.cvenv`
     - According to the Python Developer Tooling Handbook on [How to customize uv's virtual environment location](https://pydevtools.com/handbook/how-to/how-to-customize-uvs-virtual-environment-location/), this renames the default directory for the `uv` virtual environment from `.venv` to `.cvenv` to avoid conflicts with using the environment inside vs. outside the container.
-    - Note that the use of the directory `/workspace` is [detailed below](#podman_containerfile_misc_prep).
+    - Note that the use of the directory `/workspace` is [detailed below](#preparing-python-uv-and-the-working-directory).
 - `ENV UV_LINK_MODE=copy`
     - According to the Python Developer Tooling Handbook on [How to use `uv` in a Dockerfile](https://pydevtools.com/handbook/how-to/how-to-use-uv-in-a-dockerfile/), this "tells uv to copy files instead of hard-linking them. When using Docker cache mounts, the cache and the target directory live on separate filesystems, so uv falls back to copying anyway. Setting this explicitly avoids the warning message."
 
-<a id='podman_containerfile_apt-get'></a>
-[back to top](#top)
 
 #### Installing system and scientific dependencies
+[back to top](#initial-setup)
 
 The next block in the `Containerfile` uses `apt-get` to install the necessary system-level dependencies for the project. 
 The flags used here are:
@@ -1127,10 +1107,9 @@ The packages installed in this block are:
     - For taking "screenshots" of `html` maps to produce `.png` images.
 - `fonts-liberation`
 
-<a id='podman_containerfile_misc_prep'></a>
-[back to top](#top)
 
 #### Preparing Python, `uv`, and the working directory
+[back to top](#initial-setup)
 
 - `RUN ln -s /usr/bin/python3.13 /usr/bin/python`
     - This command creates a symlink such that using the command `python` calls Python 3.13.
@@ -1146,10 +1125,9 @@ The packages installed in this block are:
     - `COPY README.md ./`
     - `COPY src ./src`
 
-<a id='podman_containerfile_uv_jupyter'></a>
-[back to top](#top)
 
 #### `uv` dependencies and Jupyter kernel
+[back to top](#initial-setup)
 
 The next block in the `Containerfile` is:
 ```dockerfile
@@ -1165,10 +1143,9 @@ This installs and/or updates all the dependencies defined in the `pyproject.toml
 Specifying `--mount=type=cache,target=/root/.cache/uv` will cache the packages with `uv`, making subsequent builds much faster.
 Then, it starts a kernel for using the Python virtual environment in Jupyter notebooks. 
 
-<a id='podman_containerfile_natural_earth'></a>
-[back to top](#top)
 
-#### Downloading commonly used Natural Earth shapefiles
+#### Downloading commonly used Natural Earth 
+[back to top](#initial-setup)
 
 When making maps, it is often useful to plot coastlines or other shapes to give context. 
 A common way of doing this in Python is from Natural Earth shape files.
@@ -1188,10 +1165,9 @@ If this is not present in the image, the following warning occurs when making a 
   warnings.warn(f'Downloading: {url}', DownloadWarning)
 ```
 
-<a id='podman_containerfile_esgpull'></a>
-[back to top](#top)
 
 #### Setting up `esgpull` install
+[back to top](#initial-setup)
 
 This project uses the `esgpull` tool to download HighResMIP data files.
 This next block sets up an install of `esgpull` on an external volume.
@@ -1208,13 +1184,12 @@ This uses the separate script included with this project at `.devcontainer/esgpu
 :language: bash
 ```
 
-The `.devcontainer/esgpull_entrypoint.sh` script assumes that the directory in which the data on the external volume is stored has been defined as `/seaicecp_data`, something which is set when executing the `podman run` command (see [The `start_container` script](#podman_start_container)).
-For more information on `esgpull`, see [Initializing `esgpull`](#esgpull_init).
+The `.devcontainer/esgpull_entrypoint.sh` script assumes that the directory in which the data on the external volume is stored has been defined as `/seaicecp_data`, something which is set when executing the `podman run` command (see [The `start_container` script](#the-start_container-script)).
+For more information on `esgpull`, see [Initializing `esgpull`](#initializing-esgpull).
 
-<a id='podman_containerfile_jupyter_server'></a>
-[back to top](#top)
 
 #### Setting up the Jupyter server
+[back to top](#initial-setup)
 
 The last block of the `Containerfile` exposes port 8888 of the container and sets up the Jupyter server to run on that port with no password or identity token.
 
@@ -1236,12 +1211,11 @@ Note that port 8888 in the container will be set to connect to a different port 
 
 ---
 
-<a id='podman_start_container'></a>
-[back to top](#top)
 
 ### The `start_container` script
+[back to top](#initial-setup)
 
-[The `Containerfile`](#podman_containerfile) defines how the image for this project should be built.
+[The `Containerfile`](#the-containerfile) defines how the image for this project should be built.
 I created a script called `start_container.sh` which ultimately starts the container from that image, but first checks to make sure the Podman virtual machine is running and whether the image exists already.
 The script is shown below:
 
@@ -1302,19 +1276,17 @@ The instructions above on how to start the container are also shown on the {doc}
 
 I'll explain each section of the `start_container.sh` script in detail below.
 
-<a id='podman_start_container_pipefail'></a>
-[back to top](#top)
 
 #### Set the script to fail on common errors
+[back to top](#initial-setup)
 
 The first line is `set -euo pipefail`. 
 The GitHub Gist by `akrasic` called [`bash_strict_mode`](https://gist.github.com/akrasic/380bda362e0420be08709152c91ca1f9) explains that the `set` command is used to cause a script to fail very explicitly when encountering errors. 
 This can be helpful to track down where exactly the bugs are, especially if the script calls other scripts. 
 
-<a id='podman_start_container_machine_status'></a>
-[back to top](#top)
 
 #### Ensure the virtual machine is running
+[back to top](#initial-setup)
 
 The next block checks the status of the virtual machine, which is required for running on macOS.
 First, it checks whether the machine has been initialized.
@@ -1343,10 +1315,9 @@ fi
 This block allows you to re-run the `start_container.sh` script even if you already have the Podman machine running.
 This is useful when testing the code in a way which requires restarting the container frequently.
 
-<a id='podman_start_container_params'></a>
-[back to top](#top)
 
 #### Set the parameters
+[back to top](#initial-setup)
 
 Next, the scripts sets the following parameters.
 
@@ -1361,10 +1332,9 @@ Next, the scripts sets the following parameters.
     - This defines the name of the working directory for the container.
     - This must be the same name used in the `Containerfile`.
 
-<a id='podman_start_container_cleanup'></a>
-[back to top](#top)
 
 #### Check existing containers and images
+[back to top](#initial-setup)
 
 The next two blocks clean up any existing images and builds the image, if necessary.
 ```bash
@@ -1383,10 +1353,9 @@ fi
 The `|| true` in the first command ensures that it executes successfully, even when there is no old container to clean up. 
 In the second part, the image building step will be skipped if an image with the given name already exists.
 
-<a id='podman_start_container_external_vol'></a>
-[back to top](#top)
 
 #### Set up access to external volumes
+[back to top](#initial-setup)
 
 The next block sets up access to data on an external volume.
 The value of `SICP_DATA_DIR` should be changed to match the absolute file path of your external hard drive where `esgpull` will store the HighResMIP data.
@@ -1421,10 +1390,9 @@ The following files will be deleted:
 Are you sure you want to continue? [y/N] y
 ```
 
-<a id='podman_start_container_list_vol'></a>
-[back to top](#top)
 
 #### Create the list of volumes
+[back to top](#initial-setup)
 
 The next block creates the list of arguments to be used to define the volumes.
 This should include the working directory and the external volume.
@@ -1439,10 +1407,9 @@ fi
 ...
 ```
 
-<a id='podman_start_container_run'></a>
-[back to top](#top)
 
 #### Run the container
+[back to top](#initial-setup)
 
 Finally, the script starts the container with the `podman run` command.
 ```bash
@@ -1455,7 +1422,7 @@ podman run -it --rm \
   -w "$WORKDIR" \
   "$IMAGE"
 ```
-The arguments of the command are, similar to [Building a simple container](#podman_simple_container) (see the [Podman run docs](https://docs.podman.io/en/latest/markdown/podman-run.1.html) for details):
+The arguments of the command are, similar to [Building a simple container](#building-a-simple-container) (see the [Podman run docs](https://docs.podman.io/en/latest/markdown/podman-run.1.html) for details):
 - `-i`: Interactive
     - "When set to true, make `stdin` available to the contained process. If false, the `stdin` of the contained process is empty and immediately closed."
 - `-t`: TTY
@@ -1474,10 +1441,9 @@ The arguments of the command are, similar to [Building a simple container](#podm
 - `"$IMAGE"`
     - The name of the image to use for this container.
 
-<a id='podman_test_container'></a>
-[back to top](#top)
 
 ### Testing the container
+[back to top](#initial-setup)
 
 With the container running, I can test to make sure things were installed correctly. 
 First, I'll check the versions of various packages, starting with `uv`.
@@ -1523,10 +1489,9 @@ Type "help", "copyright", "credits" or "license" for more information.
 >>> exit()
 ```
 
-<a id='podman_clean_images'></a>
-[back to top](#top)
 
 ### Cleaning up old images
+[back to top](#initial-setup)
 
 During the testing above, several images were generated.
 In the Pod Manager sidebar, under the "Overview" dropdown, a summary of the images can be seen.
@@ -1574,19 +1539,17 @@ REPOSITORY            TAG         IMAGE ID      CREATED      SIZE
 localhost/seaicecp_7  latest      b05b6acdb72b  3 weeks ago  2.78 GB
 ```
 
-<a id='venv'></a>
-[back to top](#top)
 
 ## Virtual environment and packages
+[back to top](#initial-setup)
 
-<a id='venv_activate'></a>
-[back to top](#top)
 
 ### Activating the virtual environment
+[back to top](#initial-setup)
 
 When initializing the project, `uv` automatically creates a virtual environment in `.venv/`.
 That environment can be used outside the container. 
-In the section [Defining environment variables](#podman_containerfile_env_vars), I noted that I changed the default virtual environment location for `uv` to be `.cvenv` inside the container.
+In the section [Defining environment variables](#defining-environment-variables), I noted that I changed the default virtual environment location for `uv` to be `.cvenv` inside the container.
 I can easily activate it by first starting a terminal inside the container.
 ```console
 podman exec -it <container_id> /bin/sh
@@ -1605,19 +1568,17 @@ root@<container_id>:/workspace# source .cvenv/bin/activate
 ```
 Note that the virtual environment's name `(seaicecp)` is now at the beginning of the command prompt.
 
-<a id='venv_dependencies'></a>
-[back to top](#top)
 
 ### Adding package dependencies
+[back to top](#initial-setup)
 
 Using `uv` to add dependencies works similarly to `poetry` as described in [Py-Pkgs 3.6. Adding dependencies to your package](https://py-pkgs.org/03-how-to-package-a-python). 
-When a `uv add <package>` command is run, that package is automatically added to [the `pyproject.toml` file](#venv_pyproject_toml).
+When a `uv add <package>` command is run, that package is automatically added to [the `pyproject.toml` file](#the-pyprojecttoml-file).
 See `uv` docs for [The project environment](https://docs.astral.sh/uv/concepts/projects/layout/#the-project-environment) for more information.
 
-<a id='venv_dependencies_datasets'></a>
-[back to top](#top)
 
 #### Packages for datasets
+[back to top](#initial-setup)
 
 I use `xarray` as the main workhorse to handle datasets.
 ```console
@@ -1654,10 +1615,9 @@ Installed 7 packages in 2.48s
  + toolz==1.1.0
 ```
 
-<a id='venv_dependencies_plots'></a>
-[back to top](#top)
 
 #### Packages for making plots
+[back to top](#initial-setup)
 
 For plots, I added the `hvplot` package to be able to make `html` maps of irregular gridded data without interpolating onto a regular grid first.
 ```console
@@ -1737,13 +1697,12 @@ They have notes in the documentation about how to deal with "360_day" calendars.
 However, I still found that some dates being dropped or set to the missing value, even though all the dates are the 16th of each month.
 I'm sticking with just using `nc-time-axis` as my solution.
 
-<a id='venv_dependencies_plots_save'></a>
-[back to top](#top)
 
 #### Packages for saving plots
+[back to top](#initial-setup)
 
 The `html` plots that are made with `hvplot` cannot be directly saved to a `png` file. 
-As a workaround, I added the packages `chromium` and `chromium-driver` to the [`Containerfile`](#podman_containerfile) in order to open an `html` plot in a browser within the container, take a "screenshot", and save that as a `png` image.
+As a workaround, I added the packages `chromium` and `chromium-driver` to [the `Containerfile`](#the-containerfile) in order to open an `html` plot in a browser within the container, take a "screenshot", and save that as a `png` image.
 In order for that process to work, I added the `selenium` and `bokeh` packages.
 ```console
 (seaicecp) root@<container_id>:/workspace# uv add selenium
@@ -1780,10 +1739,9 @@ Installed 1 package in 60ms
  ~ seaicecp==0.1.0 (from file:///workspace)
 ```
 
-<a id='venv_dependencies_jupyter'></a>
-[back to top](#top)
 
 #### Packages for Jupyter notebooks
+[back to top](#initial-setup)
 
 In order to use Jupyter notebooks with the `.cvenv` virtual environment, I added `ipykernel` and `jupyter`.
 ```console
@@ -1846,10 +1804,9 @@ Installed 51 packages in 14.63s
  + widgetsnbextension==4.0.15
 ```
 
-<a id='venv_dependencies_ext_tools'></a>
-[back to top](#top)
 
 #### Packages for external tools
+[back to top](#initial-setup)
 
 I added the Python package for `cdo` to be able to call it's functions from Python scripts. 
 Note that this requires that the `cdo` CLI is installed, which is done in the `Containerfile`.
@@ -1923,12 +1880,11 @@ This fix can be seen in `.cvenv/lib/python3.13/site-packages/esgpull/context.py`
 This should be included in future updates to `esgpull` which should make it unnecessary to specify the exact commit when adding it with `uv` as shown above.
 
 Using `esgpull` requires additional steps [as noted on the Installation page](https://esgf.github.io/esgf-download/installation/#setup).
-I detail how I managed that set up in the [Initializing `esgpull`](#esgpull_init) section later in this guide.
+I detail how I managed that set up in the [Initializing `esgpull`](#initializing-esgpull) section later in this guide.
 
-<a id='venv_dependencies_test'></a>
-[back to top](#top)
 
 #### Packages for testing
+[back to top](#initial-setup)
 
 In order to run tests, following [Py-Pkgs Section 3.7.2. Running tests](https://py-pkgs.org/03-how-to-package-a-python#running-tests) and [Py-Pkgs Section 3.7.3. Code coverage](https://py-pkgs.org/03-how-to-package-a-python#code-coverage), I installed `pytest` and `pytest-cov` as development dependencies by specifying the `--dev` group.
 This means that, if someone where to install `seaicecp` as a package for their own purposes, the packages in the `--dev` group would not be installed by default.
@@ -1964,10 +1920,9 @@ Installed 1 package in 69ms
 root@<container_id>:/workspace# 
 ``` -->
 
-<a id='venv_dependencies_docs'></a>
-[back to top](#top)
 
 #### Packages for documentation
+[back to top](#initial-setup)
 
 Following [Py-Pkgs 3.8.4. Building documentation](https://py-pkgs.org/03-how-to-package-a-python#building-documentation), I added the packages necessary to build the documentation you are reading to the `--dev` group.
 ```console
@@ -2014,10 +1969,9 @@ Installed 35 packages in 317ms
  + zipp==3.23.1
 ```
 
-<a id='venv_pyproject_toml'></a>
-[back to top](#top)
 
 ### The `pyproject.toml` file
+[back to top](#initial-setup)
 
 After adding all the above packages as dependencies, the `pyproject.toml` file now appears as below.
 ```{literalinclude} ../../pyproject.toml
@@ -2025,13 +1979,12 @@ After adding all the above packages as dependencies, the `pyproject.toml` file n
 ```
 When new packages are added to the project, they will be cached the next time the container is run.
 
-<a id='venv_build_pkg'></a>
-[back to top](#top)
 
 ### Building the package
+[back to top](#initial-setup)
 
-As shown in the [Build systems](https://docs.astral.sh/uv/concepts/projects/config/#build-systems) documentation for `uv`, I had used the `--package` flag when [initializing the repository with `uv`](#uv_init). 
-In the [Building your package](https://docs.astral.sh/uv/guides/package/#building-your-package) section, I used the 
+As shown in Astral's [Build systems](https://docs.astral.sh/uv/concepts/projects/config/#build-systems) documentation for `uv`, I had used the `--package` flag when [initializing the repository with `uv`](#using-uv-init). 
+In Astral's [Building your package](https://docs.astral.sh/uv/guides/package/#building-your-package) section, I used the 
 
 ```console
 user@local:seaicecp$ podman exec -it <container_id> /bin/sh
@@ -2072,10 +2025,9 @@ Type "help", "copyright", "credits" or "license" for more information.
 0.1.0
 ```
 
-<a id='jupyter_notebook'></a>
-[back to top](#top)
 
 ### Using a Jupyter notebook in the container
+[back to top](#initial-setup)
 
 Instructions on how to test whether you can access the Jupyter server inside the container are shown in the {doc}`Jupyter Notebook Test <jupyter_test>` guide.
 Once that is working, I can test to see whether the Jupyter server has access to the `seaicecp` package by executing a cell with the following code.
@@ -2087,27 +2039,25 @@ print(seaicecp.__version__)
 0.1.0
 ```
 
-<a id='esgpull_init'></a>
-[back to top](#top)
 
 ### Initializing `esgpull`
+[back to top](#initial-setup)
 
 Data from the CMIP6 HighResMIP models can be downloaded from the [ESGF Federated Nodes](https://esgf-node.ornl.gov/search) webportal, which has great search functionality but tedious manual downloading, or through Globus, which augments the webportal through an application you can install on your system.
 However, I decided to use [`esgpull`](https://esgf.github.io/esgf-download/quickstart/) for this project, which offers a command line interface for searching and downloading.
 For detailed reasoning on choosing `esgpull`, see the {doc}`Downloading model data with esgpull <../docs_data/esgpull_downloads>` guide. 
 
-<a id='esgpull_init_install'></a>
-[back to top](#top)
 
 #### Creating an `esgpull` install
+[back to top](#initial-setup)
 
-In the section [Packages for external tools](#venv_dependencies_ext_tools), I added `esgpull` as a dependency for the Python environment. 
+In the section [Packages for external tools](#packages-for-external-tools), I added `esgpull` as a dependency for the Python environment. 
 As noted in the [Installation page](https://esgf.github.io/esgf-download/installation/#setup) under "Setup," an additonal step must be taken before `esgpull` can be used, namely running the `esgpull self install` command.
 > "The reason is that esgpull is prevented from writing anything on disk until installed.
 > 
 > Installing esgpull equates choosing a directory in which it is allowed to write anything it needs to run properly. It also creates all the required files/directories in that directory and fetches some metadata from ESGF that is required to run properly."
 
-In the `esgpull_entrypoint.sh` script, (see [Setting up `esgpull` install](#podman_containerfile_esgpull)), I run `uv run esgpull self install bergybits` from the directory where I want the data to be (in this case, `/seaice_data` which is connected to my external drive) to create an install called `bergybits`.
+In the `esgpull_entrypoint.sh` script, (see [Setting up `esgpull` install](#setting-up-esgpull-install)), I run `uv run esgpull self install bergybits` from the directory where I want the data to be (in this case, `/seaice_data` which is connected to my external drive) to create an install called `bergybits`.
 
 The first time this is run, the output will indicate that a new install has been created.
 ```console
@@ -2168,10 +2118,9 @@ $ rm -rf /workspace/.esgpull
 (seaicecp) root@<container_id>:/workspace# 
 ```
 
-<a id='esgpull_init_config'></a>
-[back to top](#top)
 
 #### Configuring the `esgpull` install
+[back to top](#initial-setup)
 
 The first time I tried to search with `esgpull`, I got the following error.
 ```console
@@ -2365,17 +2314,15 @@ retracted = "false"
 enabled = false
 ```
 
-<a id='docs'></a>
-[back to top](#top)
 
 ## Documentation
+[back to top](#initial-setup)
 
-<a id='build_docs'></a>
-[back to top](#top)
 
 ### Building documentation
+[back to top](#initial-setup)
 
-In the section, [Packages for documentation](#venv_dependencies_docs), I added the `myst-nb` `sphinx-autoapi` and `sphinx-rtd-theme` packages to the development group of the project. 
+In the section, [Packages for documentation](#packages-for-documentation), I added the `myst-nb` `sphinx-autoapi` and `sphinx-rtd-theme` packages to the development group of the project. 
 To build the documentation, activate the virtual environment, go into the `docs/` directory, and run the `make` command.
 This will produce a lot of output, especially the first time running, so I have hidden most of it.
 ```console
@@ -2499,10 +2446,9 @@ Removing everything under '_build'...
 ```
 Then, run the `make html` command again.
 
-<a id='host_docs'></a>
-[back to top](#top)
 
 ### Hosting documentation
+[back to top](#initial-setup)
 
 Following [Py-Pkgs section 3.8.5. Hosting documentation online](https://py-pkgs.org/03-how-to-package-a-python#hosting-documentation-online) to be able to have the documentation you are reading hosted on [Read the Docs](https://about.readthedocs.com).
 First, a few changes need to be made to the `.readthedocs.yml` file to ensure the documentation can successfully be hosted. 
@@ -2574,10 +2520,9 @@ Version latest / Builds / #32314755
 Now, the documentation for this project is live and available to view at [https://seaicecp.readthedocs.io/en/latest/](https://seaicecp.readthedocs.io/en/latest/).
 I put that URL in the "About" section of the GitHub repository under "Website" to make it more visible to people who find the project.
 
-<a id='latex_syntax'></a>
-[back to top](#top)
 
 ### Enabling $\LaTeX$ math syntax
+[back to top](#initial-setup)
 
 In order to be able to use dollar signs to quickly indicate a mathematical symbol from $\LaTeX$, I added the `dollarmath` and `amsmath` extensions to the `docs/conf.py` file's `myst_enable_extensions` list.
 ```python
@@ -2589,10 +2534,9 @@ myst_enable_extensions = [
 This allows me to render mathematical syntax, such as a speed of `$\sim$ 1 km day$^{−1}$` which renders as $\sim$ 1 km day$^{−1}$. 
 See the MyST-Parser documentation page on [Syntax Extensions](https://myst-parser.readthedocs.io/en/latest/syntax/optional.html)
 
-<a id='doi_links'></a>
-[back to top](#top)
 
 ### Enabling easy DOI links
+[back to top](#initial-setup)
 
 When making citations in the documentation, it can be cumbersome to link to a DOI.
 For example, to cite the EC-Earth3P-HR model, I would type out the link `[doi:10.22033/ESGF/CMIP6.2323](https://doi.org/10.22033/ESGF/CMIP6.2323)` which renders as [doi:10.22033/ESGF/CMIP6.2323](https://doi.org/10.22033/ESGF/CMIP6.2323).

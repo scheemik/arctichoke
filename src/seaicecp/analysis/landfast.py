@@ -1,13 +1,17 @@
 import numpy as np
 import xarray as xr
+import warnings
 from cdo import Cdo
 cdo = Cdo()
 # Set path for temporary files in case of a crash
 cdo = Cdo(tempdir='./cdo_tmp/')
 cdo.cleanTempDir()
 
-from seaicecp.verify import verify_path
 from seaicecp.dataset.get_variable import get_variable_name
+from seaicecp.dataset.trim_dataset import trim_latlon
+from seaicecp.path.manipulate_paths import make_file_path
+import seaicecp.params as sps
+from seaicecp.verify import verify_path
 
 def find_packed_ice(
     dataset: (str, [str], xr.DataArray, xr.Dataset),
@@ -28,7 +32,7 @@ def find_packed_ice(
             The threshold above which to mark packed ice.
             Default is `85` percent, following Laliberté et al. 2018.
         save_as : `str`, `None`, optional
-            The file name to pass to `cdo.setrtoc2(output=save_as)`.
+            The file name to which to save the modified dataset.
             Default is `None`, which doesn't save the dataset to a file.
         verbose : `bool`, optional
             Whether to verbosely output information as the function executes.
@@ -91,6 +95,8 @@ def find_packed_ice(
         raise TypeError(f"(find_packed_ice) `save_as` must be a string or `None`. Got type: {type(save_as)}")
     elif isinstance(save_as, str) and not '.nc' in save_as:
         raise TypeError(f"(find_packed_ice) `save_as` must be a `.nc` filepath. Got: {save_as}")
+    if not isinstance(verbose, bool):
+        raise TypeError(f"(find_packed_ice) `verbose` must be a `bool`. Got type: {type(verbose)}")
 
     # Verify the dataset(s) contain(s) the `siconc` variable
     for this_dataset in var_check_list:
@@ -136,11 +142,17 @@ def find_packed_ice(
         packedice_xr = cdo_command(
             input = input_command,
             returnXDataset = 'sipacked',
-            output = save_as,
         )
 
     # Rename `siconc` in the new dataset to `sipacked`
-    return packedice_xr.rename_vars({'siconc':'sipacked'})
+    packedice_xr = packedice_xr.rename_vars({'siconc':'sipacked'})
+
+    # Save the trimmed dataset, if applicable
+    if not isinstance(save_as, type(None)):
+        # Save the plot to file
+        packedice_xr.to_netcdf(save_as)
+    
+    return packedice_xr
 
 def find_slow_ice(
     dataset: (str, [str], xr.DataArray, xr.Dataset),
@@ -161,7 +173,7 @@ def find_slow_ice(
             The threshold above which to mark slow ice.
             Default is `0.01` m/s, following Laliberté et al. 2018.
         save_as : `str`, `None`, optional
-            The file name to pass to `cdo.setrtoc2(output=save_as)`.
+            The file name to which to save the modified dataset.
             Default is `None`, which doesn't save the dataset to a file.
         verbose : `bool`, optional
             Whether to verbosely output information as the function executes.
@@ -224,6 +236,8 @@ def find_slow_ice(
         raise TypeError(f"(find_slow_ice) `save_as` must be a string or `None`. Got type: {type(save_as)}")
     elif isinstance(save_as, str) and not '.nc' in save_as:
         raise TypeError(f"(find_slow_ice) `save_as` must be a `.nc` filepath. Got: {save_as}")
+    if not isinstance(verbose, bool):
+        raise TypeError(f"(trim_latlon) `verbose` must be a `bool`. Got type: {type(verbose)}")
 
     # Verify the dataset(s) contain(s) the `sispeed` variable
     for this_dataset in var_check_list:
@@ -269,11 +283,17 @@ def find_slow_ice(
         slowice_xr = cdo_command(
             input = input_command,
             returnXDataset = 'sislow',
-            output = save_as,
         )
 
     # Rename `sispeed` in the new dataset to `sislow`
-    return slowice_xr.rename_vars({'sispeed':'sislow'})
+    slowice_xr = slowice_xr.rename_vars({'sispeed':'sislow'})
+
+    # Save the trimmed dataset, if applicable
+    if not isinstance(save_as, type(None)):
+        # Save the plot to file
+        slowice_xr.to_netcdf(save_as)
+    
+    return slowice_xr
 
 def find_landfast_ice(
     siconc_dataset: (str, [str], xr.DataArray, xr.Dataset),
@@ -293,7 +313,7 @@ def find_landfast_ice(
         sispeed_dataset : `str`, list of `str`, `xarray.DataArray`, `xarray.Dataset`
             The dataset of which to find the locations of landfast ice that contains `sispeed`.
         save_as : `str`, `None`, optional
-            The file name to pass to `cdo.setrtoc2(output=save_as)`.
+            The file name to which to save the modified dataset.
             Default is `None`, which doesn't save the dataset to a file.
         verbose : `bool`, optional
             Whether to verbosely output information as the function executes.
@@ -332,6 +352,8 @@ def find_landfast_ice(
         raise TypeError(f"(find_landfast_ice) `save_as` must be a string or `None`. Got type: {type(save_as)}")
     elif isinstance(save_as, str) and not '.nc' in save_as:
         raise TypeError(f"(find_landfast_ice) `save_as` must be a `.nc` filepath. Got: {save_as}")
+    if not isinstance(verbose, bool):
+        raise TypeError(f"(trim_latlon) `verbose` must be a `bool`. Got type: {type(verbose)}")
     
     # Information to output
     if verbose:
@@ -372,4 +394,152 @@ def find_landfast_ice(
     )
 
     # Rename `sipacked` in the new dataset to `silandfast`
-    return landfastice_xr.rename_vars({'sipacked':'silandfast'})
+    landfastice_xr = landfastice_xr.rename_vars({'sipacked':'silandfast'})
+
+    # Save the trimmed dataset, if applicable
+    if not isinstance(save_as, type(None)):
+        # Save the plot to file
+        landfastice_xr.to_netcdf(save_as)
+    
+    return landfastice_xr
+
+def make_landfast_files(
+    siconc_files: [str],
+    sispeed_files: [str],
+    map_bbox: [float, float, float, float] = None,
+    version_id: str = 'v20260617',
+    overwrite: bool = False,
+    **kwargs,
+):
+    """ Make landfast files based on the lists of files given.
+
+        For each given pair of files, load the data, trim the datasets (if applicable), calculate the landfast ice, then save the landfast ice dataset as a new file in the same directory structure. 
+
+        Parameters
+        ----------
+        siconc_files : List of `str`
+            A list of paths of the sea ice concentration data files. 
+        sispeed_files : List of `str`
+            A list of paths of the sea ice speed data files. 
+        map_bbox : Array of `float`, `None`, optional
+            An array of coordinates defining the bounding box of the map in the following format:
+                - [LAT_MAX, LAT_MIN, LON_MAX, LON_MIN]
+                
+            Default is `None`, meaning the data will not be trimmed.
+        version_id : `str`, optional
+            The version ID to use when making the directory structure for the landfast ice files.
+            Default is `'v20260617'`.
+        overwrite : `bool`, optional
+            Whether to overwrite an existing file if it exists.
+            Default is `False`.
+        **kwargs
+            Keyword arguments to pass to `trim_latlon()`, and `find_landfast_ice()`.
+
+        Returns
+        -------
+        None
+        
+        Examples
+        --------
+        >>> from seaicecp.path.find_data import list_variable_files
+        >>> list_of_files = list_variable_files('EC-Earth3P-HR', 'siage', variant_label='r3i1p2f1')
+        >>> from seaicecp.dataset.trim_dataset import make_landfast_files
+        >>> make_landfast_files(list_of_files)
+        (make_landfast_files) `name_prefix`: trim_NWP_
+        (trim_latlon) `save_as`: /seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/siage/gn/v20190214/trim_NWP_siage_SImon_EC-Earth3P-HR_hist-1950_r3i1p2f1_gn_195001-195012.nc
+        ...
+        (trim_latlon) `save_as`: /seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/siage/gn/v20190214/trim_NWP_siage_SImon_EC-Earth3P-HR_hist-1950_r3i1p2f1_gn_201401-201412.nc
+    """
+    # Verify input arguments
+    if isinstance(siconc_files, str):
+        siconc_files = [siconc_files]
+    elif not isinstance(siconc_files, type([])):
+        raise TypeError(f"(make_landfast_files) `siconc_files` must be a list. Got type: {type(siconc_files)}")
+    for item in siconc_files:
+        if not isinstance(item, str):
+            raise TypeError(f"(make_landfast_files) `siconc_files` must be a list of strings. Got type: {type(item)} for item {item}")
+    if isinstance(sispeed_files, str):
+        sispeed_files = [sispeed_files]
+    elif not isinstance(sispeed_files, type([])):
+        raise TypeError(f"(make_landfast_files) `sispeed_files` must be a list. Got type: {type(sispeed_files)}")
+    for item in sispeed_files:
+        if not isinstance(item, str):
+            raise TypeError(f"(make_landfast_files) `sispeed_files` must be a list of strings. Got type: {type(item)} for item {item}")
+    if len(siconc_files) != len(sispeed_files):
+        raise ValueError(f"(make_landfast_files) `siconc_files` and `sispeed_files` must be the same length. Got `len(siconc_files)`: {len(siconc_files)}, `len(sispeed_files)`: {len(sispeed_files)}")
+    if isinstance(map_bbox, type([])):
+        if not len(map_bbox) == 4:
+            raise ValueError(f"(trim_latlon) `map_bbox` must have a length of 4. Got length: {len(map_bbox)}")
+        else: 
+            for i in range(len(map_bbox)):
+                if not isinstance(map_bbox[i], (int, float)):
+                    raise TypeError(f"(trim_latlon) `map_bbox[{i}]` must be a number. Got type: {type(map_bbox[i])}")
+    elif not isinstance(map_bbox, (type(None), type([]))):
+        raise TypeError(f"(trim_latlon) `map_bbox` must be a list or `None`. Got type: {type(map_bbox)}")
+    if not isinstance(version_id, str):
+        raise TypeError(f"(make_landfast_files) `version_id` must be a string. Got type: {type(version_id)}")
+    if not isinstance(overwrite, bool):
+        raise TypeError(f"(make_landfast_files) `overwrite` must be a `bool`. Got type: {type(overwrite)}")
+
+    # Loop across each file in the list
+    for i in range(len(siconc_files)):
+        # Verify the filepaths exist
+        siconc_filepath = verify_path(siconc_files[i])
+        sispeed_filepath = verify_path(sispeed_files[i])
+        # Verify the filepaths are for the same model run
+        siconc_filestem = siconc_filepath.replace('siconc', '')
+        sispeed_filestem = sispeed_filepath.replace('sispeed', '')
+        if siconc_filestem != sispeed_filestem:
+            raise ValueError(f"(make_landfast_files) `siconc` and `sispeed` files for index i={i} are not from the same run\n`siconc_filepath`: {siconc_filepath}\n`sispeed_filepath`:{sispeed_filepath}")
+        # Get the version ID to replace
+        replace_this_version_ID = siconc_filepath.split('/')[-2]
+        # Assemble the landfast filename
+        landfast_filepath = siconc_filepath.replace(replace_this_version_ID, version_id)
+        landfast_filepath = landfast_filepath.replace('siconc', 'silandfast')
+        # Add trimming prefix, if applicable
+        if not isinstance(map_bbox, type(None)):
+            if map_bbox == sps.CAA_BBOX:
+                trim_prefix = 'trim_CAA_'
+            elif map_bbox == sps.NWP_BBOX:
+                trim_prefix = 'trim_NWP_'
+            else:
+                trim_prefix = 'trim_'
+            landfast_filename = landfast_filepath.split('/')[-1]
+            landfast_filepath = landfast_filepath.replace(landfast_filename, f"{trim_prefix}{landfast_filename}")
+        # Make sure the directory exists
+        make_file_path(landfast_filepath)
+        # Check whether the file exists
+        try:
+            verify_path(landfast_filepath)
+            if overwrite == False:
+                warnings.warn(f"(make_landfast_files) File `{landfast_filepath}` exists already. To overwrite this file, set `overwrite` to `True`.", UserWarning)
+                continue
+            else:
+                print(f"\t(make_landfast_files) Overwriting file `{landfast_filepath}`.")
+        except (FileNotFoundError):
+            print(f"\t(make_landfast_files) Writing file `{landfast_filepath}`.")
+        # Load `siconc` and `sispeed` files with `xarray`
+        siconc_xr = xr.open_dataset(siconc_filepath)
+        sispeed_xr = xr.open_dataset(sispeed_filepath)
+        # Trim the `siconc` and `sispeed` datasets, if 
+        if not isinstance(map_bbox, type(None)):
+            siconc_xr = trim_latlon(
+                xr_data = siconc_xr,
+                map_bbox = map_bbox,
+                **kwargs,
+            )
+            sispeed_xr = trim_latlon(
+                xr_data = sispeed_xr,
+                map_bbox = map_bbox,
+                **kwargs,
+            )
+        # Calculate the landfast ice and save to file
+        find_landfast_ice(
+            siconc_dataset = siconc_xr,
+            sispeed_dataset = sispeed_xr,
+            save_as = landfast_filepath,
+            **kwargs,
+        )
+
+    return None
+
