@@ -85,11 +85,11 @@ def sum_by_year(
     # Sum the dataset by year
     year_summed_xr = dataset.groupby('time.year').sum(dim='time')
 
-    # Get the name of the variable in the dataset
-    var_name = get_variable_name(year_summed_xr)
-
-    # Rename `siconc` in the new dataset to `sipacked`
-    year_summed_xr = year_summed_xr.rename_vars({var_name: f'{var_name}_year_sum'})
+    if isinstance(dataset, xr.Dataset):
+        # Get the name of the variable in the dataset
+        var_name = get_variable_name(year_summed_xr)
+        # Rename the variable, giving it the suffix `_year_sum`
+        year_summed_xr = year_summed_xr.rename_vars({var_name: f'{var_name}_year_sum'})
 
     # Save the trimmed dataset, if applicable
     if not isinstance(save_as, type(None)):
