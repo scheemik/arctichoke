@@ -96,7 +96,9 @@ def sum_by_year(
                 dataset = dataset.drop_vars([meta_var])
 
     # Sum the dataset by year
-    year_summed_xr = dataset.groupby('time.year').sum(dim='time')
+    ## Passing `min_count=1` prevents grid cells with all `nan` values across time from being set to zero instead of the expected `nan`
+    ## Removing the `min_count` argument results in a spiky artifact on maps
+    year_summed_xr = dataset.groupby('time.year').sum(dim='time', min_count=1)
 
     if isinstance(dataset, xr.Dataset):
         # Get the name of the variable in the dataset
