@@ -7,6 +7,7 @@ def get_limited_extent(
     map_projection : crs.CRS,
     map_bbox : [float, float, float, float] = sps.NWP_BBOX,
     n_samples : int = 100,
+    **kwargs,
 ):
     """ Get the extent to which to limit a plot.
 
@@ -25,6 +26,8 @@ def get_limited_extent(
             The number of samples to take along the edges of the bounding box.
             Use a larger number for larger bounding boxes to reduce clipping.
             Default is `100`.
+        **kwargs
+            Keyword arguments to handle extras that might have been passed by the function above this one.
 
         Returns
         -------

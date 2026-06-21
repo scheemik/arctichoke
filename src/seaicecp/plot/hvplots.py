@@ -98,7 +98,11 @@ def quadmesh_map(
         # Define the projection for the plot
         map_projection = crs.NorthPolarStereo(central_longitude = box_lon_cent)
         # Get the extent to which to limit the map plot
-        map_extent = get_limited_extent(map_projection)
+        map_extent = get_limited_extent(
+            map_projection,
+            map_bbox,
+            **kwargs,
+        )
     
     # Get the latitude and longitude coordinate names
     lat_var, lon_var = get_latlon_names(xr_data)
