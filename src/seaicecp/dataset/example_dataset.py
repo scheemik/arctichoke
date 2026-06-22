@@ -40,8 +40,16 @@ def make_example_dataset(
         
         Examples
         --------
-        >>> from seaicecp.dataset.example_dataset import make_example_dataset 
-        >>> 
+        >>> from seaicecp.dataset.example_dataset import make_example_dataset
+        >>> dataset = make_example_dataset(n=3, time_axis=True)
+        >>> dataset['test_var'].values
+        array([[[0., 1., 2.],
+                [3., 4., 5.],
+                [6., 7., 8.]],
+
+               [[0., 1., 2.],
+                [3., 4., 5.],
+                [6., 7., 8.]]])
     """
     # Verify input arguments
     if isinstance(save_as, str):
