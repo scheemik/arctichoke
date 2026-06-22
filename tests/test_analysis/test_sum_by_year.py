@@ -23,6 +23,13 @@ def test_sum_by_year():
             time_axis=(2000+i),
             save_as=test_file_names[i],
         )
+    # Create test case with `nan` values
+    test_nan_dataset = xr.open_mfdataset(test_file_names)
+    test_nan_dataset['test_var'] = test_nan_dataset['test_var'].where(
+        lambda val:
+            (test_nan_dataset['test_var'] < 7),
+        lambda val: np.nan
+    )
     # Define test cases
     test_cases = [
         {
@@ -55,9 +62,14 @@ def test_sum_by_year():
         {
             'dataset': test_file_names,
             'save_as': f"{test_file_dir}/example_new_0.nc",
-            'save_as': None,
             'unique_years': [2000, 2001, 2002],
             'expected_sum': 72,
+        },
+        {
+            'dataset': test_nan_dataset,
+            'save_as': None,
+            'unique_years': [2000, 2001, 2002],
+            'expected_sum': 42,
         },
     ]
     for test_case in test_cases:
