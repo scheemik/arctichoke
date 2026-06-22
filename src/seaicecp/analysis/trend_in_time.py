@@ -140,12 +140,16 @@ def trend_in_time(
         print(f"(trend_in_time) `save_as`: {save_as}")
 
     # Get the time axis values
-    time_axis_vals = years = dataset[time_dim].values
-    # Define an epoch as January 1st, 1970
-    epoch = np.datetime64('1970-01-01T00:00:00')
-    # Convert datetimes to seconds from the epoch, then divide to get units of years
-    time_axis_epoch_y = [((x - epoch) / np.timedelta64(1, 's')) / (60 * 60 * 24 * 365) for x in time_axis_vals]
-    time_axis_epoch_y
+    time_axis_vals = dataset[time_dim].values
+    if time_dim == 'time':
+        # Define an epoch as January 1st, 1970
+        epoch = np.datetime64('1970-01-01T00:00:00')
+        # Convert datetimes to seconds from the epoch, then divide to get units of years
+        time_axis_epoch_y = [((x - epoch) / np.timedelta64(1, 's')) / (60 * 60 * 24 * 365) for x in time_axis_vals]
+    elif time_dim == 'year':
+        time_axis_epoch_y = time_axis_vals
+    else:
+        raise ValueError(f"(trend_in_time) `time_dim` must be `time` or `year`. Got: {time_dim}")
 
     if isinstance(dataset, xr.Dataset):
         # Get a numpy array of the values for the given variable
