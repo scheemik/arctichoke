@@ -55,8 +55,8 @@ def get_min_max(
         dataset = dataset[var]
     
     # Get the minimum value
-    var_min = dataset.min(skipna=True).values
+    var_min = dataset.min(skipna=True).item()
     # Get the maximum value
-    var_max = dataset.max(skipna=True).values
+    var_max = dataset.max(skipna=True).item()
 
     return var_min, var_max
