@@ -42,6 +42,7 @@ def make_diverging_cmap(
         --------
         >>> from seaicecp.plot.diverging_cmap import make_diverging_cmap
     """
+    # Verify input arguments
     if not isinstance(cmin, (int, float)):
         raise TypeError(f"(make_diverging_cmap) `cmin` must be `int` or `float`. Got type: {type(cmin)}")
     if not isinstance(cmax, (int, float)):
@@ -78,7 +79,7 @@ def make_diverging_cmap(
             midpoint=c_diverge_point_normalized,
             **kwargs,
         )
-    if range_below_mid == range_above_mid:
+    elif range_below_mid == range_above_mid:
         if verbose:
             print(f"(make_diverging_cmap) Reds and Blues are even")
         diverging_cmap = bokeh.palettes.diverging_palette(
