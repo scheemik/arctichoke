@@ -9,11 +9,15 @@ def test_make_title():
     test_cases = [
         {
             'dataset': '/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/siconc/gn/v20181212/siconc_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_201401-201412.nc',
-            'expected_title': 'EC-Earth3P-HR hist-1950 r1i1p1f1 ',
+            'expected_title': 'EC-Earth3P-HR hist-1950 r1i1p2f1 ',
         },
         {
             'dataset': xr.open_dataset('/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/siconc/gn/v20181212/siconc_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_201401-201412.nc').isel(time=0),
-            'expected_title': 'EC-Earth3P-HR hist-1950 r1i1p1f1 2014-01-16T12:00:00.000000000 ',
+            'expected_title': 'EC-Earth3P-HR hist-1950 r1i1p2f1 2014-01-16T12:00:00.000000000 ',
+        },
+        {
+            'dataset': xr.open_dataset('/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r2i1p2f1/SImon/silandfast/gn/v20260617/trim_CAA_silandfast_SImon_EC-Earth3P-HR_hist-1950_r2i1p2f1_gn_195001-195012.nc').isel(time=1),
+            'expected_title': 'EC-Earth3P-HR hist-1950 r2i1p2f1 1950-02-15T00:00:00.000000000 ',
         },
         {
             'dataset': '/seaicecp_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i1p1f1/Ofx/areacello/gn/v20190301/areacello_Ofx_HadGEM3-GC31-MM_hist-1950_r1i1p1f1_gn.nc',

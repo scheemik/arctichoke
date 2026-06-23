@@ -53,10 +53,10 @@ def make_title(
         dataset = [dataset]
     if isinstance(dataset, type([])):
         if len(dataset) < 1:
-            raise ValueError(f"(trend_in_time) `dataset` must have at least one item. Got: {dataset}")
+            raise ValueError(f"(make_title) `dataset` must have at least one item. Got: {dataset}")
         for datafile in dataset:
             if not isinstance(datafile, str):
-                raise TypeError(f"(trend_in_time) Each item in `dataset` list must be a string. Got: {type(datafile)}")
+                raise TypeError(f"(make_title) Each item in `dataset` list must be a string. Got: {type(datafile)}")
             # Verify this is a valid path
             datafile = verify_path(datafile)
             if not datafile.endswith('.nc'):
@@ -64,7 +64,7 @@ def make_title(
         # Load all the files at once
         dataset = xr.open_mfdataset(dataset)
     elif not isinstance(dataset, (xr.Dataset, xr.DataArray)):
-        raise TypeError(f"(trend_in_time) `dataset` must be a string, `xr.Dataset`, or `xarray.DataArray`. Got type: {type(dataset)}")
+        raise TypeError(f"(make_title) `dataset` must be a string, `xr.Dataset`, or `xarray.DataArray`. Got type: {type(dataset)}")
     if not isinstance(add_source_id, bool):
         raise TypeError(f"(make_title) `add_source_id` must be a `bool`. Got type: {type(add_source_id)}")
     if not isinstance(add_experiment_id, bool):
@@ -92,9 +92,13 @@ def make_title(
         dataset_title = f"{dataset_title}{dataset.attrs['experiment_id']} "
     # Add the variant label
     if add_variant_label:
-        if 'parent_variant_label' not in attr_keys:
-            raise KeyError(f"(make_title) `dataset` has no `parent_variant_label` attribute. Available attributes: {attr_keys}")
-        dataset_title = f"{dataset_title}{dataset.attrs['parent_variant_label']} "
+        if 'variant_label' in attr_keys:
+            variant_label_attr = 'variant_label'
+        elif 'parent_variant_label' in attr_keys:
+            variant_label_attr = 'parent_variant_label'
+        else:
+            raise KeyError(f"(make_label) `dataset` has no `variant_label` or `parent_variant_label` attribute. Available attributes: {attr_keys}")
+        dataset_title = f"{dataset_title}{dataset.attrs[variant_label_attr]} "
     # Add the time stamp
     if add_time_stamp:
         # Get the coordinate names
