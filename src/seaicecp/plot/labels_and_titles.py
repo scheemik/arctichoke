@@ -3,7 +3,7 @@ import xarray as xr
 from seaicecp.verify.verify_path import verify_path
 
 def make_title(
-    dataset: (str, [str], xr.DataArray, xr.Dataset),
+    dataset: (str, [str], xr.Dataset),
     add_source_id: bool = True,
     add_experiment_id: bool = True,
     add_variant_label: bool = True,
@@ -15,7 +15,7 @@ def make_title(
 
         Parameters
         ----------
-        dataset : `str`, list of `str`, `xarray.DataArray`, `xarray.Dataset`
+        dataset : `str`, list of `str`, `xarray.Dataset`
             The dataset for which to make a title.
         add_source_id : `bool`, optional
             Whether to add the source ID to the title.
@@ -63,8 +63,8 @@ def make_title(
                 raise TypeError(f"(plot_time_series) `datafile` must be a `.nc` filepath. Got: {datafile}")
         # Load all the files at once
         dataset = xr.open_mfdataset(dataset)
-    elif not isinstance(dataset, (xr.Dataset, xr.DataArray)):
-        raise TypeError(f"(make_title) `dataset` must be a string, `xr.Dataset`, or `xarray.DataArray`. Got type: {type(dataset)}")
+    elif not isinstance(dataset, (xr.Dataset)):
+        raise TypeError(f"(make_title) `dataset` must be a string, `xr.Dataset`. Got type: {type(dataset)}")
     if not isinstance(add_source_id, bool):
         raise TypeError(f"(make_title) `add_source_id` must be a `bool`. Got type: {type(add_source_id)}")
     if not isinstance(add_experiment_id, bool):
