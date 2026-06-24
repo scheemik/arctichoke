@@ -1,5 +1,6 @@
 import xarray as xr
 
+from seaicecp.dataset.get_variable import get_variable_name
 from seaicecp.verify.verify_path import verify_path
 
 def make_title(
@@ -8,6 +9,7 @@ def make_title(
     add_experiment_id: bool = True,
     add_variant_label: bool = True,
     add_time_stamp: bool = True,
+    **kwargs,
 ):
     """ Create a title for the dataset for use in plots.
 
@@ -118,3 +120,101 @@ def make_title(
             dataset_title = f"{dataset_title}{this_time_stamp} "
     
     return dataset_title
+
+def make_label(
+    dataset: (str, [str], xr.DataArray, xr.Dataset),
+    var: str,
+    add_name: bool = True,
+    add_units: bool = True,
+    **kwargs,
+):
+    """ Create a label for the specified variable in the given dataset for use in plots.
+
+        Assemble a label to be used in plots on axes or colorbars for the specified variable in the given dataset based on the specified attributes.
+
+        Parameters
+        ----------
+        dataset : `str`, list of `str`, `xarray.DataArray`, `xarray.Dataset`
+            The dataset for which to make a label.
+        var : `str`
+            The variable in `dataset` for which to make a label.
+        add_name : `bool`, optional
+            Whether to add the variable name to the label.
+            Default is `True`.
+        add_units : `bool`, optional
+            Whether to add the units to the label.
+            Default is `True`.
+
+        Returns
+        -------
+        dataset_label : `str`
+            The label for the dataset.
+        
+        Examples
+        --------
+        >>> from seaicecp.plot.labes_and_titles import make_label
+        >>> example_file = '/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/siconc/gn/v20181212/siconc_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_200001-200012.nc'
+        >>> make_label(example_file, 'siconc')
+        'Sea Ice Area Fraction (Ocean Grid) (%) '
+    """
+    # Verify input arguments
+    if isinstance(dataset, str):
+        # Wrap that string into a list
+        dataset = [dataset]
+    if isinstance(dataset, type([])):
+        if len(dataset) < 1:
+            raise ValueError(f"(make_label) `dataset` must have at least one item. Got: {dataset}")
+        for datafile in dataset:
+            if not isinstance(datafile, str):
+                raise TypeError(f"(make_label) Each item in `dataset` list must be a string. Got: {type(datafile)}")
+            # Verify this is a valid path
+            datafile = verify_path(datafile)
+            if not datafile.endswith('.nc'):
+                raise TypeError(f"(plot_time_series) `datafile` must be a `.nc` filepath. Got: {datafile}")
+        # Load all the files at once
+        dataset = xr.open_mfdataset(dataset)
+    elif not isinstance(dataset, (xr.Dataset, xr.DataArray)):
+        raise TypeError(f"(make_label) `dataset` must be a string, `xr.Dataset`, or `xarray.DataArray`. Got type: {type(dataset)}")
+    if not isinstance(var, (str, type(None))):
+        raise TypeError(f"(make_label) `var` must be a string or `None`. Got type: {type(var)}")
+    if not isinstance(add_name, bool):
+        raise TypeError(f"(make_label) `add_name` must be a `bool`. Got type: {type(add_name)}")
+    if not isinstance(add_units, bool):
+        raise TypeError(f"(make_label) `add_units` must be a `bool`. Got type: {type(add_units)}")
+
+    # Verify `dataset` has the specified variable
+    if isinstance(dataset, xr.Dataset):
+        actual_vars = get_variable_name(dataset)
+        if var not in actual_vars:
+            raise ValueError(f"(make_label) `dataset` must have the specified `var` {var}. Available variables: {actual_vars}")
+        # Get this variable's attributes
+        var_attrs = dataset[var].attrs
+        # Get this variable's attribute keys
+        attr_keys = dataset[var].attrs.keys()
+    else:
+        # Get this data array's attributes
+        var_attrs = dataset.attrs
+        # Get the data array's attribute keys
+        attr_keys = dataset.attrs.keys()
+
+    # Start the label string
+    dataset_label = ""
+
+    # Add the source ID
+    if add_name:
+        if 'long_name' in attr_keys:
+            var_name_attr = 'long_name'
+        elif 'original_name' in attr_keys:
+            var_name_attr = 'original_name'
+        elif 'standard_name' in attr_keys:
+            var_name_attr = 'standard_name'
+        else:
+            raise KeyError(f"(make_label) `dataset` has no `long_name`, `original_name`, or `standard_name` attribute. Available attributes: {attr_keys}")
+        dataset_label = f"{dataset_label}{var_attrs[var_name_attr]} "
+    # Add the experiment ID
+    if add_units:
+        if 'units' not in attr_keys:
+            raise KeyError(f"(make_label) `dataset` has no `units` attribute. Available attributes: {attr_keys}")
+        dataset_label = f"{dataset_label}({var_attrs['units']}) "
+    
+    return dataset_label

@@ -6,7 +6,7 @@ from seaicecp.dataset.get_min_max import get_min_max
 from seaicecp.dataset.latlon_type import get_latlon_names
 import seaicecp.params as sps
 from seaicecp.plot.diverging_cmap import make_diverging_cmap
-from seaicecp.plot.labels_and_titles import make_title 
+from seaicecp.plot.labels_and_titles import make_title, make_label
 from seaicecp.plot.limit_extent import get_limited_extent
 from seaicecp.plot.save_hvplots import save_hvplot
 
@@ -137,15 +137,15 @@ def quadmesh_map(
     qm_map_plot = xr_data[var].hvplot.quadmesh(
         lon_var, 
         lat_var, 
-        projection=map_projection, 
-        project=True,
-        global_extent=False, 
-        title=make_title(xr_data),
-        clabel='colorbar label',
-        cmap=this_cmap, 
-        symmetric=False,
-        coastline=True,
-        geo=True,
+        projection = map_projection, 
+        project = True,
+        global_extent = False, 
+        title = make_title(xr_data),
+        clabel = make_label(xr_data, var),
+        cmap = this_cmap, 
+        symmetric = False,
+        coastline = True,
+        geo = True,
     )
 
     # Set plot extent
