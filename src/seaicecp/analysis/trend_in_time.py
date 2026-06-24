@@ -7,7 +7,7 @@ from seaicecp.verify import verify_path
 
 def trend_in_time(
     dataset: (str, [str], xr.Dataset, xr.DataArray),
-    var: str,
+    var: str = None,
     time_dim: str = 'year',
     save_as: str = None,
     verbose: bool = False,
@@ -22,8 +22,10 @@ def trend_in_time(
         ----------
         dataset : `str`, list of `str`, `xarray.Dataset`, `xarray.DataArray`
             The dataset of which to find the sum across time.
-        var : `str`
+        var : `str`, `None`, optional
             The variable in `dataset` for which to take the trend across time.
+            This is required if `dataset` is an `xarray.Dataset`. 
+            Default is `None`.
         time_dim : `str`, optional
             The name of the time dimension over which to find the trend.
             Default is `year`. 
@@ -131,9 +133,10 @@ def trend_in_time(
         raise TypeError(f"(trend_in_time) `save_as` must be a `.nc` filepath. Got: {save_as}")
 
     # Verify `dataset` has the specified variable
-    actual_vars = get_variable_name(dataset)
-    if var not in actual_vars:
-        raise ValueError(f"(trend_in_time) `dataset` must have the specified `var` {var}. Available variables: {actual_vars}")
+    if isinstance(dataset, xr.Dataset):
+        actual_vars = get_variable_name(dataset)
+        if var not in actual_vars:
+            raise ValueError(f"(trend_in_time) `dataset` must have the specified `var` {var}. Available variables: {actual_vars}")
     
     # Information to output
     if verbose:
