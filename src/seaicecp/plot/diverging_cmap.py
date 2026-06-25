@@ -67,7 +67,7 @@ def make_diverging_cmap(
     range_above_mid = cmax - cmid
     # Set the normalized point
     c_diverge_point_normalized = (range_below_mid) / (total_range)
-    palette_cutoff = round(c_diverge_point_normalized * ncolors)
+    palette_cutoff = round(c_diverge_point_normalized * ncolors)-1
     if range_below_mid > range_above_mid:
         if verbose:
             print(f"(make_diverging_cmap) Shortening the Reds")
@@ -82,6 +82,7 @@ def make_diverging_cmap(
     elif range_below_mid == range_above_mid:
         if verbose:
             print(f"(make_diverging_cmap) Reds and Blues are even")
+            print(f"(make_diverging_cmap) `palette_cutoff`: {palette_cutoff}")
         diverging_cmap = bokeh.palettes.diverging_palette(
             bokeh.palettes.Blues[ncolors],
             bokeh.palettes.Reds[ncolors],
@@ -100,4 +101,8 @@ def make_diverging_cmap(
             midpoint=c_diverge_point_normalized,
             **kwargs,
         )
+    # Insert white (#ffffff) into the middle of the colormap
+    if verbose:
+        print(f"(make_diverging_cmap) Adding white (#ffffff) to the middle of the colormap")
+    diverging_cmap = diverging_cmap[:palette_cutoff] + ('#ffffff',) + diverging_cmap[palette_cutoff:]
     return diverging_cmap
