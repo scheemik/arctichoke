@@ -116,7 +116,7 @@ def make_title(
         # Check whether there is more than one time slice
         if dataset[time_coord].size == 1:
             # Get the value of the time stamp as a string
-            this_time_stamp = str(dataset[time_coord].values)
+            this_time_stamp = str(dataset[time_coord].values).split('.')[0]
             # Add the time stamp to the title
             dataset_title = f"{dataset_title}{this_time_stamp} "
     
