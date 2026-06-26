@@ -139,9 +139,9 @@ def sum_by_year(
     
     if var_name == 'silandfast':
         if isinstance(attr_long_name, type(None)):
-            attr_long_name = "Annual landfast ice months"
+            attr_long_name = "Annual Landfast Ice Months"
         if isinstance(attr_units, type(None)):
-            attr_units = "months per year"
+            attr_units = "months/yr"
 
     # Modify the attributes of the dataset to reflect the changes
     xr_var_to_add_attrs.attrs['standard_name'] = f'{var_name}_year_sum'
@@ -150,11 +150,11 @@ def sum_by_year(
     elif 'long_name' in xr_var_to_add_attrs.attrs.keys():
         xr_var_to_add_attrs.attrs['long_name'] = f'Yearly Sum of {xr_var_to_add_attrs.attrs['long_name']}'
     else:
-        xr_var_to_add_attrs.attrs['long_name'] = f'Yearly Sum of {var_name}_year_sum'
+        xr_var_to_add_attrs.attrs['long_name'] = f'Yearly Sum of {var_name}'
     if not isinstance(attr_units, type(None)):
         xr_var_to_add_attrs.attrs['units'] = attr_units
     elif 'units' in xr_var_to_add_attrs.attrs.keys():
-        xr_var_to_add_attrs.attrs['units'] = f'{xr_var_to_add_attrs.attrs['units']} per year'
+        xr_var_to_add_attrs.attrs['units'] = f'{xr_var_to_add_attrs.attrs['units']}/yr'
     else:
         xr_var_to_add_attrs.attrs['units'] = f'N/P'
     if 'comment' in xr_var_to_add_attrs.attrs.keys():
