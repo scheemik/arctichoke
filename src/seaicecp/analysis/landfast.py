@@ -163,7 +163,7 @@ def find_slow_ice(
 ):
     """ Calculate where slow ice is from the dataset.
 
-        Verify the dataset contains the `sispeed` variable, and adds a variable `sislow` which is 1 where `sispeed` is less than 1 cm/s (or the given threshold) and 0 elsewhere.
+        Verify the dataset contains the `sispeed` variable, and adds a variable `sislow` which is 1 where `sispeed` is less than 1 cm s-1 (or the given threshold) and 0 elsewhere.
 
         Parameters
         ----------
@@ -171,7 +171,7 @@ def find_slow_ice(
             The dataset of which to find the locations of slow ice.
         slow_threshold : `int`, `float`, optional
             The threshold above which to mark slow ice.
-            Default is `0.01` m/s, following Laliberté et al. 2018.
+            Default is `0.01` m s-1, following Laliberté et al. 2018.
         save_as : `str`, `None`, optional
             The file name to which to save the modified dataset.
             Default is `None`, which doesn't save the dataset to a file.
