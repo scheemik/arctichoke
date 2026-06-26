@@ -298,6 +298,8 @@ def find_slow_ice(
 def find_landfast_ice(
     siconc_dataset: (str, [str], xr.DataArray, xr.Dataset),
     sispeed_dataset: (str, [str], xr.DataArray, xr.Dataset),
+    packed_threshold: (int, float) = 85, 
+    slow_threshold: (int, float) = 0.01, 
     save_as: str = None,
     verbose: bool = False,
     **kwargs,
@@ -312,6 +314,12 @@ def find_landfast_ice(
             The dataset of which to find the locations of landfast ice that contains `siconc`.
         sispeed_dataset : `str`, list of `str`, `xarray.DataArray`, `xarray.Dataset`
             The dataset of which to find the locations of landfast ice that contains `sispeed`.
+        packed_threshold : `int`, `float`, optional
+            The threshold above which to mark packed ice.
+            Default is `85` percent, following Laliberté et al. 2018.
+        slow_threshold : `int`, `float`, optional
+            The threshold above which to mark slow ice.
+            Default is `0.01` m s-1, following Laliberté et al. 2018.
         save_as : `str`, `None`, optional
             The file name to which to save the modified dataset.
             Default is `None`, which doesn't save the dataset to a file.
@@ -348,6 +356,10 @@ def find_landfast_ice(
     """
     # Verify input arguments
     ## `siconc_dataset` and `sispeed_dataset` are verified by `find_packed_ice()` and `find_slow_ice()`, respectively
+    if not isinstance(packed_threshold, (int, float)):
+        raise TypeError(f"(find_landfast_ice) `packed_threshold` must be `int` or `float`. Got type: {type(packed_threshold)}")
+    if not isinstance(slow_threshold, (int, float)):
+        raise TypeError(f"(find_landfast_ice) `slow_threshold` must be `int` or `float`. Got type: {type(slow_threshold)}")
     if not isinstance(save_as, (str, type(None))):
         raise TypeError(f"(find_landfast_ice) `save_as` must be a string or `None`. Got type: {type(save_as)}")
     elif isinstance(save_as, str) and not '.nc' in save_as:
@@ -361,11 +373,13 @@ def find_landfast_ice(
 
     # Find the packed and slow ice
     dataset_sipacked = find_packed_ice(
-        dataset=siconc_dataset,
+        dataset = siconc_dataset,
+        packed_threshold = packed_threshold,
         **kwargs,
     )
     dataset_sislow = find_slow_ice(
-        dataset=sispeed_dataset,
+        dataset = sispeed_dataset,
+        slow_threshold = slow_threshold,
         **kwargs,
     )
 
