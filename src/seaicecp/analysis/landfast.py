@@ -15,7 +15,7 @@ from seaicecp.verify import verify_path
 
 def find_packed_ice(
     dataset: (str, [str], xr.DataArray, xr.Dataset),
-    packed_threshold = 85, 
+    packed_threshold: (int, float) = 85, 
     save_as: str = None,
     verbose: bool = False,
     **kwargs,
@@ -156,7 +156,7 @@ def find_packed_ice(
 
 def find_slow_ice(
     dataset: (str, [str], xr.DataArray, xr.Dataset),
-    slow_threshold = 0.01, 
+    slow_threshold: (int, float) = 0.01, 
     save_as: str = None,
     verbose: bool = False,
     **kwargs,
