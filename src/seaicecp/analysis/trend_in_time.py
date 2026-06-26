@@ -10,7 +10,7 @@ def trend_in_time(
     dataset: (str, [str], xr.Dataset, xr.DataArray),
     var: str = None,
     time_dim: str = 'year',
-    mask_where_zero_across_time: bool = True,
+    mask_where_zero_across_time: bool = False,
     save_as: str = None,
     verbose: bool = False,
     **kwargs,
@@ -33,7 +33,7 @@ def trend_in_time(
             Default is `year`. 
         mask_where_zero_across_time : `bool`, optional
             Whether to mask out grid cells which have zero as a value across the entire time dimension using `mask_where_all_zero()`.
-            Default is `True`. 
+            Default is `False`. 
         save_as : `str`, `None`, optional
             The file name to which to save the modified dataset.
             Default is `None`, which doesn't save the dataset to a file.
