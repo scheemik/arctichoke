@@ -166,7 +166,7 @@ def find_packed_ice(
         original_history = ''
     packedice_xr.attrs['history'] = f"{get_current_datetime_str()} altered by `seaicecp`: Calculated packed ice, marking `siconc` > {packed_threshold} as 1 and 0 otherwise. {original_history}"
 
-    # Save the trimmed dataset, if applicable
+    # Save the modified dataset, if applicable
     if not isinstance(save_as, type(None)):
         # Save the plot to file
         packedice_xr.to_netcdf(save_as)
@@ -256,7 +256,7 @@ def find_slow_ice(
     elif isinstance(save_as, str) and not '.nc' in save_as:
         raise TypeError(f"(find_slow_ice) `save_as` must be a `.nc` filepath. Got: {save_as}")
     if not isinstance(verbose, bool):
-        raise TypeError(f"(trim_latlon) `verbose` must be a `bool`. Got type: {type(verbose)}")
+        raise TypeError(f"(find_slow_ice) `verbose` must be a `bool`. Got type: {type(verbose)}")
 
     # Verify the dataset(s) contain(s) the `sispeed` variable
     for this_dataset in var_check_list:
@@ -324,7 +324,7 @@ def find_slow_ice(
         original_history = ''
     slowice_xr.attrs['history'] = f"{get_current_datetime_str()} altered by `seaicecp`: Calculated slow ice, marking `sispeed` > {slow_threshold} as 1 and 0 otherwise. {original_history}"
 
-    # Save the trimmed dataset, if applicable
+    # Save the modified dataset, if applicable
     if not isinstance(save_as, type(None)):
         # Save the plot to file
         slowice_xr.to_netcdf(save_as)
@@ -401,7 +401,7 @@ def find_landfast_ice(
     elif isinstance(save_as, str) and not '.nc' in save_as:
         raise TypeError(f"(find_landfast_ice) `save_as` must be a `.nc` filepath. Got: {save_as}")
     if not isinstance(verbose, bool):
-        raise TypeError(f"(trim_latlon) `verbose` must be a `bool`. Got type: {type(verbose)}")
+        raise TypeError(f"(find_landfast_ice) `verbose` must be a `bool`. Got type: {type(verbose)}")
     
     # Information to output
     if verbose:
@@ -469,7 +469,7 @@ def find_landfast_ice(
         original_history = ''
     landfastice_xr.attrs['history'] = f"{get_current_datetime_str()} altered by `seaicecp`: Calculated landfast ice, marking where both `siconc` > {packed_threshold} and `sispeed` > {slow_threshold} as 1 and 0 otherwise. {original_history}"
 
-    # Save the trimmed dataset, if applicable
+    # Save the modified dataset, if applicable
     if not isinstance(save_as, type(None)):
         # Save the plot to file
         landfastice_xr.to_netcdf(save_as)
@@ -514,14 +514,41 @@ def make_landfast_files(
         
         Examples
         --------
-        >>> from seaicecp.path.find_data import list_variable_files
-        >>> list_of_files = list_variable_files('EC-Earth3P-HR', 'siage', variant_label='r3i1p2f1')
-        >>> from seaicecp.dataset.trim_dataset import make_landfast_files
-        >>> make_landfast_files(list_of_files)
-        (make_landfast_files) `name_prefix`: trim_NWP_
-        (trim_latlon) `save_as`: /seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/siage/gn/v20190214/trim_NWP_siage_SImon_EC-Earth3P-HR_hist-1950_r3i1p2f1_gn_195001-195012.nc
+        >>> from seaicecp.path import list_variable_files
+        >>> from seaicecp.analysis.landfast import make_landfast_files
+        >>> from seaicecp.params import CAA_BBOX
+        >>> this_model = 'EC-Earth3P-HR'
+        >>> for this_variant_label in [
+        >>>     'r1i1p2f1', 
+        >>>     'r2i1p2f1', 
+        >>>     'r3i1p2f1',
+        >>> ]:
+        >>>     for this_experiment in ['hist-1950']:#, 'highres-future']:
+        >>>         siconc_list = list_variable_files(
+        >>>             source_id = this_model,
+        >>>             variable_id = 'siconc',
+        >>>             experiment_id = this_experiment,
+        >>>             variant_label = this_variant_label,
+        >>>         )
+        >>>         sispeed_list = list_variable_files(
+        >>>             source_id = this_model,
+        >>>             variable_id = 'sispeed',
+        >>>             experiment_id = this_experiment,
+        >>>             variant_label = this_variant_label,
+        >>>         )
+        >>>         make_landfast_files(
+        >>>             siconc_files = siconc_list,
+        >>>             sispeed_files = sispeed_list,
+        >>>             map_bbox = CAA_BBOX,
+        >>>             precise_trim = False,
+        >>>         )
+        (make_landfast_files) Writing file `/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/silandfast/gn/v20260617/trim_CAA_silandfast_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_195001-195012.nc`.
+        (make_landfast_files) Writing file `/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/silandfast/gn/v20260617/trim_CAA_silandfast_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_195101-195112.nc`.
+        (make_landfast_files) Writing file `/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/silandfast/gn/v20260617/trim_CAA_silandfast_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_195201-195212.nc`.
         ...
-        (trim_latlon) `save_as`: /seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/siage/gn/v20190214/trim_NWP_siage_SImon_EC-Earth3P-HR_hist-1950_r3i1p2f1_gn_201401-201412.nc
+        (make_landfast_files) Writing file `/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/silandfast/gn/v20260617/trim_CAA_silandfast_SImon_EC-Earth3P-HR_hist-1950_r3i1p2f1_gn_201201-201212.nc`.
+        (make_landfast_files) Writing file `/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/silandfast/gn/v20260617/trim_CAA_silandfast_SImon_EC-Earth3P-HR_hist-1950_r3i1p2f1_gn_201301-201312.nc`.
+        (make_landfast_files) Writing file `/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/silandfast/gn/v20260617/trim_CAA_silandfast_SImon_EC-Earth3P-HR_hist-1950_r3i1p2f1_gn_201401-201412.nc`.
     """
     # Verify input arguments
     if isinstance(siconc_files, str):
@@ -542,13 +569,13 @@ def make_landfast_files(
         raise ValueError(f"(make_landfast_files) `siconc_files` and `sispeed_files` must be the same length. Got `len(siconc_files)`: {len(siconc_files)}, `len(sispeed_files)`: {len(sispeed_files)}")
     if isinstance(map_bbox, type([])):
         if not len(map_bbox) == 4:
-            raise ValueError(f"(trim_latlon) `map_bbox` must have a length of 4. Got length: {len(map_bbox)}")
+            raise ValueError(f"(make_landfast_files) `map_bbox` must have a length of 4. Got length: {len(map_bbox)}")
         else: 
             for i in range(len(map_bbox)):
                 if not isinstance(map_bbox[i], (int, float)):
-                    raise TypeError(f"(trim_latlon) `map_bbox[{i}]` must be a number. Got type: {type(map_bbox[i])}")
+                    raise TypeError(f"(make_landfast_files) `map_bbox[{i}]` must be a number. Got type: {type(map_bbox[i])}")
     elif not isinstance(map_bbox, (type(None), type([]))):
-        raise TypeError(f"(trim_latlon) `map_bbox` must be a list or `None`. Got type: {type(map_bbox)}")
+        raise TypeError(f"(make_landfast_files) `map_bbox` must be a list or `None`. Got type: {type(map_bbox)}")
     if not isinstance(version_id, str):
         raise TypeError(f"(make_landfast_files) `version_id` must be a string. Got type: {type(version_id)}")
     if not isinstance(overwrite, bool):
