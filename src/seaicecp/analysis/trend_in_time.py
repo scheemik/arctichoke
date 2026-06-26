@@ -1,6 +1,7 @@
 import numpy as np
 import xarray as xr
 
+from seaicecp import get_current_datetime_str
 from seaicecp.dataset.get_variable import get_variable_name
 from seaicecp.dataset.get_min_max import get_min_max
 import seaicecp.params as sps
@@ -189,8 +190,41 @@ def trend_in_time(
         trends_dataset = trends_dataset.rename_vars({var: f'{var}_trends'})
         # Put the trends data into the dataset
         trends_dataset[f'{var}_trends'].values = trends
+        # Get the reference to this variable
+        xr_var_to_add_attrs = trends_dataset[f'{var}_trends']
+        # Add this operation to the history
+        if 'history' in trends_dataset.attrs.keys():
+            original_history = trends_dataset.attrs['history']
+        else:
+            original_history = ''
+        trends_dataset.attrs['history'] = f"{get_current_datetime_str()} altered by `seaicecp`: Calculated the sum of the `{var}` values per year in `{var}_trends`. {original_history}"
     else:
         trends_dataset.values = trends
+        # Get the name of the variable in the dataset
+        var = trends_dataset.name
+        # Get the reference to this variable
+        xr_var_to_add_attrs = trends_dataset
+
+    # Modify the attributes of the dataset to reflect the changes
+    xr_var_to_add_attrs.attrs['standard_name'] = f'{var}_trends'
+    if 'long_name' in xr_var_to_add_attrs.attrs.keys():
+        xr_var_to_add_attrs.attrs['long_name'] = f'Trend in {xr_var_to_add_attrs.attrs['long_name']}'
+    else:
+        xr_var_to_add_attrs.attrs['long_name'] = f'Trend in {var}'
+    if 'units' in xr_var_to_add_attrs.attrs.keys():
+        xr_var_to_add_attrs.attrs['units'] = f'{xr_var_to_add_attrs.attrs['units']}/yr'
+    else:
+        xr_var_to_add_attrs.attrs['units'] = f'N/P'
+    if 'comment' in xr_var_to_add_attrs.attrs.keys():
+        xr_var_to_add_attrs.attrs['comment'] = f'Trend in {xr_var_to_add_attrs.attrs['comment']}'
+    else:
+        xr_var_to_add_attrs.attrs['comment'] = f'N/P'
+    xr_var_to_add_attrs.attrs['original_name'] = f'{var}_trends'
+    if 'history' in xr_var_to_add_attrs.attrs.keys():
+        original_history = xr_var_to_add_attrs.attrs['history']
+    else:
+        original_history = ''
+    xr_var_to_add_attrs.attrs['history'] = f"{get_current_datetime_str()} altered by `seaicecp`: Calculated the sum of the `{var}` values to get `{var}_trends`. {original_history}"
 
     # Save the modified dataset, if applicable
     if not isinstance(save_as, type(None)):
