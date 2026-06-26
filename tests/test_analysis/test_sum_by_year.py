@@ -137,6 +137,28 @@ def test_sum_by_year():
             assert True, f"`sum_by_year` raised an exception on invalid `dataset`: {e}"
         else:
             assert False, f"`sum_by_year` did not raise an exception on invalid `dataset` {invalid_string}"
+        # Test with `attr_long_name`
+        if not isinstance(invalid_string, type(None)):
+            try:
+                actual = analysis.sum_by_year(
+                    dataset = test_cases[0]['dataset'],
+                    attr_long_name = invalid_string,
+                )
+            except (TypeError) as e:
+                assert True, f"`sum_by_year` raised an exception on invalid `attr_long_name`: {e}"
+            else:
+                assert False, f"`sum_by_year` did not raise an exception on invalid `attr_long_name` {invalid_string}"
+        # Test with `attr_units`
+        if not isinstance(invalid_string, type(None)):
+            try:
+                actual = analysis.sum_by_year(
+                    dataset = test_cases[0]['dataset'],
+                    attr_units = invalid_string,
+                )
+            except (TypeError) as e:
+                assert True, f"`sum_by_year` raised an exception on invalid `attr_units`: {e}"
+            else:
+                assert False, f"`sum_by_year` did not raise an exception on invalid `attr_units` {invalid_string}"
         # Test with `save_as`
         if not isinstance(invalid_string, type(None)):
             try:
@@ -149,15 +171,14 @@ def test_sum_by_year():
             else:
                 assert False, f"`sum_by_year` did not raise an exception on invalid `save_as` {invalid_string}"
         # Test with `verbose`
-        if not isinstance(invalid_string, type(None)):
-            try:
-                actual = analysis.sum_by_year(
-                    dataset = test_cases[0]['dataset'],
-                    verbose = invalid_string,
-                )
-            except (TypeError) as e:
-                assert True, f"`sum_by_year` raised an exception on invalid `verbose`: {e}"
-            else:
-                assert False, f"`sum_by_year` did not raise an exception on invalid `verbose` {invalid_string}"
+        try:
+            actual = analysis.sum_by_year(
+                dataset = test_cases[0]['dataset'],
+                verbose = invalid_string,
+            )
+        except (TypeError) as e:
+            assert True, f"`sum_by_year` raised an exception on invalid `verbose`: {e}"
+        else:
+            assert False, f"`sum_by_year` did not raise an exception on invalid `verbose` {invalid_string}"
     # Clean up test files that were created
     remove_non_empty_directory(test_file_dir)
