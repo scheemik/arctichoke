@@ -173,7 +173,7 @@ def calc_siconc(
     
     return siconc2_dataset
 
-def make_landfast_files(
+def make_siconc_files(
     sithick_files: [str],
     sivol_files: [str],
     map_bbox: [float, float, float, float] = None,
@@ -181,23 +181,23 @@ def make_landfast_files(
     overwrite: bool = False,
     **kwargs,
 ):
-    """ Make landfast files based on the lists of files given.
+    """ Make sea ice concentration files based on the lists of files given.
 
-        For each given pair of files, load the data, trim the datasets (if applicable), calculate the landfast ice, then save the landfast ice dataset as a new file in the same directory structure. 
+        For each given pair of files, load the data, trim the datasets (if applicable), calculate the sea ice concentration, then save the sea ice concentration dataset as a new file in the same directory structure. 
 
         Parameters
         ----------
         sithick_files : List of `str`
-            A list of paths of the sea ice concentration data files. 
+            A list of paths of the sea ice thickness data files. 
         sivol_files : List of `str`
-            A list of paths of the sea ice speed data files. 
+            A list of paths of the sea ice volume data files. 
         map_bbox : Array of `float`, `None`, optional
             An array of coordinates defining the bounding box of the map in the following format:
                 - [LAT_MAX, LAT_MIN, LON_MAX, LON_MIN]
                 
             Default is `None`, meaning the data will not be trimmed.
         version_id : `str`, optional
-            The version ID to use when making the directory structure for the landfast ice files.
+            The version ID to use when making the directory structure for the sea ice concentration files.
             Default is `'v20260617'`.
         overwrite : `bool`, optional
             Whether to overwrite an existing file if it exists.
@@ -212,7 +212,7 @@ def make_landfast_files(
         Examples
         --------
         >>> from seaicecp.path import list_variable_files
-        >>> from seaicecp.analysis.landfast import make_landfast_files
+        >>> from seaicecp.analysis import make_siconc_files
         >>> from seaicecp.params import CAA_BBOX
         >>> this_model = 'EC-Earth3P-HR'
         >>> for this_variant_label in [
@@ -233,50 +233,50 @@ def make_landfast_files(
         >>>             experiment_id = this_experiment,
         >>>             variant_label = this_variant_label,
         >>>         )
-        >>>         make_landfast_files(
+        >>>         make_siconc_files(
         >>>             sithick_files = sithick_list,
         >>>             sivol_files = sivol_list,
         >>>             map_bbox = CAA_BBOX,
         >>>             precise_trim = False,
         >>>         )
-        (make_landfast_files) Writing file `/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/siconc2/gn/v20260617/trim_CAA_siconc2_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_195001-195012.nc`.
-        (make_landfast_files) Writing file `/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/siconc2/gn/v20260617/trim_CAA_siconc2_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_195101-195112.nc`.
-        (make_landfast_files) Writing file `/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/siconc2/gn/v20260617/trim_CAA_siconc2_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_195201-195212.nc`.
+        (make_siconc_files) Writing file `/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/siconc2/gn/v20260617/trim_CAA_siconc2_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_195001-195012.nc`.
+        (make_siconc_files) Writing file `/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/siconc2/gn/v20260617/trim_CAA_siconc2_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_195101-195112.nc`.
+        (make_siconc_files) Writing file `/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/siconc2/gn/v20260617/trim_CAA_siconc2_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_195201-195212.nc`.
         ...
-        (make_landfast_files) Writing file `/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/siconc2/gn/v20260617/trim_CAA_siconc2_SImon_EC-Earth3P-HR_hist-1950_r3i1p2f1_gn_201201-201212.nc`.
-        (make_landfast_files) Writing file `/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/siconc2/gn/v20260617/trim_CAA_siconc2_SImon_EC-Earth3P-HR_hist-1950_r3i1p2f1_gn_201301-201312.nc`.
-        (make_landfast_files) Writing file `/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/siconc2/gn/v20260617/trim_CAA_siconc2_SImon_EC-Earth3P-HR_hist-1950_r3i1p2f1_gn_201401-201412.nc`.
+        (make_siconc_files) Writing file `/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/siconc2/gn/v20260617/trim_CAA_siconc2_SImon_EC-Earth3P-HR_hist-1950_r3i1p2f1_gn_201201-201212.nc`.
+        (make_siconc_files) Writing file `/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/siconc2/gn/v20260617/trim_CAA_siconc2_SImon_EC-Earth3P-HR_hist-1950_r3i1p2f1_gn_201301-201312.nc`.
+        (make_siconc_files) Writing file `/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/siconc2/gn/v20260617/trim_CAA_siconc2_SImon_EC-Earth3P-HR_hist-1950_r3i1p2f1_gn_201401-201412.nc`.
     """
     # Verify input arguments
     if isinstance(sithick_files, str):
         sithick_files = [sithick_files]
     elif not isinstance(sithick_files, type([])):
-        raise TypeError(f"(make_landfast_files) `sithick_files` must be a list. Got type: {type(sithick_files)}")
+        raise TypeError(f"(make_siconc_files) `sithick_files` must be a list. Got type: {type(sithick_files)}")
     for item in sithick_files:
         if not isinstance(item, str):
-            raise TypeError(f"(make_landfast_files) `sithick_files` must be a list of strings. Got type: {type(item)} for item {item}")
+            raise TypeError(f"(make_siconc_files) `sithick_files` must be a list of strings. Got type: {type(item)} for item {item}")
     if isinstance(sivol_files, str):
         sivol_files = [sivol_files]
     elif not isinstance(sivol_files, type([])):
-        raise TypeError(f"(make_landfast_files) `sivol_files` must be a list. Got type: {type(sivol_files)}")
+        raise TypeError(f"(make_siconc_files) `sivol_files` must be a list. Got type: {type(sivol_files)}")
     for item in sivol_files:
         if not isinstance(item, str):
-            raise TypeError(f"(make_landfast_files) `sivol_files` must be a list of strings. Got type: {type(item)} for item {item}")
+            raise TypeError(f"(make_siconc_files) `sivol_files` must be a list of strings. Got type: {type(item)} for item {item}")
     if len(sithick_files) != len(sivol_files):
-        raise ValueError(f"(make_landfast_files) `sithick_files` and `sivol_files` must be the same length. Got `len(sithick_files)`: {len(sithick_files)}, `len(sivol_files)`: {len(sivol_files)}")
+        raise ValueError(f"(make_siconc_files) `sithick_files` and `sivol_files` must be the same length. Got `len(sithick_files)`: {len(sithick_files)}, `len(sivol_files)`: {len(sivol_files)}")
     if isinstance(map_bbox, type([])):
         if not len(map_bbox) == 4:
-            raise ValueError(f"(make_landfast_files) `map_bbox` must have a length of 4. Got length: {len(map_bbox)}")
+            raise ValueError(f"(make_siconc_files) `map_bbox` must have a length of 4. Got length: {len(map_bbox)}")
         else: 
             for i in range(len(map_bbox)):
                 if not isinstance(map_bbox[i], (int, float)):
-                    raise TypeError(f"(make_landfast_files) `map_bbox[{i}]` must be a number. Got type: {type(map_bbox[i])}")
+                    raise TypeError(f"(make_siconc_files) `map_bbox[{i}]` must be a number. Got type: {type(map_bbox[i])}")
     elif not isinstance(map_bbox, (type(None), type([]))):
-        raise TypeError(f"(make_landfast_files) `map_bbox` must be a list or `None`. Got type: {type(map_bbox)}")
+        raise TypeError(f"(make_siconc_files) `map_bbox` must be a list or `None`. Got type: {type(map_bbox)}")
     if not isinstance(version_id, str):
-        raise TypeError(f"(make_landfast_files) `version_id` must be a string. Got type: {type(version_id)}")
+        raise TypeError(f"(make_siconc_files) `version_id` must be a string. Got type: {type(version_id)}")
     if not isinstance(overwrite, bool):
-        raise TypeError(f"(make_landfast_files) `overwrite` must be a `bool`. Got type: {type(overwrite)}")
+        raise TypeError(f"(make_siconc_files) `overwrite` must be a `bool`. Got type: {type(overwrite)}")
 
     # Loop across each file in the list
     for i in range(len(sithick_files)):
@@ -287,12 +287,12 @@ def make_landfast_files(
         sithick_filestem = sithick_filepath.replace('sithick', '')
         sivol_filestem = sivol_filepath.replace('sivol', '')
         if sithick_filestem != sivol_filestem:
-            raise ValueError(f"(make_landfast_files) `sithick` and `sivol` files for index i={i} are not from the same run\n`sithick_filepath`: {sithick_filepath}\n`sivol_filepath`:{sivol_filepath}")
+            raise ValueError(f"(make_siconc_files) `sithick` and `sivol` files for index i={i} are not from the same run\n`sithick_filepath`: {sithick_filepath}\n`sivol_filepath`:{sivol_filepath}")
         # Get the version ID to replace
         replace_this_version_ID = sithick_filepath.split('/')[-2]
-        # Assemble the landfast filename
-        landfast_filepath = sithick_filepath.replace(replace_this_version_ID, version_id)
-        landfast_filepath = landfast_filepath.replace('sithick', 'siconc2')
+        # Assemble the sea ice concentration filename
+        siconc2_filepath = sithick_filepath.replace(replace_this_version_ID, version_id)
+        siconc2_filepath = siconc2_filepath.replace('sithick', 'siconc2')
         # Add trimming prefix, if applicable
         if not isinstance(map_bbox, type(None)):
             if map_bbox == sps.CAA_BBOX:
@@ -301,20 +301,20 @@ def make_landfast_files(
                 trim_prefix = 'trim_NWP_'
             else:
                 trim_prefix = 'trim_'
-            landfast_filename = landfast_filepath.split('/')[-1]
-            landfast_filepath = landfast_filepath.replace(landfast_filename, f"{trim_prefix}{landfast_filename}")
+            siconc2_filename = siconc2_filepath.split('/')[-1]
+            siconc2_filepath = siconc2_filepath.replace(siconc2_filename, f"{trim_prefix}{siconc2_filename}")
         # Make sure the directory exists
-        make_file_path(landfast_filepath)
+        make_file_path(siconc2_filepath)
         # Check whether the file exists
         try:
-            verify_path(landfast_filepath)
+            verify_path(siconc2_filepath)
             if overwrite == False:
-                warnings.warn(f"(make_landfast_files) File `{landfast_filepath}` exists already. To overwrite this file, set `overwrite` to `True`.", UserWarning)
+                warnings.warn(f"(make_siconc_files) File `{siconc2_filepath}` exists already. To overwrite this file, set `overwrite` to `True`.", UserWarning)
                 continue
             else:
-                print(f"\t(make_landfast_files) Overwriting file `{landfast_filepath}`.")
+                print(f"\t(make_siconc_files) Overwriting file `{siconc2_filepath}`.")
         except (FileNotFoundError):
-            print(f"\t(make_landfast_files) Writing file `{landfast_filepath}`.")
+            print(f"\t(make_siconc_files) Writing file `{siconc2_filepath}`.")
         # Load `sithick` and `sivol` files with `xarray`
         sithick_xr = xr.open_dataset(sithick_filepath)
         sivol_xr = xr.open_dataset(sivol_filepath)
@@ -330,11 +330,11 @@ def make_landfast_files(
                 map_bbox = map_bbox,
                 **kwargs,
             )
-        # Calculate the landfast ice and save to file
+        # Calculate the sea ice concentration ice and save to file
         calc_siconc(
             sithick_dataset = sithick_xr,
             sivol_dataset = sivol_xr,
-            save_as = landfast_filepath,
+            save_as = siconc2_filepath,
             **kwargs,
         )
 
