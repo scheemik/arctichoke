@@ -84,6 +84,8 @@ def trim_latlon(
 
     # Determine the longitude type of the dataset
     lon_type = get_lon_type(xr_data)
+    if verbose:
+        print(f"(trim_latlon) `lon_type`: {lon_type}")
     if lon_type == 'PM_centered':
         # Check whether the longitude values are negative
         if box_lon_max < 0:
@@ -94,6 +96,8 @@ def trim_latlon(
     # cdo expects bounding box coordinates as a string in the order: 
     ## lon_min, lon_max, lat_min, lat_max
     this_bbox = f"{box_lon_min},{box_lon_max},{box_lat_min},{box_lat_max}"
+    if verbose:
+        print(f"(trim_latlon) `this_bbox`: {this_bbox}")
 
     # Use `cdo` to trim the indices which contain no data within the bounding box
     xr_data_trimmed = cdo.sellonlatbox(this_bbox, input=xr_data, returnXDataset='trim_latlon')
