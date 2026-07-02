@@ -186,7 +186,8 @@ def trim_latlon(
 
 def trim_files(
     files_to_trim: [str],
-    name_prefix: str = 'trim_NWP_',
+    name_prefix: str = 'trim_',
+    use_cdo_python: bool = True,
     overwrite: bool = False,
     **kwargs,
 ):
@@ -200,7 +201,10 @@ def trim_files(
             A list of paths of the data files to trim. 
         name_prefix : `str`, optional
             The prefix to be prepended to each file name when saving.
-            Default is `trim_NWP_`.
+            Default is `trim_`.
+        use_cdo_python : `bool`, optional
+            Whether to tell `trim_latlon()` to use the Python implementation of `cdo` or use `subprocess` to run a shell command.
+            Default is `True` which uses the Python implementation of `cdo`.
         overwrite : `bool`, optional
             Whether to overwrite an existing file if it exists.
             Default is `False`.
@@ -237,6 +241,8 @@ def trim_files(
         name_prefix = f"{name_prefix}_"
     # Replace any spaces in `name_prefix` with underscores
     name_prefix = name_prefix.replace(" ", "_")
+    if not isinstance(use_cdo_python, bool):
+        raise TypeError(f"(trim_files) `use_cdo_python` must be a `bool`. Got type: {type(use_cdo_python)}")
     if not isinstance(overwrite, bool):
         raise TypeError(f"(trim_files) `overwrite` must be a `bool`. Got type: {type(overwrite)}")
     
@@ -262,10 +268,13 @@ def trim_files(
         except (FileNotFoundError):
             print(f"\t(trim_files) Writing file `{new_filepath}`.")
         # Load this file with `xarray`
-        this_xr = xr.open_dataset(filepath)
+        if use_cdo_python:
+            this_xr = xr.open_dataset(filepath)
+        else:
+            this_xr = filepath
         # Trim the dataset and save to file
         trim_latlon(
-            xr_data = this_xr,
+            dataset = this_xr,
             save_as = new_filepath,
             **kwargs,
         )
