@@ -618,7 +618,7 @@ def make_landfast_files(
         siconc_filestem = siconc_filepath.replace(siconc_var, '')
         sispeed_filestem = sispeed_filepath.replace('sispeed', '')
         if siconc_filestem != sispeed_filestem:
-            raise ValueError(f"(make_landfast_files) `{siconc_var}` and `sispeed` files for index i={i} are not from the same run\n`siconc_filepath`: {siconc_filepath}\n`sispeed_filepath`:{sispeed_filepath}")
+            raise ValueError(f"(make_landfast_files) `{siconc_var}` and `sispeed` files for index i={i} are not from the same run.\n`siconc_filepath`: {siconc_filepath}\n`sispeed_filepath`:{sispeed_filepath}\n`siconc_filestem`: {siconc_filestem}\n`sispeed_filestem`:{sispeed_filestem}")
         # Get the version ID to replace
         replace_this_version_ID = siconc_filepath.split('/')[-2]
         # Assemble the landfast filename
