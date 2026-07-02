@@ -90,7 +90,7 @@ def find_packed_ice(
             # Verify this is a valid path
             datafile = verify_path(datafile)
             if not datafile.endswith('.nc'):
-                raise TypeError(f"(plot_time_series) `datafile` must be a `.nc` filepath. Got: {datafile}")
+                raise TypeError(f"(find_packed_ice) `datafile` must be a `.nc` filepath. Got: {datafile}")
             input_command_files = f"{input_command_files} {datafile}"
         input_command_files = f"{input_command_files} ]"
         cdo_command = cdo.mergetime
