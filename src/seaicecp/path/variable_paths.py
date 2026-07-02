@@ -95,7 +95,11 @@ def list_available_variables(
         # Get the variant labels (ensemble members) for each experiment ID
         for this_experiment_id in experiment_ids:
             # Verify the experiment ID path exists
-            experiment_path = verify_path(f"{model_path}/{this_experiment_id}")
+            try:
+                experiment_path = verify_path(f"{model_path}/{this_experiment_id}")
+            except:
+                warnings.warn(f"(get_variable_path) Experiment path not found: `{model_path}/{this_experiment_id}`\nSkipping this experiment.", UserWarning)
+                continue
             # Get the variant labels
             variant_labels = next(os.walk(experiment_path))[1]
             # Add the variant labels as a dictionary to the available variable dictionary
