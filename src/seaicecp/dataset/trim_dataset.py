@@ -1,4 +1,5 @@
 import numpy as np
+import subprocess
 import xarray as xr
 import warnings
 from cdo import Cdo, __version__
@@ -107,7 +108,20 @@ def trim_latlon(
         print(f"(trim_latlon) `this_bbox`: {this_bbox}")
 
     # Use `cdo` to trim the indices which contain no data within the bounding box
-    xr_data_trimmed = cdo.sellonlatbox(this_bbox, input=xr_data, returnXDataset='trim_latlon')
+    if not isinstance(dataset, str):
+        # Use the Python implementation of `cdo` to directly return an `xarray` Dataset
+        xr_data_trimmed = cdo.sellonlatbox(this_bbox, input=xr_data, returnXDataset='trim_latlon')
+    else:
+        # Set a location for the temporary file
+        tmp_save_file = './cdo_tmp/tmp_sellonlatbox_file.nc'
+        # Use `subprocess` to execute a `cdo` shell command
+        # This can be helpful when working with very large file sizes
+        cdo_command = f"cdo -O -s -f nc -sellonlatbox,{this_bbox} {dataset} {tmp_save_file}"
+        if verbose:
+            print(f"(trim_latlon) Using `cdo` directly, `cdo_command`: {cdo_command}")
+        subprocess.run(cdo_command, shell=True)
+        # Load that file in as an xarray
+        xr_data_trimmed = xr.open_dataset(tmp_save_file)
     
     # Get the list of data variables
     data_vars = list(xr_data_trimmed.data_vars.keys())
@@ -118,7 +132,7 @@ def trim_latlon(
         if meta_var in data_vars:
             data_vars.remove(meta_var)
     if verbose:
-        print(f"(trim_latlon) `data_vars` cleaned: {data_vars}")
+        print(f"(trim_latlon) `data_vars` after cleaning: {data_vars}")
 
     # Get the latitude and longitude coordinate names
     lat_var, lon_var = get_latlon_names(xr_data_trimmed)
