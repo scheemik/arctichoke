@@ -165,10 +165,23 @@ def get_lon_type(
     lat_var, lon_var = get_latlon_names(dataset)
     
     # Get the longitude values of this dataset
-    lon_vals = dataset[lon_var].values.flatten()
+    checked_sanity = False
+    # lon_vals = dataset[lon_var].values.flatten()
     # Get the maximum and minimum longitude values
-    lon_max = max(lon_vals)
-    lon_min = min(lon_vals)
+    # lon_max = max(lon_vals)
+    # lon_min = min(lon_vals)
+    while checked_sanity == False:
+        lon_min = dataset[lon_var].min(skipna=True).compute().item()
+        lon_max = dataset[lon_var].max(skipna=True).compute().item()
+
+        # Check for missing values
+        if lon_min < -1e+30:
+            # HadGEM3-GC31-HH has longitude missing values of `-1.00000002e+30`
+            # I know that HadGEM3-GC31-HH has an actual longitude minimum of 0
+            lon_min = 0
+            checked_sanity = True
+        else:
+            checked_sanity = True
 
     # Determine the type of longitude values the dataset has
     lon_type = determine_lon_type(
