@@ -14,7 +14,7 @@ from seaicecp.dataset.grid_type import get_grid_type
 from seaicecp.dataset.latlon_type import get_latlon_names, get_lon_type
 
 def trim_latlon(
-    xr_data: xr.Dataset,
+    dataset: (str, xr.Dataset, xr.DataArray),
     map_bbox: [float, float, float, float] = sps.NWP_BBOX,
     precise_trim: bool = False,
     save_as: str = None,
@@ -26,7 +26,7 @@ def trim_latlon(
 
         Parameters
         ----------
-        xr_data : `xarray.Dataset`
+        dataset : `str`, `xarray.Dataset`, `xarray.DataArray`
             The dataset to plot.
         map_bbox : Array of `float`, optional
             An array of coordinates defining the bounding box of the map in the following format:
@@ -53,8 +53,15 @@ def trim_latlon(
         >>> 
     """
     # Verify input arguments
-    if not isinstance(xr_data, (xr.Dataset, xr.DataArray)):
-        raise TypeError(f"(trim_latlon) `xr_data` must be `xr.Dataset` or `xr.DataArray`. Got type: {type(xr_data)}")
+    if not isinstance(dataset, (str, xr.Dataset, xr.DataArray)):
+        raise TypeError(f"(trim_latlon) `dataset` must be a string, `xr.Dataset`, or `xr.DataArray`. Got type: {type(dataset)}")
+    if isinstance(dataset, str):
+        if not dataset.endswith('.nc'):
+            raise TypeError(f"(trim_latlon) `datafile` must be a `.nc` filepath. Got: {datafile}")
+        dataset = verify_path(dataset)
+        xr_data = xr.open_dataset(dataset)
+    else:
+        xr_data = dataset
     if not isinstance(map_bbox, type([])):
         raise TypeError(f"(trim_latlon) `map_bbox` must be a list. Got type: {type(map_bbox)}")
     elif not len(map_bbox) == 4:
