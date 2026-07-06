@@ -5,19 +5,22 @@ sea_ice_vars = {
         'plot_range': None,
     },
     'siage': {
-        'plot_range': None,
+        'plot_range': [0, 5],
     },
     'siconc': {
         'plot_range': [0, 100],
     },
     'sithick': {
-        'plot_range': None,
+        'plot_range': [0, 10],
     },
     'siu': {
         'plot_range': None,
     },
     'siv': {
         'plot_range': None,
+    },
+    'sivol': {
+        'plot_range': [0, 10],
     },
 }
 
