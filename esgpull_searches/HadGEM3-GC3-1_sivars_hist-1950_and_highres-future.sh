@@ -5,6 +5,6 @@ data_node:eagle.alcf.anl.gov,esgf-node.ornl.gov \
 experiment_id:hist-1950,highres-future \
 source_id:HadGEM3-GC31-HH,HadGEM3-GC31-HM,HadGEM3-GC31-MM \
 frequency:mon \
-variable_id:siage,siconc,sithick,siu,siv
-# Expect to find 140 datasets.
-# Downloads 2150 files (90.6 GiB)
+variable_id:siage,siconc,sispeed,sithick,siu,siv,sivol
+# Expect to find 196 datasets.
+# Downloads 3068 files (142.4 GiB)

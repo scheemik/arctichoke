@@ -1,3 +1,4 @@
+import warnings
 import xarray as xr 
 
 from seaicecp.verify import verify_path
@@ -45,6 +46,7 @@ def get_variable_name(
 
     # Check how many variables are left
     if len(data_var_list) != 1:
-        raise ValueError(f"(get_variable_name) Found {len(data_var_list)} variables: {data_var_list}")
+        warnings.warn(f"(get_variable_name) Found {len(data_var_list)} variables: {data_var_list}", UserWarning)
+        return data_var_list
     else:
         return data_var_list[0]

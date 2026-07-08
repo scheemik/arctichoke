@@ -31,6 +31,7 @@ def test_find_packed_ice():
                 test_var_name='siconc',
             ),
             'packed_threshold': 3,
+            'siconc_var': 'siconc',
             'save_as': None,
             'expected_sum': 6,
         },
@@ -40,18 +41,31 @@ def test_find_packed_ice():
                 test_var_name='siconc',
             ),
             'packed_threshold': 3,
+            'siconc_var': 'siconc',
             'save_as': f"{test_file_dir}/example_landfast_0.nc",
+            'expected_sum': 6,
+        },
+        {
+            'dataset': make_example_dataset(
+                n=3, 
+                test_var_name='siconc2',
+            ),
+            'packed_threshold': 3,
+            'siconc_var': 'siconc2',
+            'save_as': None,
             'expected_sum': 6,
         },
         {
             'dataset': test_file_names,
             'packed_threshold': 3,
+            'siconc_var': 'siconc',
             'save_as': None,
             'expected_sum': 36,
         },
         {
             'dataset': test_file_names,
             'packed_threshold': 3,
+            'siconc_var': 'siconc',
             'save_as': f"{test_file_dir}/example_landfast_1.nc",
             'expected_sum': 36,
         },
@@ -60,6 +74,7 @@ def test_find_packed_ice():
         actual_dataset = analysis.find_packed_ice(
             dataset = test_case['dataset'],
             packed_threshold = test_case['packed_threshold'],
+            siconc_var = test_case['siconc_var'],
             save_as = test_case['save_as'],
         )
         actual_sum = actual_dataset['sipacked'].sum(skipna=True).values
@@ -111,6 +126,16 @@ def test_find_packed_ice():
             assert True, f"`find_packed_ice` raised an exception on invalid `dataset`: {e}"
         else:
             assert False, f"`find_packed_ice` did not raise an exception on invalid `dataset` {invalid_string}"
+        # Test with `siconc_var`
+        try:
+            actual = analysis.find_packed_ice(
+                dataset = test_cases[0]['dataset'],
+                siconc_var = invalid_string,
+            )
+        except (TypeError, ValueError) as e:
+            assert True, f"`find_packed_ice` raised an exception on invalid `siconc_var`: {e}"
+        else:
+            assert False, f"`find_packed_ice` did not raise an exception on invalid `siconc_var` {invalid_string}"
         # Test with `save_as`
         if not isinstance(invalid_string, type(None)):
             try:
@@ -313,6 +338,7 @@ def test_find_landfast_ice():
             ),
             'packed_threshold': 4,
             'slow_threshold': 4,
+            'siconc_var': 'siconc',
             'save_as': None,
             'expected_sum': 1,
         },
@@ -327,7 +353,23 @@ def test_find_landfast_ice():
             ),
             'packed_threshold': 4,
             'slow_threshold': 4,
+            'siconc_var': 'siconc',
             'save_as': f"{test_file_dir}/example_landfast_0.nc",
+            'expected_sum': 1,
+        },
+        {
+            'siconc_dataset': make_example_dataset(
+                n=3, 
+                test_var_name='siconc2',
+            ),
+            'sispeed_dataset': make_example_dataset(
+                n=3, 
+                test_var_name='sispeed',
+            ),
+            'packed_threshold': 4,
+            'slow_threshold': 4,
+            'siconc_var': 'siconc2',
+            'save_as': None,
             'expected_sum': 1,
         },
         {
@@ -335,6 +377,7 @@ def test_find_landfast_ice():
             'sispeed_dataset': test_file_names['sispeed'],
             'packed_threshold': 4,
             'slow_threshold': 4,
+            'siconc_var': 'siconc',
             'save_as': None,
             'expected_sum': 6,
         },
@@ -343,6 +386,7 @@ def test_find_landfast_ice():
             'sispeed_dataset': test_file_names['sispeed'],
             'packed_threshold': 4,
             'slow_threshold': 4,
+            'siconc_var': 'siconc',
             'save_as': f"{test_file_dir}/example_landfast_1.nc",
             'expected_sum': 6,
         },
@@ -353,6 +397,7 @@ def test_find_landfast_ice():
             sispeed_dataset = test_case['sispeed_dataset'],
             packed_threshold = test_case['packed_threshold'],
             slow_threshold = test_case['slow_threshold'],
+            siconc_var = test_case['siconc_var'],
             save_as = test_case['save_as'],
         )
         actual_sum = actual_dataset['silandfast'].sum(skipna=True).values
@@ -440,6 +485,17 @@ def test_find_landfast_ice():
             assert True, f"`find_landfast_ice` raised an exception on invalid `sispeed_dataset`: {e}"
         else:
             assert False, f"`find_landfast_ice` did not raise an exception on invalid `sispeed_dataset` {invalid_string}"
+        # Test with `siconc_var`
+        try:
+            actual = analysis.find_landfast_ice(
+                siconc_dataset = test_file_names['siconc'][0],
+                sispeed_dataset = test_file_names['sispeed'][0],
+                siconc_var = invalid_string,
+            )
+        except (TypeError, ValueError) as e:
+            assert True, f"`find_landfast_ice` raised an exception on invalid `siconc_var`: {e}"
+        else:
+            assert False, f"`find_landfast_ice` did not raise an exception on invalid `siconc_var` {invalid_string}"
         # Test with `save_as`
         if not isinstance(invalid_string, type(None)):
             try:
@@ -464,6 +520,7 @@ def test_make_landfast_files():
     test_file_names = {
         'siconc': None,
         'sispeed': None,
+        'siconc2': None,
     }
     for si_var in test_file_names.keys():
         make_file_path(f"{test_file_dir}/{si_var}/{version_id}")
@@ -486,6 +543,16 @@ def test_make_landfast_files():
             'sispeed_files': test_file_names['sispeed'][0],
             'packed_threshold': 4,
             'slow_threshold': 8,
+            'siconc_var': 'siconc',
+            'version_id': 'v20260618',
+            'expected_sum': 10,
+        },
+        {
+            'siconc_files': test_file_names['siconc2'][0],
+            'sispeed_files': test_file_names['sispeed'][0],
+            'packed_threshold': 4,
+            'slow_threshold': 8,
+            'siconc_var': 'siconc2',
             'version_id': 'v20260618',
             'expected_sum': 10,
         },
@@ -494,6 +561,7 @@ def test_make_landfast_files():
             'sispeed_files': test_file_names['sispeed'][0],
             'packed_threshold': 8,
             'slow_threshold': 4,
+            'siconc_var': 'siconc',
             'version_id': 'v20260618',
             'expected_sum': 0,
         },
@@ -502,6 +570,7 @@ def test_make_landfast_files():
             'sispeed_files': test_file_names['sispeed'],
             'packed_threshold': 4,
             'slow_threshold': 8,
+            'siconc_var': 'siconc',
             'version_id': 'v20260618',
             'expected_sum': 10,
         },
@@ -512,6 +581,7 @@ def test_make_landfast_files():
             sispeed_files = test_case['sispeed_files'],
             packed_threshold = test_case['packed_threshold'],
             slow_threshold = test_case['slow_threshold'],
+            siconc_var = test_case['siconc_var'],
             version_id = test_case['version_id'],
             overwrite = True,
         )
@@ -613,6 +683,17 @@ def test_make_landfast_files():
             assert True, f"`make_landfast_files` raised an exception on invalid `sispeed_files`: {e}"
         else:
             assert False, f"`make_landfast_files` did not raise an exception on invalid `sispeed_files` {invalid_string}"
+        # Test with `siconc_var`
+        try:
+            actual = analysis.make_landfast_files(
+                siconc_files = test_file_names['siconc'][0],
+                sispeed_files = test_file_names['sispeed'][0],
+                siconc_var = invalid_string,
+            )
+        except (TypeError, ValueError) as e:
+            assert True, f"`make_landfast_files` raised an exception on invalid `siconc_var`: {e}"
+        else:
+            assert False, f"`make_landfast_files` did not raise an exception on invalid `siconc_var` {invalid_string}"
         # Test with `version_id`
         if not isinstance(invalid_string, type(None)):
             try:

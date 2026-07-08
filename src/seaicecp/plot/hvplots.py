@@ -16,8 +16,8 @@ def quadmesh_map(
     save_as: str = None,
     map_projection: str = 'NorthPolarStereo',
     map_bbox: [float, float, float, float] = sps.NWP_BBOX,
+    clims: [(int, float), (int, float)] = None,
     diverging_cbar: bool = False, 
-    symmetric_cbar: bool = False, 
     verbose: bool = False,
     **kwargs,
 ):
@@ -43,6 +43,10 @@ def quadmesh_map(
                 - [LAT_MAX, LAT_MIN, LON_MAX, LON_MIN]
                 
             Default is `seaicecp.params.latlon_params.NWP_BBOX`.
+        clims : List or tuple of `int`, `float`, optional
+            The limits to use in the colorbar.
+            Note: This overrides the default method of limiting the colorbar range when `diverging_cbar=True`.
+            Default is `None`, which uses the minimum / maximum values present in the data.
         diverging_cbar : `bool`, optional
             Whether to use a diverging colormap on the colorbar.
             Default is `False`.
@@ -85,6 +89,16 @@ def quadmesh_map(
         for i in range(len(map_bbox)):
             if not isinstance(map_bbox[i], (int, float)):
                 raise TypeError(f"(quadmesh_map) `map_bbox[{i}]` must be a number. Got type: {type(map_bbox[i])}")
+    if isinstance(clims, type([])):
+        clims = tuple(clims)
+    if not isinstance(clims, (tuple, type(None))):
+        raise TypeError(f"(quadmesh_map) `clims` must be a list, tuple, or `None`. Got type: {type(clims)}")
+    elif not isinstance(clims, type(None)) and len(clims) != 2:
+        raise TypeError(f"(quadmesh_map) `clims` must be a list or tuple of length 2. Got length: {len(clims)}")
+    if not isinstance(diverging_cbar, bool):
+        raise TypeError(f"(quadmesh_map) `diverging_cbar` must be a `bool`. Got type: {type(diverging_cbar)}")
+    if not isinstance(verbose, bool):
+        raise TypeError(f"(quadmesh_map) `verbose` must be a `bool`. Got type: {type(verbose)}")
     
     # Information to output
     if verbose:
@@ -132,6 +146,7 @@ def quadmesh_map(
         title=make_title(xr_data),
         clabel=make_label(xr_data, var),
         cmap=this_cmap, 
+        clim=clims,
         bgcolor='lightgray',
         symmetric=symmetric_cbar,
         coastline=True,
@@ -146,7 +161,11 @@ def quadmesh_map(
         )
 
     # Set colorbar parameters
-    cmin, cmax = get_min_max(xr_data, var)
+    if isinstance(clims, type(None)):
+        cmin, cmax = get_min_max(xr_data, var)
+    else:
+        cmin = min(clims)
+        cmax = max(clims)
     if verbose:
         print(f"(quadmesh_map) `diverging_cbar`: {diverging_cbar}")
         print(f"(quadmesh_map) `cmin`: {cmin}, `cmax`: {cmax}")

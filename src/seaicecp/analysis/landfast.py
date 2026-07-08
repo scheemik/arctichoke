@@ -18,6 +18,7 @@ from seaicecp.verify import verify_path
 def find_packed_ice(
     dataset: (str, [str], xr.DataArray, xr.Dataset),
     packed_threshold: (int, float) = 85, 
+    siconc_var: str = 'siconc',
     save_as: str = None,
     verbose: bool = False,
     **kwargs,
@@ -33,6 +34,10 @@ def find_packed_ice(
         packed_threshold : `int`, `float`, optional
             The threshold above which to mark packed ice.
             Default is `85` percent, following Laliberté et al. 2018.
+        siconc_var : `str`, optional
+            The name of the variable to use from the provided dataset.
+            Must be either `siconc` or `siconc2`.
+            Default is `siconc`.
         save_as : `str`, `None`, optional
             The file name to which to save the modified dataset.
             Default is `None`, which doesn't save the dataset to a file.
@@ -85,7 +90,7 @@ def find_packed_ice(
             # Verify this is a valid path
             datafile = verify_path(datafile)
             if not datafile.endswith('.nc'):
-                raise TypeError(f"(plot_time_series) `datafile` must be a `.nc` filepath. Got: {datafile}")
+                raise TypeError(f"(find_packed_ice) `datafile` must be a `.nc` filepath. Got: {datafile}")
             input_command_files = f"{input_command_files} {datafile}"
         input_command_files = f"{input_command_files} ]"
         cdo_command = cdo.mergetime
@@ -93,6 +98,10 @@ def find_packed_ice(
         raise TypeError(f"(find_packed_ice) `dataset` must be a string, `xr.Dataset`, or `xr.DataArray`. Got type: {type(dataset)}")
     if not isinstance(packed_threshold, (int, float)):
         raise TypeError(f"(find_packed_ice) `packed_threshold` must be `int` or `float`. Got type: {type(packed_threshold)}")
+    if not isinstance(siconc_var, str):
+        raise TypeError(f"(find_packed_ice) `siconc_var` must be a string. Got type: {type(siconc_var)}")
+    elif not siconc_var in ['siconc', 'siconc2']:
+        raise ValueError(f"(find_packed_ice) `siconc_var` must be either `siconc` or `siconc2`. Got: {siconc_var}")
     if not isinstance(save_as, (str, type(None))):
         raise TypeError(f"(find_packed_ice) `save_as` must be a string or `None`. Got type: {type(save_as)}")
     elif isinstance(save_as, str) and not '.nc' in save_as:
@@ -104,11 +113,11 @@ def find_packed_ice(
     for this_dataset in var_check_list:
         var_name = get_variable_name(this_dataset)
         if isinstance(var_name, str):
-            if not var_name == 'siconc':
-                raise ValueError(f"(find_packed_ice) `this_dataset` must contain the variable `siconc`. Available variables: {var_name}")
+            if not var_name == siconc_var:
+                raise ValueError(f"(find_packed_ice) `this_dataset` must contain the variable `{siconc_var}`. Available variables: {var_name}")
         elif isinstance(var_name, type([])):
-            if not 'siconc' in var_name:
-                raise ValueError(f"(find_packed_ice) `this_dataset` must contain the variable `siconc`. Available variables: {var_name}")
+            if not siconc_var in var_name:
+                raise ValueError(f"(find_packed_ice) `this_dataset` must contain the variable `{siconc_var}`. Available variables: {var_name}")
         else:
             raise TypeError(f"(find_packed_ice) `get_variable_name` returned something other than a string or list: {var_name}")
     
@@ -147,24 +156,24 @@ def find_packed_ice(
         )
 
     # Rename `siconc` in the new dataset to `sipacked`
-    packedice_xr = packedice_xr.rename_vars({'siconc':'sipacked'})
+    packedice_xr = packedice_xr.rename_vars({siconc_var:'sipacked'})
 
     # Modify the attributes of the dataset to reflect the changes
     packedice_xr['sipacked'].attrs['standard_name'] = 'sea_ice_packed_marker'
     packedice_xr['sipacked'].attrs['long_name'] = f'Sea Ice Concentration > {packed_threshold}%'
     packedice_xr['sipacked'].attrs['units'] = '1: Yes, 0: No'
-    packedice_xr['sipacked'].attrs['comment'] = f'Marker of packed ice, where sea ice concentration (`siconc`) >{packed_threshold}%'
+    packedice_xr['sipacked'].attrs['comment'] = f'Marker of packed ice, where sea ice concentration (`{siconc_var}`) >{packed_threshold}%'
     packedice_xr['sipacked'].attrs['original_name'] = 'sipacked'
     if 'history' in packedice_xr['sipacked'].attrs.keys():
         original_history = packedice_xr['sipacked'].attrs['history']
     else:
         original_history = ''
-    packedice_xr['sipacked'].attrs['history'] = f"{get_current_datetime_str()} altered by `seaicecp`: Calculated packed ice, marking `siconc` > {packed_threshold} as 1 and 0 otherwise. {original_history}"
+    packedice_xr['sipacked'].attrs['history'] = f"{get_current_datetime_str()} altered by `seaicecp`: Calculated packed ice, marking `{siconc_var}` > {packed_threshold} as 1 and 0 otherwise. {original_history}"
     if 'history' in packedice_xr.attrs.keys():
         original_history = packedice_xr.attrs['history']
     else:
         original_history = ''
-    packedice_xr.attrs['history'] = f"{get_current_datetime_str()} altered by `seaicecp`: Calculated packed ice, marking `siconc` > {packed_threshold} as 1 and 0 otherwise. {original_history}"
+    packedice_xr.attrs['history'] = f"{get_current_datetime_str()} altered by `seaicecp`: Calculated packed ice, marking `{siconc_var}` > {packed_threshold} as 1 and 0 otherwise. {original_history}"
 
     # Save the modified dataset, if applicable
     if not isinstance(save_as, type(None)):
@@ -336,18 +345,19 @@ def find_landfast_ice(
     sispeed_dataset: (str, [str], xr.DataArray, xr.Dataset),
     packed_threshold: (int, float) = 85, 
     slow_threshold: (int, float) = 0.01, 
+    siconc_var: str = 'siconc',
     save_as: str = None,
     verbose: bool = False,
     **kwargs,
 ):
     """ Calculate where landfast ice is from the dataset(s).
 
-        Verify the dataset(s) contains the `siconc` and `sispeed` variables, calculates `sipacked` and `sislow` using `find_packed_ice()` and `find_landfast_ice()`, then takes the overlap of these to define `silandfast`.
+        Verify the dataset(s) contains the `siconc`/`siconc2` and `sispeed` variables, calculates `sipacked` and `sislow` using `find_packed_ice()` and `find_landfast_ice()`, then takes the overlap of these to define `silandfast`.
 
         Parameters
         ----------
         siconc_dataset : `str`, list of `str`, `xarray.DataArray`, `xarray.Dataset`
-            The dataset of which to find the locations of landfast ice that contains `siconc`.
+            The dataset of which to find the locations of landfast ice that contains `siconc`/`siconc2`.
         sispeed_dataset : `str`, list of `str`, `xarray.DataArray`, `xarray.Dataset`
             The dataset of which to find the locations of landfast ice that contains `sispeed`.
         packed_threshold : `int`, `float`, optional
@@ -356,6 +366,10 @@ def find_landfast_ice(
         slow_threshold : `int`, `float`, optional
             The threshold above which to mark slow ice.
             Default is `0.01` m s-1, following Laliberté et al. 2018.
+        siconc_var : `str`, optional
+            The name of the variable to use from the provided sea ice concentration dataset.
+            Must be either `siconc` or `siconc2`.
+            Default is `siconc`.
         save_as : `str`, `None`, optional
             The file name to which to save the modified dataset.
             Default is `None`, which doesn't save the dataset to a file.
@@ -396,6 +410,10 @@ def find_landfast_ice(
         raise TypeError(f"(find_landfast_ice) `packed_threshold` must be `int` or `float`. Got type: {type(packed_threshold)}")
     if not isinstance(slow_threshold, (int, float)):
         raise TypeError(f"(find_landfast_ice) `slow_threshold` must be `int` or `float`. Got type: {type(slow_threshold)}")
+    if not isinstance(siconc_var, str):
+        raise TypeError(f"(find_landfast_ice) `siconc_var` must be a string. Got type: {type(siconc_var)}")
+    elif not siconc_var in ['siconc', 'siconc2']:
+        raise ValueError(f"(find_landfast_ice) `siconc_var` must be either `siconc` or `siconc2`. Got: {siconc_var}")
     if not isinstance(save_as, (str, type(None))):
         raise TypeError(f"(find_landfast_ice) `save_as` must be a string or `None`. Got type: {type(save_as)}")
     elif isinstance(save_as, str) and not '.nc' in save_as:
@@ -411,6 +429,7 @@ def find_landfast_ice(
     dataset_sipacked = find_packed_ice(
         dataset = siconc_dataset,
         packed_threshold = packed_threshold,
+        siconc_var = siconc_var,
         **kwargs,
     )
     dataset_sislow = find_slow_ice(
@@ -456,18 +475,18 @@ def find_landfast_ice(
     landfastice_xr['silandfast'].attrs['standard_name'] = 'sea_ice_landfast_marker'
     landfastice_xr['silandfast'].attrs['long_name'] = f'Landfast Ice (>{packed_threshold}%, <{slow_threshold}m s-1)'
     landfastice_xr['silandfast'].attrs['units'] = '1: Yes, 0: No'
-    landfastice_xr['silandfast'].attrs['comment'] = f'Marker of landfast ice, where sea ice concentration (`siconc`) > {packed_threshold}% and sea ice speed (`sispeed`) < {slow_threshold} m s-1'
+    landfastice_xr['silandfast'].attrs['comment'] = f'Marker of landfast ice, where sea ice concentration (`{siconc_var}`) > {packed_threshold}% and sea ice speed (`sispeed`) < {slow_threshold} m s-1'
     landfastice_xr['silandfast'].attrs['original_name'] = 'silandfast'
     if 'history' in landfastice_xr['silandfast'].attrs.keys():
         original_history = landfastice_xr['silandfast'].attrs['history']
     else:
         original_history = ''
-    landfastice_xr['silandfast'].attrs['history'] = f"{get_current_datetime_str()} altered by `seaicecp`: Calculated landfast ice, marking where both `siconc` > {packed_threshold} and `sispeed` > {slow_threshold} as 1 and 0 otherwise. {original_history}"
+    landfastice_xr['silandfast'].attrs['history'] = f"{get_current_datetime_str()} altered by `seaicecp`: Calculated landfast ice, marking where both `{siconc_var}` > {packed_threshold} and `sispeed` > {slow_threshold} as 1 and 0 otherwise. {original_history}"
     if 'history' in landfastice_xr.attrs.keys():
         original_history = landfastice_xr.attrs['history']
     else:
         original_history = ''
-    landfastice_xr.attrs['history'] = f"{get_current_datetime_str()} altered by `seaicecp`: Calculated landfast ice, marking where both `siconc` > {packed_threshold} and `sispeed` > {slow_threshold} as 1 and 0 otherwise. {original_history}"
+    landfastice_xr.attrs['history'] = f"{get_current_datetime_str()} altered by `seaicecp`: Calculated landfast ice, marking where both `{siconc_var}` > {packed_threshold} and `sispeed` > {slow_threshold} as 1 and 0 otherwise. {original_history}"
 
     # Save the modified dataset, if applicable
     if not isinstance(save_as, type(None)):
@@ -481,6 +500,7 @@ def make_landfast_files(
     sispeed_files: [str],
     map_bbox: [float, float, float, float] = None,
     version_id: str = 'v20260617',
+    siconc_var: str = 'siconc',
     overwrite: bool = False,
     **kwargs,
 ):
@@ -502,6 +522,10 @@ def make_landfast_files(
         version_id : `str`, optional
             The version ID to use when making the directory structure for the landfast ice files.
             Default is `'v20260617'`.
+        siconc_var : `str`, optional
+            The name of the variable to use from the provided sea ice concentration dataset.
+            Must be either `siconc` or `siconc2`.
+            Default is `siconc`.
         overwrite : `bool`, optional
             Whether to overwrite an existing file if it exists.
             Default is `False`.
@@ -578,6 +602,10 @@ def make_landfast_files(
         raise TypeError(f"(make_landfast_files) `map_bbox` must be a list or `None`. Got type: {type(map_bbox)}")
     if not isinstance(version_id, str):
         raise TypeError(f"(make_landfast_files) `version_id` must be a string. Got type: {type(version_id)}")
+    if not isinstance(siconc_var, str):
+        raise TypeError(f"(make_landfast_files) `siconc_var` must be a string. Got type: {type(siconc_var)}")
+    elif not siconc_var in ['siconc', 'siconc2']:
+        raise ValueError(f"(make_landfast_files) `siconc_var` must be either `siconc` or `siconc2`. Got: {siconc_var}")
     if not isinstance(overwrite, bool):
         raise TypeError(f"(make_landfast_files) `overwrite` must be a `bool`. Got type: {type(overwrite)}")
 
@@ -587,15 +615,15 @@ def make_landfast_files(
         siconc_filepath = verify_path(siconc_files[i])
         sispeed_filepath = verify_path(sispeed_files[i])
         # Verify the filepaths are for the same model run
-        siconc_filestem = siconc_filepath.replace('siconc', '')
+        siconc_filestem = siconc_filepath.replace(siconc_var, '')
         sispeed_filestem = sispeed_filepath.replace('sispeed', '')
         if siconc_filestem != sispeed_filestem:
-            raise ValueError(f"(make_landfast_files) `siconc` and `sispeed` files for index i={i} are not from the same run\n`siconc_filepath`: {siconc_filepath}\n`sispeed_filepath`:{sispeed_filepath}")
+            raise ValueError(f"(make_landfast_files) `{siconc_var}` and `sispeed` files for index i={i} are not from the same run.\n`siconc_filepath`: {siconc_filepath}\n`sispeed_filepath`:{sispeed_filepath}\n`siconc_filestem`: {siconc_filestem}\n`sispeed_filestem`:{sispeed_filestem}")
         # Get the version ID to replace
         replace_this_version_ID = siconc_filepath.split('/')[-2]
         # Assemble the landfast filename
         landfast_filepath = siconc_filepath.replace(replace_this_version_ID, version_id)
-        landfast_filepath = landfast_filepath.replace('siconc', 'silandfast')
+        landfast_filepath = landfast_filepath.replace(siconc_var, 'silandfast')
         # Add trimming prefix, if applicable
         if not isinstance(map_bbox, type(None)):
             if map_bbox == sps.CAA_BBOX:
@@ -637,6 +665,7 @@ def make_landfast_files(
         find_landfast_ice(
             siconc_dataset = siconc_xr,
             sispeed_dataset = sispeed_xr,
+            siconc_var = siconc_var,
             save_as = landfast_filepath,
             **kwargs,
         )

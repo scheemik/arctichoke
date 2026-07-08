@@ -1,4 +1,5 @@
 import numpy as np
+import subprocess
 import xarray as xr
 import warnings
 from cdo import Cdo, __version__
@@ -14,7 +15,7 @@ from seaicecp.dataset.grid_type import get_grid_type
 from seaicecp.dataset.latlon_type import get_latlon_names, get_lon_type
 
 def trim_latlon(
-    xr_data: xr.Dataset,
+    dataset: (str, xr.Dataset, xr.DataArray),
     map_bbox: [float, float, float, float] = sps.NWP_BBOX,
     precise_trim: bool = False,
     save_as: str = None,
@@ -26,7 +27,7 @@ def trim_latlon(
 
         Parameters
         ----------
-        xr_data : `xarray.Dataset`
+        dataset : `str`, `xarray.Dataset`, `xarray.DataArray`
             The dataset to plot.
         map_bbox : Array of `float`, optional
             An array of coordinates defining the bounding box of the map in the following format:
@@ -53,8 +54,15 @@ def trim_latlon(
         >>> 
     """
     # Verify input arguments
-    if not isinstance(xr_data, (xr.Dataset, xr.DataArray)):
-        raise TypeError(f"(trim_latlon) `xr_data` must be `xr.Dataset` or `xr.DataArray`. Got type: {type(xr_data)}")
+    if not isinstance(dataset, (str, xr.Dataset, xr.DataArray)):
+        raise TypeError(f"(trim_latlon) `dataset` must be a string, `xr.Dataset`, or `xr.DataArray`. Got type: {type(dataset)}")
+    if isinstance(dataset, str):
+        if not dataset.endswith('.nc'):
+            raise TypeError(f"(trim_latlon) `datafile` must be a `.nc` filepath. Got: {datafile}")
+        dataset = verify_path(dataset)
+        xr_data = xr.open_dataset(dataset)
+    else:
+        xr_data = dataset
     if not isinstance(map_bbox, type([])):
         raise TypeError(f"(trim_latlon) `map_bbox` must be a list. Got type: {type(map_bbox)}")
     elif not len(map_bbox) == 4:
@@ -84,6 +92,8 @@ def trim_latlon(
 
     # Determine the longitude type of the dataset
     lon_type = get_lon_type(xr_data)
+    if verbose:
+        print(f"(trim_latlon) `lon_type`: {lon_type}")
     if lon_type == 'PM_centered':
         # Check whether the longitude values are negative
         if box_lon_max < 0:
@@ -94,9 +104,24 @@ def trim_latlon(
     # cdo expects bounding box coordinates as a string in the order: 
     ## lon_min, lon_max, lat_min, lat_max
     this_bbox = f"{box_lon_min},{box_lon_max},{box_lat_min},{box_lat_max}"
+    if verbose:
+        print(f"(trim_latlon) `this_bbox`: {this_bbox}")
 
     # Use `cdo` to trim the indices which contain no data within the bounding box
-    xr_data_trimmed = cdo.sellonlatbox(this_bbox, input=xr_data, returnXDataset='trim_latlon')
+    if not isinstance(dataset, str):
+        # Use the Python implementation of `cdo` to directly return an `xarray` Dataset
+        xr_data_trimmed = cdo.sellonlatbox(this_bbox, input=xr_data, returnXDataset='trim_latlon')
+    else:
+        # Set a location for the temporary file
+        tmp_save_file = './cdo_tmp/tmp_sellonlatbox_file.nc'
+        # Use `subprocess` to execute a `cdo` shell command
+        # This can be helpful when working with very large file sizes
+        cdo_command = f"cdo -O -s -f nc -sellonlatbox,{this_bbox} {dataset} {tmp_save_file}"
+        if verbose:
+            print(f"(trim_latlon) Using `cdo` directly, `cdo_command`: {cdo_command}")
+        subprocess.run(cdo_command, shell=True)
+        # Load that file in as an xarray
+        xr_data_trimmed = xr.open_dataset(tmp_save_file)
     
     # Get the list of data variables
     data_vars = list(xr_data_trimmed.data_vars.keys())
@@ -107,7 +132,7 @@ def trim_latlon(
         if meta_var in data_vars:
             data_vars.remove(meta_var)
     if verbose:
-        print(f"(trim_latlon) `data_vars` cleaned: {data_vars}")
+        print(f"(trim_latlon) `data_vars` after cleaning: {data_vars}")
 
     # Get the latitude and longitude coordinate names
     lat_var, lon_var = get_latlon_names(xr_data_trimmed)
@@ -161,7 +186,8 @@ def trim_latlon(
 
 def trim_files(
     files_to_trim: [str],
-    name_prefix: str = 'trim_NWP_',
+    name_prefix: str = 'trim_',
+    use_cdo_python: bool = True,
     overwrite: bool = False,
     **kwargs,
 ):
@@ -175,7 +201,10 @@ def trim_files(
             A list of paths of the data files to trim. 
         name_prefix : `str`, optional
             The prefix to be prepended to each file name when saving.
-            Default is `trim_NWP_`.
+            Default is `trim_`.
+        use_cdo_python : `bool`, optional
+            Whether to tell `trim_latlon()` to use the Python implementation of `cdo` or use `subprocess` to run a shell command.
+            Default is `True` which uses the Python implementation of `cdo`.
         overwrite : `bool`, optional
             Whether to overwrite an existing file if it exists.
             Default is `False`.
@@ -212,6 +241,8 @@ def trim_files(
         name_prefix = f"{name_prefix}_"
     # Replace any spaces in `name_prefix` with underscores
     name_prefix = name_prefix.replace(" ", "_")
+    if not isinstance(use_cdo_python, bool):
+        raise TypeError(f"(trim_files) `use_cdo_python` must be a `bool`. Got type: {type(use_cdo_python)}")
     if not isinstance(overwrite, bool):
         raise TypeError(f"(trim_files) `overwrite` must be a `bool`. Got type: {type(overwrite)}")
     
@@ -237,10 +268,13 @@ def trim_files(
         except (FileNotFoundError):
             print(f"\t(trim_files) Writing file `{new_filepath}`.")
         # Load this file with `xarray`
-        this_xr = xr.open_dataset(filepath)
+        if use_cdo_python:
+            this_xr = xr.open_dataset(filepath)
+        else:
+            this_xr = filepath
         # Trim the dataset and save to file
         trim_latlon(
-            xr_data = this_xr,
+            dataset = this_xr,
             save_as = new_filepath,
             **kwargs,
         )

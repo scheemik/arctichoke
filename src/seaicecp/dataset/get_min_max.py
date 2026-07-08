@@ -51,7 +51,7 @@ def get_min_max(
         # Verify `dataset` has the specified variable
         actual_vars = get_variable_name(dataset)
         if var not in actual_vars:
-            raise ValueError(f"(trend_in_time) `dataset` must have the specified `var` {var}. Available variables: {actual_vars}")
+            raise ValueError(f"(get_min_max) `dataset` must have the specified `var` {var}. Available variables: {actual_vars}")
         dataset = dataset[var]
     
     # Get the minimum value
