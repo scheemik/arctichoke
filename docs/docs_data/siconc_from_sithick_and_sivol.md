@@ -1,6 +1,6 @@
 # Calculating `siconc` from `sithick` and `sivol` 
 
-Below, I describe how I calculated sea ice concentration (`siconc`) from sea ice thickness (`sithick`) and sea ice volume (`sivol`) for the `HadGEM3-GC31-HM` and `HadGEM3-GC31-MM` models.
+Below, I describe how I calculated sea ice concentration (`siconc`) from sea ice thickness (`sithick`) and sea ice volume (`sivol`) for the `EC-Earth3P-HR` and `HadGEM3-GC31` models.
 For details on how the data for those models was downloaded, see the {doc}`Downloading model data with `esgpull` <../docs_data/esgpull_downloads>` guide. 
 For details on how to prepare the data for the `HadGEM3-GC31-HH` model, see {doc}`Trimming data to the CAA region <../docs_data/trim_to_CAA_region>`.
 
@@ -176,14 +176,14 @@ The units for the variables involved are:
 - `sivol`: Sea-ice volume per area (m)
     - Total volume of sea ice divided by grid-cell area (this used to be called ice thickness in CMIP5)
 
-I want `siconc`, which can be thought of as:
-$$ \text{Sea Ice Concentration} = \frac{\text{Area of ice in grid cell}}{\text{Area of grid cell}}\times 100 $$
+I want `siconc`, which can be thought of as:  
+$ \text{Sea Ice Concentration} = \frac{\text{Area of ice in grid cell}}{\text{Area of grid cell}}\times 100 $
 
-So, if `sivol` is already:
-$$ \text{Sea Ice Volume} = \frac{\text{Volume of ice in grid cell}}{\text{Area of grid cell}} $$
+So, if `sivol` is already:  
+$ \text{Sea Ice Volume} = \frac{\text{Volume of ice in grid cell}}{\text{Area of grid cell}} $
 
-And area is volume divided by thickness, then `siconc` could be calculated as:
-$$ \text{Sea Ice Concentration} = \frac{\text{Volume of ice in grid cell}}{\text{Area of grid cell}} \times \frac{1}{\text{Sea Ice Thickness}} \times 100 $$
+And area is volume divided by thickness, then `siconc` could be calculated as:  
+$ \text{Sea Ice Concentration} = \frac{\text{Volume of ice in grid cell}}{\text{Area of grid cell}} \times \frac{1}{\text{Sea Ice Thickness}} \times 100 $
 
 Or, `siconc` = `sivol` / `sithick` * 100.
 
