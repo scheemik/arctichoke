@@ -3,14 +3,14 @@ import glob
 import warnings
 from datetime import datetime
 
-from seaicecp.verify import verify_path
-from seaicecp.path.variable_paths import get_variable_path
+from arctichoke.verify import verify_path
+from arctichoke.path.variable_paths import get_variable_path
 
 """
 The functions in this module assume the files are organized in the default fashion of `esgpull`.
 This has the general structure as shown below.
 
-/seaicecp_data/bergybits/
+/arctichoke_data/bergybits/
     ├── data
     │   └── CMIP6
     │       └── HighResMIP
@@ -112,15 +112,15 @@ def list_variable_files(
         
         Examples
         --------
-        >>> from seaicecp.path.find import list_variable_files
+        >>> from arctichoke.path.find import list_variable_files
         >>> list_variable_files(source_id = 'HadGEM3-GC31-HM', variable_id = 'areacello')
-        ['/seaicecp_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-HM/hist-1950/r1i1p1f1/Ofx/areacello/gn/v20190301/areacello_Ofx_HadGEM3-GC31-HM_hist-1950_r1i1p1f1_gn.nc']
+        ['/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-HM/hist-1950/r1i1p1f1/Ofx/areacello/gn/v20190301/areacello_Ofx_HadGEM3-GC31-HM_hist-1950_r1i1p1f1_gn.nc']
         >>> list_variable_files(source_id = 'EC-Earth3P-HR', variable_id = 'siage')
-        /workspace/src/seaicecp/path/find_data.py:399: UserWarning: (get_variable_path) More than one file path found: ['/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/siage', '/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r2i1p2f1/SImon/siage', '/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/siage']
+        /workspace/src/arctichoke/path/find_data.py:399: UserWarning: (get_variable_path) More than one file path found: ['/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/siage', '/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r2i1p2f1/SImon/siage', '/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/siage']
         Returning first result in list.
-        ['/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/siage/gn/v20181212/siage_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_195001-195012.nc',
+        ['/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/siage/gn/v20181212/siage_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_195001-195012.nc',
         ...
-        '/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/siage/gn/v20181212/siage_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_201401-201412.nc']
+        '/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/siage/gn/v20181212/siage_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_201401-201412.nc']
     """
     # Verify input arguments
     if not isinstance(source_id, (str, type(None))):
@@ -184,9 +184,9 @@ def select_files_by_time(
         
         Examples
         --------
-        >>> from seaicecp.path.find import select_files_by_time
+        >>> from arctichoke.path.find import select_files_by_time
         >>> select_files_by_time(source_id = 'HadGEM3-GC31-HM', variable_id = 'areacello')
-        ['/seaicecp_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-HM/hist-1950/r1i1p1f1/Ofx/areacello/gn/v20190301/areacello_Ofx_HadGEM3-GC31-HM_hist-1950_r1i1p1f1_gn.nc']
+        ['/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-HM/hist-1950/r1i1p1f1/Ofx/areacello/gn/v20190301/areacello_Ofx_HadGEM3-GC31-HM_hist-1950_r1i1p1f1_gn.nc']
     """
     # Verify input arguments
     if not isinstance(data_filepaths, type([])):

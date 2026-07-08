@@ -20,7 +20,7 @@ def get_current_datetime_str(
         
         Examples
         --------
-        >>> from seaicecp import get_current_datetime_str
+        >>> from arctichoke import get_current_datetime_str
         >>> get_current_datetime_str
     """
     # Verify input arguments

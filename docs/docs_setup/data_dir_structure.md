@@ -1,5 +1,5 @@
 ```
-/seaicecp_data/bergybits/
+/arctichoke_data/bergybits/
     ├── data
     │   └── CMIP6
     │       └── HighResMIP

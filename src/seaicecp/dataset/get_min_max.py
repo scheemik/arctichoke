@@ -1,7 +1,7 @@
 import xarray as xr 
 
-from seaicecp.dataset.get_variable import get_variable_name
-from seaicecp.verify import verify_path
+from arctichoke.dataset.get_variable import get_variable_name
+from arctichoke.verify import verify_path
 
 def get_min_max(
     dataset: (str, xr.DataArray, xr.Dataset),
@@ -28,8 +28,8 @@ def get_min_max(
         
         Examples
         --------
-        >>> from seaicecp.dataset.example_dataset import make_example_dataset
-        >>> from seaicecp.dataset.get_min_max import get_min_max
+        >>> from arctichoke.dataset.example_dataset import make_example_dataset
+        >>> from arctichoke.dataset.get_min_max import get_min_max
         >>> dataset = make_example_dataset(n=3)
         >>> min, max = get_min_max(dataset, var='test_var')
         >>> print('min:',min,'max:',max)

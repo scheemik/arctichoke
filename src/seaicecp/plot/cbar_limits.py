@@ -36,7 +36,7 @@ def set_cbar_lims(
         
         Examples
         --------
-        >>> from seaicecp.plot.cbar_limits import set_cbar_lims
+        >>> from arctichoke.plot.cbar_limits import set_cbar_lims
     """
     # Verify input arguments
     if not isinstance(hv_overlay, (hv.core.overlay.Overlay, hv.element.raster.QuadMesh)):

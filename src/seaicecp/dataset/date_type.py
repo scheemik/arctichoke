@@ -1,7 +1,7 @@
 import cftime
 import xarray as xr
 
-from seaicecp.verify import verify_path
+from arctichoke.verify import verify_path
 
 def get_date_type(
     dataset: (str, xr.DataArray, xr.Dataset),
@@ -22,7 +22,7 @@ def get_date_type(
 
         Examples
         --------
-        >>> from seaicecp.verify.get_date_type import get_date_type
+        >>> from arctichoke.verify.get_date_type import get_date_type
         >>> get_date_type()
     """
     # Verify input arguments

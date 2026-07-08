@@ -8,11 +8,11 @@ cdo = Cdo()
 cdo = Cdo(tempdir='./cdo_tmp/')
 cdo.cleanTempDir()
 
-import seaicecp.params as sps
-from seaicecp.verify import verify_path
-from seaicecp.params.var_params import meta_vars
-from seaicecp.dataset.grid_type import get_grid_type
-from seaicecp.dataset.latlon_type import get_latlon_names, get_lon_type
+import arctichoke.params as sps
+from arctichoke.verify import verify_path
+from arctichoke.params.var_params import meta_vars
+from arctichoke.dataset.grid_type import get_grid_type
+from arctichoke.dataset.latlon_type import get_latlon_names, get_lon_type
 
 def trim_latlon(
     dataset: (str, xr.Dataset, xr.DataArray),
@@ -33,7 +33,7 @@ def trim_latlon(
             An array of coordinates defining the bounding box of the map in the following format:
                 - [LAT_MAX, LAT_MIN, LON_MAX, LON_MIN]
                 
-            Default is `seaicecp.params.latlon_params.NWP_BBOX`.
+            Default is `arctichoke.params.latlon_params.NWP_BBOX`.
         precise_trim : `bool`, optional
             Whether to precisely trim an irregular grid to the bounding box, making all values outside the bounding box null.
             Default is `False`.
@@ -217,14 +217,14 @@ def trim_files(
         
         Examples
         --------
-        >>> from seaicecp.path.find_data import list_variable_files
+        >>> from arctichoke.path.find_data import list_variable_files
         >>> list_of_files = list_variable_files('EC-Earth3P-HR', 'siage', variant_label='r3i1p2f1')
-        >>> from seaicecp.dataset.trim_dataset import trim_files
+        >>> from arctichoke.dataset.trim_dataset import trim_files
         >>> trim_files(list_of_files)
         (trim_files) `name_prefix`: trim_NWP_
-        (trim_latlon) `save_as`: /seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/siage/gn/v20190214/trim_NWP_siage_SImon_EC-Earth3P-HR_hist-1950_r3i1p2f1_gn_195001-195012.nc
+        (trim_latlon) `save_as`: /arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/siage/gn/v20190214/trim_NWP_siage_SImon_EC-Earth3P-HR_hist-1950_r3i1p2f1_gn_195001-195012.nc
         ...
-        (trim_latlon) `save_as`: /seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/siage/gn/v20190214/trim_NWP_siage_SImon_EC-Earth3P-HR_hist-1950_r3i1p2f1_gn_201401-201412.nc
+        (trim_latlon) `save_as`: /arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/siage/gn/v20190214/trim_NWP_siage_SImon_EC-Earth3P-HR_hist-1950_r3i1p2f1_gn_201401-201412.nc
     """
     # Verify input arguments
     if isinstance(files_to_trim, str):

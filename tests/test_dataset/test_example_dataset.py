@@ -1,7 +1,7 @@
 import numpy as np
 import os
 
-from seaicecp import dataset
+from arctichoke import dataset
 
 def test_make_example_dataset():
     """Test the `make_example_dataset` function."""

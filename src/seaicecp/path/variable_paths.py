@@ -2,8 +2,8 @@ import glob
 import os
 import warnings
 
-from seaicecp.verify import verify_path
-from seaicecp.path.model_paths import get_model_path, list_available_models
+from arctichoke.verify import verify_path
+from arctichoke.path.model_paths import get_model_path, list_available_models
 
 def list_available_variables(
     source_id: str,
@@ -37,7 +37,7 @@ def list_available_variables(
         
         Examples
         --------
-        >>> from seaicecp.path.find_data import list_available_variables 
+        >>> from arctichoke.path.find_data import list_available_variables 
         >>> list_available_variables(source_id = 'HadGEM3-GC31-HM')
         {'MOHC/HadGEM3-GC31-HM': {
             'control-1950': {
@@ -143,7 +143,7 @@ def list_available_variables(
 def get_variable_path(
     source_id: str,
     variable_id: str,
-    data_dir: str = '/seaicecp_data/bergybits/data',
+    data_dir: str = '/arctichoke_data/bergybits/data',
     project: str = 'CMIP6',
     activity_id: str = 'HighResMIP',
     experiment_id: str = 'hist-1950',
@@ -164,7 +164,7 @@ def get_variable_path(
         data_dir : `str`, optional
             The absolute file path to the data directory.
             The `esgpull` convention means this should end in `/data`.
-            Default is `/seaicecp_data/bergybits/data`.
+            Default is `/arctichoke_data/bergybits/data`.
         project : `str`, optional
             The name of the project in which to search for available models.
             Default is `CMIP6`.
@@ -188,16 +188,16 @@ def get_variable_path(
         
         Examples
         --------
-        >>> from seaicecp.path.find_data import get_variable_path
+        >>> from arctichoke.path.find_data import get_variable_path
         >>> get_variable_path(source_id = 'HadGEM3-GC31-HM', variable_id = 'areacello')
-        '/seaicecp_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-HM/hist-1950/r1i1p1f1/Ofx/areacello'
+        '/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-HM/hist-1950/r1i1p1f1/Ofx/areacello'
         >>> get_variable_path(source_id = 'EC-Earth3P-HR', variable_id = 'siage')
-        '/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/siage'
-        /workspace/src/seaicecp/path/find_data.py:396: UserWarning: (get_variable_path) More than one file path found: ['/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/siage', '/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r2i1p2f1/SImon/siage', '/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/siage']
+        '/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/siage'
+        /workspace/src/arctichoke/path/find_data.py:396: UserWarning: (get_variable_path) More than one file path found: ['/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/siage', '/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r2i1p2f1/SImon/siage', '/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/siage']
         Returning first result in list.
-        '/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/siage'
+        '/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/siage'
         >>> get_variable_path(source_id = 'EC-Earth3P-HR', variable_id = 'siage', variant_label = 'r3i1p2f1')
-        '/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/siage'
+        '/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/siage'
     """
     # Verify input arguments
     if not isinstance(source_id, (str, type(None))):
@@ -292,10 +292,10 @@ def list_variable_modifications(
         
         Examples
         --------
-        >>> from seaicecp.path.find_data import list_variable_modifications 
-        >>> list_variable_modifications(variable_path = '/seaicecp_data/bergybits/data/CMIP6/HighResMIP/AWI/AWI-CM-1-1-HR/hist-1950/r1i1p1f2/Ofx/areacello', list_filenames = True)
+        >>> from arctichoke.path.find_data import list_variable_modifications 
+        >>> list_variable_modifications(variable_path = '/arctichoke_data/bergybits/data/CMIP6/HighResMIP/AWI/AWI-CM-1-1-HR/hist-1950/r1i1p1f2/Ofx/areacello', list_filenames = True)
         {'': ['areacello_Ofx_AWI-CM-1-1-HR_hist-1950_r1i1p1f2_gn.nc']}
-        >>> list_variable_modifications(variable_path = '/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r2i1p2f1/SImon/siconc')
+        >>> list_variable_modifications(variable_path = '/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r2i1p2f1/SImon/siconc')
         {'': 65, 'trim_NWP_': 65}
     """
     # Verify input arguments

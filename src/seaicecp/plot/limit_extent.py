@@ -1,7 +1,7 @@
 import numpy as np 
 import cartopy.crs as crs
 
-import seaicecp.params as sps
+import arctichoke.params as sps
 
 def get_limited_extent(
     map_projection : crs.CRS,
@@ -21,7 +21,7 @@ def get_limited_extent(
             An array of coordinates defining the bounding box of the map in the following format:
                 - [LAT_MAX, LAT_MIN, LON_MAX, LON_MIN]
                 
-            Default is `seaicecp.params.latlon_params.NWP_BBOX`.
+            Default is `arctichoke.params.latlon_params.NWP_BBOX`.
         n_sample : `int`, optional
             The number of samples to take along the edges of the bounding box.
             Use a larger number for larger bounding boxes to reduce clipping.

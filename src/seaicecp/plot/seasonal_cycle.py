@@ -7,10 +7,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 import xarray as xr
 
-from seaicecp.dataset.field_mean import get_field_mean 
-from seaicecp.path.file_lists import list_variable_files, select_files_by_time
-import seaicecp.params as sps
-from seaicecp.verify import verify_path
+from arctichoke.dataset.field_mean import get_field_mean 
+from arctichoke.path.file_lists import list_variable_files, select_files_by_time
+import arctichoke.params as sps
+from arctichoke.verify import verify_path
 
 def plot_seasonal_cycle(
     datasets: [(str, xr.DataArray, xr.Dataset)],
@@ -91,9 +91,9 @@ def plot_seasonal_cycle(
         
         Examples
         --------
-        >>> from seaicecp.dataset.field_mean import get_field_mean 
+        >>> from arctichoke.dataset.field_mean import get_field_mean 
         >>> fldmean_xr = get_field_mean('example_siconc_dataset.nc')
-        >>> from seaicecp.plot.seasonal_cycle import plot_seasonal_cycle
+        >>> from arctichoke.plot.seasonal_cycle import plot_seasonal_cycle
         >>> plot_seasonal_cycle(dataset = fldmean_xr, variable_id = 'siconc')
     """
     # Verify input arguments
@@ -339,7 +339,7 @@ def multi_seasonal_cycle(
         
         Examples
         --------
-        >>> from seaicecp.plot.seasonal_cycle import multi_seasonal_cycle 
+        >>> from arctichoke.plot.seasonal_cycle import multi_seasonal_cycle 
         >>> multi_seasonal_cycle(
                 source_id = 'EC-Earth3P-HR',
                 variable_ids = ['siconc'],

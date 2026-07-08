@@ -1,8 +1,8 @@
 import warnings
 import xarray as xr 
 
-from seaicecp.verify import verify_path
-from seaicecp.params.var_params import meta_vars
+from arctichoke.verify import verify_path
+from arctichoke.params.var_params import meta_vars
 
 def get_variable_name(
     dataset: (str, xr.DataArray, xr.Dataset),
@@ -23,7 +23,7 @@ def get_variable_name(
         
         Examples
         --------
-        >>> from seaicecp.dataset.grid_type import get_variable_name
+        >>> from arctichoke.dataset.grid_type import get_variable_name
     """
     # Verify input arguments
     if not isinstance(dataset, (str, xr.Dataset, xr.DataArray)):

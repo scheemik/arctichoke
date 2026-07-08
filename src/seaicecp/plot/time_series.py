@@ -2,8 +2,8 @@ import xarray as xr
 import matplotlib.pyplot as plt
 from datetime import datetime
 
-import seaicecp.params as sps
-from seaicecp.verify import verify_path
+import arctichoke.params as sps
+from arctichoke.verify import verify_path
 
 def plot_time_series(
     dataset: (str, xr.DataArray, xr.Dataset),
@@ -57,9 +57,9 @@ def plot_time_series(
         
         Examples
         --------
-        >>> from seaicecp.dataset.field_mean import get_field_mean 
+        >>> from arctichoke.dataset.field_mean import get_field_mean 
         >>> fldmean_xr = get_field_mean('example_siconc_dataset.nc')
-        >>> from seaicecp.plot.time_series import plot_time_series
+        >>> from arctichoke.plot.time_series import plot_time_series
         >>> plot_time_series(dataset = fldmean_xr, variable_id = 'siconc')
     """
     # Verify input arguments

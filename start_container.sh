@@ -16,8 +16,8 @@ if [[ "$MACHINE_STATE" != "running" ]]; then
 fi
 
 # ---- Set parameters ----
-IMAGE="seaicecp_7"
-CONTAINER_NAME="sicp_cont"
+IMAGE="arctichoke"
+CONTAINER_NAME="arctichoke_cont"
 WORKDIR="/workspace"
 
 # ---- Cleanup old container if it exists ----
@@ -30,7 +30,7 @@ if ! podman image exists "$IMAGE"; then
 fi
 
 # ---- Setup external hard drive access ----
-export SICP_DATA_DIR=/Volumes/BERGY_BITS/seaicecp_data/
+export SICP_DATA_DIR=/Volumes/BERGY_BITS/arctichoke_data/
 SICP_DATA_DIR="${SICP_DATA_DIR:-}"
 
 if [[ -n "$SICP_DATA_DIR" ]]; then
@@ -44,7 +44,7 @@ fi
 VOLUMES=(-v "$(pwd)":"$WORKDIR")
 
 if [[ -n "$SICP_DATA_DIR" ]]; then
-  VOLUMES+=(-v "$SICP_DATA_DIR:/seaicecp_data")
+  VOLUMES+=(-v "$SICP_DATA_DIR:/arctichoke_data")
 fi
 
 # ---- Run container (Jupyter starts automatically from CMD) ----

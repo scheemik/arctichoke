@@ -1,7 +1,7 @@
 import xarray as xr 
 
-from seaicecp.verify import verify_path
-from seaicecp.dataset.get_variable import get_variable_name
+from arctichoke.verify import verify_path
+from arctichoke.dataset.get_variable import get_variable_name
 
 def get_grid_type(
     dataset: (str, xr.DataArray, xr.Dataset),
@@ -22,8 +22,8 @@ def get_grid_type(
         
         Examples
         --------
-        >>> from seaicecp.dataset.grid_type import get_grid_type
-        >>> get_grid_type('/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/siconc/gn/v20181212/siconc_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_201401-201412.nc')
+        >>> from arctichoke.dataset.grid_type import get_grid_type
+        >>> get_grid_type('/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/siconc/gn/v20181212/siconc_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_201401-201412.nc')
         irregular
     """
     # Verify input arguments
@@ -71,9 +71,9 @@ def summarize_grid_types(
         
         Examples
         --------
-        >>> from seaicecp.path import list_variable_files
+        >>> from arctichoke.path import list_variable_files
         >>> this_list = list_variable_files(source_id='EC-Earth3P-HR', variable_id='siconc', variant_label='r2i1p2f1')
-        >>> from seaicecp.dataset.grid_type import summarize_grid_types
+        >>> from arctichoke.dataset.grid_type import summarize_grid_types
         >>> summarize_grid_types(this_list)
         {'total': 65, 'irregular': 65}
         >>> this_list = list_variable_files(source_id='HadGEM3-GC31-MM', variable_id='siconc', experiment_id='highres-future', variant_label='r1i1p1f1')

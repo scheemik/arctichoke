@@ -8,12 +8,12 @@ cdo = Cdo()
 cdo = Cdo(tempdir='./cdo_tmp/')
 cdo.cleanTempDir()
 
-from seaicecp import get_current_datetime_str
-from seaicecp.dataset.get_variable import get_variable_name
-from seaicecp.dataset.trim_dataset import trim_latlon
-from seaicecp.path.manipulate_paths import make_file_path
-import seaicecp.params as sps
-from seaicecp.verify import verify_path
+from arctichoke import get_current_datetime_str
+from arctichoke.dataset.get_variable import get_variable_name
+from arctichoke.dataset.trim_dataset import trim_latlon
+from arctichoke.path.manipulate_paths import make_file_path
+import arctichoke.params as sps
+from arctichoke.verify import verify_path
 
 def find_packed_ice(
     dataset: (str, [str], xr.DataArray, xr.Dataset),
@@ -54,13 +54,13 @@ def find_packed_ice(
         
         Examples
         --------
-        >>> from seaicecp.dataset.example_dataset import make_example_dataset
+        >>> from arctichoke.dataset.example_dataset import make_example_dataset
         >>> dataset = make_example_dataset(n=3, test_var_name='siconc')
         >>> dataset['siconc'].values
         array([[0., 1., 2.],
                [3., 4., 5.],
                [6., 7., 8.]])
-        >>> from seaicecp.analysis.landfast import find_packed_ice
+        >>> from arctichoke.analysis.landfast import find_packed_ice
         >>> dataset_sipacked = find_packed_ice(dataset, packed_threshold=4)
         >>> dataset_sipacked['sipacked'].values
         array([[0., 0., 0.],
@@ -168,12 +168,12 @@ def find_packed_ice(
         original_history = packedice_xr['sipacked'].attrs['history']
     else:
         original_history = ''
-    packedice_xr['sipacked'].attrs['history'] = f"{get_current_datetime_str()} altered by `seaicecp`: Calculated packed ice, marking `{siconc_var}` > {packed_threshold} as 1 and 0 otherwise. {original_history}"
+    packedice_xr['sipacked'].attrs['history'] = f"{get_current_datetime_str()} altered by `arctichoke`: Calculated packed ice, marking `{siconc_var}` > {packed_threshold} as 1 and 0 otherwise. {original_history}"
     if 'history' in packedice_xr.attrs.keys():
         original_history = packedice_xr.attrs['history']
     else:
         original_history = ''
-    packedice_xr.attrs['history'] = f"{get_current_datetime_str()} altered by `seaicecp`: Calculated packed ice, marking `{siconc_var}` > {packed_threshold} as 1 and 0 otherwise. {original_history}"
+    packedice_xr.attrs['history'] = f"{get_current_datetime_str()} altered by `arctichoke`: Calculated packed ice, marking `{siconc_var}` > {packed_threshold} as 1 and 0 otherwise. {original_history}"
 
     # Save the modified dataset, if applicable
     if not isinstance(save_as, type(None)):
@@ -216,13 +216,13 @@ def find_slow_ice(
         
         Examples
         --------
-        >>> from seaicecp.dataset.example_dataset import make_example_dataset
+        >>> from arctichoke.dataset.example_dataset import make_example_dataset
         >>> dataset = make_example_dataset(n=3, test_var_name='sispeed')
         >>> dataset['sispeed'].values
         array([[0., 1., 2.],
                [3., 4., 5.],
                [6., 7., 8.]])
-        >>> from seaicecp.analysis.landfast import find_slow_ice
+        >>> from arctichoke.analysis.landfast import find_slow_ice
         >>> dataset_sislow = find_slow_ice(dataset, slow_threshold=4)
         >>> dataset_sislow['sislow'].values
         array([[1., 1., 1.],
@@ -326,12 +326,12 @@ def find_slow_ice(
         original_history = slowice_xr['sislow'].attrs['history']
     else:
         original_history = ''
-    slowice_xr['sislow'].attrs['history'] = f"{get_current_datetime_str()} altered by `seaicecp`: Calculated slow ice, marking `sispeed` > {slow_threshold} as 1 and 0 otherwise. {original_history}"
+    slowice_xr['sislow'].attrs['history'] = f"{get_current_datetime_str()} altered by `arctichoke`: Calculated slow ice, marking `sispeed` > {slow_threshold} as 1 and 0 otherwise. {original_history}"
     if 'history' in slowice_xr.attrs.keys():
         original_history = slowice_xr.attrs['history']
     else:
         original_history = ''
-    slowice_xr.attrs['history'] = f"{get_current_datetime_str()} altered by `seaicecp`: Calculated slow ice, marking `sispeed` > {slow_threshold} as 1 and 0 otherwise. {original_history}"
+    slowice_xr.attrs['history'] = f"{get_current_datetime_str()} altered by `arctichoke`: Calculated slow ice, marking `sispeed` > {slow_threshold} as 1 and 0 otherwise. {original_history}"
 
     # Save the modified dataset, if applicable
     if not isinstance(save_as, type(None)):
@@ -386,7 +386,7 @@ def find_landfast_ice(
         
         Examples
         --------
-        >>> from seaicecp.dataset.example_dataset import make_example_dataset
+        >>> from arctichoke.dataset.example_dataset import make_example_dataset
         >>> dataset_0 = make_example_dataset(n=3, test_var_name='siconc')
         >>> dataset_0['siconc'].values
         array([[0., 1., 2.],
@@ -397,7 +397,7 @@ def find_landfast_ice(
         array([[0., 1., 2.],
                [3., 4., 5.],
                [6., 7., 8.]])
-        >>> from seaicecp.analysis.landfast import find_landfast_ice
+        >>> from arctichoke.analysis.landfast import find_landfast_ice
         >>> dataset_landfast = find_landfast_ice(siconc_dataset=dataset_0, sispeed_dataset=dataset_1, packed_threshold=4, slow_threshold=4)
         >>> dataset_landfast['silandfast'].values
         array([[0., 0., 0.],
@@ -481,12 +481,12 @@ def find_landfast_ice(
         original_history = landfastice_xr['silandfast'].attrs['history']
     else:
         original_history = ''
-    landfastice_xr['silandfast'].attrs['history'] = f"{get_current_datetime_str()} altered by `seaicecp`: Calculated landfast ice, marking where both `{siconc_var}` > {packed_threshold} and `sispeed` > {slow_threshold} as 1 and 0 otherwise. {original_history}"
+    landfastice_xr['silandfast'].attrs['history'] = f"{get_current_datetime_str()} altered by `arctichoke`: Calculated landfast ice, marking where both `{siconc_var}` > {packed_threshold} and `sispeed` > {slow_threshold} as 1 and 0 otherwise. {original_history}"
     if 'history' in landfastice_xr.attrs.keys():
         original_history = landfastice_xr.attrs['history']
     else:
         original_history = ''
-    landfastice_xr.attrs['history'] = f"{get_current_datetime_str()} altered by `seaicecp`: Calculated landfast ice, marking where both `{siconc_var}` > {packed_threshold} and `sispeed` > {slow_threshold} as 1 and 0 otherwise. {original_history}"
+    landfastice_xr.attrs['history'] = f"{get_current_datetime_str()} altered by `arctichoke`: Calculated landfast ice, marking where both `{siconc_var}` > {packed_threshold} and `sispeed` > {slow_threshold} as 1 and 0 otherwise. {original_history}"
 
     # Save the modified dataset, if applicable
     if not isinstance(save_as, type(None)):
@@ -538,9 +538,9 @@ def make_landfast_files(
         
         Examples
         --------
-        >>> from seaicecp.path import list_variable_files
-        >>> from seaicecp.analysis.landfast import make_landfast_files
-        >>> from seaicecp.params import CAA_BBOX
+        >>> from arctichoke.path import list_variable_files
+        >>> from arctichoke.analysis.landfast import make_landfast_files
+        >>> from arctichoke.params import CAA_BBOX
         >>> this_model = 'EC-Earth3P-HR'
         >>> for this_variant_label in [
         >>>     'r1i1p2f1', 
@@ -566,13 +566,13 @@ def make_landfast_files(
         >>>             map_bbox = CAA_BBOX,
         >>>             precise_trim = False,
         >>>         )
-        (make_landfast_files) Writing file `/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/silandfast/gn/v20260617/trim_CAA_silandfast_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_195001-195012.nc`.
-        (make_landfast_files) Writing file `/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/silandfast/gn/v20260617/trim_CAA_silandfast_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_195101-195112.nc`.
-        (make_landfast_files) Writing file `/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/silandfast/gn/v20260617/trim_CAA_silandfast_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_195201-195212.nc`.
+        (make_landfast_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/silandfast/gn/v20260617/trim_CAA_silandfast_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_195001-195012.nc`.
+        (make_landfast_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/silandfast/gn/v20260617/trim_CAA_silandfast_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_195101-195112.nc`.
+        (make_landfast_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/silandfast/gn/v20260617/trim_CAA_silandfast_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_195201-195212.nc`.
         ...
-        (make_landfast_files) Writing file `/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/silandfast/gn/v20260617/trim_CAA_silandfast_SImon_EC-Earth3P-HR_hist-1950_r3i1p2f1_gn_201201-201212.nc`.
-        (make_landfast_files) Writing file `/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/silandfast/gn/v20260617/trim_CAA_silandfast_SImon_EC-Earth3P-HR_hist-1950_r3i1p2f1_gn_201301-201312.nc`.
-        (make_landfast_files) Writing file `/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/silandfast/gn/v20260617/trim_CAA_silandfast_SImon_EC-Earth3P-HR_hist-1950_r3i1p2f1_gn_201401-201412.nc`.
+        (make_landfast_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/silandfast/gn/v20260617/trim_CAA_silandfast_SImon_EC-Earth3P-HR_hist-1950_r3i1p2f1_gn_201201-201212.nc`.
+        (make_landfast_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/silandfast/gn/v20260617/trim_CAA_silandfast_SImon_EC-Earth3P-HR_hist-1950_r3i1p2f1_gn_201301-201312.nc`.
+        (make_landfast_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/silandfast/gn/v20260617/trim_CAA_silandfast_SImon_EC-Earth3P-HR_hist-1950_r3i1p2f1_gn_201401-201412.nc`.
     """
     # Verify input arguments
     if isinstance(siconc_files, str):

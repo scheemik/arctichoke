@@ -1,8 +1,8 @@
 import xarray as xr
-from seaicecp.analysis.sum_by_year import sum_by_year
-from seaicecp.analysis.trend_in_time import trend_in_time
-from seaicecp.path.file_lists import list_variable_files
-from seaicecp.plot.hvplots import quadmesh_map
+from arctichoke.analysis.sum_by_year import sum_by_year
+from arctichoke.analysis.trend_in_time import trend_in_time
+from arctichoke.path.file_lists import list_variable_files
+from arctichoke.plot.hvplots import quadmesh_map
 
 def make_trend_map(
     this_source_id: str,
@@ -42,7 +42,7 @@ def make_trend_map(
         
         Examples
         --------
-        >>> from seaicecp.plot import make_trend_map
+        >>> from arctichoke.plot import make_trend_map
         >>> make_trend_map(
         >>>     this_source_id = 'EC-Earth3P-HR',
         >>>     this_var = 'silandfast',

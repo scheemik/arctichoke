@@ -7,7 +7,7 @@ The script called `start_container.sh` will ultimately start the container for t
 
 This script can be run with a simple `bash` command.
 ```console
-user@local:seaicecp$ bash start_container.sh 
+user@local:arctichoke$ bash start_container.sh 
 Starting podman machine...
 Starting machine "podman-machine-default"
 
@@ -22,9 +22,9 @@ Docker API clients default to this address. You do not need to set DOCKER_HOST.
 
 Machine "podman-machine-default" started successfully
 ───────────────────────────────────────────────────── esgpull installation ──────────────────────────────────────────────────────
-Using existing install at /seaicecp_data/bergybits
+Using existing install at /arctichoke_data/bergybits
 Install config added to /root/.config/esgpull/installs.json
-      Built seaicecp @ file:///workspace
+      Built arctichoke @ file:///workspace
 Uninstalled 1 package in 13ms
 Installed 1 package in 62ms
 [I 2026-06-04 18:23:25.915 ServerApp] jupyter_lsp | extension was successfully linked.

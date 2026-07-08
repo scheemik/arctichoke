@@ -113,17 +113,17 @@ Warning: uv 0.11.6 already installed
 [back to top](#initial-setup)
 
 To start a project, I simply need to use `uv` to initiate one, following the [Working on projects](https://docs.astral.sh/uv/guides/projects/) guide.
-I chose the name `seaicecp` to stand for "Sea Ice Choke Points," trying to balance brevity and descriptiveness.
+I chose the name `arctichoke` to stand for "Sea Ice Choke Points," trying to balance brevity and descriptiveness.
 First, I navigated to the directory in which I want my project to be, `<absolute/path/to/project>`, then used the `uv init` command with the name for the project and the `--package` flag.
 ```console
 user@local:~$ cd /<absolute/path/to/project>
-user@local:/<absolute/path/to/project>$ uv init seaicecp --package
-Initialized project `seaicecp` at `/<absolute/path/to/project>/seaicecp`
+user@local:/<absolute/path/to/project>$ uv init arctichoke --package
+Initialized project `arctichoke` at `/<absolute/path/to/project>/arctichoke`
 ```
 
 This creates a very simple directory structure for the project.
 ```console
-user@local:/<absolute/path/to/project>$ tree seaicecp
+user@local:/<absolute/path/to/project>$ tree arctichoke
 ├── .gitignore
 ├── .python-version
 ├── README.md
@@ -146,13 +146,13 @@ By using `uvx`, you don't need to commit to actually installing `cookiecutter` o
 First, I created and went into a temporary directory, `tmp_dir`, then generated the package structure.
 This is to ensure I didn't accidentally overwrite the structure I made with `uv init` earlier.
 ```console
-user@local:seaicecp$ mkdir tmp_dir
-user@local:seaicecp$ cd tmp_dir
+user@local:arctichoke$ mkdir tmp_dir
+user@local:arctichoke$ cd tmp_dir
 user@local:tmp_dir$ git branch -m master main
 $ uvx cookiecutter https://github.com/py-pkgs/py-pkgs-cookiecutter.git
 Installed 21 packages in 137ms
   [1/7] author_name (Monty Python): Mikhail Schee
-  [2/7] package_name (mypkg): seaicecp
+  [2/7] package_name (mypkg): arctichoke
   [3/7] package_short_description (A package for doing great things!): Investigate sea ice choke points in the Canadian Arctic Archipelago using high-resolution models.
   [4/7] package_version (0.1.0): 
   [5/7] python_version (3.12): 3.13.5
@@ -172,10 +172,10 @@ Installed 21 packages in 137ms
     Choose from [1/2/3] (1):
 ```
 
-This generates a directory with the chosen package name (in this case, `seaicecp`) and fill it with all the boiler-plate files you would expect in a Python Package.
+This generates a directory with the chosen package name (in this case, `arctichoke`) and fill it with all the boiler-plate files you would expect in a Python Package.
 ```console
-user@local:tmp_dir$ tree seaicecp/
-seaicecp/
+user@local:tmp_dir$ tree arctichoke/
+arctichoke/
 ├── CHANGELOG.md
 ├── CONDUCT.md
 ├── CONTRIBUTING.md
@@ -193,11 +193,11 @@ seaicecp/
 ├── pyproject.toml
 ├── README.md
 ├── src
-│   └── seaicecp
+│   └── arctichoke
 │       ├── __init__.py
-│       └── seaicecp.py
+│       └── arctichoke.py
 └── tests
-    └── test_seaicecp.py
+    └── test_arctichoke.py
 
 5 directories, 18 files
 ```
@@ -223,7 +223,7 @@ Below are the files that are shared across both structures I generated and what 
 The `pyproject.toml` file initially looks like:
 ```toml
 [project]
-name = "seaicecp"
+name = "arctichoke"
 version = "0.1.0"
 description = "Investigate sea ice choke points in the Canadian Arctic Archipelago using high-resolution models."
 authors = [
@@ -242,7 +242,7 @@ dev = [
 ]
 
 [project.scripts]
-seaicecp = "seaicecp:main"
+arctichoke = "arctichoke:main"
 
 [build-system]
 requires = ["uv_build>=0.9.15,<0.10.0"]
@@ -252,7 +252,7 @@ build-backend = "uv_build"
 After completing those steps, I deleted the redundant instance of my project directory in `tmp_dir`. 
 ```console
 user@local:tmp_dir$ cd ..
-user@local:seaicecp$ rm -rf tmp_dir/
+user@local:arctichoke$ rm -rf tmp_dir/
 ```
 
 
@@ -261,11 +261,11 @@ user@local:seaicecp$ rm -rf tmp_dir/
 
 Following [Py-Pkgs Section 3.3. Put your package under version control](https://py-pkgs.org/03-how-to-package-a-python#put-your-package-under-version-control), I initiated `git` for my new repository.
 ```console
-user@local:seaicecp$ git init
-Initialized empty Git repository in /<absolute/path/to/project>/seaicecp/.git/
+user@local:arctichoke$ git init
+Initialized empty Git repository in /<absolute/path/to/project>/arctichoke/.git/
 ```
 
-I then added and committed the initial structure and pushed to a new [GitHub repository for the project](https://github.com/scheemik/seaicecp).
+I then added and committed the initial structure and pushed to a new [GitHub repository for the project](https://github.com/scheemik/arctichoke).
 I am working in VSCodium, which I'd already set up to [connect to my GitHub account](https://github.com/VSCodium/vscodium/blob/master/docs/usage.md#signin-github), so the process was as simple as pressing the "push" button in the GUI.
 
 
@@ -277,15 +277,15 @@ I'm following the guide from Geeks for Geeks on [How to Change Git Default Branc
 
 First, I renamed the local branch.
 ```console
-user@local:/<absolute/path/to/project>$ cd seaicecp
-user@local:seaicecp$ git branch -m master main
-user@local:seaicecp$ git push -u origin main
+user@local:/<absolute/path/to/project>$ cd arctichoke
+user@local:arctichoke$ git branch -m master main
+user@local:arctichoke$ git push -u origin main
 Total 0 (delta 0), reused 0 (delta 0)
 remote: 
 remote: Create a pull request for 'main' on GitHub by visiting:
-remote:      https://github.com/scheemik/seaicecp/pull/new/main
+remote:      https://github.com/scheemik/arctichoke/pull/new/main
 remote: 
-To https://github.com/scheemik/seaicecp.git
+To https://github.com/scheemik/arctichoke.git
  * [new branch]      main -> main
 Branch 'main' set up to track remote branch 'main' from 'origin'.
 ```
@@ -294,8 +294,8 @@ Then, on GitHub, I went to the "Settings" tab for the repository, then confirmed
 Under the heading "Default branch," I clicked the button to "Switch to another branch," selected `main`, then hit "Update."
 Next, I deleted the `master` branch from the remote.
 ```console
-user@local:seaicecp$ git push origin --delete master
-To https://github.com/scheemik/seaicecp.git
+user@local:arctichoke$ git push origin --delete master
+To https://github.com/scheemik/arctichoke.git
  - [deleted]         master
 ```
 
@@ -746,7 +746,7 @@ This is the image that was built when [Testing Podman](#testing-podman).
 Containers get added to the list in the Pod Manager sidebar when they start running. 
 I can start the `basic_httpd` container again.
 ```console
-user@local:seaicecp$ podman run --name basic_httpd -d -p 8080:80/tcp docker.io/nginx
+user@local:arctichoke$ podman run --name basic_httpd -d -p 8080:80/tcp docker.io/nginx
 9ab04fb2f7c04e2a1cf263ee46b33a00cde5fc7c89e71926f7a65aeae4e35dd7
 ```
 Since this image was already built, all that needed to be done was start a container with the image.
@@ -762,7 +762,7 @@ podman exec -it 9ab04fb2f7c0 /bin/sh
 The default interactive shell is now zsh.
 To update your account to use zsh, please run `chsh -s /bin/zsh`.
 For more details, please visit https://support.apple.com/kb/HT208050.
-user@local:seaicecp$ podman exec -it 9ab04fb2f7c0 /bin/sh
+user@local:arctichoke$ podman exec -it 9ab04fb2f7c0 /bin/sh
 # basic_httpd whoami
 root
 # 
@@ -820,7 +820,7 @@ CMD ["/bin/bash"]
 Next, I'll build the image.
 A lot of information is output to the console in the build process, so I'll collapse most of the output for brevity.
 ```console
-user@local:seaicecp$ podman build -f Containerfile -t test_trixie .
+user@local:arctichoke$ podman build -f Containerfile -t test_trixie .
 [1/2] STEP 1/1: FROM ghcr.io/astral-sh/uv:latest AS uv
 Trying to pull ghcr.io/astral-sh/uv:latest...
 Getting image source signatures
@@ -986,7 +986,7 @@ Then, I'll run the container with the following flags (see the [Podman run docs]
 - `--name`: Container name
     - "Assign a name to the container." This can be completely different from the name of the image it is built from.
 ```console
-user@local:seaicecp$ podman run -it --rm --name container_name test_trixie
+user@local:arctichoke$ podman run -it --rm --name container_name test_trixie
 root@<container_id>:/workspace# 
 ```
 Where `<container_id>` is a 12-digit identifier of the container. 
@@ -1005,7 +1005,7 @@ When I am done, I can exit the container.
 ```console
 root@<container_id>:/workspace# exit
 exit
-user@local:seaicecp$ 
+user@local:arctichoke$ 
 ```
 Upon exiting the container, I can refresh the Pod Manager sidebar again to see that the container removed itself upon exit because of the `--rm` flag.
 This is important to keep from building up a large number of idle containers when starting a particular image many times.
@@ -1027,7 +1027,7 @@ Below is the current `Containerfile` used to build the image for this project.
 Note that this is meant to be executed via [the `start_container.sh` script](#the-start_container-script).
 However, if testing a new build, it can be useful to pipe the output of `podman build` to a log file using `tee`.
 ```console
-user@local:seaicecp$ podman build -f .devcontainer/Containerfile -t <image_name> . | tee .devcontainer/<log_file_name>.log
+user@local:arctichoke$ podman build -f .devcontainer/Containerfile -t <image_name> . | tee .devcontainer/<log_file_name>.log
 ```
 
 I'll explain each section of the `Containerfile` in detail below.
@@ -1043,9 +1043,9 @@ After [Building a simple container](#building-a-simple-container), I now see the
 
 I can get the exact hashes of the versions of `uv` and `trixie-slim` from their manifests.
 ```console
-user@local:seaicecp$ podman image inspect debian:trixie-slim --format '{{.Digest}}'
+user@local:arctichoke$ podman image inspect debian:trixie-slim --format '{{.Digest}}'
 sha256:e18da95f66066b7c5fa31491b524e83121271eca59a3d140f4906c8d0a090367
-user@local:seaicecp$ podman image inspect ghcr.io/astral-sh/uv --format '{{.Digest}}'
+user@local:arctichoke$ podman image inspect ghcr.io/astral-sh/uv --format '{{.Digest}}'
 sha256:5cbec7ab7753a6c763c6dda6a38f085c8c585ec9f53cfb4e7368b79ca30bc881
 ```
 
@@ -1119,7 +1119,7 @@ The packages installed in this block are:
 - `WORKDIR /workspace`
     - This sets the working directory to be named `/workspace`.
     - The choice of the name is arbitrary, however sets a specific file path that can be expected by other parts of the project.
-    - This essentially renames the root of the project directory on your computer (`seaicecp`) to be `/workspace` inside the container. 
+    - This essentially renames the root of the project directory on your computer (`arctichoke`) to be `/workspace` inside the container. 
 - The next three commands set up dependency files for the virtual environment.
     - `COPY pyproject.toml uv.lock ./`
     - `COPY README.md ./`
@@ -1135,7 +1135,7 @@ The next block in the `Containerfile` is:
 # Install dependencies via `uv` and start a kernel for Jupyter notebooks
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync \
- && uv run python -m ipykernel install --sys-prefix --name python3 --display-name "seaicecp (container)"
+ && uv run python -m ipykernel install --sys-prefix --name python3 --display-name "arctichoke (container)"
 ...
 ```
 
@@ -1184,7 +1184,7 @@ This uses the separate script included with this project at `.devcontainer/esgpu
 :language: bash
 ```
 
-The `.devcontainer/esgpull_entrypoint.sh` script assumes that the directory in which the data on the external volume is stored has been defined as `/seaicecp_data`, something which is set when executing the `podman run` command (see [The `start_container` script](#the-start_container-script)).
+The `.devcontainer/esgpull_entrypoint.sh` script assumes that the directory in which the data on the external volume is stored has been defined as `/arctichoke_data`, something which is set when executing the `podman run` command (see [The `start_container` script](#the-start_container-script)).
 For more information on `esgpull`, see [Initializing `esgpull`](#initializing-esgpull).
 
 
@@ -1225,7 +1225,7 @@ The script is shown below:
 
 This script can be run with a simple `bash` command.
 ```console
-user@local:seaicecp$ bash start_container.sh 
+user@local:arctichoke$ bash start_container.sh 
 Starting podman machine...
 Starting machine "podman-machine-default"
 
@@ -1240,9 +1240,9 @@ Docker API clients default to this address. You do not need to set DOCKER_HOST.
 
 Machine "podman-machine-default" started successfully
 ───────────────────────────────────────────────────── esgpull installation ──────────────────────────────────────────────────────
-Using existing install at /seaicecp_data/bergybits
+Using existing install at /arctichoke_data/bergybits
 Install config added to /root/.config/esgpull/installs.json
-      Built seaicecp @ file:///workspace
+      Built arctichoke @ file:///workspace
 Uninstalled 1 package in 13ms
 Installed 1 package in 62ms
 [I 2026-06-04 18:23:25.915 ServerApp] jupyter_lsp | extension was successfully linked.
@@ -1321,7 +1321,7 @@ This is useful when testing the code in a way which requires restarting the cont
 
 Next, the scripts sets the following parameters.
 
-- `IMAGE="seaicecp_7"`
+- `IMAGE="arctichoke_7"`
     - This will be the name of the image that is built. 
     - If an image with this name already exists, a new one will not be built.
     - If you want to try a new build, change this parameter.
@@ -1363,7 +1363,7 @@ The value of `SICP_DATA_DIR` should be changed to match the absolute file path o
 ```bash
 ...
 # ---- Setup external hard drive access ----
-export SICP_DATA_DIR=/Volumes/BERGY_BITS/seaicecp_data/
+export SICP_DATA_DIR=/Volumes/BERGY_BITS/arctichoke_data/
 SICP_DATA_DIR="${SICP_DATA_DIR:-}"
 
 if [[ -n "$SICP_DATA_DIR" ]]; then
@@ -1376,9 +1376,9 @@ fi
 ```
 If you need to change the external volume setup, you will need to restart the Podman machine, not just the container, to see whether the change worked.
 ```console
-user@local:seaicecp$ podman machine stop
+user@local:arctichoke$ podman machine stop
 Machine "podman-machine-default" stopped successfully
-user@local:seaicecp$ podman machine rm
+user@local:arctichoke$ podman machine rm
 The following files will be deleted:
 
 
@@ -1402,7 +1402,7 @@ This should include the working directory and the external volume.
 VOLUMES=(-v "$(pwd)":"$WORKDIR")
 
 if [[ -n "$SICP_DATA_DIR" ]]; then
-  VOLUMES+=(-v "$SICP_DATA_DIR:/seaicecp_data")
+  VOLUMES+=(-v "$SICP_DATA_DIR:/arctichoke_data")
 fi
 ...
 ```
@@ -1448,7 +1448,7 @@ The arguments of the command are, similar to [Building a simple container](#buil
 With the container running, I can test to make sure things were installed correctly. 
 First, I'll check the versions of various packages, starting with `uv`.
 ```console
-user@local:seaicecp$ podman exec -it <container_id> /bin/sh
+user@local:arctichoke$ podman exec -it <container_id> /bin/sh
 # bash
 root@<container_id>:/workspace# uv --version
 uv 0.11.8 (x86_64-unknown-linux-musl)
@@ -1501,7 +1501,7 @@ For the images, containers, and local volumes, it lists the total number, the nu
 When testing out new builds of the `Containerfile`, it is easy to generate many images.
 Podman can list the existing images. 
 ```console
-user@local:seaicecp$ podman images -a
+user@local:arctichoke$ podman images -a
 REPOSITORY                TAG          IMAGE ID      CREATED      SIZE
 <none>                    <none>       55b854bc8dcd  2 days ago   199 MB
 localhost/test_trixie     latest       7bab3cfc2aa3  2 days ago   199 MB
@@ -1512,14 +1512,14 @@ localhost/test_trixie     latest       7bab3cfc2aa3  2 days ago   199 MB
 ghcr.io/astral-sh/uv      latest       b960411dc937  6 days ago   58.2 MB
 docker.io/library/nginx   latest       7aaca76c508f  12 days ago  165 MB
 docker.io/library/debian  trixie-slim  f283d70f8784  2 weeks ago  81.1 MB
-localhost/seaicecp_7      latest       b05b6acdb72b  3 weeks ago  2.78 GB
+localhost/arctichoke_7      latest       b05b6acdb72b  3 weeks ago  2.78 GB
 ```
 While the image for this project is a reasonable 2.78 GB, it adds up quickly when there are dozens of copies.
 Podman provides an easy `prune` command to clean this up. 
 When this command is run, it will remove all images that do not have an associated container that is currently running. 
 This makes it convenient as I can just start a container from the image that I want to keep then, from outside that container, run a `prune` command.
 ```console
-user@local:seaicecp$ podman image prune -a
+user@local:arctichoke$ podman image prune -a
 WARNING! This command removes all images without at least one container associated with them.
 Are you sure you want to continue? [y/N] y
 7aaca76c508f7d121ff29cbe9dd071012486d00c21e17655eb1a1dfb711e9330
@@ -1534,9 +1534,9 @@ b907eed1ae8b4ec83fe12df4292630c67ca77d99f5e966dfa0e99e8077d2bae7
 ```
 I can then confirm that only one image remains.
 ```console
-user@local:seaicecp$ podman images -a
+user@local:arctichoke$ podman images -a
 REPOSITORY            TAG         IMAGE ID      CREATED      SIZE
-localhost/seaicecp_7  latest      b05b6acdb72b  3 weeks ago  2.78 GB
+localhost/arctichoke_7  latest      b05b6acdb72b  3 weeks ago  2.78 GB
 ```
 
 
@@ -1557,16 +1557,16 @@ podman exec -it <container_id> /bin/sh
 The default interactive shell is now zsh.
 To update your account to use zsh, please run `chsh -s /bin/zsh`.
 For more details, please visit https://support.apple.com/kb/HT208050.
-user@local:seaicecp$ podman exec -it <container_id> /bin/sh
+user@local:arctichoke$ podman exec -it <container_id> /bin/sh
 # 
 ```
 Then, I activate `bash` and source the virtual environment directory.
 ```console
 # bash
 root@<container_id>:/workspace# source .cvenv/bin/activate
-(seaicecp) root@<container_id>:/workspace# 
+(arctichoke) root@<container_id>:/workspace# 
 ```
-Note that the virtual environment's name `(seaicecp)` is now at the beginning of the command prompt.
+Note that the virtual environment's name `(arctichoke)` is now at the beginning of the command prompt.
 
 
 ### Adding package dependencies
@@ -1582,7 +1582,7 @@ See `uv` docs for [The project environment](https://docs.astral.sh/uv/concepts/p
 
 I use `xarray` as the main workhorse to handle datasets.
 ```console
-(seaicecp) root@<container_id>:/workspace# uv add xarray
+(arctichoke) root@<container_id>:/workspace# uv add xarray
 Resolved 48 packages in 343ms
 Prepared 1 package in 318ms
 Installed 1 package in 11ms
@@ -1590,7 +1590,7 @@ Installed 1 package in 11ms
 ```
 In order to load data from NetCDF files into an `xarray` dataset, I also need to add the `netcdf4` package.
 ```console
-(seaicecp) root@<container_id>:/workspace# uv add netcdf4
+(arctichoke) root@<container_id>:/workspace# uv add netcdf4
 Resolved 78 packages in 716ms
 Prepared 2 packages in 3.74s
 Installed 2 packages in 13ms
@@ -1600,9 +1600,9 @@ Installed 2 packages in 13ms
 I also specifically added `dask` so that I can take advantage of lazy loading with `xarray.open_dataset()`. 
 This allows me to filter a large dataset before actually loading the entire file into memory.
 ```console
-(seaicecp) root@<container_id>:/workspace# uv add dask
+(arctichoke) root@<container_id>:/workspace# uv add dask
 Resolved 198 packages in 708ms
-      Built seaicecp @ file:///workspace
+      Built arctichoke @ file:///workspace
 Prepared 1 package in 18ms
 Uninstalled 1 package in 13ms
 Installed 7 packages in 2.48s
@@ -1611,7 +1611,7 @@ Installed 7 packages in 2.48s
  + fsspec==2026.4.0
  + locket==1.0.0
  + partd==1.4.2
- ~ seaicecp==0.1.0 (from file:///workspace)
+ ~ arctichoke==0.1.0 (from file:///workspace)
  + toolz==1.1.0
 ```
 
@@ -1621,9 +1621,9 @@ Installed 7 packages in 2.48s
 
 For plots, I added the `hvplot` package to be able to make `html` maps of irregular gridded data without interpolating onto a regular grid first.
 ```console
-(seaicecp) root@<container_id>:/workspace# uv add hvplot
+(arctichoke) root@<container_id>:/workspace# uv add hvplot
 Resolved 170 packages in 2.70s
-      Built seaicecp @ file:///workspace
+      Built arctichoke @ file:///workspace
 Prepared 16 packages in 6.01s
 Uninstalled 1 package in 14ms
 Installed 16 packages in 18.01s
@@ -1639,16 +1639,16 @@ Installed 16 packages in 18.01s
  + param==2.3.3
  + pillow==12.2.0
  + pyviz-comms==3.0.6
- ~ seaicecp==0.1.0 (from file:///workspace)
+ ~ arctichoke==0.1.0 (from file:///workspace)
  + tqdm==4.67.3
  + uc-micro-py==2.0.0
  + xyzservices==2026.3.0
 ```
 Then, I added `cartopy` to have access to map projections through the submodule `cartopy.crs`.
 ```console
-(seaicecp) root@<container_id>:/workspace# uv add cartopy
+(arctichoke) root@<container_id>:/workspace# uv add cartopy
 Resolved 178 packages in 1.40s
-      Built seaicecp @ file:///workspace
+      Built arctichoke @ file:///workspace
 Prepared 9 packages in 6.54s
 Uninstalled 1 package in 10ms
 Installed 9 packages in 5.07s
@@ -1659,19 +1659,19 @@ Installed 9 packages in 5.07s
  + matplotlib==3.10.9
  + pyproj==3.7.2
  + pyshp==3.0.3
- ~ seaicecp==0.1.0 (from file:///workspace)
+ ~ arctichoke==0.1.0 (from file:///workspace)
  + shapely==2.1.2
 ```
 I also added the `geoviews` package for handling physical features on maps.
 ```console
-(seaicecp) root@<container_id>:/workspace# uv add geoviews
+(arctichoke) root@<container_id>:/workspace# uv add geoviews
 Resolved 179 packages in 643ms
-      Built seaicecp @ file:///workspace
+      Built arctichoke @ file:///workspace
 Prepared 2 packages in 503ms
 Uninstalled 1 package in 13ms
 Installed 2 packages in 859ms
  + geoviews==1.15.1
- ~ seaicecp==0.1.0 (from file:///workspace)
+ ~ arctichoke==0.1.0 (from file:///workspace)
 ```
 When tyring to plot data from the HadGEM3-GC models over time, I got the following error.
 ```console
@@ -1683,14 +1683,14 @@ In the GitHub issue [How to convert cftime.Datetime360Day() object to python dat
 
 Adding `nc-time-axis` indeed fixed the issue. 
 ```console
-(seaicecp) root@<container_id>:/workspace# uv add nc-time-axis
+(arctichoke) root@<container_id>:/workspace# uv add nc-time-axis
 Resolved 200 packages in 697ms
-      Built seaicecp @ file:///workspace
+      Built arctichoke @ file:///workspace
 Prepared 2 packages in 174ms
 Uninstalled 1 package in 20ms
 Installed 2 packages in 139ms
  + nc-time-axis==1.4.1
- ~ seaicecp==0.1.0 (from file:///workspace)
+ ~ arctichoke==0.1.0 (from file:///workspace)
 ```
 I had also tried to use [`xarray.convert_calendar()`](https://docs.xarray.dev/en/stable/generated/xarray.Dataset.convert_calendar.html) instead of installing `nc-time-axis`, but with no luck. 
 They have notes in the documentation about how to deal with "360_day" calendars.
@@ -1705,38 +1705,38 @@ The `html` plots that are made with `hvplot` cannot be directly saved to a `png`
 As a workaround, I added the packages `chromium` and `chromium-driver` to [the `Containerfile`](#the-containerfile) in order to open an `html` plot in a browser within the container, take a "screenshot", and save that as a `png` image.
 In order for that process to work, I added the `selenium` and `bokeh` packages.
 ```console
-(seaicecp) root@<container_id>:/workspace# uv add selenium
+(arctichoke) root@<container_id>:/workspace# uv add selenium
 Resolved 187 packages in 910ms
-      Built seaicecp @ file:///workspace
+      Built arctichoke @ file:///workspace
 Prepared 9 packages in 1.64s
 Uninstalled 1 package in 31ms
 Installed 9 packages in 2.54s
  + outcome==1.3.0.post0
  + pysocks==1.7.1
- ~ seaicecp==0.1.0 (from file:///workspace)
+ ~ arctichoke==0.1.0 (from file:///workspace)
  + selenium==4.43.0
  + sniffio==1.3.1
  + sortedcontainers==2.4.0
  + trio==0.33.0
  + trio-websocket==0.12.2
  + wsproto==1.3.2
-(seaicecp) root@<container_id>:/workspace# uv add bokeh
+(arctichoke) root@<container_id>:/workspace# uv add bokeh
 Resolved 187 packages in 323ms
-      Built seaicecp @ file:///workspace
+      Built arctichoke @ file:///workspace
 Prepared 1 package in 18ms
 Uninstalled 1 package in 14ms
 Installed 1 package in 45ms
- ~ seaicecp==0.1.0 (from file:///workspace)
+ ~ arctichoke==0.1.0 (from file:///workspace)
 ```
 I also added the `pillow` package for additional `png` manipulation tools.
 ```console
-(seaicecp) root@<container_id>:/workspace# uv add pillow
+(arctichoke) root@<container_id>:/workspace# uv add pillow
 Resolved 187 packages in 331ms
-      Built seaicecp @ file:///workspace
+      Built arctichoke @ file:///workspace
 Prepared 1 package in 20ms
 Uninstalled 1 package in 14ms
 Installed 1 package in 60ms
- ~ seaicecp==0.1.0 (from file:///workspace)
+ ~ arctichoke==0.1.0 (from file:///workspace)
 ```
 
 
@@ -1745,9 +1745,9 @@ Installed 1 package in 60ms
 
 In order to use Jupyter notebooks with the `.cvenv` virtual environment, I added `ipykernel` and `jupyter`.
 ```console
-(seaicecp) root@<container_id>:/workspace# uv add ipykernel jupyter
+(arctichoke) root@<container_id>:/workspace# uv add ipykernel jupyter
 Resolved 134 packages in 1.15s
-      Built seaicecp @ file:///workspace
+      Built arctichoke @ file:///workspace
 Prepared 51 packages in 3.38s
 Uninstalled 1 package in 19ms
 Installed 51 packages in 14.63s
@@ -1790,7 +1790,7 @@ Installed 51 packages in 14.63s
  + rfc3339-validator==0.1.4
  + rfc3986-validator==0.1.1
  + rfc3987-syntax==1.1.0
- ~ seaicecp==0.1.0 (from file:///workspace)
+ ~ arctichoke==0.1.0 (from file:///workspace)
  + send2trash==2.1.0
  + setuptools==82.0.1
  + soupsieve==2.8.3
@@ -1811,15 +1811,15 @@ Installed 51 packages in 14.63s
 I added the Python package for `cdo` to be able to call it's functions from Python scripts. 
 Note that this requires that the `cdo` CLI is installed, which is done in the `Containerfile`.
 ```console
-(seaicecp) root@<container_id>:/workspace# uv add cdo
+(arctichoke) root@<container_id>:/workspace# uv add cdo
 Resolved 199 packages in 2.61s
-      Built seaicecp @ file:///workspace
+      Built arctichoke @ file:///workspace
 Prepared 2 packages in 177ms
 Uninstalled 1 package in 17ms
 Installed 2 packages in 68ms
  + cdo==1.6.1
- ~ seaicecp==0.1.0 (from file:///workspace)
-(seaicecp) root@<container_id>:/workspace# python
+ ~ arctichoke==0.1.0 (from file:///workspace)
+(arctichoke) root@<container_id>:/workspace# python
 Python 3.13.5 (main, Jun 25 2025, 18:55:22) [GCC 14.2.0] on linux
 Type "help", "copyright", "credits" or "license" for more information.
 >>> import cdo
@@ -1833,7 +1833,7 @@ I specify the source with `git+https://github.com/ESGF/esgf-download` in order t
 ```console
 root@<container_id>:/workspace# uv add git+https://github.com/ESGF/esgf-download
 Resolved 198 packages in 1.07s
-      Built seaicecp @ file:///workspace
+      Built arctichoke @ file:///workspace
     Updated https://github.com/ESGF/esgf-download (726ef1166114eadd085c24c6e1542ec0be052e03)
       Built esgpull @ git+https://github.com/ESGF/esgf-download@726ef1166114eadd085c24c6e1542ec0be052e03
 Prepared 21 packages in 3.08s
@@ -1855,7 +1855,7 @@ Installed 21 packages in 2.54s
  + pyopenssl==26.2.0
  + python-dotenv==1.2.2
  + rich==15.0.0
- ~ seaicecp==0.1.0 (from file:///workspace)
+ ~ arctichoke==0.1.0 (from file:///workspace)
  + tomlkit==0.14.0
  + typing-inspection==0.4.2
  + validators==0.22.0
@@ -1887,36 +1887,36 @@ I detail how I managed that set up in the [Initializing `esgpull`](#initializing
 [back to top](#initial-setup)
 
 In order to run tests, following [Py-Pkgs Section 3.7.2. Running tests](https://py-pkgs.org/03-how-to-package-a-python#running-tests) and [Py-Pkgs Section 3.7.3. Code coverage](https://py-pkgs.org/03-how-to-package-a-python#code-coverage), I installed `pytest` and `pytest-cov` as development dependencies by specifying the `--dev` group.
-This means that, if someone where to install `seaicecp` as a package for their own purposes, the packages in the `--dev` group would not be installed by default.
+This means that, if someone where to install `arctichoke` as a package for their own purposes, the packages in the `--dev` group would not be installed by default.
 ```console
 root@<container_id>:/workspace# uv add --dev pytest
 Resolved 190 packages in 2.15s
-      Built seaicecp @ file:///workspace
+      Built arctichoke @ file:///workspace
 Prepared 4 packages in 210ms
 Uninstalled 1 package in 14ms
 Installed 4 packages in 499ms
  + iniconfig==2.3.0
  + pluggy==1.6.0
  + pytest==9.0.3
- ~ seaicecp==0.1.0 (from file:///workspace)
+ ~ arctichoke==0.1.0 (from file:///workspace)
 root@<container_id>:/workspace# uv add --dev pytest-cov
 Resolved 192 packages in 512ms
-      Built seaicecp @ file:///workspace
+      Built arctichoke @ file:///workspace
 Prepared 3 packages in 181ms
 Uninstalled 1 package in 16ms
 Installed 3 packages in 337ms
  + coverage==7.13.5
  + pytest-cov==7.1.0
- ~ seaicecp==0.1.0 (from file:///workspace)
+ ~ arctichoke==0.1.0 (from file:///workspace)
 ```
 <!-- ```console
 root@<container_id>:/workspace# uv add --dev debugpy   
 Resolved 192 packages in 165ms
-      Built seaicecp @ file:///workspace
+      Built arctichoke @ file:///workspace
 Prepared 1 package in 20ms
 Uninstalled 1 package in 14ms
 Installed 1 package in 69ms
- ~ seaicecp==0.1.0 (from file:///workspace)
+ ~ arctichoke==0.1.0 (from file:///workspace)
 root@<container_id>:/workspace# 
 ``` -->
 
@@ -1926,9 +1926,9 @@ root@<container_id>:/workspace#
 
 Following [Py-Pkgs 3.8.4. Building documentation](https://py-pkgs.org/03-how-to-package-a-python#building-documentation), I added the packages necessary to build the documentation you are reading to the `--dev` group.
 ```console
-(seaicecp) root@<container_id>:/workspace# uv add --dev myst-nb sphinx-autoapi sphinx-rtd-theme
+(arctichoke) root@<container_id>:/workspace# uv add --dev myst-nb sphinx-autoapi sphinx-rtd-theme
 Resolved 112 packages in 1.08s
-      Built seaicecp @ file:///workspace
+      Built arctichoke @ file:///workspace
 Prepared 31 packages in 3.20s
 Uninstalled 1 package in 8ms
 Installed 35 packages in 317ms
@@ -1952,7 +1952,7 @@ Installed 35 packages in 317ms
  + referencing==0.37.0
  + roman-numerals==4.1.0
  + rpds-py==0.30.0
- ~ seaicecp==0.1.0 (from file:///workspace)
+ ~ arctichoke==0.1.0 (from file:///workspace)
  + snowballstemmer==3.0.1
  + sphinx==9.1.0
  + sphinx-autoapi==3.8.0
@@ -1987,41 +1987,41 @@ As shown in Astral's [Build systems](https://docs.astral.sh/uv/concepts/projects
 In Astral's [Building your package](https://docs.astral.sh/uv/guides/package/#building-your-package) section, I used the 
 
 ```console
-user@local:seaicecp$ podman exec -it <container_id> /bin/sh
+user@local:arctichoke$ podman exec -it <container_id> /bin/sh
 # bash 
 root@<container_id>:/workspace# source .cvenv/bin/activate
-(seaicecp) root@<container_id>:/workspace# uv sync
+(arctichoke) root@<container_id>:/workspace# uv sync
 Resolved 200 packages in 550ms
-      Built seaicecp @ file:///workspace
+      Built arctichoke @ file:///workspace
 Prepared 1 package in 53ms
 Installed 1 package in 12ms
- + seaicecp==0.1.0 (from file:///workspace)
-(seaicecp) root@<container_id>:/workspace# uv lock
+ + arctichoke==0.1.0 (from file:///workspace)
+(arctichoke) root@<container_id>:/workspace# uv lock
 Resolved 200 packages in 21ms
 ```
 
 ```console
-(seaicecp) root@<container_id>:/workspace# uv build
+(arctichoke) root@<container_id>:/workspace# uv build
 Building source distribution (uv build backend)...
 Building wheel from source distribution (uv build backend)...
-Successfully built dist/seaicecp-0.1.0.tar.gz
-Successfully built dist/seaicecp-0.1.0-py3-none-any.whl
+Successfully built dist/arctichoke-0.1.0.tar.gz
+Successfully built dist/arctichoke-0.1.0-py3-none-any.whl
 ```
 
 
 
 ```console
-(seaicecp) root@<container_id>:/workspace# uv version
-seaicecp 0.1.0
+(arctichoke) root@<container_id>:/workspace# uv version
+arctichoke 0.1.0
 ```
 
 I can now import the package in the Python interpreter.
 ```console
-(seaicecp) root@<container_id>:/workspace# python
+(arctichoke) root@<container_id>:/workspace# python
 Python 3.13.5 (main, Jun 25 2025, 18:55:22) [GCC 14.2.0] on linux
 Type "help", "copyright", "credits" or "license" for more information.
->>> import seaicecp
->>> print(seaicecp.__version__)
+>>> import arctichoke
+>>> print(arctichoke.__version__)
 0.1.0
 ```
 
@@ -2030,10 +2030,10 @@ Type "help", "copyright", "credits" or "license" for more information.
 [back to top](#initial-setup)
 
 Instructions on how to test whether you can access the Jupyter server inside the container are shown in the {doc}`Jupyter Notebook Test <jupyter_test>` guide.
-Once that is working, I can test to see whether the Jupyter server has access to the `seaicecp` package by executing a cell with the following code.
+Once that is working, I can test to see whether the Jupyter server has access to the `arctichoke` package by executing a cell with the following code.
 ```python
-import seaicecp
-print(seaicecp.__version__)
+import arctichoke
+print(arctichoke.__version__)
 ```
 ```
 0.1.0
@@ -2061,23 +2061,23 @@ In the `esgpull_entrypoint.sh` script, (see [Setting up `esgpull` install](#sett
 
 The first time this is run, the output will indicate that a new install has been created.
 ```console
-(seaicecp) root@<container_id>:/workspace# cd /seaicecp_data/
-(seaicecp) root@<container_id>:/seaicecp_data# uv run esgpull self install bergybits
+(arctichoke) root@<container_id>:/workspace# cd /arctichoke_data/
+(arctichoke) root@<container_id>:/arctichoke_data# uv run esgpull self install bergybits
 ──────────────────────────────────── esgpull installation ────────────────────────────────────
-Creating install directory and files at /seaicecp_data/bergybits
+Creating install directory and files at /arctichoke_data/bergybits
 Install config added to /root/.config/esgpull/installs.json
 ```
 On subsequent times running the `start_container.sh` script, `esgpull` will automatically recognize and use the existing install that has been set up with whatever data has already been downloaded.
 ```console
 ...
 ───────────────────────────────── esgpull installation ─────────────────────────────────
-Using existing install at /seaicecp_data/bergybits
+Using existing install at /arctichoke_data/bergybits
 Install config added to /root/.config/esgpull/installs.json
 ```
 
 If no name for the install is given, (i.e., running just `uv run esgpull self install`), then you will be taken through an interactive setup process shown below where you can specify the name and location of the install.
 ```console
-(seaicecp) root@<container_id>:/workspace# uv run esgpull self install
+(arctichoke) root@<container_id>:/workspace# uv run esgpull self install
 ──────────────────────────────────────────────────── esgpull installation ────────────────────────────────────────────────────
 Install location (/workspace/.esgpull): .esgpull
 Name (optional): new_install
@@ -2086,36 +2086,36 @@ Install config added to /root/.config/esgpull/installs.json
 ```
 I can view all the installs I have setup where the one marked with `*` is the one that is currently selected.
 ```console
-(seaicecp) root@<container_id>:/workspace# uv run esgpull self choose
+(arctichoke) root@<container_id>:/workspace# uv run esgpull self choose
 Install locations           
-    /seaicecp_data/bergybits 
+    /arctichoke_data/bergybits 
  *  /workspace/.esgpull     
 ```
 I can choose a different install by specifying the name at the end of that command.
 ```console
-(seaicecp) root@<container_id>:/workspace# uv run esgpull self choose /seaicecp_data/bergybits/
-(seaicecp) root@<container_id>:/workspace# uv run esgpull self choose
+(arctichoke) root@<container_id>:/workspace# uv run esgpull self choose /arctichoke_data/bergybits/
+(arctichoke) root@<container_id>:/workspace# uv run esgpull self choose
 Install locations           
- *  /seaicecp_data/bergybits 
+ *  /arctichoke_data/bergybits 
     /workspace/.esgpull     
 ```
 To delete an install, select it first, then use the `esgpull self delete` command.
 To remove the associated data, run the `rm` command suggested by the output.
 ```console
-(seaicecp) root@<container_id>:/workspace# uv run esgpull self choose /workspace/.esgpull/
-(seaicecp) root@<container_id>:/workspace# uv run esgpull self choose
+(arctichoke) root@<container_id>:/workspace# uv run esgpull self choose /workspace/.esgpull/
+(arctichoke) root@<container_id>:/workspace# uv run esgpull self choose
 Install locations                 
-    /seaicecp_data/bergybits      
+    /arctichoke_data/bergybits      
  *  /workspace/.esgpull
-(seaicecp) root@<container_id>:/workspace# uv run esgpull self delete
+(arctichoke) root@<container_id>:/workspace# uv run esgpull self delete
 You are going to delete: /workspace/.esgpull
 Please enter '.esgpull' to continue: .esgpull
 Deleting /workspace/.esgpull from config...
 To remove all files from this install, run:
 
 $ rm -rf /workspace/.esgpull
-(seaicecp) root@<container_id>:/workspace# rm -rf /workspace/.esgpull/
-(seaicecp) root@<container_id>:/workspace# 
+(arctichoke) root@<container_id>:/workspace# rm -rf /workspace/.esgpull/
+(arctichoke) root@<container_id>:/workspace# 
 ```
 
 
@@ -2124,7 +2124,7 @@ $ rm -rf /workspace/.esgpull
 
 The first time I tried to search with `esgpull`, I got the following error.
 ```console
-(seaicecp) root@<container_id>:/workspace# uv run esgpull search
+(arctichoke) root@<container_id>:/workspace# uv run esgpull search
 (
     'fetch',
     [
@@ -2144,7 +2144,7 @@ However, in an older version of `esgpull`, the error was more cryptic.
 <summary>Expand for an older version of the error message</summary>
 
 ```console
-(seaicecp) root@<container_id>:/workspace# uv run esgpull search
+(arctichoke) root@<container_id>:/workspace# uv run esgpull search
 [2026-04-14 18:33:45]  ERROR     root
 
   + Exception Group Traceback (most recent call last):
@@ -2163,14 +2163,14 @@ The line with `Server error '500 500' for url 'https://esgf-node.ipsl.upmc.fr/..
 
 I checked the configuration for this `esgpull` install.
 ```console
-(seaicecp) root@<container_id>:/workspace# uv run esgpull config
-──────────────────────────── /seaicecp_data/bergybits/config.toml ────────────────────────────
+(arctichoke) root@<container_id>:/workspace# uv run esgpull config
+──────────────────────────── /arctichoke_data/bergybits/config.toml ────────────────────────────
 [paths]
-data = "/seaicecp_data/bergybits/data"
-db = "/seaicecp_data/bergybits/db"
-log = "/seaicecp_data/bergybits/log"
-tmp = "/seaicecp_data/bergybits/tmp"
-plugins = "/seaicecp_data/bergybits/plugins"
+data = "/arctichoke_data/bergybits/data"
+db = "/arctichoke_data/bergybits/db"
+log = "/arctichoke_data/bergybits/log"
+tmp = "/arctichoke_data/bergybits/tmp"
+plugins = "/arctichoke_data/bergybits/plugins"
 
 [credentials]
 filename = "credentials.toml"
@@ -2210,7 +2210,7 @@ This confirms install I created has `index_node = "esgf-node.ipsl.upmc.fr"`.
 I can check the status of the available nodes.
 This information should also be available at the [ESGF Nodes Status Summary page](https://metagrid.esgf-west.org/nodes/), however that site is currently not working.
 ```console
-(seaicecp) root@<container_id>:/workspace# uv run esgpull index-nodes
+(arctichoke) root@<container_id>:/workspace# uv run esgpull index-nodes
                 node                │   status    
 ════════════════════════════════════╪═════════════
  esgf-node.ornl.gov/esgf-1-5-bridge │          OK 
@@ -2224,11 +2224,11 @@ And here's the problem.
 The French node is indeed not responding.
 I changed the index node to be the one recommended for the USA region.
 ```console
-(workspace) root@<container_id>:/seaicecp_data# uv run esgpull config api.index_node esgf-node.ornl.gov/esgf-1-5-bridge
+(workspace) root@<container_id>:/arctichoke_data# uv run esgpull config api.index_node esgf-node.ornl.gov/esgf-1-5-bridge
 [api]
 index_node = "esgf-node.ornl.gov/esgf-1-5-bridge"
 
-👍 New config file created at /seaicecp_data/bergybits/config.toml.
+👍 New config file created at /arctichoke_data/bergybits/config.toml.
 ```
 
 Then, I was able to perform a search:
@@ -2270,14 +2270,14 @@ Previous value: none
 I'm not certain this step is strictly necessary, but it works.
 Here is what the configuration for my `esgpull` install looks like.
 ```console
-(seaicecp) root@<container_id>:/workspace# uv run esgpull config
-──────────────────────────── /seaicecp_data/bergybits/config.toml ────────────────────────────
+(arctichoke) root@<container_id>:/workspace# uv run esgpull config
+──────────────────────────── /arctichoke_data/bergybits/config.toml ────────────────────────────
 [paths]
-data = "/seaicecp_data/bergybits/data"
-db = "/seaicecp_data/bergybits/db"
-log = "/seaicecp_data/bergybits/log"
-tmp = "/seaicecp_data/bergybits/tmp"
-plugins = "/seaicecp_data/bergybits/plugins"
+data = "/arctichoke_data/bergybits/data"
+db = "/arctichoke_data/bergybits/db"
+log = "/arctichoke_data/bergybits/log"
+tmp = "/arctichoke_data/bergybits/tmp"
+plugins = "/arctichoke_data/bergybits/plugins"
 
 [credentials]
 filename = "credentials.toml"
@@ -2326,8 +2326,8 @@ In the section, [Packages for documentation](#packages-for-documentation), I add
 To build the documentation, activate the virtual environment, go into the `docs/` directory, and run the `make` command.
 This will produce a lot of output, especially the first time running, so I have hidden most of it.
 ```console
-(seaicecp) root@<container_id>:/workspace# cd docs
-(seaicecp) root@<container_id>:/workspace/docs# make html
+(arctichoke) root@<container_id>:/workspace# cd docs
+(arctichoke) root@<container_id>:/workspace/docs# make html
 Running Sphinx v9.1.0
 loading translations [en]... done
 loading pickled environment... The configuration has changed (3 options: 'html_permalinks_icon', 'jquery_use_sri', 'mathjax3_config')
@@ -2344,66 +2344,66 @@ done
 myst v5.0.0: MdParserConfig(commonmark_only=False, gfm_only=False, enable_extensions={'amsmath', 'dollarmath'}, disable_syntax=[], all_links_external=False, links_external_new_tab=False, url_schemes=('http', 'https', 'wiki', 'doi', 'gh-issue'), ref_domains=None, fence_as_directive=set(), number_code_blocks=[], title_to_header=False, heading_anchors=0, heading_slug_func=None, html_meta={}, footnote_sort=True, footnote_transition=True, words_per_minute=200, substitutions={}, linkify_fuzzy_links=True, dmath_allow_labels=True, dmath_allow_space=True, dmath_allow_digits=True, dmath_double_inline=False, update_mathjax=True, mathjax_classes='tex2jax_process|mathjax_process|math|output_area', enable_checkboxes=False, suppress_warnings=[], highlight_code_blocks=True)
 myst-nb v1.4.0: NbParserConfig(custom_formats={}, metadata_key='mystnb', cell_metadata_key='mystnb', kernel_rgx_aliases={}, eval_name_regex='^[a-zA-Z_][a-zA-Z0-9_]*$', execution_mode='auto', execution_cache_path='', execution_excludepatterns=(), execution_timeout=30, execution_in_temp=False, execution_allow_errors=False, execution_raise_on_error=False, execution_show_tb=False, merge_streams=False, render_plugin='default', remove_code_source=False, remove_code_outputs=False, scroll_outputs=False, code_prompt_show='Show code cell {type}', code_prompt_hide='Hide code cell {type}', number_source_lines=False, output_stderr='show', render_text_lexer='myst-ansi', render_error_lexer='ipythontb', render_image_options={}, render_figure_options={}, render_markdown_format='commonmark', output_folder='build', append_css=True, metadata_to_fm=False)
 Using jupyter-cache at: /workspace/docs/_build/.jupyter_cache
-[AutoAPI] Reading files... [100%] /workspace/src/seaicecp/params/var_params.py
-[AutoAPI] Mapping Data... [100%] /workspace/src/seaicecp/params/var_params.py
-[AutoAPI] Rendering Data... [  4%] seaicecp
-[AutoAPI] Rendering Data... [  7%] seaicecp.plot
-[AutoAPI] Rendering Data... [ 11%] seaicecp.path
-[AutoAPI] Rendering Data... [ 15%] seaicecp.verify
-[AutoAPI] Rendering Data... [ 19%] seaicecp.params
-[AutoAPI] Rendering Data... [ 22%] seaicecp.dataset
-[AutoAPI] Rendering Data... [ 26%] seaicecp.seaicecp
-[AutoAPI] Rendering Data... [ 30%] seaicecp.dataset.tmp
-[AutoAPI] Rendering Data... [ 33%] seaicecp.plot.hvplots
-[AutoAPI] Rendering Data... [ 37%] seaicecp.path.file_lists
-[AutoAPI] Rendering Data... [ 41%] seaicecp.plot.time_series
-[AutoAPI] Rendering Data... [ 44%] seaicecp.path.model_paths
-[AutoAPI] Rendering Data... [ 48%] seaicecp.plot.save_hvplots
-[AutoAPI] Rendering Data... [ 52%] seaicecp.plot.limit_extent
-[AutoAPI] Rendering Data... [ 56%] seaicecp.dataset.date_type
-[AutoAPI] Rendering Data... [ 59%] seaicecp.dataset.grid_type
-[AutoAPI] Rendering Data... [ 63%] seaicecp.params.var_params
-[AutoAPI] Rendering Data... [ 67%] seaicecp.verify.verify_path
-[AutoAPI] Rendering Data... [ 70%] seaicecp.dataset.field_mean
-[AutoAPI] Rendering Data... [ 74%] seaicecp.plot.seasonal_cycle
-[AutoAPI] Rendering Data... [ 78%] seaicecp.path.variable_paths
-[AutoAPI] Rendering Data... [ 81%] seaicecp.dataset.get_variable
-[AutoAPI] Rendering Data... [ 85%] seaicecp.dataset.trim_dataset
-[AutoAPI] Rendering Data... [ 89%] seaicecp.params.latlon_params
-[AutoAPI] Rendering Data... [ 93%] seaicecp.dataset.set_date_type
-[AutoAPI] Rendering Data... [ 96%] seaicecp.path.manipulate_paths
-[AutoAPI] Rendering Data... [100%] seaicecp.dataset.example_dataset
+[AutoAPI] Reading files... [100%] /workspace/src/arctichoke/params/var_params.py
+[AutoAPI] Mapping Data... [100%] /workspace/src/arctichoke/params/var_params.py
+[AutoAPI] Rendering Data... [  4%] arctichoke
+[AutoAPI] Rendering Data... [  7%] arctichoke.plot
+[AutoAPI] Rendering Data... [ 11%] arctichoke.path
+[AutoAPI] Rendering Data... [ 15%] arctichoke.verify
+[AutoAPI] Rendering Data... [ 19%] arctichoke.params
+[AutoAPI] Rendering Data... [ 22%] arctichoke.dataset
+[AutoAPI] Rendering Data... [ 26%] arctichoke.arctichoke
+[AutoAPI] Rendering Data... [ 30%] arctichoke.dataset.tmp
+[AutoAPI] Rendering Data... [ 33%] arctichoke.plot.hvplots
+[AutoAPI] Rendering Data... [ 37%] arctichoke.path.file_lists
+[AutoAPI] Rendering Data... [ 41%] arctichoke.plot.time_series
+[AutoAPI] Rendering Data... [ 44%] arctichoke.path.model_paths
+[AutoAPI] Rendering Data... [ 48%] arctichoke.plot.save_hvplots
+[AutoAPI] Rendering Data... [ 52%] arctichoke.plot.limit_extent
+[AutoAPI] Rendering Data... [ 56%] arctichoke.dataset.date_type
+[AutoAPI] Rendering Data... [ 59%] arctichoke.dataset.grid_type
+[AutoAPI] Rendering Data... [ 63%] arctichoke.params.var_params
+[AutoAPI] Rendering Data... [ 67%] arctichoke.verify.verify_path
+[AutoAPI] Rendering Data... [ 70%] arctichoke.dataset.field_mean
+[AutoAPI] Rendering Data... [ 74%] arctichoke.plot.seasonal_cycle
+[AutoAPI] Rendering Data... [ 78%] arctichoke.path.variable_paths
+[AutoAPI] Rendering Data... [ 81%] arctichoke.dataset.get_variable
+[AutoAPI] Rendering Data... [ 85%] arctichoke.dataset.trim_dataset
+[AutoAPI] Rendering Data... [ 89%] arctichoke.params.latlon_params
+[AutoAPI] Rendering Data... [ 93%] arctichoke.dataset.set_date_type
+[AutoAPI] Rendering Data... [ 96%] arctichoke.path.manipulate_paths
+[AutoAPI] Rendering Data... [100%] arctichoke.dataset.example_dataset
 
-[autosummary] generating autosummary for: autoapi/index.rst, autoapi/seaicecp/dataset/date_type/index.rst, autoapi/seaicecp/dataset/example_dataset/index.rst, autoapi/seaicecp/dataset/field_mean/index.rst, autoapi/seaicecp/dataset/get_variable/index.rst, autoapi/seaicecp/dataset/grid_type/index.rst, autoapi/seaicecp/dataset/index.rst, autoapi/seaicecp/dataset/set_date_type/index.rst, autoapi/seaicecp/dataset/tmp/index.rst, autoapi/seaicecp/dataset/trim_dataset/index.rst, ..., docs_setup/HighResMIP_choices.md, docs_setup/data_dir_structure.md, docs_setup/esgpull_downloads.md, docs_setup/globus_downloads.md, docs_setup/initial_setup.md, docs_setup/installation.md, docs_setup/jupyter_test.md, docs_setup/start_container.md, example.ipynb, index.md
+[autosummary] generating autosummary for: autoapi/index.rst, autoapi/arctichoke/dataset/date_type/index.rst, autoapi/arctichoke/dataset/example_dataset/index.rst, autoapi/arctichoke/dataset/field_mean/index.rst, autoapi/arctichoke/dataset/get_variable/index.rst, autoapi/arctichoke/dataset/grid_type/index.rst, autoapi/arctichoke/dataset/index.rst, autoapi/arctichoke/dataset/set_date_type/index.rst, autoapi/arctichoke/dataset/tmp/index.rst, autoapi/arctichoke/dataset/trim_dataset/index.rst, ..., docs_setup/HighResMIP_choices.md, docs_setup/data_dir_structure.md, docs_setup/esgpull_downloads.md, docs_setup/globus_downloads.md, docs_setup/initial_setup.md, docs_setup/installation.md, docs_setup/jupyter_test.md, docs_setup/start_container.md, example.ipynb, index.md
 building [mo]: targets for 0 po files that are out of date
 writing output... 
 building [html]: targets for 28 source files that are out of date
 updating environment: 0 added, 28 changed, 0 removed
-reading sources... [100%] autoapi/seaicecp/verify/verify_path/index
-/workspace/docs/autoapi/seaicecp/dataset/field_mean/index.rst:29: WARNING: duplicate object description of seaicecp.dataset.field_mean.cdo, other instance in autoapi/seaicecp/dataset/field_mean/index, use :no-index: for one of them
-/workspace/docs/autoapi/seaicecp/dataset/index.rst:144: WARNING: duplicate object description of seaicecp.dataset.cdo, other instance in autoapi/seaicecp/dataset/index, use :no-index: for one of them
-/workspace/docs/autoapi/seaicecp/dataset/index.rst:146: WARNING: duplicate object description of seaicecp.dataset.meta_vars, other instance in autoapi/seaicecp/dataset/index, use :no-index: for one of them
-/workspace/docs/autoapi/seaicecp/dataset/index.rst:161: WARNING: Definition list ends without a blank line; unexpected unindent. [docutils]
-/workspace/docs/autoapi/seaicecp/dataset/trim_dataset/index.rst:30: WARNING: duplicate object description of seaicecp.dataset.trim_dataset.cdo, other instance in autoapi/seaicecp/dataset/trim_dataset/index, use :no-index: for one of them
-/workspace/docs/autoapi/seaicecp/dataset/trim_dataset/index.rst:43: WARNING: Definition list ends without a blank line; unexpected unindent. [docutils]
-/workspace/docs/autoapi/seaicecp/path/index.rst:269: WARNING: duplicate object description of seaicecp.path.get_model_path, other instance in autoapi/seaicecp/path/index, use :no-index: for one of them
-/workspace/docs/autoapi/seaicecp/path/index.rst:301: WARNING: duplicate object description of seaicecp.path.list_available_models, other instance in autoapi/seaicecp/path/index, use :no-index: for one of them
-/workspace/docs/autoapi/seaicecp/path/index.rst:388: WARNING: duplicate object description of seaicecp.path.get_variable_path, other instance in autoapi/seaicecp/path/index, use :no-index: for one of them
-/workspace/docs/autoapi/seaicecp/plot/hvplots/index.rst:38: WARNING: Definition list ends without a blank line; unexpected unindent. [docutils]
-/workspace/docs/autoapi/seaicecp/plot/index.rst:67: WARNING: Definition list ends without a blank line; unexpected unindent. [docutils]
-/workspace/docs/autoapi/seaicecp/plot/index.rst:101: WARNING: Definition list ends without a blank line; unexpected unindent. [docutils]
-/workspace/docs/autoapi/seaicecp/plot/index.rst:116: WARNING: duplicate object description of seaicecp.plot.get_limited_extent, other instance in autoapi/seaicecp/plot/index, use :no-index: for one of them
-/workspace/docs/autoapi/seaicecp/plot/index.rst:127: WARNING: Definition list ends without a blank line; unexpected unindent. [docutils]
-/workspace/docs/autoapi/seaicecp/plot/index.rst:141: WARNING: duplicate object description of seaicecp.plot.save_hvplot, other instance in autoapi/seaicecp/plot/index, use :no-index: for one of them
-/workspace/docs/autoapi/seaicecp/plot/index.rst:194: WARNING: Definition list ends without a blank line; unexpected unindent. [docutils]
-/workspace/docs/autoapi/seaicecp/plot/index.rst:200: WARNING: Definition list ends without a blank line; unexpected unindent. [docutils]
-/workspace/docs/autoapi/seaicecp/plot/limit_extent/index.rst:29: WARNING: Definition list ends without a blank line; unexpected unindent. [docutils]
-/workspace/docs/autoapi/seaicecp/plot/seasonal_cycle/index.rst:37: WARNING: Definition list ends without a blank line; unexpected unindent. [docutils]
-/workspace/docs/autoapi/seaicecp/plot/seasonal_cycle/index.rst:43: WARNING: Definition list ends without a blank line; unexpected unindent. [docutils]
-/workspace/docs/autoapi/seaicecp/plot/time_series/index.rst:34: WARNING: Definition list ends without a blank line; unexpected unindent. [docutils]
-/workspace/docs/autoapi/seaicecp/plot/time_series/index.rst:40: WARNING: Definition list ends without a blank line; unexpected unindent. [docutils]
-/workspace/docs/autoapi/seaicecp/verify/index.rst:27: WARNING: duplicate object description of seaicecp.verify.verify_path, other instance in autoapi/seaicecp/verify/verify_path/index, use :no-index: for one of them
-/workspace/docs/autoapi/seaicecp/verify/verify_path/index.rst:4: WARNING: duplicate object description of seaicecp.verify.verify_path, other instance in autoapi/seaicecp/verify/index, use :no-index: for one of them
+reading sources... [100%] autoapi/arctichoke/verify/verify_path/index
+/workspace/docs/autoapi/arctichoke/dataset/field_mean/index.rst:29: WARNING: duplicate object description of arctichoke.dataset.field_mean.cdo, other instance in autoapi/arctichoke/dataset/field_mean/index, use :no-index: for one of them
+/workspace/docs/autoapi/arctichoke/dataset/index.rst:144: WARNING: duplicate object description of arctichoke.dataset.cdo, other instance in autoapi/arctichoke/dataset/index, use :no-index: for one of them
+/workspace/docs/autoapi/arctichoke/dataset/index.rst:146: WARNING: duplicate object description of arctichoke.dataset.meta_vars, other instance in autoapi/arctichoke/dataset/index, use :no-index: for one of them
+/workspace/docs/autoapi/arctichoke/dataset/index.rst:161: WARNING: Definition list ends without a blank line; unexpected unindent. [docutils]
+/workspace/docs/autoapi/arctichoke/dataset/trim_dataset/index.rst:30: WARNING: duplicate object description of arctichoke.dataset.trim_dataset.cdo, other instance in autoapi/arctichoke/dataset/trim_dataset/index, use :no-index: for one of them
+/workspace/docs/autoapi/arctichoke/dataset/trim_dataset/index.rst:43: WARNING: Definition list ends without a blank line; unexpected unindent. [docutils]
+/workspace/docs/autoapi/arctichoke/path/index.rst:269: WARNING: duplicate object description of arctichoke.path.get_model_path, other instance in autoapi/arctichoke/path/index, use :no-index: for one of them
+/workspace/docs/autoapi/arctichoke/path/index.rst:301: WARNING: duplicate object description of arctichoke.path.list_available_models, other instance in autoapi/arctichoke/path/index, use :no-index: for one of them
+/workspace/docs/autoapi/arctichoke/path/index.rst:388: WARNING: duplicate object description of arctichoke.path.get_variable_path, other instance in autoapi/arctichoke/path/index, use :no-index: for one of them
+/workspace/docs/autoapi/arctichoke/plot/hvplots/index.rst:38: WARNING: Definition list ends without a blank line; unexpected unindent. [docutils]
+/workspace/docs/autoapi/arctichoke/plot/index.rst:67: WARNING: Definition list ends without a blank line; unexpected unindent. [docutils]
+/workspace/docs/autoapi/arctichoke/plot/index.rst:101: WARNING: Definition list ends without a blank line; unexpected unindent. [docutils]
+/workspace/docs/autoapi/arctichoke/plot/index.rst:116: WARNING: duplicate object description of arctichoke.plot.get_limited_extent, other instance in autoapi/arctichoke/plot/index, use :no-index: for one of them
+/workspace/docs/autoapi/arctichoke/plot/index.rst:127: WARNING: Definition list ends without a blank line; unexpected unindent. [docutils]
+/workspace/docs/autoapi/arctichoke/plot/index.rst:141: WARNING: duplicate object description of arctichoke.plot.save_hvplot, other instance in autoapi/arctichoke/plot/index, use :no-index: for one of them
+/workspace/docs/autoapi/arctichoke/plot/index.rst:194: WARNING: Definition list ends without a blank line; unexpected unindent. [docutils]
+/workspace/docs/autoapi/arctichoke/plot/index.rst:200: WARNING: Definition list ends without a blank line; unexpected unindent. [docutils]
+/workspace/docs/autoapi/arctichoke/plot/limit_extent/index.rst:29: WARNING: Definition list ends without a blank line; unexpected unindent. [docutils]
+/workspace/docs/autoapi/arctichoke/plot/seasonal_cycle/index.rst:37: WARNING: Definition list ends without a blank line; unexpected unindent. [docutils]
+/workspace/docs/autoapi/arctichoke/plot/seasonal_cycle/index.rst:43: WARNING: Definition list ends without a blank line; unexpected unindent. [docutils]
+/workspace/docs/autoapi/arctichoke/plot/time_series/index.rst:34: WARNING: Definition list ends without a blank line; unexpected unindent. [docutils]
+/workspace/docs/autoapi/arctichoke/plot/time_series/index.rst:40: WARNING: Definition list ends without a blank line; unexpected unindent. [docutils]
+/workspace/docs/autoapi/arctichoke/verify/index.rst:27: WARNING: duplicate object description of arctichoke.verify.verify_path, other instance in autoapi/arctichoke/verify/verify_path/index, use :no-index: for one of them
+/workspace/docs/autoapi/arctichoke/verify/verify_path/index.rst:4: WARNING: duplicate object description of arctichoke.verify.verify_path, other instance in autoapi/arctichoke/verify/index, use :no-index: for one of them
 looking for now-outdated files... none found
 pickling environment... done
 checking consistency... done
@@ -2420,7 +2420,7 @@ copying extra files: done
 copying assets: done
 writing output... [100%] index
 generating indices... genindex py-modindex done
-highlighting module code... [100%] seaicecp.verify.verify_path
+highlighting module code... [100%] arctichoke.verify.verify_path
 writing additional pages... search done
 dumping search index in English (code: en)... done
 dumping object inventory... done
@@ -2441,7 +2441,7 @@ The test webpage seems like it rendered properly.
 
 When troubleshooting, it can be helpful to try making the `html` directory clean and recreating those documents, in case some cached data is causing issues.
 ```console
-(seaicecp) root@<container_id>:/workspace/docs# make clean
+(arctichoke) root@<container_id>:/workspace/docs# make clean
 Removing everything under '_build'...
 ```
 Then, run the `make html` command again.
@@ -2492,9 +2492,9 @@ Next, I went to [Read the Docs](https://readthedocs.org/) and logged in.
 On the "Projects" dashboard, I clicked "Add project."
 On the next page, I selected "Configure manually" then filled in this information:
 - Name
-    - `seaicecp`
+    - `arctichoke`
 - Repository URL
-    - `https://github.com/scheemik/seaicecp`
+    - `https://github.com/scheemik/arctichoke`
 - Default branch
     - `main`
 - Language
@@ -2504,7 +2504,7 @@ Then, I clicked "Next" and confirmed that the file `.readthedocs.yaml` exists al
 Upon building, I was greeted with confirmation that the build succeeded. 
 ```
 Version latest / Builds / #32314755 
-	git clone --depth 1 https://github.com/scheemik/seaicecp .
+	git clone --depth 1 https://github.com/scheemik/arctichoke .
 	git fetch origin --force --prune --prune-tags --depth 50 refs/heads/main:refs/remotes/origin/main
 	git checkout --force origin/main
 	cat .readthedocs.yml
@@ -2517,7 +2517,7 @@ Version latest / Builds / #32314755
 	python -m sphinx -T -j auto -b html -d _build/doctrees -D language=en . $READTHEDOCS_OUTPUT/html
 ```
 
-Now, the documentation for this project is live and available to view at [https://seaicecp.readthedocs.io/en/latest/](https://seaicecp.readthedocs.io/en/latest/).
+Now, the documentation for this project is live and available to view at [https://arctichoke.readthedocs.io/en/latest/](https://arctichoke.readthedocs.io/en/latest/).
 I put that URL in the "About" section of the GitHub repository under "Website" to make it more visible to people who find the project.
 
 

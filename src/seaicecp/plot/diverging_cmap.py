@@ -40,7 +40,7 @@ def make_diverging_cmap(
         
         Examples
         --------
-        >>> from seaicecp.plot.diverging_cmap import make_diverging_cmap
+        >>> from arctichoke.plot.diverging_cmap import make_diverging_cmap
     """
     # Verify input arguments
     if not isinstance(cmin, (int, float)):

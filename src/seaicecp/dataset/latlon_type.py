@@ -1,7 +1,7 @@
 import numpy as np
 import xarray as xr 
 
-from seaicecp.verify import verify_path
+from arctichoke.verify import verify_path
 
 def get_latlon_names(
     dataset: (str, xr.DataArray, xr.Dataset),
@@ -27,10 +27,10 @@ def get_latlon_names(
         
         Examples
         --------
-        >>> from seaicecp.dataset.grid_type import get_latlon_names
-        >>> get_latlon_names('/seaicecp_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i1p1f1/SImon/siconc/gn/v20170928/siconc_SImon_HadGEM3-GC31-MM_hist-1950_r1i1p1f1_gn_201401-201412.nc')
+        >>> from arctichoke.dataset.grid_type import get_latlon_names
+        >>> get_latlon_names('/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i1p1f1/SImon/siconc/gn/v20170928/siconc_SImon_HadGEM3-GC31-MM_hist-1950_r1i1p1f1_gn_201401-201412.nc')
         ('lat', 'lon')
-        >>> get_latlon_names('/seaicecp_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i1p1f1/SImon/sithick/gn/v20170928/sithick_SImon_HadGEM3-GC31-MM_hist-1950_r1i1p1f1_gn_201401-201412.nc')
+        >>> get_latlon_names('/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i1p1f1/SImon/sithick/gn/v20170928/sithick_SImon_HadGEM3-GC31-MM_hist-1950_r1i1p1f1_gn_201401-201412.nc')
         ('latitude', 'longitude')
     """
     # Verify input arguments
@@ -86,7 +86,7 @@ def determine_lon_type(
         
         Examples
         --------
-        >>> from seaicecp.dataset.grid_type import determine_lon_type
+        >>> from arctichoke.dataset.grid_type import determine_lon_type
         >>> determine_lon_type(lon_min = 0, lon_max = 360)
         PM_centered
         >>> determine_lon_type(lon_min = -180, lon_max = 180)
@@ -146,8 +146,8 @@ def get_lon_type(
         
         Examples
         --------
-        >>> from seaicecp.dataset.grid_type import get_lon_type
-        >>> get_lon_type('/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/siconc/gn/v20181212/siconc_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_201401-201412.nc')
+        >>> from arctichoke.dataset.grid_type import get_lon_type
+        >>> get_lon_type('/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/siconc/gn/v20181212/siconc_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_201401-201412.nc')
         IDL_centered
     """
     # Verify input arguments

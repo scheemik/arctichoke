@@ -1,7 +1,7 @@
 import xarray as xr
 
-from seaicecp.dataset import date_type
-from seaicecp.dataset.example_dataset import make_example_dataset
+from arctichoke.dataset import date_type
+from arctichoke.dataset.example_dataset import make_example_dataset
 
 def test_get_date_type():
     """Test the `get_date_type` function."""
@@ -12,19 +12,19 @@ def test_get_date_type():
             'expected_date_type': 'datetime64[ns]',
         },
         {
-            'dataset': '/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/siconc/gn/v20181212/siconc_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_201401-201412.nc',
+            'dataset': '/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/siconc/gn/v20181212/siconc_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_201401-201412.nc',
             'expected_date_type': 'datetime64[ns]',
         },
         {
-            'dataset': '/seaicecp_data/bergybits/data/CMIP6/HighResMIP/NERC/HadGEM3-GC31-HH/hist-1950/r1i1p1f1/SImon/siconc/gn/v20210416/siconc_SImon_HadGEM3-GC31-HH_hist-1950_r1i1p1f1_gn_201401-201412.nc',
+            'dataset': '/arctichoke_data/bergybits/data/CMIP6/HighResMIP/NERC/HadGEM3-GC31-HH/hist-1950/r1i1p1f1/SImon/siconc/gn/v20210416/siconc_SImon_HadGEM3-GC31-HH_hist-1950_r1i1p1f1_gn_201401-201412.nc',
             'expected_date_type': 'cftime.Datetime360Day',
         },
         {
-            'dataset': '/seaicecp_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-HM/hist-1950/r1i1p1f1/SImon/sithick/gn/v20180730/sithick_SImon_HadGEM3-GC31-HM_hist-1950_r1i1p1f1_gn_201401-201412.nc',
+            'dataset': '/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-HM/hist-1950/r1i1p1f1/SImon/sithick/gn/v20180730/sithick_SImon_HadGEM3-GC31-HM_hist-1950_r1i1p1f1_gn_201401-201412.nc',
             'expected_date_type': 'cftime.Datetime360Day',
         },
         {
-            'dataset': '/seaicecp_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i1p1f1/SImon/sithick/gn/v20170928/sithick_SImon_HadGEM3-GC31-MM_hist-1950_r1i1p1f1_gn_201401-201412.nc',
+            'dataset': '/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i1p1f1/SImon/sithick/gn/v20170928/sithick_SImon_HadGEM3-GC31-MM_hist-1950_r1i1p1f1_gn_201401-201412.nc',
             'expected_date_type': 'cftime.Datetime360Day',
         },
     ]

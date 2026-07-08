@@ -25,7 +25,7 @@ If running on macOS or Windows, this will necessitate the use of the Podman virt
 Choose a location in which to clone the repository for this project.
 ```console
 user@local:~$ cd /<absolute/path/to/project>
-user@local:/<absolute/path/to/project>$ git clone git@github.com:scheemik/seaicecp.git
+user@local:/<absolute/path/to/project>$ git clone git@github.com:scheemik/arctichoke.git
 ```
 
 
@@ -35,14 +35,14 @@ user@local:/<absolute/path/to/project>$ git clone git@github.com:scheemik/seaice
 In the `start_container.sh` script, it is important to modify the following lines.
 ```bash
 # ---- Setup external hard drive access ----
-export SICP_DATA_DIR=/Volumes/BERGY_BITS/seaicecp_data/
+export SICP_DATA_DIR=/Volumes/BERGY_BITS/arctichoke_data/
 ```
 Make sure to choose a file path to where you want the data for the project to be saved.
 This can, and probably should, be a different location than the project directory.
 If you choose an external drive, make sure that drive is connected and mounted before every time you start the container.
 When using an external drive, if it is missing when starting the container, you may encounter the following error.
 ```console
-user@local:seaicecp$ bash start_container.sh
+user@local:arctichoke$ bash start_container.sh
 Error: vfkit exited unexpectedly with exit code 1
 ```
 If connecting the external drive does not solve that error, check the GitHub issue [Error: vfkit exited unexpectedly with exit code 1 on M4 MacMini #25046](https://github.com/podman-container-tools/podman/issues/25046) for more details.
@@ -60,7 +60,7 @@ However, once the image is built, the subsequent runs of `start_container.sh` wi
 <summary>Expand for example output for running the first time.</summary>
 
 ```console
-user@local:seaicecp$ bash start_container.sh 
+user@local:arctichoke$ bash start_container.sh 
 Starting podman machine...
 Starting machine "podman-machine-default"
 
@@ -105,12 +105,12 @@ Machine "podman-machine-default" started successfully
 --> e45411fe5602
 [2/2] STEP 11/18: COPY src ./src
 --> aadbaf0d823b
-[2/2] STEP 12/18: RUN --mount=type=cache,target=/root/.cache/uv     uv sync  && uv run python -m ipykernel install --sys-prefix --name python3 --display-name "seaicecp (container)"
+[2/2] STEP 12/18: RUN --mount=type=cache,target=/root/.cache/uv     uv sync  && uv run python -m ipykernel install --sys-prefix --name python3 --display-name "arctichoke (container)"
 Using CPython 3.13.5 interpreter at: /usr/bin/python3
 Creating virtual environment at: .cvenv
 Resolved 198 packages in 2ms
-   Building seaicecp @ file:///workspace
-      Built seaicecp @ file:///workspace
+   Building arctichoke @ file:///workspace
+      Built arctichoke @ file:///workspace
 Prepared 1 package in 16ms
 Installed 195 packages in 8.40s
  + aiofiles==25.1.0
@@ -259,7 +259,7 @@ Installed 195 packages in 8.40s
  + rich==15.0.0
  + roman-numerals==4.1.0
  + rpds-py==0.30.0
- + seaicecp==0.1.0 (from file:///workspace)
+ + arctichoke==0.1.0 (from file:///workspace)
  + selenium==4.43.0
  + send2trash==2.1.0
  + setuptools==82.0.1
@@ -323,15 +323,15 @@ Installed kernelspec python3 in /workspace/.cvenv/share/jupyter/kernels/python3
 [2/2] STEP 17/18: EXPOSE 8888
 --> a5f4f112906c
 [2/2] STEP 18/18: CMD ["bash", "-lc", "exec uv run jupyter lab     --ip=0.0.0.0     --port=8888     --no-browser     --allow-root     --ServerApp.token=''     --ServerApp.password=''"]
-[2/2] COMMIT seaicecp_7
+[2/2] COMMIT arctichoke_7
 --> 27f0309d397f
-Successfully tagged localhost/seaicecp_7:latest
+Successfully tagged localhost/arctichoke_7:latest
 27f0309d397f573599f2449782ada3e82a4ff9a55f6a12c71ac47f511726610f
 
 ──────────────────────────────────── esgpull installation ────────────────────────────────────
-Creating install directory and files at /seaicecp_data/bergybits
+Creating install directory and files at /arctichoke_data/bergybits
 Install config added to /root/.config/esgpull/installs.json
-      Built seaicecp @ file:///workspace
+      Built arctichoke @ file:///workspace
 Uninstalled 1 package in 13ms
 Installed 1 package in 62ms
 [I 2026-06-04 18:23:25.915 ServerApp] jupyter_lsp | extension was successfully linked.

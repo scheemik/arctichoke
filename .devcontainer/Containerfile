@@ -53,7 +53,7 @@ COPY src ./src
 # Install dependencies via `uv` and start a kernel for Jupyter notebooks
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync \
- && uv run python -m ipykernel install --sys-prefix --name python3 --display-name "seaicecp (container)"
+ && uv run python -m ipykernel install --sys-prefix --name python3 --display-name "arctichoke (container)"
 
 # Trigger downloads of commonly used Natural Earth datasets
 RUN /workspace/.cvenv/bin/python - <<'EOF'

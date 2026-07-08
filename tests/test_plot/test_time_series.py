@@ -1,5 +1,5 @@
-from seaicecp.plot import time_series
-from seaicecp.dataset import example_dataset
+from arctichoke.plot import time_series
+from arctichoke.dataset import example_dataset
 
 def test_plot_time_series():
     """Test the `plot_time_series` function."""

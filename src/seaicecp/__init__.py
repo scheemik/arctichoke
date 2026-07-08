@@ -1,5 +1,5 @@
 # read version from installed package
 from importlib.metadata import version
-__version__ = version("seaicecp")
+__version__ = version("arctichoke")
 
-from .seaicecp import *
+from .arctichoke import *

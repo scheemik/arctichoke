@@ -1,6 +1,6 @@
 import os
 
-from seaicecp.verify.verify_path import verify_path
+from arctichoke.verify.verify_path import verify_path
 
 def remove_non_empty_directory(
     base_dir,

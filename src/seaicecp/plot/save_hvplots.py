@@ -3,7 +3,7 @@ from selenium.webdriver.chrome.options import Options
 import holoviews as hv
 from hvplot import save as hv_save
 
-from seaicecp.verify import verify_path
+from arctichoke.verify import verify_path
 
 def save_hvplot(
     hvplot_to_save,

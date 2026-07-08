@@ -1,11 +1,11 @@
 import numpy as np
 import xarray as xr
 
-from seaicecp import get_current_datetime_str
-from seaicecp.dataset.get_variable import get_variable_name
-from seaicecp.dataset.get_min_max import get_min_max
-import seaicecp.params as sps
-from seaicecp.verify import verify_path
+from arctichoke import get_current_datetime_str
+from arctichoke.dataset.get_variable import get_variable_name
+from arctichoke.dataset.get_min_max import get_min_max
+import arctichoke.params as sps
+from arctichoke.verify import verify_path
 
 def trend_in_time(
     dataset: (str, [str], xr.Dataset, xr.DataArray),
@@ -51,8 +51,8 @@ def trend_in_time(
         
         Examples
         --------
-        >>> from seaicecp.dataset.example_dataset import make_example_dataset
-        >>> from seaicecp.path.manipulate_paths import make_file_path
+        >>> from arctichoke.dataset.example_dataset import make_example_dataset
+        >>> from arctichoke.path.manipulate_paths import make_file_path
         >>> # Create multiple example test files
         >>> test_file_dir = 'tests/test_analysis/example_datasets'
         >>> make_file_path(test_file_dir)
@@ -96,7 +96,7 @@ def trend_in_time(
                [[ 3.,  4.,  5.],
                 [ 6.,  7.,  8.],
                 [ 9., 10., 11.]]])
-        >>> from seaicecp.analysis.trend_in_time import trend_in_time
+        >>> from arctichoke.analysis.trend_in_time import trend_in_time
         >>> test_trends = trend_in_time(
         >>>     test_dataset,
         >>>     var='test_var',
@@ -197,7 +197,7 @@ def trend_in_time(
             original_history = trends_dataset.attrs['history']
         else:
             original_history = ''
-        trends_dataset.attrs['history'] = f"{get_current_datetime_str()} altered by `seaicecp`: Calculated the sum of the `{var}` values per year in `{var}_trends`. {original_history}"
+        trends_dataset.attrs['history'] = f"{get_current_datetime_str()} altered by `arctichoke`: Calculated the sum of the `{var}` values per year in `{var}_trends`. {original_history}"
     else:
         trends_dataset.values = trends
         # Get the name of the variable in the dataset
@@ -224,7 +224,7 @@ def trend_in_time(
         original_history = xr_var_to_add_attrs.attrs['history']
     else:
         original_history = ''
-    xr_var_to_add_attrs.attrs['history'] = f"{get_current_datetime_str()} altered by `seaicecp`: Calculated the sum of the `{var}` values to get `{var}_trends`. {original_history}"
+    xr_var_to_add_attrs.attrs['history'] = f"{get_current_datetime_str()} altered by `arctichoke`: Calculated the sum of the `{var}` values to get `{var}_trends`. {original_history}"
 
     # Save the modified dataset, if applicable
     if not isinstance(save_as, type(None)):
@@ -287,7 +287,7 @@ def mask_where_all_zero(
                [[0, 1, 1],
                 [1, 0, 0],
                 [0, 0, 0]]])
-        >>> from seaicecp.analysis.trend_in_time import mask_where_all_zero
+        >>> from arctichoke.analysis.trend_in_time import mask_where_all_zero
         >>> xr_ds_nan = mask_where_all_zero(
         >>>     xr_ds,
         >>>     'test_var',

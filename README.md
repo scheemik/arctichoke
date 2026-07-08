@@ -1,4 +1,4 @@
-# seaicecp
+# arctichoke
 
 Investigate sea ice choke points in the Canadian Arctic Archipelago using high-resolution models.
 
@@ -8,10 +8,10 @@ It also makes use of command line interfaces such as [`cdo`](https://code.mpimet
 
 ## Installation
 
-- Follow the instructions on the [Installation](https://seaicecp.readthedocs.io/en/latest/docs_setup/installation.html) page.
+- Follow the instructions on the [Installation](https://arctichoke.readthedocs.io/en/latest/docs_setup/installation.html) page.
 
 <!-- ```bash
-$ pip install seaicecp
+$ pip install arctichoke
 ``` -->
 
 ## Usage
@@ -20,12 +20,12 @@ $ pip install seaicecp
 
 ## Contributing
 
-Interested in contributing? Check out the [contributing guidelines](https://seaicecp.readthedocs.io/en/latest/contributing.html). Please note that this project is released with a [Code of Conduct](https://seaicecp.readthedocs.io/en/latest/conduct.html). By contributing to this project, you agree to abide by its terms.
+Interested in contributing? Check out the [contributing guidelines](https://arctichoke.readthedocs.io/en/latest/contributing.html). Please note that this project is released with a [Code of Conduct](https://arctichoke.readthedocs.io/en/latest/conduct.html). By contributing to this project, you agree to abide by its terms.
 
 ## License
 
-`seaicecp` was created by Mikhail Schee. It is licensed under the terms of the [MIT license](https://seaicecp.readthedocs.io/en/latest/docs_ref/license.html).
+`arctichoke` was created by Mikhail Schee. It is licensed under the terms of the [MIT license](https://arctichoke.readthedocs.io/en/latest/docs_ref/license.html).
 
 ## Credits
 
-`seaicecp` was created with [`cookiecutter`](https://cookiecutter.readthedocs.io/en/latest/) and the `py-pkgs-cookiecutter` [template](https://github.com/py-pkgs/py-pkgs-cookiecutter).
+`arctichoke` was created with [`cookiecutter`](https://cookiecutter.readthedocs.io/en/latest/) and the `py-pkgs-cookiecutter` [template](https://github.com/py-pkgs/py-pkgs-cookiecutter).

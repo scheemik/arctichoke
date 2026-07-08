@@ -2,13 +2,13 @@ import hvplot.xarray
 import xarray as xr
 import cartopy.crs as crs
 
-from seaicecp.dataset.get_min_max import get_min_max
-from seaicecp.dataset.latlon_type import get_latlon_names
-import seaicecp.params as sps
-from seaicecp.plot.cbar_limits import set_cbar_lims
-from seaicecp.plot.labels_and_titles import make_title, make_label
-from seaicecp.plot.limit_extent import get_limited_extent
-from seaicecp.plot.save_hvplots import save_hvplot
+from arctichoke.dataset.get_min_max import get_min_max
+from arctichoke.dataset.latlon_type import get_latlon_names
+import arctichoke.params as sps
+from arctichoke.plot.cbar_limits import set_cbar_lims
+from arctichoke.plot.labels_and_titles import make_title, make_label
+from arctichoke.plot.limit_extent import get_limited_extent
+from arctichoke.plot.save_hvplots import save_hvplot
 
 def quadmesh_map(
     xr_data: xr.Dataset,
@@ -32,7 +32,7 @@ def quadmesh_map(
         var : `str`
             The variable in `xr_data` to plot.
         save_as : `str`, `None`, optional
-            The file name to pass to `seaicecp.plot.save_hvplots.save_hvplot()`.
+            The file name to pass to `arctichoke.plot.save_hvplots.save_hvplot()`.
             Default is `None`, which doesn't save the plot to a file.
         map_projection : `str`, optional
             A string naming the map projection to use in the plot.
@@ -42,7 +42,7 @@ def quadmesh_map(
             An array of coordinates defining the bounding box of the map in the following format:
                 - [LAT_MAX, LAT_MIN, LON_MAX, LON_MIN]
                 
-            Default is `seaicecp.params.latlon_params.NWP_BBOX`.
+            Default is `arctichoke.params.latlon_params.NWP_BBOX`.
         clims : List or tuple of `int`, `float`, optional
             The limits to use in the colorbar.
             Note: This overrides the default method of limiting the colorbar range when `diverging_cbar=True`.
@@ -54,7 +54,7 @@ def quadmesh_map(
             Whether to verbosely output information as the function executes.
             Default is `False`.
         **kwargs
-            Keyword arguments to pass to `hvplot.quadmesh()` and `seaicecp.plot.limit_extent.get_limited_extent()`
+            Keyword arguments to pass to `hvplot.quadmesh()` and `arctichoke.plot.limit_extent.get_limited_extent()`
 
         Returns
         -------

@@ -1,6 +1,6 @@
 import os
 
-from seaicecp import verify
+from arctichoke import verify
 
 def test_verify_path():
     """Test the `verify_path` function."""
@@ -8,7 +8,7 @@ def test_verify_path():
     valid_paths = [
         'README.md',
         'pyproject.toml',
-        'src/seaicecp/',
+        'src/arctichoke/',
     ]
     for valid_path in valid_paths:
         actual = verify.verify_path(valid_path)

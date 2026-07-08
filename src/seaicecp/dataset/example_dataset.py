@@ -1,7 +1,7 @@
 import xarray as xr
 import numpy as np
 
-from seaicecp.verify import verify_path
+from arctichoke.verify import verify_path
 
 def make_example_dataset(
     save_as: str = None,
@@ -44,7 +44,7 @@ def make_example_dataset(
         
         Examples
         --------
-        >>> from seaicecp.dataset.example_dataset import make_example_dataset
+        >>> from arctichoke.dataset.example_dataset import make_example_dataset
         >>> dataset = make_example_dataset(n=3, time_axis=True)
         >>> dataset['test_var'].values
         array([[[0., 1., 2.],

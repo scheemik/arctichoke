@@ -1,10 +1,10 @@
 import numpy as np
 import xarray as xr
 
-from seaicecp import get_current_datetime_str
-from seaicecp.dataset.get_variable import get_variable_name
-import seaicecp.params as sps
-from seaicecp.verify import verify_path
+from arctichoke import get_current_datetime_str
+from arctichoke.dataset.get_variable import get_variable_name
+import arctichoke.params as sps
+from arctichoke.verify import verify_path
 
 def sum_by_year(
     dataset: (str, [str], xr.DataArray, xr.Dataset),
@@ -40,12 +40,12 @@ def sum_by_year(
 
         Returns
         -------
-        year_summed_xr : `xarray.Dataset`
+        dataset : `xarray.Dataset`
             A dataset where the data has been summed by year.
         
         Examples
         --------
-        >>> from seaicecp.dataset.example_dataset import make_example_dataset
+        >>> from arctichoke.dataset.example_dataset import make_example_dataset
         >>> dataset = make_example_dataset(n=3, time_axis=True)
         >>> dataset['test_var'].values
         array([[[0., 1., 2.],
@@ -55,7 +55,7 @@ def sum_by_year(
                [[0., 1., 2.],
                 [3., 4., 5.],
                 [6., 7., 8.]]])
-        >>> from seaicecp.analysis.sum_by_year import sum_by_year
+        >>> from arctichoke.analysis.sum_by_year import sum_by_year
         >>> dataset_year_sum = sum_by_year(dataset)
         >>> dataset_year_sum['test_var_year_sum'].values
         array([[[ 0.,  2.,  4.],
@@ -166,9 +166,8 @@ def sum_by_year(
         original_history = xr_var_to_add_attrs.attrs['history']
     else:
         original_history = ''
-    xr_var_to_add_attrs.attrs['history'] = f"{get_current_datetime_str()} altered by `seaicecp`: Calculated the sum of the `{var_name}` values to get `{var_name}_year_sum`. {original_history}"
+    xr_var_to_add_attrs.attrs['history'] = f"{get_current_datetime_str()} altered by `arctichoke`: Calculated the sum of the `{var_name}` values to get `{var_name}_year_sum`. {original_history}"
     
-
     # Save the modified dataset, if applicable
     if not isinstance(save_as, type(None)):
         # Save the plot to file

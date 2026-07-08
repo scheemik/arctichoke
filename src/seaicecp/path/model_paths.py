@@ -3,10 +3,10 @@ import glob
 import warnings
 from datetime import datetime
 
-from seaicecp.verify import verify_path
+from arctichoke.verify import verify_path
 
 def list_available_models(
-    data_dir: str = '/seaicecp_data/bergybits/data',
+    data_dir: str = '/arctichoke_data/bergybits/data',
     project: str = 'CMIP6',
     activity_id: str = 'HighResMIP',
     institution_id: (str, [str]) = None,
@@ -21,7 +21,7 @@ def list_available_models(
         data_dir : `str`, optional
             The absolute file path to the data directory.
             The `esgpull` convention means this should end in `/data`.
-            Default is `/seaicecp_data/bergybits/data`.
+            Default is `/arctichoke_data/bergybits/data`.
         project : `str`, optional
             The name of the project in which to search for available models.
             Default is `CMIP6`.
@@ -40,7 +40,7 @@ def list_available_models(
         
         Examples
         --------
-        >>> from seaicecp.path.find_data import list_available_models 
+        >>> from arctichoke.path.find_data import list_available_models 
         >>> list_available_models()
         ['AWI/AWI-CM-1-1-HR', 'AWI/AWI-CM-1-1-LR', 'BCC/BCC-CSM2-HR', 'EC-Earth-Consortium/EC-Earth3P', 'EC-Earth-Consortium/EC-Earth3P-HR', 'MOHC/HadGEM3-GC31-HH', 'MOHC/HadGEM3-GC31-HM', 'MOHC/HadGEM3-GC31-LL', 'MOHC/HadGEM3-GC31-MM', 'NCAR/CESM1-CAM5-SE-HR', 'NCAR/CESM1-CAM5-SE-LR', 'NERC/HadGEM3-GC31-HH', 'NERC/HadGEM3-GC31-HM']
         >>> list_available_models(institution_id = 'EC-Earth-Consortium')
@@ -92,7 +92,7 @@ def list_available_models(
 
 def get_model_path(
     source_id: str,
-    data_dir: str = '/seaicecp_data/bergybits/data',
+    data_dir: str = '/arctichoke_data/bergybits/data',
     project: str = 'CMIP6',
     activity_id: str = 'HighResMIP',
 ):
@@ -108,7 +108,7 @@ def get_model_path(
         data_dir : `str`, optional
             The absolute file path to the data directory.
             The `esgpull` convention means this should end in `/data`.
-            Default is `/seaicecp_data/bergybits/data`.
+            Default is `/arctichoke_data/bergybits/data`.
         project : `str`, optional
             The name of the project in which to search for available models.
             Default is `CMIP6`.
@@ -123,11 +123,11 @@ def get_model_path(
         
         Examples
         --------
-        >>> from seaicecp.path.find_data import get_model_path
+        >>> from arctichoke.path.find_data import get_model_path
         >>> get_model_path(source_id='AWI-CM-1-1-HR')
-        ['/seaicecp_data/bergybits/data/CMIP6/HighResMIP/AWI/AWI-CM-1-1-HR']
+        ['/arctichoke_data/bergybits/data/CMIP6/HighResMIP/AWI/AWI-CM-1-1-HR']
         >>> get_model_path('HadGEM3-GC31-HM')
-        ['/seaicecp_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-HM', '/seaicecp_data/bergybits/data/CMIP6/HighResMIP/NERC/HadGEM3-GC31-HM']
+        ['/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-HM', '/arctichoke_data/bergybits/data/CMIP6/HighResMIP/NERC/HadGEM3-GC31-HM']
     """
     # Verify input arguments
     if not isinstance(source_id, (str, type(None))):

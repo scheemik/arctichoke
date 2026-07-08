@@ -8,12 +8,12 @@ import warnings
 # cdo = Cdo(tempdir='./cdo_tmp/')
 # cdo.cleanTempDir()
 
-from seaicecp import get_current_datetime_str
-from seaicecp.dataset.get_variable import get_variable_name
-from seaicecp.dataset.trim_dataset import trim_latlon
-from seaicecp.path.manipulate_paths import make_file_path
-import seaicecp.params as sps
-from seaicecp.verify import verify_path
+from arctichoke import get_current_datetime_str
+from arctichoke.dataset.get_variable import get_variable_name
+from arctichoke.dataset.trim_dataset import trim_latlon
+from arctichoke.path.manipulate_paths import make_file_path
+import arctichoke.params as sps
+from arctichoke.verify import verify_path
 
 def calc_siconc(
     sithick_dataset: (str, [str], xr.DataArray, xr.Dataset),
@@ -50,7 +50,7 @@ def calc_siconc(
         
         Examples
         --------
-        >>> from seaicecp.dataset.example_dataset import make_example_dataset
+        >>> from arctichoke.dataset.example_dataset import make_example_dataset
         >>> dataset_0 = make_example_dataset(n=3, test_var_name='sithick')
         >>> dataset_0['sithick'].values
         array([[1., 2., 3.],
@@ -61,7 +61,7 @@ def calc_siconc(
         array([[0., 1., 2.],
                [3., 4., 5.],
                [6., 7., 8.]])
-        >>> from seaicecp.analysis import calc_siconc
+        >>> from arctichoke.analysis import calc_siconc
         >>> dataset_siconc2 = calc_siconc(sithick_dataset=dataset_0, sivol_dataset=dataset_1)
         >>> dataset_siconc2['siconc2'].values
         array([[ 0.        , 50.        , 66.66666667],
@@ -159,12 +159,12 @@ def calc_siconc(
         original_history = siconc2_dataset['siconc2'].attrs['history']
     else:
         original_history = ''
-    siconc2_dataset['siconc2'].attrs['history'] = f"{get_current_datetime_str()} altered by `seaicecp`: Calculated sea ice concentration by `sivol` / `sithick` * 100. {original_history}"
+    siconc2_dataset['siconc2'].attrs['history'] = f"{get_current_datetime_str()} altered by `arctichoke`: Calculated sea ice concentration by `sivol` / `sithick` * 100. {original_history}"
     if 'history' in siconc2_dataset.attrs.keys():
         original_history = siconc2_dataset.attrs['history']
     else:
         original_history = ''
-    siconc2_dataset.attrs['history'] = f"{get_current_datetime_str()} altered by `seaicecp`: Calculated sea ice concentration by `sivol` / `sithick` * 100. {original_history}"
+    siconc2_dataset.attrs['history'] = f"{get_current_datetime_str()} altered by `arctichoke`: Calculated sea ice concentration by `sivol` / `sithick` * 100. {original_history}"
 
     # Save the modified dataset, if applicable
     if not isinstance(save_as, type(None)):
@@ -211,9 +211,9 @@ def make_siconc_files(
         
         Examples
         --------
-        >>> from seaicecp.path import list_variable_files
-        >>> from seaicecp.analysis import make_siconc_files
-        >>> from seaicecp.params import CAA_BBOX
+        >>> from arctichoke.path import list_variable_files
+        >>> from arctichoke.analysis import make_siconc_files
+        >>> from arctichoke.params import CAA_BBOX
         >>> this_model = 'EC-Earth3P-HR'
         >>> for this_variant_label in [
         >>>     'r1i1p2f1', 
@@ -239,13 +239,13 @@ def make_siconc_files(
         >>>             map_bbox = CAA_BBOX,
         >>>             precise_trim = False,
         >>>         )
-        (make_siconc_files) Writing file `/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/siconc2/gn/v20260617/trim_CAA_siconc2_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_195001-195012.nc`.
-        (make_siconc_files) Writing file `/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/siconc2/gn/v20260617/trim_CAA_siconc2_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_195101-195112.nc`.
-        (make_siconc_files) Writing file `/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/siconc2/gn/v20260617/trim_CAA_siconc2_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_195201-195212.nc`.
+        (make_siconc_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/siconc2/gn/v20260617/trim_CAA_siconc2_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_195001-195012.nc`.
+        (make_siconc_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/siconc2/gn/v20260617/trim_CAA_siconc2_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_195101-195112.nc`.
+        (make_siconc_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/siconc2/gn/v20260617/trim_CAA_siconc2_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_195201-195212.nc`.
         ...
-        (make_siconc_files) Writing file `/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/siconc2/gn/v20260617/trim_CAA_siconc2_SImon_EC-Earth3P-HR_hist-1950_r3i1p2f1_gn_201201-201212.nc`.
-        (make_siconc_files) Writing file `/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/siconc2/gn/v20260617/trim_CAA_siconc2_SImon_EC-Earth3P-HR_hist-1950_r3i1p2f1_gn_201301-201312.nc`.
-        (make_siconc_files) Writing file `/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/siconc2/gn/v20260617/trim_CAA_siconc2_SImon_EC-Earth3P-HR_hist-1950_r3i1p2f1_gn_201401-201412.nc`.
+        (make_siconc_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/siconc2/gn/v20260617/trim_CAA_siconc2_SImon_EC-Earth3P-HR_hist-1950_r3i1p2f1_gn_201201-201212.nc`.
+        (make_siconc_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/siconc2/gn/v20260617/trim_CAA_siconc2_SImon_EC-Earth3P-HR_hist-1950_r3i1p2f1_gn_201301-201312.nc`.
+        (make_siconc_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/siconc2/gn/v20260617/trim_CAA_siconc2_SImon_EC-Earth3P-HR_hist-1950_r3i1p2f1_gn_201401-201412.nc`.
     """
     # Verify input arguments
     if isinstance(sithick_files, str):

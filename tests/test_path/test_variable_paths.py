@@ -1,7 +1,7 @@
 import warnings
 warnings.filterwarnings("error")
 
-from seaicecp import path
+from arctichoke import path
 
 def test_list_available_variables():
     """Test the `list_available_variables` function."""
@@ -114,14 +114,14 @@ def test_list_available_variables():
         {
             'source_id': 'invalid_string',
             'experiment_id': 'hist-1950',
-            'data_dir': '/seaicecp_data/bergybits/data',
+            'data_dir': '/arctichoke_data/bergybits/data',
             'project': 'CMIP6',
             'activity_id': 'HighResMIP',
         },
         {
             'source_id': 'EC-Earth3P-HR',
             'experiment_id': 'invalid_string',
-            'data_dir': '/seaicecp_data/bergybits/data',
+            'data_dir': '/arctichoke_data/bergybits/data',
             'project': 'CMIP6',
             'activity_id': 'HighResMIP',
         },
@@ -135,14 +135,14 @@ def test_list_available_variables():
         {
             'source_id': 'EC-Earth3P-HR',
             'experiment_id': 'hist-1950',
-            'data_dir': '/seaicecp_data/bergybits/data',
+            'data_dir': '/arctichoke_data/bergybits/data',
             'project': 'invalid_string',
             'activity_id': 'HighResMIP',
         },
         {
             'source_id': 'EC-Earth3P-HR',
             'experiment_id': 'hist-1950',
-            'data_dir': '/seaicecp_data/bergybits/data',
+            'data_dir': '/arctichoke_data/bergybits/data',
             'project': 'CMIP6',
             'activity_id': 'invalid_string',
         },
@@ -241,147 +241,147 @@ def test_get_variable_path():
             'variable_id': 'areacello',
             'experiment_id': 'hist-1950',
             'variant_label': None,
-            'expected_path': '/seaicecp_data/bergybits/data/CMIP6/HighResMIP/AWI/AWI-CM-1-1-HR/hist-1950/r1i1p1f2/Ofx/areacello'
+            'expected_path': '/arctichoke_data/bergybits/data/CMIP6/HighResMIP/AWI/AWI-CM-1-1-HR/hist-1950/r1i1p1f2/Ofx/areacello'
         },
         {
             'source_id': 'AWI-CM-1-1-HR',
             'variable_id': 'areacello',
             'experiment_id': 'control-1950',
             'variant_label': None,
-            'expected_path': '/seaicecp_data/bergybits/data/CMIP6/HighResMIP/AWI/AWI-CM-1-1-HR/control-1950/r1i1p1f2/Ofx/areacello'
+            'expected_path': '/arctichoke_data/bergybits/data/CMIP6/HighResMIP/AWI/AWI-CM-1-1-HR/control-1950/r1i1p1f2/Ofx/areacello'
         },
         {
             'source_id': 'AWI-CM-1-1-LR',
             'variable_id': 'areacello',
             'experiment_id': 'hist-1950',
             'variant_label': None,
-            'expected_path': '/seaicecp_data/bergybits/data/CMIP6/HighResMIP/AWI/AWI-CM-1-1-LR/hist-1950/r1i1p1f2/Ofx/areacello'
+            'expected_path': '/arctichoke_data/bergybits/data/CMIP6/HighResMIP/AWI/AWI-CM-1-1-LR/hist-1950/r1i1p1f2/Ofx/areacello'
         },
         {
             'source_id': 'BCC-CSM2-HR',
             'variable_id': 'areacello',
             'experiment_id': 'hist-1950',
             'variant_label': None,
-            'expected_path': '/seaicecp_data/bergybits/data/CMIP6/HighResMIP/BCC/BCC-CSM2-HR/hist-1950/r1i1p1f1/Ofx/areacello'
+            'expected_path': '/arctichoke_data/bergybits/data/CMIP6/HighResMIP/BCC/BCC-CSM2-HR/hist-1950/r1i1p1f1/Ofx/areacello'
         },
         {
             'source_id': 'CESM1-CAM5-SE-HR',
             'variable_id': 'areacello',
             'experiment_id': 'hist-1950',
             'variant_label': None,
-            'expected_path': '/seaicecp_data/bergybits/data/CMIP6/HighResMIP/NCAR/CESM1-CAM5-SE-HR/hist-1950/r1i1p1f1/Ofx/areacello'
+            'expected_path': '/arctichoke_data/bergybits/data/CMIP6/HighResMIP/NCAR/CESM1-CAM5-SE-HR/hist-1950/r1i1p1f1/Ofx/areacello'
         },
         {
             'source_id': 'CESM1-CAM5-SE-LR',
             'variable_id': 'areacello',
             'experiment_id': 'control-1950',
             'variant_label': None,
-            'expected_path': '/seaicecp_data/bergybits/data/CMIP6/HighResMIP/NCAR/CESM1-CAM5-SE-LR/control-1950/r1i1p1f1/Ofx/areacello'
+            'expected_path': '/arctichoke_data/bergybits/data/CMIP6/HighResMIP/NCAR/CESM1-CAM5-SE-LR/control-1950/r1i1p1f1/Ofx/areacello'
         },
         {
             'source_id': 'EC-Earth3P',
             'variable_id': 'areacello',
             'experiment_id': 'highres-future',
             'variant_label': None,
-            'expected_path': '/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P/highres-future/r2i1p2f1/Ofx/areacello'
+            'expected_path': '/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P/highres-future/r2i1p2f1/Ofx/areacello'
         },
         {
             'source_id': 'EC-Earth3P-HR',
             'variable_id': 'areacello',
             'experiment_id': 'highres-future',
             'variant_label': None,
-            'expected_path': '/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/highres-future/r2i1p2f1/Ofx/areacello'
+            'expected_path': '/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/highres-future/r2i1p2f1/Ofx/areacello'
         },
         {
             'source_id': 'EC-Earth3P-HR',
             'variable_id': 'siage',
             'experiment_id': 'hist-1950',
             'variant_label': 'r2i1p2f1',
-            'expected_path': '/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r2i1p2f1/SImon/siage'
+            'expected_path': '/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r2i1p2f1/SImon/siage'
         },
         {
             'source_id': 'EC-Earth3P-HR',
             'variable_id': 'siu',
             'experiment_id': 'hist-1950',
             'variant_label': 'r3i1p2f1',
-            'expected_path': '/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/siu'
+            'expected_path': '/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/siu'
         },
         {
             'source_id': 'HadGEM3-GC31-HM',
             'variable_id': 'areacello',
             'experiment_id': 'hist-1950',
             'variant_label': None,
-            'expected_path': '/seaicecp_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-HM/hist-1950/r1i1p1f1/Ofx/areacello'
+            'expected_path': '/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-HM/hist-1950/r1i1p1f1/Ofx/areacello'
         },
         {
             'source_id': 'HadGEM3-GC31-HM',
             'variable_id': 'areacello',
             'experiment_id': 'highres-future',
             'variant_label': None,
-            'expected_path': '/seaicecp_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-HM/highres-future/r1i1p1f1/Ofx/areacello'
+            'expected_path': '/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-HM/highres-future/r1i1p1f1/Ofx/areacello'
         },
         {
             'source_id': 'HadGEM3-GC31-HM',
             'variable_id': 'areacello',
             'experiment_id': 'control-1950',
             'variant_label': None,
-            'expected_path': '/seaicecp_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-HM/control-1950/r1i1p1f1/Ofx/areacello'
+            'expected_path': '/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-HM/control-1950/r1i1p1f1/Ofx/areacello'
         },
         {
             'source_id': 'HadGEM3-GC31-LL',
             'variable_id': 'areacello',
             'experiment_id': 'hist-1950',
             'variant_label': None,
-            'expected_path': '/seaicecp_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-LL/hist-1950/r1i1p1f1/Ofx/areacello'
+            'expected_path': '/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-LL/hist-1950/r1i1p1f1/Ofx/areacello'
         },
         {
             'source_id': 'HadGEM3-GC31-LL',
             'variable_id': 'areacello',
             'experiment_id': 'highres-future',
             'variant_label': None,
-            'expected_path': '/seaicecp_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-LL/highres-future/r1i1p1f1/Ofx/areacello'
+            'expected_path': '/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-LL/highres-future/r1i1p1f1/Ofx/areacello'
         },
         {
             'source_id': 'HadGEM3-GC31-LL',
             'variable_id': 'areacello',
             'experiment_id': 'control-1950',
             'variant_label': None,
-            'expected_path': '/seaicecp_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-LL/control-1950/r1i1p1f1/Ofx/areacello'
+            'expected_path': '/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-LL/control-1950/r1i1p1f1/Ofx/areacello'
         },
         {
             'source_id': 'HadGEM3-GC31-LL',
             'variable_id': 'areacello',
             'experiment_id': 'spinup-1950',
             'variant_label': None,
-            'expected_path': '/seaicecp_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-LL/spinup-1950/r1i1p1f1/Ofx/areacello'
+            'expected_path': '/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-LL/spinup-1950/r1i1p1f1/Ofx/areacello'
         },
         {
             'source_id': 'HadGEM3-GC31-MM',
             'variable_id': 'areacello',
             'experiment_id': 'hist-1950',
             'variant_label': None,
-            'expected_path': '/seaicecp_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i1p1f1/Ofx/areacello'
+            'expected_path': '/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i1p1f1/Ofx/areacello'
         },
         {
             'source_id': 'HadGEM3-GC31-MM',
             'variable_id': 'areacello',
             'experiment_id': 'highres-future',
             'variant_label': None,
-            'expected_path': '/seaicecp_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/highres-future/r1i1p1f1/Ofx/areacello'
+            'expected_path': '/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/highres-future/r1i1p1f1/Ofx/areacello'
         },
         {
             'source_id': 'HadGEM3-GC31-MM',
             'variable_id': 'areacello',
             'experiment_id': 'control-1950',
             'variant_label': None,
-            'expected_path': '/seaicecp_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/control-1950/r1i1p1f1/Ofx/areacello'
+            'expected_path': '/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/control-1950/r1i1p1f1/Ofx/areacello'
         },
         {
             'source_id': 'HadGEM3-GC31-MM',
             'variable_id': 'areacello',
             'experiment_id': 'spinup-1950',
             'variant_label': None,
-            'expected_path': '/seaicecp_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/spinup-1950/r1i1p1f1/Ofx/areacello'
+            'expected_path': '/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/spinup-1950/r1i1p1f1/Ofx/areacello'
         },
     ]
     for test_case in test_cases:
@@ -401,14 +401,14 @@ def test_get_variable_path():
             'variable_id': 'siage',
             'experiment_id': 'hist-1950',
             'variant_label': None,
-            'expected_path': '/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/siage'
+            'expected_path': '/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/siage'
         },
         {
             'source_id': 'EC-Earth3P-HR',
             'variable_id': 'siconc',
             'experiment_id': 'hist-1950',
             'variant_label': None,
-            'expected_path': '/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/siconc'
+            'expected_path': '/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/siconc'
         },
     ]
     for test_case in test_cases:
@@ -523,14 +523,14 @@ def test_list_variable_modifications():
     ## Note: The expected output of these test cases is manually kept up to date
     test_cases = [
         {
-            'variable_path': '/seaicecp_data/bergybits/data/CMIP6/HighResMIP/AWI/AWI-CM-1-1-HR/hist-1950/r1i1p1f2/Ofx/areacello',
+            'variable_path': '/arctichoke_data/bergybits/data/CMIP6/HighResMIP/AWI/AWI-CM-1-1-HR/hist-1950/r1i1p1f2/Ofx/areacello',
             'list_filenames': True,
             'expected_dict': {
                 '': ['areacello_Ofx_AWI-CM-1-1-HR_hist-1950_r1i1p1f2_gn.nc'],
             },
         },
         {
-            'variable_path': '/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r2i1p2f1/SImon/siconc',
+            'variable_path': '/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r2i1p2f1/SImon/siconc',
             'list_filenames': False,
             'expected_dict': {
                 '': 65,

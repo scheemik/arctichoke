@@ -5,7 +5,7 @@ cdo = Cdo()
 cdo = Cdo(tempdir='./cdo_tmp/')
 cdo.cleanTempDir()
 
-from seaicecp.verify import verify_path
+from arctichoke.verify import verify_path
 
 def get_field_mean(
     dataset: (str, [str], xr.DataArray, xr.Dataset),
@@ -33,7 +33,7 @@ def get_field_mean(
         
         Examples
         --------
-        >>> from seaicecp.dataset.field_mean import get_field_mean 
+        >>> from arctichoke.dataset.field_mean import get_field_mean 
         >>> fldmean_xr = get_field_mean('data/NWP_cdo_CLI_areacello_Ofx_EC-Earth3P-HR_highres-future_r2i1p2f1_gn.nc')
         >>> fldmean_xr['areacello'].values[0]
         (get_field_mean) `save_as`: None

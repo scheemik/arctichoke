@@ -1,7 +1,7 @@
 import warnings
 warnings.filterwarnings("error")
 
-from seaicecp import path
+from arctichoke import path
 
 def test_list_available_models():
     """Test the `list_available_models` function."""
@@ -55,19 +55,19 @@ def test_list_available_models():
             'institution_id': None,
         },
         {
-            'data_dir': '/seaicecp_data/bergybits/data',
+            'data_dir': '/arctichoke_data/bergybits/data',
             'project': 'invalid_string',
             'activity_id': 'HighResMIP',
             'institution_id': None,
         },
         {
-            'data_dir': '/seaicecp_data/bergybits/data',
+            'data_dir': '/arctichoke_data/bergybits/data',
             'project': 'CMIP6',
             'activity_id': 'invalid_string',
             'institution_id': None,
         },
         {
-            'data_dir': '/seaicecp_data/bergybits/data',
+            'data_dir': '/arctichoke_data/bergybits/data',
             'project': 'CMIP6',
             'activity_id': 'HighResMIP',
             'institution_id': 'invalid_string',
@@ -140,55 +140,55 @@ def test_get_model_path():
     test_cases = [
         {
             'source_id': 'AWI-CM-1-1-HR',
-            'expected_path': ['/seaicecp_data/bergybits/data/CMIP6/HighResMIP/AWI/AWI-CM-1-1-HR']
+            'expected_path': ['/arctichoke_data/bergybits/data/CMIP6/HighResMIP/AWI/AWI-CM-1-1-HR']
         },
         {
             'source_id': 'AWI-CM-1-1-LR',
-            'expected_path': ['/seaicecp_data/bergybits/data/CMIP6/HighResMIP/AWI/AWI-CM-1-1-LR']
+            'expected_path': ['/arctichoke_data/bergybits/data/CMIP6/HighResMIP/AWI/AWI-CM-1-1-LR']
         },
         {
             'source_id': 'BCC-CSM2-HR',
-            'expected_path': ['/seaicecp_data/bergybits/data/CMIP6/HighResMIP/BCC/BCC-CSM2-HR']
+            'expected_path': ['/arctichoke_data/bergybits/data/CMIP6/HighResMIP/BCC/BCC-CSM2-HR']
         },
         {
             'source_id': 'CESM1-CAM5-SE-HR',
-            'expected_path': ['/seaicecp_data/bergybits/data/CMIP6/HighResMIP/NCAR/CESM1-CAM5-SE-HR']
+            'expected_path': ['/arctichoke_data/bergybits/data/CMIP6/HighResMIP/NCAR/CESM1-CAM5-SE-HR']
         },
         {
             'source_id': 'CESM1-CAM5-SE-LR',
-            'expected_path': ['/seaicecp_data/bergybits/data/CMIP6/HighResMIP/NCAR/CESM1-CAM5-SE-LR']
+            'expected_path': ['/arctichoke_data/bergybits/data/CMIP6/HighResMIP/NCAR/CESM1-CAM5-SE-LR']
         },
         {
             'source_id': 'EC-Earth3P',
-            'expected_path': ['/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P']
+            'expected_path': ['/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P']
 
         },
         {
             'source_id': 'EC-Earth3P-HR',
-            'expected_path': ['/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR']
+            'expected_path': ['/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR']
 
         },
         {
             'source_id': 'HadGEM3-GC31-HH',
             'expected_path': [
-                '/seaicecp_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-HH',
-                '/seaicecp_data/bergybits/data/CMIP6/HighResMIP/NERC/HadGEM3-GC31-HH',
+                '/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-HH',
+                '/arctichoke_data/bergybits/data/CMIP6/HighResMIP/NERC/HadGEM3-GC31-HH',
             ]
         },
         {
             'source_id': 'HadGEM3-GC31-HM',
             'expected_path': [
-                '/seaicecp_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-HM',
-                '/seaicecp_data/bergybits/data/CMIP6/HighResMIP/NERC/HadGEM3-GC31-HM',
+                '/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-HM',
+                '/arctichoke_data/bergybits/data/CMIP6/HighResMIP/NERC/HadGEM3-GC31-HM',
             ]
         },
         {
             'source_id': 'HadGEM3-GC31-LL',
-            'expected_path': ['/seaicecp_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-LL']
+            'expected_path': ['/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-LL']
         },
         {
             'source_id': 'HadGEM3-GC31-MM',
-            'expected_path': ['/seaicecp_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM']
+            'expected_path': ['/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM']
         },
     ]
     for test_case in test_cases:
@@ -199,7 +199,7 @@ def test_get_model_path():
     invalid_test_cases = [
         {
             'source_id': 'invalid_string',
-            'data_dir': '/seaicecp_data/bergybits/data',
+            'data_dir': '/arctichoke_data/bergybits/data',
             'project': 'CMIP6',
             'activity_id': 'HighResMIP',
         },
@@ -211,13 +211,13 @@ def test_get_model_path():
         },
         {
             'source_id': 'HadGEM3-GC31-HM',
-            'data_dir': '/seaicecp_data/bergybits/data',
+            'data_dir': '/arctichoke_data/bergybits/data',
             'project': 'invalid_string',
             'activity_id': 'HighResMIP',
         },
         {
             'source_id': 'HadGEM3-GC31-HM',
-            'data_dir': '/seaicecp_data/bergybits/data',
+            'data_dir': '/arctichoke_data/bergybits/data',
             'project': 'CMIP6',
             'activity_id': 'invalid_string',
         },
