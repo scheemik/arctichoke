@@ -65,9 +65,9 @@ def test_list_available_variables():
                         'r3i1p2f1': ['siconc', 'siage', 'siu', 'sithick', 'siv']
                     },
                     'hist-1950': {
-                        'r1i1p2f1': ['siu', 'siv', 'sithick', 'siage', 'siconc'],
-                        'r2i1p2f1': ['siage', 'sithick', 'siv', 'siu', 'siconc'],
-                        'r3i1p2f1': ['sithick', 'siage', 'siu', 'siv', 'siconc']
+                        'r1i1p2f1': ['siu', 'siv', 'sithick', 'siage', 'siconc', 'sispeed', 'silandfast', 'sivol', 'siconc2'],
+                        'r2i1p2f1': ['siage', 'sithick', 'siv', 'siu', 'siconc', 'sispeed', 'silandfast', 'sivol', 'siconc2'],
+                        'r3i1p2f1': ['sithick', 'siage', 'siu', 'siv', 'siconc', 'sispeed', 'silandfast', 'sivol', 'siconc2']
                     },
                 },
             },
@@ -82,20 +82,20 @@ def test_list_available_variables():
                         'r1i1p1f1': ['areacello']
                     },
                     'highres-future': {
-                        'r1i1p1f1': ['areacello', 'siu', 'siv', 'sithick', 'siconc', 'siage'],
-                        'r1i3p1f1': ['siconc', 'siage', 'siv', 'sithick', 'siu']
+                        'r1i1p1f1': ['areacello', 'siu', 'siv', 'sithick', 'siconc', 'siage', 'sivol', 'sispeed'],
+                        'r1i3p1f1': ['siconc', 'siage', 'siv', 'sithick', 'siu', 'sispeed', 'sivol']
                     },
                     'hist-1950': {
-                        'r1i1p1f1': ['areacello', 'siage', 'siv', 'siu', 'siconc', 'sithick'],
-                        'r1i3p1f1': ['siconc', 'sithick', 'siu', 'siage', 'siv']
+                        'r1i1p1f1': ['areacello', 'siage', 'siv', 'siu', 'siconc', 'sithick', 'sispeed', 'sivol', 'siconc2', 'silandfast'],
+                        'r1i3p1f1': ['siconc', 'sithick', 'siu', 'siage', 'siv', 'sispeed', 'sivol', 'siconc2', 'silandfast']
                     },
                 },
                 'NERC/HadGEM3-GC31-HM': {
                     'highres-future': {
-                        'r1i2p1f1': ['siv', 'siu', 'siconc', 'sithick', 'siage']
+                        'r1i2p1f1': ['siv', 'siu', 'siconc', 'sithick', 'siage', 'sispeed', 'sivol']
                     },
                     'hist-1950': {
-                        'r1i2p1f1': ['siconc', 'siu', 'sithick', 'siv', 'siage']
+                        'r1i2p1f1': ['siconc', 'siu', 'sithick', 'siv', 'siage', 'sispeed', 'sivol', 'siconc2', 'silandfast']
                     },
                 },
             },
@@ -107,7 +107,7 @@ def test_list_available_variables():
             experiment_id=test_case['experiment_id'],
             list_var_mods=test_case['list_var_mods'], 
         )
-        assert actual == test_case['expected_var_dict'], f"`list_available_variables` failed on test case: {test_case}. \nActual: {actual}\nExpected: {test_case['expected_var_dict']}\nHas the expected list in `tests/test_path/test_find_data.py` been updated?"
+        assert actual == test_case['expected_var_dict'], f"`list_available_variables` failed on test case: {test_case}. \nActual: {actual}\nExpected: {test_case['expected_var_dict']}\nHas the expected list in `tests/test_path/test_variable_paths.py` been updated?"
 
     # Define invalid test cases
     invalid_test_cases = [
@@ -118,13 +118,13 @@ def test_list_available_variables():
             'project': 'CMIP6',
             'activity_id': 'HighResMIP',
         },
-        {
-            'source_id': 'EC-Earth3P-HR',
-            'experiment_id': 'invalid_string',
-            'data_dir': '/arctichoke_data/bergybits/data',
-            'project': 'CMIP6',
-            'activity_id': 'HighResMIP',
-        },
+        # { # No longer relevant as an invalid experiment string raises a warning instead of an error now.
+        #     'source_id': 'EC-Earth3P-HR',
+        #     'experiment_id': 'invalid_string',
+        #     'data_dir': '/arctichoke_data/bergybits/data',
+        #     'project': 'CMIP6',
+        #     'activity_id': 'HighResMIP',
+        # },
         {
             'source_id': 'EC-Earth3P-HR',
             'experiment_id': None,
