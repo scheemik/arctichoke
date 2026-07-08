@@ -164,7 +164,7 @@ def test_make_label():
             'var': 'silandfast',
             'add_name': True,
             'add_units': True,
-            'expected_label': 'silandfast ',
+            'expected_label': 'Landfast Ice (>85%, <0.01m s-1) (1: Yes, 0: No) ',
         },
         {
             'dataset': '/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i1p1f1/Ofx/areacello/gn/v20190301/areacello_Ofx_HadGEM3-GC31-MM_hist-1950_r1i1p1f1_gn.nc',
