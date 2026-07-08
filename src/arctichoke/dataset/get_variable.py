@@ -45,8 +45,10 @@ def get_variable_name(
             data_var_list.remove(meta_var)
 
     # Check how many variables are left
-    if len(data_var_list) != 1:
+    if len(data_var_list) == 1:
+        return data_var_list[0]
+    elif len(data_var_list) == 0:
+        raise ValueError(f"(get_variable_name) No `data_vars` found in `dataset`.")
+    else:
         warnings.warn(f"(get_variable_name) Found {len(data_var_list)} variables: {data_var_list}", UserWarning)
         return data_var_list
-    else:
-        return data_var_list[0]

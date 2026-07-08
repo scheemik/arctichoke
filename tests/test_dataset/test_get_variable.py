@@ -48,7 +48,7 @@ def test_get_variable_name():
 
     # Define invalid test cases
     invalid_example_dataset = make_example_dataset()
-    invalid_example_dataset['test_var2'] = invalid_example_dataset['test_var']
+    invalid_example_dataset = invalid_example_dataset.drop_vars(['test_var'])
     invalid_test_cases = [
         {
             'dataset': 'invalid_dataset',
