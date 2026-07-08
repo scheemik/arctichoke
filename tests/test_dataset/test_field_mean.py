@@ -1,8 +1,8 @@
 from cdo import CDOException
 
-from seaicecp import dataset
-from seaicecp.path.manipulate_paths import remove_non_empty_directory, make_file_path
-from seaicecp.dataset.example_dataset import make_example_dataset
+from arctichoke import dataset
+from arctichoke.path.manipulate_paths import remove_non_empty_directory, make_file_path
+from arctichoke.dataset.example_dataset import make_example_dataset
 
 def test_get_field_mean():
     """Test the `get_field_mean` function."""

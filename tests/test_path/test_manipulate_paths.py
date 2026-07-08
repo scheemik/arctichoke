@@ -1,6 +1,6 @@
 import os
 
-from seaicecp.path import manipulate_paths
+from arctichoke.path import manipulate_paths
 
 def test_remove_non_empty_directory():
     """Test the remove_non_empty_directory function."""

@@ -1,10 +1,10 @@
 import numpy as np 
 import xarray as xr
 
-from seaicecp import dataset
-from seaicecp.dataset.example_dataset import make_example_dataset
-from seaicecp.path.manipulate_paths import remove_non_empty_directory, make_file_path
-from seaicecp.verify import verify_path
+from arctichoke import dataset
+from arctichoke.dataset.example_dataset import make_example_dataset
+from arctichoke.path.manipulate_paths import remove_non_empty_directory, make_file_path
+from arctichoke.verify import verify_path
 
 def test_get_min_max():
     """Test the `get_min_max` function."""

@@ -1,5 +1,5 @@
 [project]
-name = "seaicecp"
+name = "arctichoke"
 version = "0.1.0"
 description = "Investigate sea ice choke points in the Canadian Arctic Archipelago using high-resolution models."
 authors = [
@@ -35,7 +35,7 @@ dev = [
 ]
 
 [project.scripts]
-seaicecp = "seaicecp:main"
+arctichoke = "arctichoke:main"
 
 [build-system]
 requires = ["uv_build>=0.9.15,<0.12.0"]

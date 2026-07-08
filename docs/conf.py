@@ -6,7 +6,7 @@
 
 # -- Project information -----------------------------------------------------
 
-project = u"seaicecp"
+project = u"arctichoke"
 copyright = u"2026, Mikhail Schee"
 author = u"Mikhail Schee"
 

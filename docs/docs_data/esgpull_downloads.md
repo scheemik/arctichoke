@@ -55,7 +55,7 @@ Basically, it amounts to running the `esgpull search` command followed by argume
 
 Without any filters, the search returns a very large number of results.
 ```console
-(seaicecp) root@<container_id>:/workspace# uv run esgpull search
+(arctichoke) root@<container_id>:/workspace# uv run esgpull search
 Found 14427436 datasets.
  id │                               dataset                               │ #  │   size    
 ════╪═════════════════════════════════════════════════════════════════════╪════╪═══════════
@@ -82,7 +82,7 @@ Found 14427436 datasets.
 ```
 I can filter this to just results from CMIP6.
 ```console
-(seaicecp) root@<container_id>:/workspace# uv run esgpull search project:CMIP6
+(arctichoke) root@<container_id>:/workspace# uv run esgpull search project:CMIP6
 Found 14217502 datasets.
  id │                                dataset                                 │ #  │   size    
 ════╪════════════════════════════════════════════════════════════════════════╪════╪═══════════
@@ -148,14 +148,14 @@ I have found that the only two nodes which are consistently available at this ti
     | httpx.RemoteProtocolError: Server disconnected without sending a response.
     +------------------------------------
 ExceptionGroup: Download (1 sub-exception)
-See /seaicecp_data/bergybits/log/esgpull-download-2026-05-12_15-30-34.log for error log.
+See /arctichoke_data/bergybits/log/esgpull-download-2026-05-12_15-30-34.log for error log.
 Aborted!
 ```
 When specifying multiple values for a particular facet, such as `data_node`, the syntax `esgpull` expects is to have the values comma-separated, with no spaces.
 
 Running the above script gives the following results.
 ```console
-(seaicecp) root@c11f20a93021:/workspace# bash esgpull_searches/HRMIP_areacello.sh 
+(arctichoke) root@c11f20a93021:/workspace# bash esgpull_searches/HRMIP_areacello.sh 
 Found 46 datasets.
  id │                      dataset                       │ # │   size    │     data_node      
 ════╪════════════════════════════════════════════════════╪═══╪═══════════╪════════════════════
@@ -197,7 +197,7 @@ variable_id:areacello
 ```
 Then, run the script.
 ```console
-(seaicecp) root@94822df4851d:/workspace# bash esgpull_searches/HRMIP_areacello.sh 
+(arctichoke) root@94822df4851d:/workspace# bash esgpull_searches/HRMIP_areacello.sh 
 <37ca8c> untracked
 │ added    2026-05-12T20:03:29Z
 │ updated  2026-05-12T20:03:29Z
@@ -212,7 +212,7 @@ Queries are untracked by default when they are added to avoid downloading large 
 If you are sure this is the query you want, use that ID to tell `esgpull` to track it.
 This always results in the system asking to set some options before completing.
 ```console
-(seaicecp) root@94822df4851d:/workspace# uv run esgpull track 37ca8c
+(arctichoke) root@94822df4851d:/workspace# uv run esgpull track 37ca8c
 For <37ca8c> to become tracked, options must be set.
                          before                         │                         after                          
 ════════════════════════════════════════════════════════╪════════════════════════════════════════════════════════
@@ -235,7 +235,7 @@ Once the query is tracked, use the new ID to update it.
 This will have `esgpull` use the API to fetch the metadata of each file to download.
 If this update results in files that have not been previously downloaded, it will prompt you asking whether to automatically add those new files to the download queue.
 ```console
-(seaicecp) root@94822df4851d:/workspace# uv run esgpull update 60d0a8
+(arctichoke) root@94822df4851d:/workspace# uv run esgpull update 60d0a8
 <60d0a8> -> 46 files (before replica de-duplication).
 Adding 24 new datasets to database.
 Adding 24 new files to database.
@@ -253,7 +253,7 @@ If you have more queries that you want to add to the queue before downloading, r
 In the [`esgpull` "Download" documentation](https://esgf.github.io/esgf-download/download/), it is fairly straight-forward to start the download process after [adding, tracking, and updating queries](#add-track-and-update-queries).
 Before starting the download, I recommend checking the download queue.
 ```console
-(seaicecp) root@c11f20a93021:/workspace# uv run esgpull show
+(arctichoke) root@c11f20a93021:/workspace# uv run esgpull show
 <60d0a8>
 │ added    2026-04-15T14:44:20Z
 │ updated  2026-04-15T14:45:09Z
@@ -271,7 +271,7 @@ Before starting the download, I recommend checking the download queue.
 ```
 Running the download command will output the queue again for reference and start downloading the files.
 ```console
-(seaicecp) root@94822df4851d:/workspace# uv run esgpull download
+(arctichoke) root@94822df4851d:/workspace# uv run esgpull download
 <60d0a8>
 │ added    2026-04-15T14:44:20Z
 │ updated  2026-04-15T14:45:09Z
@@ -298,7 +298,7 @@ Downloaded 24 new files for a total size of 1.2 GiB
 ```
 After it completes, I can check the queue again and see that the files are downloaded.
 ```console
-(seaicecp) root@c11f20a93021:/workspace# uv run esgpull show
+(arctichoke) root@c11f20a93021:/workspace# uv run esgpull show
 <60d0a8>
 │ added    2026-04-15T14:44:20Z
 │ updated  2026-04-15T14:45:09Z
@@ -337,12 +337,12 @@ Downloaded 1168 new files for a total size of 46.6 GiB
 ```
 A simple command sends just the failed downloads back to the queue.
 ```console
-Grey@Audron:seaicecp$ esgpull retry
+Grey@Audron:arctichoke$ esgpull retry
 Sent back to the queue: 21 error
 ```
 Then, starting the download process again will just focus on those missing files.
 ```console
-Grey@Audron:seaicecp$ esgpull download                                           
+Grey@Audron:arctichoke$ esgpull download                                           
 <aab029>
 │ added    2026-04-17T19:24:42Z
 │ updated  2026-04-17T19:25:49Z

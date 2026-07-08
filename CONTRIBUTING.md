@@ -40,9 +40,9 @@ If you are proposing a feature:
 
 ## Get Started!
 
-Ready to contribute? Here's how to set up `seaicecp` for local development.
+Ready to contribute? Here's how to set up `arctichoke` for local development.
 
-1. Follow the [Installation](https://seaicecp.readthedocs.io/en/latest/docs_setup/installation.html) instructions.
+1. Follow the [Installation](https://arctichoke.readthedocs.io/en/latest/docs_setup/installation.html) instructions.
 
 2. Use `git` (or similar) to create a branch for local development and make your changes:
 
@@ -64,5 +64,5 @@ Before you submit a pull request, check that it meets these guidelines:
 
 ## Code of Conduct
 
-Please note that the `seaicecp` project is released with a
+Please note that the `arctichoke` project is released with a
 Code of Conduct. By contributing to this project you agree to abide by its terms.

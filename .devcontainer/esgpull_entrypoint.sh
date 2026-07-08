@@ -14,13 +14,13 @@ else
 fi
 
 # Run esgpull install (idempotent, only takes affect the first time it is executed)
-if [[ -d "/seaicecp_data" ]]; then
-    cd /seaicecp_data
+if [[ -d "/arctichoke_data" ]]; then
+    cd /arctichoke_data
     # Use `|| true` to ensure the following line always returns exit status 0
     #   even if the `esgpull` command fails
     uv run esgpull self install bergybits || true
 else
-    echo "WARNING: Directory /seaicecp_data not found. No `esgpull` install created."
+    echo "WARNING: Directory /arctichoke_data not found. No `esgpull` install created."
 fi
 
 # Go back and start default CMD
