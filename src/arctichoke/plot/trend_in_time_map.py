@@ -37,7 +37,7 @@ def make_trend_map(
 
         Returns
         -------
-        sum_year_map : `holoviews.core.overlay.Overlay`
+        sum_year_trend_map : `holoviews.core.overlay.Overlay`
             The map of the trends in time for the given variable.
         
         Examples
@@ -76,11 +76,11 @@ def make_trend_map(
         verbose = verbose,
     )
     # Plot the trends on a map
-    sum_year_map = quadmesh_map(
+    sum_year_trend_map = quadmesh_map(
         sum_year_trend_xr,
         f'{this_var}_year_sum_trends',
         map_projection = map_projection,
         diverging_cbar = True,
         verbose = verbose,
     )
-    sum_year_map
+    sum_year_trend_map
