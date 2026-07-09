@@ -84,6 +84,7 @@ def list_variable_files(
     source_id: str,
     variable_id: str,
     with_modification: str = None,
+    verbose: bool = False,
     **kwargs,
 ):
     """ Get a list of data files for the specified variable for the specified model.
@@ -102,6 +103,9 @@ def list_variable_files(
             Ex: `trim_NWP_`.
             If `None`, returns only the original files.
             Default is `None`.
+        verbose : `bool`, optional
+            Whether to verbosely output information as the function executes.
+            Default is `False`.
         **kwargs
             Keyword arguments to pass to `get_variable_path()`.
 
@@ -133,6 +137,8 @@ def list_variable_files(
             with_modification = f"{with_modification}_"
     elif not isinstance(with_modification, type(None)):
         raise TypeError(f"(list_variable_files) `with_modification` must be a string or `None`. Got type: {type(with_modification)}")
+    if not isinstance(verbose, str):
+        raise TypeError(f"(list_variable_files) `verbose` must be a `bool``. Got type: {type(verbose)}")
 
     # Get the path to the variable directory
     variable_path = get_variable_path(
@@ -151,6 +157,8 @@ def list_variable_files(
     else:
         # Filter to just files with the modification prefix
         data_filepaths = [item for item in data_filepaths if with_modification in item]
+    if verbose:
+        print(f"(list_variable_files) Found {len(data_filepaths)} files.")
 
     return sorted(data_filepaths)
 
