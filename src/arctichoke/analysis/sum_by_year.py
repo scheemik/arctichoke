@@ -110,13 +110,18 @@ def sum_by_year(
                     if verbose:
                         print(f"(sum_by_year) Removing `meta_var`: {meta_var}")
                     dataset = dataset.drop_vars([meta_var])
+        
+        # Record the fact that `dataset` is an `xr.Dataset`
+        dataset_is_Dataset = True
+    else:
+        dataset_is_Dataset = False
 
     # Sum the dataset by year
     ## Passing `min_count=1` prevents grid cells with all `nan` values across time from being set to zero instead of the expected `nan`
     ## Removing the `min_count` argument results in a spiky artifact on maps
     dataset = dataset.groupby('time.year').sum(dim='time', min_count=1, **kwargs)
 
-    if isinstance(dataset, xr.Dataset):
+    if dataset_is_Dataset:
         # Get the name of the variable in the dataset
         var_name = get_variable_name(dataset)
         if not isinstance(var_name, str):
