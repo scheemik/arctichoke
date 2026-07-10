@@ -120,6 +120,9 @@ def sum_by_year(
     ## Passing `min_count=1` prevents grid cells with all `nan` values across time from being set to zero instead of the expected `nan`
     ## Removing the `min_count` argument results in a spiky artifact on maps
     dataset = dataset.groupby('time.year').sum(dim='time', min_count=1, **kwargs)
+    if verbose:
+        print(f"(sum_by_year) Completed summing by year.")
+    # return dataset
 
     if dataset_is_Dataset:
         # Get the name of the variable in the dataset
@@ -148,6 +151,8 @@ def sum_by_year(
         if isinstance(attr_units, type(None)):
             attr_units = "months/yr"
 
+    if verbose:
+        print(f"(sum_by_year) Modifying the dataset attributes.")
     # Modify the attributes of the dataset to reflect the changes
     xr_var_to_add_attrs.attrs['standard_name'] = f'{var_name}_year_sum'
     if not isinstance(attr_long_name, type(None)):
@@ -175,7 +180,11 @@ def sum_by_year(
     
     # Save the modified dataset, if applicable
     if not isinstance(save_as, type(None)):
+        if verbose:
+            print(f"(sum_by_year) Saving the dataset file: {save_as}")
         # Save the plot to file
         dataset.to_netcdf(save_as)
+        if verbose:
+            print(f"(sum_by_year) Done saving dataset file.")
     
     return dataset
