@@ -1,6 +1,7 @@
-import xarray as xr
-import matplotlib.pyplot as plt
 from datetime import datetime
+import matplotlib.pyplot as plt
+import numpy as np
+import xarray as xr
 
 import arctichoke.params as sps
 from arctichoke.verify import verify_path
@@ -8,6 +9,7 @@ from arctichoke.verify import verify_path
 def plot_time_series(
     dataset: (str, xr.DataArray, xr.Dataset),
     variable_id: str = None,
+    add_regression: bool = False,
     plt_title: str = None,
     xlims: [str, str] = None,
     ylims: [float, float] = None,
@@ -23,8 +25,11 @@ def plot_time_series(
         ----------
         dataset : `str`, `xarray.DataArray`, `xarray.Dataset`
             The dataset for which to make a plot.
-        variable_id : `str`
+        variable_id : `str`, optional
             The name of the variable ID to plot.
+        add_regression : `bool`, optional
+            Whether to add a linear regression line to the plot.
+            Default is `False`.
         plt_title : `str`, `None`, optional
             The title to use for the plot.
             Default is `None`, which uses a default title for the plot.
@@ -136,6 +141,26 @@ def plot_time_series(
         ylim = ylims,
         **kwargs,
     )
+
+    # Add a linear regression line if specified
+    if add_regression:
+        # Find the appropriate coordinate for the x-axis
+        possible_coords = []
+        for this_coord in dataset.coords:
+            if dataset[this_coord].size > 1:
+                possible_coords.append(this_coord)
+        if len(possible_coords) == 1:
+            x_var = possible_coords[0]
+        # Take the regression
+        regressions = np.polyfit(dataset[x_var].values, dataset.values, 1)
+        reg_m = regressions[0]
+        reg_b = regressions[1]
+        # Format the label
+        reg_label = f"{str(reg_m)[:6]}x+{str(reg_b)[:6]}"
+        # Plot the regression line
+        plt.plot(dataset[x_var].values, dataset[x_var].values * reg_m + reg_b, label=reg_label)
+        plt.legend()
+
     # Modify the plot
     plt.title(plt_title)
 
