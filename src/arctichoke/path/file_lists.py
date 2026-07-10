@@ -137,7 +137,7 @@ def list_variable_files(
             with_modification = f"{with_modification}_"
     elif not isinstance(with_modification, type(None)):
         raise TypeError(f"(list_variable_files) `with_modification` must be a string or `None`. Got type: {type(with_modification)}")
-    if not isinstance(verbose, str):
+    if not isinstance(verbose, bool):
         raise TypeError(f"(list_variable_files) `verbose` must be a `bool``. Got type: {type(verbose)}")
 
     # Get the path to the variable directory

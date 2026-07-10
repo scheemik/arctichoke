@@ -57,6 +57,7 @@ def make_trend_map(
         variable_id = this_var,
         variant_label = this_variant_label,
         with_modification = this_modification,
+        verbose = verbose,
     )
     # Open those files into a multi-file dataset
     xr_ds = xr.open_mfdataset(
