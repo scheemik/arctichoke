@@ -14,6 +14,7 @@ This directly uses the `silandfast` datafiles generated in {doc}`Identifying lan
     - [HadGEM3-GC31-HM landfast ice trend maps](#hadgem3-gc31-hm-landfast-ice-trend-maps)
     - [HadGEM3-GC31-HH landfast ice trend map](#hadgem3-gc31-hh-landfast-ice-trend-map)
 
+---
 ## Calculating trends in landfast ice
 [back to top](#trends-in-landfast-ice-over-time)
 
@@ -165,38 +166,26 @@ print(f"Longitude: {test_spot_xr['longitude'].values}")
 Latitude: 70.64608001708984
 Longitude: 335.64935302734375
 ```
-For this chosen spot, I can then use the `numpy.polyfit()` function to get trend line.
+For this chosen spot, I can then use the `numpy.polyfit()` function to get trend line, a process which I've written into my `plot_time_series()` function.
 ```python
-import matplotlib.pyplot as plt 
+from arctichoke.plot import make_title, plot_time_series
 
-# Create a figure with one subplot
-fig = plt.figure()
-ax = fig.add_subplot(1,1,1)
-
-# Plot `silandfast_year_sum` over time
-ax.plot(test_spot_xr['year'].values, test_spot_xr['silandfast_year_sum'].values)
-
-import numpy as np
-
-# Returns an array of [m, b] for y=mx+b
-regressions = np.polyfit(test_spot_xr.year.values, test_spot_xr['silandfast_year_sum'].values, 1)
-print(f"Slope of regression line: {regressions[0]} annual landfast ice months per year")
-
-# Plot the regression line
-ax.plot(test_spot_xr.year.values, test_spot_xr.year.values*regressions[0] + regressions[1])
-
-from arctichoke.plot.labels_and_titles import make_title, make_label
-
-# Format the plot
-ax.set_ylabel(make_label(test_spot_xr, 'silandfast_year_sum'))
+# Make the plot title
 this_lon = f"{test_spot_xr['longitude'].values:.2f}"
 this_lat = f"{test_spot_xr['latitude'].values:.2f}"
-ax.set_title(f"{make_title(test_spot_xr)} at ({this_lat}, {this_lon})")
+this_plot_title = f"{make_title(test_spot_xr)} at ({this_lat}, {this_lon})"
 
-plt.show()
+this_plot = plot_time_series(
+    test_spot_xr,
+    'silandfast_year_sum',
+    plt_title = this_plot_title,
+    add_regression = True,
+    verbose = True,
+)
 ```
 ```console
-Slope of regression line: -0.1037587412587413 annual landfast ice months per year
+(plot_time_series) `save_as`: None
+(plot_time_series) Slope of regression line: -0.1037587412587413
 ```
 ![EC_Earth3P-HR_silandfast_CAA_sum_trend_at_Ittoqqortoormiit.png](landfast_trends-img/EC_Earth3P-HR_silandfast_CAA_sum_trend_at_Ittoqqortoormiit.png)
 
@@ -206,38 +195,26 @@ Most of the trends in the CAA are much smaller, for example the one below for a 
 ```python
 test_spot_xr = EC_Earth3P_HR_hist_silandfast_CAA_sum_xr.isel(j=198, i=518)
 
-import matplotlib.pyplot as plt 
+from arctichoke.plot import make_title, plot_time_series
 
-# Create a figure with one subplot
-fig = plt.figure()
-ax = fig.add_subplot(1,1,1)
-
-# Plot `silandfast_year_sum` over time
-ax.plot(test_spot_xr['year'].values, test_spot_xr['silandfast_year_sum'].values)
-
-import numpy as np
-
-# Returns an array of [m, b] for y=mx+b
-regressions = np.polyfit(test_spot_xr.year.values, test_spot_xr['silandfast_year_sum'].values, 1)
-print(f"Slope of regression line: {regressions[0]} annual landfast ice months per year")
-
-# Plot the regression line
-ax.plot(test_spot_xr.year.values, test_spot_xr.year.values*regressions[0] + regressions[1])
-
-from arctichoke.plot.labels_and_titles import make_title, make_label
-
-# Format the plot
-ax.set_ylabel(make_label(test_spot_xr, 'silandfast_year_sum'))
+# Make the plot title
 this_lon = f"{test_spot_xr['longitude'].values:.2f}"
 this_lat = f"{test_spot_xr['latitude'].values:.2f}"
-ax.set_title(f"{make_title(test_spot_xr)} at ({this_lat}, {this_lon})")
+this_plot_title = f"{make_title(test_spot_xr)} at ({this_lat}, {this_lon})"
 
-plt.show()
+this_plot = plot_time_series(
+    test_spot_xr,
+    'silandfast_year_sum',
+    plt_title = this_plot_title,
+    add_regression = True,
+    verbose = True,
+)
 ```
 ```console
-Slope of regression line: -0.0193181818181819 annual landfast ice months per year
+(plot_time_series) `save_as`: None
+(plot_time_series) Slope of regression line: -0.0193181818181819
 ```
-![EC_Earth3P-HR_silandfast_CAA_sum_trend_at_77_252.png](landfast_trends-img/EC_Earth3P-HR_silandfast_CAA_sum_trend_at_77_252.png)
+![EC_Earth3P-HR_silandfast_CAA_sum_trend_at_78_253.png](landfast_trends-img/EC_Earth3P-HR_silandfast_CAA_sum_trend_at_78_253.png)
 
 ## Maps of landfast ice trends
 [back to top](#trends-in-landfast-ice-over-time)
