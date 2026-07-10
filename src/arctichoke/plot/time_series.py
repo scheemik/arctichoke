@@ -151,6 +151,8 @@ def plot_time_series(
                 possible_coords.append(this_coord)
         if len(possible_coords) == 1:
             x_var = possible_coords[0]
+        else:
+            raise ValueError(f"(plot_time_series) `dataset` must only have one coordinate with a size larger than 1.\nFound the following possible coordinates: {possible_coords}")
         # Take the regression
         regressions = np.polyfit(dataset[x_var].values, dataset.values, 1)
         reg_m = regressions[0]
