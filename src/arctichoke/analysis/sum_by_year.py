@@ -110,32 +110,40 @@ def sum_by_year(
                     if verbose:
                         print(f"(sum_by_year) Removing `meta_var`: {meta_var}")
                     dataset = dataset.drop_vars([meta_var])
+        
+        # Record the fact that `dataset` is an `xr.Dataset`
+        dataset_is_Dataset = True
+    else:
+        dataset_is_Dataset = False
 
     # Sum the dataset by year
     ## Passing `min_count=1` prevents grid cells with all `nan` values across time from being set to zero instead of the expected `nan`
     ## Removing the `min_count` argument results in a spiky artifact on maps
-    year_summed_xr = dataset.groupby('time.year').sum(dim='time', min_count=1, **kwargs)
+    dataset = dataset.groupby('time.year').sum(dim='time', min_count=1, **kwargs)
+    if verbose:
+        print(f"(sum_by_year) Completed summing by year.")
+    # return dataset
 
-    if isinstance(dataset, xr.Dataset):
+    if dataset_is_Dataset:
         # Get the name of the variable in the dataset
-        var_name = get_variable_name(year_summed_xr)
+        var_name = get_variable_name(dataset)
         if not isinstance(var_name, str):
             raise ValueError(f"(sum_by_year) `dataset` must only have one variable. Available variables: {var_name}")
         # Rename the variable, giving it the suffix `_year_sum`
-        year_summed_xr = year_summed_xr.rename_vars({var_name: f'{var_name}_year_sum'})
+        dataset = dataset.rename_vars({var_name: f'{var_name}_year_sum'})
         # Get the reference to this variable
-        xr_var_to_add_attrs = year_summed_xr[f'{var_name}_year_sum']
+        xr_var_to_add_attrs = dataset[f'{var_name}_year_sum']
         # Add this operation to the history
-        if 'history' in year_summed_xr.attrs.keys():
-            original_history = year_summed_xr.attrs['history']
+        if 'history' in dataset.attrs.keys():
+            original_history = dataset.attrs['history']
         else:
             original_history = ''
-        year_summed_xr.attrs['history'] = f"{get_current_datetime_str()} altered by `seaicecp`: Calculated the sum of the `{var_name}` values per year in `{var_name}_year_sum`. {original_history}"
+        dataset.attrs['history'] = f"{get_current_datetime_str()} altered by `arctichoke`: Calculated the sum of the `{var_name}` values per year in `{var_name}_year_sum`. {original_history}"
     else:
         # Get the name of the variable in the dataset
-        var_name = year_summed_xr.name
+        var_name = dataset.name
         # Get the reference to this variable
-        xr_var_to_add_attrs = year_summed_xr
+        xr_var_to_add_attrs = dataset
     
     if var_name == 'silandfast':
         if isinstance(attr_long_name, type(None)):
@@ -143,6 +151,8 @@ def sum_by_year(
         if isinstance(attr_units, type(None)):
             attr_units = "months/yr"
 
+    if verbose:
+        print(f"(sum_by_year) Modifying the dataset attributes.")
     # Modify the attributes of the dataset to reflect the changes
     xr_var_to_add_attrs.attrs['standard_name'] = f'{var_name}_year_sum'
     if not isinstance(attr_long_name, type(None)):
@@ -170,7 +180,11 @@ def sum_by_year(
     
     # Save the modified dataset, if applicable
     if not isinstance(save_as, type(None)):
+        if verbose:
+            print(f"(sum_by_year) Saving the dataset file: {save_as}")
         # Save the plot to file
-        year_summed_xr.to_netcdf(save_as)
+        dataset.to_netcdf(save_as)
+        if verbose:
+            print(f"(sum_by_year) Done saving dataset file.")
     
-    return year_summed_xr
+    return dataset

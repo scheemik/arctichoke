@@ -14,9 +14,9 @@ It also makes use of command line interfaces such as [`cdo`](https://code.mpimet
 $ pip install arctichoke
 ``` -->
 
-## Usage
+<!-- ## Usage
 
-- TODO
+- TODO -->
 
 ## Contributing
 

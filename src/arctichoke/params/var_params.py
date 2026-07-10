@@ -10,6 +10,12 @@ sea_ice_vars = {
     'siconc': {
         'plot_range': [0, 100],
     },
+    'siconc2': {
+        'plot_range': [0, 100],
+    },
+    'sispeed': {
+        'plot_range': None,
+    },
     'sithick': {
         'plot_range': [0, 10],
     },

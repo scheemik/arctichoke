@@ -1,7 +1,9 @@
 import numpy as np
+import os
 import subprocess
 import xarray as xr
 import warnings
+
 from cdo import Cdo, __version__
 cdo = Cdo()
 # Set path for temporary files in case of a crash
@@ -111,6 +113,8 @@ def trim_latlon(
     if not isinstance(dataset, str):
         # Use the Python implementation of `cdo` to directly return an `xarray` Dataset
         xr_data_trimmed = cdo.sellonlatbox(this_bbox, input=xr_data, returnXDataset='trim_latlon')
+        # Set a dummy value for the `tmp_save_file` variable
+        tmp_save_file = None
     else:
         # Set a location for the temporary file
         tmp_save_file = './cdo_tmp/tmp_sellonlatbox_file.nc'
@@ -121,6 +125,7 @@ def trim_latlon(
             print(f"(trim_latlon) Using `cdo` directly, `cdo_command`: {cdo_command}")
         subprocess.run(cdo_command, shell=True)
         # Load that file in as an xarray
+        tmp_save_file = verify_path(tmp_save_file)
         xr_data_trimmed = xr.open_dataset(tmp_save_file)
     
     # Get the list of data variables
@@ -181,6 +186,10 @@ def trim_latlon(
     if not isinstance(save_as, type(None)):
         # Save the plot to file
         xr_data_trimmed.to_netcdf(save_as)
+    
+    # Clean up the `tmp_save_file` file if necessary
+    if not isinstance(tmp_save_file, type(None)):
+        os.remove(tmp_save_file)
 
     return xr_data_trimmed
 
