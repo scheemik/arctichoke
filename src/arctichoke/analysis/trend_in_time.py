@@ -2,8 +2,7 @@ import numpy as np
 import xarray as xr
 
 from arctichoke import get_current_datetime_str
-from arctichoke.dataset.get_variable import get_variable_name
-from arctichoke.dataset.get_min_max import get_min_max
+from arctichoke.dataset import get_variable_name, get_min_max, get_epoch_times
 import arctichoke.params as sps
 from arctichoke.verify import verify_path
 
@@ -160,17 +159,10 @@ def trend_in_time(
         )
 
     # Get the time axis values
-    time_axis_vals = dataset[time_dim].values
-    if time_dim == 'time':
-        # Define an epoch as January 1st, 1970
-        epoch = np.datetime64('1970-01-01T00:00:00')
-        # Convert datetimes to seconds from the epoch, then divide to get units of years
-        time_axis_epoch_y = [((x - epoch) / np.timedelta64(1, 's')) / (60 * 60 * 24 * 365) for x in time_axis_vals]
-    elif time_dim == 'year':
-        time_axis_epoch_y = time_axis_vals
-    else:
-        raise ValueError(f"(trend_in_time) `time_dim` must be `time` or `year`. Got: {time_dim}")
-
+    time_axis_epoch_y = get_epoch_times(
+        dataset,
+        time_dim,
+    )
     if isinstance(dataset, xr.Dataset):
         # Get a numpy array of the values for the given variable
         vals = dataset[var].values
