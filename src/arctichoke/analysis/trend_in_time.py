@@ -163,18 +163,28 @@ def trend_in_time(
         dataset,
         time_dim,
     )
+    if verbose:
+        print(f"(trend_in_time) Getting a numpy array of the values for the given variable")
     if isinstance(dataset, xr.Dataset):
         # Get a numpy array of the values for the given variable
         vals = dataset[var].values
     else:
         # Get a numpy array of the values for the given variable
         vals = dataset.values
+    if verbose:
+        print(f"(trend_in_time) Create a new dataset with just the first time slice")
     # Create a new dataset with just the first time slice
     trends_dataset = dataset.isel({time_dim:0}, drop=True)
+    if verbose:
+        print(f"(trend_in_time) Reshaping array")
     # Reshape to an array with as many rows as years and as many columns as there are pixels
     vals2 = vals.reshape(len(time_axis_epoch_y), -1)
+    if verbose:
+        print(f"(trend_in_time) Do a first-degree polyfit")
     # Do a first-degree polyfit
     regressions = np.polyfit(time_axis_epoch_y, vals2, 1)
+    if verbose:
+        print(f"(trend_in_time) Get the coefficients")
     # Get the coefficients back
     trends = regressions[0,:].reshape(vals.shape[1], vals.shape[2])
     if isinstance(dataset, xr.Dataset):
@@ -197,6 +207,8 @@ def trend_in_time(
         # Get the reference to this variable
         xr_var_to_add_attrs = trends_dataset
 
+    if verbose:
+        print(f"(trend_in_time) Modify attributes")
     # Modify the attributes of the dataset to reflect the changes
     xr_var_to_add_attrs.attrs['standard_name'] = f'{var}_trends'
     if 'long_name' in xr_var_to_add_attrs.attrs.keys():
