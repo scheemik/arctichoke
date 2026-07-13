@@ -15,6 +15,7 @@ def plot_time_series(
     xlims: [str, str] = None,
     ylims: [float, float] = None,
     save_as: str = None,
+    verbose: bool = False,
     test: bool = False,
     **kwargs,
 ):
@@ -48,6 +49,9 @@ def plot_time_series(
         save_as : `str`, `None`, optional
             The name of the file to which to save the plot.
             Default is `None`, which doesn't save the plot to a file.
+        verbose : `bool`, optional
+            Whether to verbosely output information as the function executes.
+            Default is `False`.
         test : `bool`, optional
             If `True`, the function exists before making a plot for use in testing.
             Default is `False`.
@@ -114,11 +118,14 @@ def plot_time_series(
         raise TypeError(f"(plot_time_series) `save_as` must be a string or `None`. Got type: {type(save_as)}")
     elif isinstance(save_as, str) and not '.png' in save_as:
         raise TypeError(f"(plot_time_series) `save_as` must be a `.png` filepath. Got: {save_as}")
+    if not isinstance(verbose, bool):
+        raise TypeError(f"(plot_time_series) `verbose` must be a `bool`. Got type: {type(verbose)}")
     if not isinstance(test, (type(True))):
         raise TypeError(f"(plot_time_series) `test` must be a `bool`. Got type: {type(test)}")
     
     # Information to output
-    print(f"(plot_time_series) `save_as`: {save_as}")
+    if verbose:
+        print(f"(plot_time_series) `save_as`: {save_as}")
 
     # Get limits for the y-axis
     if isinstance(ylims, type(None)):
@@ -158,6 +165,7 @@ def plot_time_series(
             x_vals = np.array(get_epoch_times(
                 dataset,
                 x_var,
+                verbose=verbose,
             ))
         else:
             x_vals = dataset[x_var].values
@@ -165,6 +173,8 @@ def plot_time_series(
         regressions = np.polyfit(x_vals, np.array(dataset.values), 1)
         reg_m = regressions[0]
         reg_b = regressions[1]
+        if verbose:
+            print(f"(plot_time_series) Slope of regression line: {reg_m}")
         # Format the label
         reg_label = f"{str(reg_m)[:6]}x+{str(reg_b)[:6]}"
         # Plot the regression line
