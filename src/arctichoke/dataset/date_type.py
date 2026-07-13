@@ -64,6 +64,7 @@ def get_date_type(
 def get_epoch_times(
     dataset: (str, xr.DataArray, xr.Dataset),
     time_dim: str = 'time',
+    verbose: bool = False,
 ):
     """ Get the epoch times of the times in a dataset.
 
@@ -76,6 +77,9 @@ def get_epoch_times(
         time_dim : `str`, optional
             The name of the time dimension for which to find the epoch times.
             Default is `time`. 
+        verbose : `bool`, optional
+            Whether to verbosely output information as the function executes.
+            Default is `False`.
 
         Returns
         -------
@@ -102,6 +106,8 @@ def get_epoch_times(
         dataset = xr.open_dataset(dataset)
     if not isinstance(time_dim, str):
         raise TypeError(f"(trend_in_time) `time_dim` must be a string. Got type: {type(time_dim)}")
+    if not isinstance(verbose, bool):
+        raise TypeError(f"(trend_in_time) `verbose` must be a `bool`. Got type: {type(verbose)}")
 
     # Get the names of the dimensions of the dataset
     ## Note: Use `.sizes` instead of `.dims` for consistency across Datasets and DataArrays
@@ -128,6 +134,8 @@ def get_epoch_times(
             epoch = cftime.Datetime360Day(1970, 1, 1, 0, 0, 0, 0, has_year_zero=True)
         else:
             raise TypeError(f"(get_epoch_times) Correction factor not yet set for time dimension type: {date_dtype}")
+        if verbose:
+            print(f"(get_epoch_times) `dataset` has date type: {date_dtype}")
         # Convert datetimes to seconds from the epoch, then divide to get units of years
         epoch_times = [((x - epoch) / np.timedelta64(1, 's')) / correction_factor for x in time_dim_vals]
     elif time_dim == 'year':
@@ -137,4 +145,6 @@ def get_epoch_times(
     else:
         raise ValueError(f"(get_epoch_times) `time_dim` must be `time` or `year`. Got: {time_dim}")
 
+    if verbose:
+        print(f"(get_epoch_times) Found epoch times: \n{epoch_times}")
     return epoch_times
