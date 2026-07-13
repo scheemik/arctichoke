@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import xarray as xr
 
+from arctichoke.dataset import get_epoch_times
 import arctichoke.params as sps
 from arctichoke.verify import verify_path
 
@@ -153,14 +154,21 @@ def plot_time_series(
             x_var = possible_coords[0]
         else:
             raise ValueError(f"(plot_time_series) `dataset` must only have one coordinate with a size larger than 1.\nFound the following possible coordinates: {possible_coords}")
+        if x_var == 'time':
+            x_vals = np.array(get_epoch_times(
+                dataset,
+                x_var,
+            ))
+        else:
+            x_vals = dataset[x_var].values
         # Take the regression
-        regressions = np.polyfit(dataset[x_var].values, dataset.values, 1)
+        regressions = np.polyfit(x_vals, np.array(dataset.values), 1)
         reg_m = regressions[0]
         reg_b = regressions[1]
         # Format the label
         reg_label = f"{str(reg_m)[:6]}x+{str(reg_b)[:6]}"
         # Plot the regression line
-        plt.plot(dataset[x_var].values, dataset[x_var].values * reg_m + reg_b, label=reg_label)
+        plt.plot(dataset[x_var].values, x_vals * reg_m + reg_b, label=reg_label)
         plt.legend()
 
     # Modify the plot
