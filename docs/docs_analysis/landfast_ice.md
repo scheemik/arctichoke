@@ -276,7 +276,7 @@ for this_variant_label in [
     'r2i1p2f1', 
     'r3i1p2f1',
 ]:
-    for this_experiment in ['hist-1950']:#, 'highres-future']:
+    for this_experiment in ['hist-1950']:
         siconc_list = list_variable_files(
             source_id = this_model,
             variable_id = 'siconc',
@@ -317,28 +317,28 @@ list_available_variables(
 {'EC-Earth-Consortium/EC-Earth3P-HR': {'hist-1950': {
     'r1i1p2f1': {'SImon': {'siu': {'': 65},
      'siv': {'': 65},
-     'sithick': {'': 65, 'trim_NWP_': 65},
+     'sithick': {'': 65},
      'siage': {'': 65},
-     'siconc': {'': 65, 'trim_NWP_': 65},
-     'sispeed': {'': 65, 'trim_NWP_': 65},
+     'siconc': {'': 65},
+     'sispeed': {'': 65},
      'silandfast': {'trim_CAA_': 65},
      'sivol': {'': 65},
      'siconc2': {'trim_CAA_': 65}}},
    'r2i1p2f1': {'SImon': {'siage': {'': 65},
-     'sithick': {'': 65, 'trim_NWP_': 65},
+     'sithick': {'': 65},
      'siv': {'': 65},
      'siu': {'': 65},
-     'siconc': {'': 65, 'trim_NWP_': 65},
-     'sispeed': {'': 65, 'trim_NWP_': 65},
+     'siconc': {'': 65},
+     'sispeed': {'': 65},
      'silandfast': {'trim_CAA_': 65},
      'sivol': {'': 65},
      'siconc2': {'trim_CAA_': 65}}},
-   'r3i1p2f1': {'SImon': {'sithick': {'': 65, 'trim_NWP_': 65},
-     'siage': {'': 65, 'trim_NWP_': 65},
+   'r3i1p2f1': {'SImon': {'sithick': {'': 65},
+     'siage': {'': 65},
      'siu': {'': 65},
      'siv': {'': 65},
-     'siconc': {'': 65, 'trim_NWP_': 65},
-     'sispeed': {'': 65, 'trim_NWP_': 65},
+     'siconc': {'': 65},
+     'sispeed': {'': 65},
      'silandfast': {'trim_CAA_': 65},
      'sivol': {'': 65},
      'siconc2': {'trim_CAA_': 65}}}}}}
@@ -466,7 +466,6 @@ for this_variant_label in [
             precise_trim = False,
             siconc_var = 'siconc2',
         )
-        
 ```
 ```console
 	(make_landfast_files) Writing file `/seaicecp_data/bergybits/data/CMIP6/HighResMIP/NERC/HadGEM3-GC31-HM/hist-1950/r1i2p1f1/SImon/silandfast/gn/v20260617/trim_CAA_silandfast_SImon_HadGEM3-GC31-HM_hist-1950_r1i2p1f1_gn_195001-195012.nc`.
@@ -476,30 +475,61 @@ for this_variant_label in [
 	(make_landfast_files) Writing file `/seaicecp_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-HM/hist-1950/r1i3p1f1/SImon/silandfast/gn/v20260617/trim_CAA_silandfast_SImon_HadGEM3-GC31-HM_hist-1950_r1i3p1f1_gn_201401-201412.nc`.
 ```
 
-### Writing all files for HadGEM3-GC31-HH
-[back to top](#identifying-landfast-ice)
-
 ```python
 from arctichoke.path.variable_paths import list_available_variables
 
 list_available_variables(
-    source_id = 'NERC/HadGEM3-GC31-HH',
+    source_id = 'MOHC/HadGEM3-GC31-HM',
     experiment_id = 'hist-1950',
     list_var_mods = True,
 )
 ```
 ```console
-{'NERC/HadGEM3-GC31-HH': {'hist-1950': {
-    'r1i1p1f1': {'SImon': {'sithick': {'': 65,
-      'trim_CAA_': 65},
+{'MOHC/HadGEM3-GC31-HM': {'hist-1950': {'r1i1p1f1': {'Ofx': {'areacello': {'': 1}},
+    'SImon': {'siage': {'': 65},
      'siv': {'': 65},
      'siu': {'': 65},
-     'siconc': {'': 64},
-     'siage': {'': 65, 'trim_CAA_': 65},
+     'siconc': {'': 65},
+     'sithick': {'': 65},
      'sispeed': {'': 65, 'trim_CAA_': 65},
-     'sivol': {'': 65, 'trim_CAA_': 65},
-     'siconc2': {'trim_CAA_': 65}}}}}}
+     'sivol': {'': 65},
+     'siconc2': {'trim_CAA_': 65},
+     'silandfast': {'trim_CAA_': 65}}},
+   'r1i3p1f1': {'SImon': {'siconc': {'': 65},
+     'sithick': {'': 65},
+     'siu': {'': 65},
+     'siage': {'': 65},
+     'siv': {'': 65},
+     'sispeed': {'': 65, 'trim_CAA_': 65},
+     'sivol': {'': 65},
+     'siconc2': {'trim_CAA_': 65},
+     'silandfast': {'trim_CAA_': 65}}}}}}
 ```
+
+```python
+from arctichoke.path.variable_paths import list_available_variables
+
+list_available_variables(
+    source_id = 'NERC/HadGEM3-GC31-HM',
+    experiment_id = 'hist-1950',
+    list_var_mods = True,
+)
+```
+```console
+{'NERC/HadGEM3-GC31-HM': {'hist-1950': {'r1i2p1f1': {'SImon': {'siconc': {'': 65},
+     'siu': {'': 65},
+     'sithick': {'': 65},
+     'siv': {'': 65},
+     'siage': {'': 65},
+     'sispeed': {'': 65, 'trim_CAA_': 65},
+     'sivol': {'': 65},
+     'siconc2': {'trim_CAA_': 65},
+     'silandfast': {'trim_CAA_': 65}}}}}}
+```
+
+### Writing all files for HadGEM3-GC31-HH
+[back to top](#identifying-landfast-ice)
+
 ```python
 from arctichoke.path import list_variable_files
 from arctichoke.analysis.landfast import make_landfast_files
@@ -538,6 +568,29 @@ for this_variant_label in [
     ...
 	(make_landfast_files) Writing file `/seaicecp_data/bergybits/data/CMIP6/HighResMIP/NERC/HadGEM3-GC31-HH/hist-1950/r1i1p1f1/SImon/silandfast/gn/v20260617/trim_CAA_silandfast_SImon_HadGEM3-GC31-HH_hist-1950_r1i1p1f1_gn_201301-201312.nc`.
 	(make_landfast_files) Writing file `/seaicecp_data/bergybits/data/CMIP6/HighResMIP/NERC/HadGEM3-GC31-HH/hist-1950/r1i1p1f1/SImon/silandfast/gn/v20260617/trim_CAA_silandfast_SImon_HadGEM3-GC31-HH_hist-1950_r1i1p1f1_gn_201401-201412.nc`.
+```
+
+```python
+from arctichoke.path.variable_paths import list_available_variables
+
+list_available_variables(
+    source_id = 'NERC/HadGEM3-GC31-HH',
+    experiment_id = 'hist-1950',
+    list_var_mods = True,
+)
+```
+```console
+{'NERC/HadGEM3-GC31-HH': {'hist-1950': {
+    'r1i1p1f1': {'SImon': {
+     'sithick': {'': 65, 'trim_CAA_': 65},
+     'siv': {'': 65},
+     'siu': {'': 65},
+     'siconc': {'': 64, 'trim_CAA_': 3},
+     'siage': {'': 65, 'trim_CAA_': 65},
+     'sispeed': {'': 65, 'trim_CAA_': 65},
+     'sivol': {'': 65, 'trim_CAA_': 65},
+     'siconc2': {'trim_CAA_': 65},
+     'silandfast': {'trim_CAA_': 65}}}}}}
 ```
 
 Now, with all the landfast ice files created, I can move on to {doc}`Calculating trends in landfast ice over time <../docs_analysis/landfast_trends>`.

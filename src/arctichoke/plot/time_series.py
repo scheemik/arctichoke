@@ -1,17 +1,21 @@
-import xarray as xr
-import matplotlib.pyplot as plt
 from datetime import datetime
+import matplotlib.pyplot as plt
+import numpy as np
+import xarray as xr
 
+from arctichoke.dataset import get_epoch_times
 import arctichoke.params as sps
 from arctichoke.verify import verify_path
 
 def plot_time_series(
     dataset: (str, xr.DataArray, xr.Dataset),
     variable_id: str = None,
+    add_regression: bool = False,
     plt_title: str = None,
     xlims: [str, str] = None,
     ylims: [float, float] = None,
     save_as: str = None,
+    verbose: bool = False,
     test: bool = False,
     **kwargs,
 ):
@@ -23,8 +27,11 @@ def plot_time_series(
         ----------
         dataset : `str`, `xarray.DataArray`, `xarray.Dataset`
             The dataset for which to make a plot.
-        variable_id : `str`
+        variable_id : `str`, optional
             The name of the variable ID to plot.
+        add_regression : `bool`, optional
+            Whether to add a linear regression line to the plot.
+            Default is `False`.
         plt_title : `str`, `None`, optional
             The title to use for the plot.
             Default is `None`, which uses a default title for the plot.
@@ -42,6 +49,9 @@ def plot_time_series(
         save_as : `str`, `None`, optional
             The name of the file to which to save the plot.
             Default is `None`, which doesn't save the plot to a file.
+        verbose : `bool`, optional
+            Whether to verbosely output information as the function executes.
+            Default is `False`.
         test : `bool`, optional
             If `True`, the function exists before making a plot for use in testing.
             Default is `False`.
@@ -108,11 +118,14 @@ def plot_time_series(
         raise TypeError(f"(plot_time_series) `save_as` must be a string or `None`. Got type: {type(save_as)}")
     elif isinstance(save_as, str) and not '.png' in save_as:
         raise TypeError(f"(plot_time_series) `save_as` must be a `.png` filepath. Got: {save_as}")
+    if not isinstance(verbose, bool):
+        raise TypeError(f"(plot_time_series) `verbose` must be a `bool`. Got type: {type(verbose)}")
     if not isinstance(test, (type(True))):
         raise TypeError(f"(plot_time_series) `test` must be a `bool`. Got type: {type(test)}")
     
     # Information to output
-    print(f"(plot_time_series) `save_as`: {save_as}")
+    if verbose:
+        print(f"(plot_time_series) `save_as`: {save_as}")
 
     # Get limits for the y-axis
     if isinstance(ylims, type(None)):
@@ -136,6 +149,38 @@ def plot_time_series(
         ylim = ylims,
         **kwargs,
     )
+
+    # Add a linear regression line if specified
+    if add_regression:
+        # Find the appropriate coordinate for the x-axis
+        possible_coords = []
+        for this_coord in dataset.coords:
+            if dataset[this_coord].size > 1:
+                possible_coords.append(this_coord)
+        if len(possible_coords) == 1:
+            x_var = possible_coords[0]
+        else:
+            raise ValueError(f"(plot_time_series) `dataset` must only have one coordinate with a size larger than 1.\nFound the following possible coordinates: {possible_coords}")
+        if x_var == 'time':
+            x_vals = np.array(get_epoch_times(
+                dataset,
+                x_var,
+                verbose=verbose,
+            ))
+        else:
+            x_vals = dataset[x_var].values
+        # Take the regression
+        regressions = np.polyfit(x_vals, np.array(dataset.values), 1)
+        reg_m = regressions[0]
+        reg_b = regressions[1]
+        if verbose:
+            print(f"(plot_time_series) Slope of regression line: {reg_m}")
+        # Format the label
+        reg_label = f"{str(reg_m)[:6]}x+{str(reg_b)[:6]}"
+        # Plot the regression line
+        plt.plot(dataset[x_var].values, x_vals * reg_m + reg_b, label=reg_label)
+        plt.legend()
+
     # Modify the plot
     plt.title(plt_title)
 

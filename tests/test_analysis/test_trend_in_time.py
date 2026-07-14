@@ -43,6 +43,7 @@ def test_trend_in_time():
             'var': 'test_var',
             'time_dim': 'time',
             'mask_where_zero_across_time': True,
+            'use_xarray_polyfit': True,
             'save_as': None,
             'atol': 1e-12,
             'expected_trends': [0, np.nan],
@@ -56,6 +57,7 @@ def test_trend_in_time():
             'var': 'test_var',
             'time_dim': 'time',
             'mask_where_zero_across_time': False,
+            'use_xarray_polyfit': True,
             'save_as': f"{test_file_dir}/example_new_0.nc",
             'atol': 1e-12,
             'expected_trends': [0],
@@ -65,6 +67,7 @@ def test_trend_in_time():
             'var': 'test_var',
             'time_dim': 'time',
             'mask_where_zero_across_time': True,
+            'use_xarray_polyfit': True,
             'save_as': None,
             'atol': 1e-4,
             'expected_trends': [1.49368],
@@ -74,6 +77,7 @@ def test_trend_in_time():
             'var': 'test_var',
             'time_dim': 'time',
             'mask_where_zero_across_time': True,
+            'use_xarray_polyfit': True,
             'atol': 1e-4,
             'save_as': f"{test_file_dir}/example_new_1.nc",
             'expected_trends': [1.49368],
@@ -83,6 +87,17 @@ def test_trend_in_time():
             'var': 'test_var',
             'time_dim': 'time',
             'mask_where_zero_across_time': True,
+            'use_xarray_polyfit': True,
+            'atol': 1e-4,
+            'save_as': None,
+            'expected_trends': [1.49368, 0.990164, 0, np.nan],
+        },
+        {
+            'dataset': test_nan_dataset,
+            'var': 'test_var',
+            'time_dim': 'time',
+            'mask_where_zero_across_time': True,
+            'use_xarray_polyfit': False,
             'atol': 1e-4,
             'save_as': None,
             'expected_trends': [1.49368, np.nan],
@@ -94,6 +109,7 @@ def test_trend_in_time():
             var = test_case['var'],
             time_dim = test_case['time_dim'],
             mask_where_zero_across_time = test_case['mask_where_zero_across_time'],
+            use_xarray_polyfit = test_case['use_xarray_polyfit'],
             save_as = test_case['save_as'],
         )
         # Check the trends present on the time axis
@@ -156,6 +172,7 @@ def test_trend_in_time():
             actual = analysis.trend_in_time(
                 dataset = invalid_string,
                 var = 'test_var',
+                time_dim = 'time',
             )
         except (TypeError, ValueError) as e:
             assert True, f"`trend_in_time` raised an exception on invalid `dataset`: {e}"
@@ -167,6 +184,7 @@ def test_trend_in_time():
                 actual = analysis.trend_in_time(
                     dataset = test_file_names,
                     var = invalid_string,
+                    time_dim = 'time',
                 )
             except (TypeError) as e:
                 assert True, f"`trend_in_time` raised an exception on invalid `var`: {e}"
@@ -188,18 +206,32 @@ def test_trend_in_time():
             actual = analysis.trend_in_time(
                 dataset = test_file_names,
                 var = 'test_var',
+                time_dim = 'time',
                 mask_where_zero_across_time = invalid_string,
             )
         except (TypeError) as e:
             assert True, f"`trend_in_time` raised an exception on invalid `mask_where_zero_across_time`: {e}"
         else:
             assert False, f"`trend_in_time` did not raise an exception on invalid `mask_where_zero_across_time` {invalid_string}"
+        # Test with `use_xarray_polyfit`
+        try:
+            actual = analysis.trend_in_time(
+                dataset = test_file_names,
+                var = 'test_var',
+                time_dim = 'time',
+                use_xarray_polyfit = invalid_string,
+            )
+        except (TypeError) as e:
+            assert True, f"`trend_in_time` raised an exception on invalid `use_xarray_polyfit`: {e}"
+        else:
+            assert False, f"`trend_in_time` did not raise an exception on invalid `use_xarray_polyfit` {invalid_string}"
         # Test with `save_as`
         if not isinstance(invalid_string, type(None)):
             try:
                 actual = analysis.trend_in_time(
                     dataset = test_file_names,
                     var = 'test_var',
+                    time_dim = 'time',
                     save_as = invalid_string,
                 )
             except (TypeError) as e:
@@ -211,6 +243,7 @@ def test_trend_in_time():
             actual = analysis.trend_in_time(
                 dataset = test_file_names,
                 var = 'test_var',
+                time_dim = 'time',
                 verbose = invalid_string,
             )
         except (TypeError) as e:

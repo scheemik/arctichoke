@@ -1,7 +1,7 @@
 # Calculating `siconc` from `sithick` and `sivol` 
 
 Below, I describe how I calculated sea ice concentration (`siconc`) from sea ice thickness (`sithick`) and sea ice volume (`sivol`) for the `EC-Earth3P-HR` and `HadGEM3-GC31` models.
-For details on how the data for those models was downloaded, see the {doc}`Downloading model data with `esgpull` <../docs_data/esgpull_downloads>` guide. 
+For details on how the data for those models were downloaded, see the {doc}`Downloading model data with 'esgpull' <../docs_data/esgpull_downloads>` guide. 
 For details on how to prepare the data for the `HadGEM3-GC31-HH` model, see {doc}`Trimming data to the CAA region <../docs_data/trim_to_CAA_region>`.
 
 ## Contents
@@ -248,6 +248,20 @@ EC_Earth3P_HR_hist_siconc_diff_2000_trim_map
 
 There are a couple areas where the differences are fairly large, however these areas are generally not within the CAA.
 I can limit the colorbar to the range [-1, 1] to show more detail around differences close to zero.
+```python
+EC_Earth3P_HR_hist_siconc2_2000_xr_trim['siconc_diff'] = EC_Earth3P_HR_hist_siconc_2000_xr_trim['siconc'] - EC_Earth3P_HR_hist_siconc2_2000_xr_trim['siconc2']
+
+from arctichoke.plot.hvplots import quadmesh_map
+
+EC_Earth3P_HR_hist_siconc_diff_2000_trim_map = quadmesh_map(
+    EC_Earth3P_HR_hist_siconc2_2000_xr_trim.isel(time=3),
+    'siconc_diff',
+    map_projection = 'Orthographic',
+    diverging_cbar = True,
+    clims = [-1, 1],
+)
+EC_Earth3P_HR_hist_siconc_diff_2000_trim_map
+```
 ![EC-Earth3P-HR_hist_r1i1p2f1_2000-04_siconc_vs_siconc2_diff_map_cbar_limited.png](siconc2_calculations-img/EC-Earth3P-HR_hist_r1i1p2f1_2000-04_siconc_vs_siconc2_diff_map_cbar_limited.png)
 
 Below, I calculate the number of grid cells that differ by more than 0.1 percent between my recalculation (`siconc2`) and the original `siconc`.
@@ -351,6 +365,7 @@ sivol_list
  '/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/sivol/gn/v20181212/sivol_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_201301-201312.nc',
  '/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/sivol/gn/v20181212/sivol_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_201401-201412.nc']
 ```
+
 Then, I'll go through a loop across all three variants and calculate the `siconc2` files.
 ```python
 from arctichoke.path import list_variable_files
@@ -437,7 +452,7 @@ list_available_variables(
      'siage': {'': 65},
      'siv': {'': 65},
      'sispeed': {'': 65},
-     'sivol': {'': 62}}}
+     'sivol': {'': 65}}}
 }}}
 ```
 
@@ -699,6 +714,26 @@ for this_variant_label in [
 [back to top](#calculating-siconc-from-sithick-and-sivol)
 
 The `HadGEM3-GC31-HH` model has `siconc` on the irregular grid by default, however I have been unable to figure out how to actually open those data files and work with them. 
+I suspect it might have something to do with the unnecessary and unused coordinate `type` that is only in `siconc` data files for `HadGEM3-GC31-HH` but not any other variables or models.
+It has the attributes:
+- `long_name: Sea Ice area type`
+- `standard_name: area_type`
+```python
+import xarray as xr 
+
+HadGEM3_GC31_HH_hist_1950_siconc_xr = xr.open_dataset('/arctichoke_data/bergybits/data/CMIP6/HighResMIP/NERC/HadGEM3-GC31-HH/hist-1950/r1i1p1f1/SImon/siconc/gn/v20210416/siconc_SImon_HadGEM3-GC31-HH_hist-1950_r1i1p1f1_gn_195201-195212.nc')
+HadGEM3_GC31_HH_hist_1950_siconc_xr.coords
+```
+```console
+Coordinates:
+  * time       (time) object 96B 1952-01-16 00:00:00 ... 1952-12-16 00:00:00
+  * j          (j) int32 14kB 0 1 2 3 4 5 6 ... 3598 3599 3600 3601 3602 3603
+  * i          (i) int32 17kB 0 1 2 3 4 5 6 ... 4314 4315 4316 4317 4318 4319
+    latitude   (j, i) float64 125MB ...
+    longitude  (j, i) float64 125MB ...
+    type       |S7 7B ...
+```
+
 Below, I use the code I developed above to calculate `siconc2` from `sithick` and `sivol` for the year 2000 of the `HadGEM3-GC31-HH` model.
 
 First, I'll list what variables are currently available for this model.
@@ -718,7 +753,7 @@ list_available_variables(
      'sithick': {'': 65},
      'siv': {'': 65},
      'siu': {'': 65},
-     'siconc': {'': 64, 'trim_CAA_': 3},
+     'siconc': {'': 64},
      'siage': {'': 65},
      'sispeed': {'': 65, 'trim_CAA_': 65},
      'sivol': {'': 65}}}
@@ -742,6 +777,44 @@ HadGEM3_GC31_HH_hist_siconc_2000_xr_trim = trim_latlon(
 
 HadGEM3_GC31_HH_hist_siconc_2000_xr_trim
 ```
+```console
+(trim_latlon) `save_as`: HadGEM3_GC31_HH_hist_siconc_2000_xr_trim.nc
+(trim_latlon) `lon_type`: PM_centered
+(trim_latlon) `this_bbox`: 230,345,65,85
+(trim_latlon) Using `cdo` directly, `cdo_command`: cdo -O -s -f nc -sellonlatbox,230,345,65,85 /seaicecp_data/bergybits/data/CMIP6/HighResMIP/NERC/HadGEM3-GC31-HH/hist-1950/r1i1p1f1/SImon/siconc/gn/v20210416/siconc_SImon_HadGEM3-GC31-HH_hist-1950_r1i1p1f1_gn_200001-200012.nc ./cdo_tmp/tmp_sellonlatbox_file.nc
+cdi  warning (cdf_set_dimtype): Could not assign all character coordinates to data variable!
+
+cdo    sellonlatbox (Abort): Latitudinal dimension is too small!
+
+---------------------------------------------------------------------------
+FileNotFoundError                         Traceback (most recent call last)
+Cell In[2], line 6
+      2 
+      3 from seaicecp.dataset.trim_dataset import trim_latlon
+      4 from seaicecp.params import CAA_BBOX
+      5 
+----> 6 HadGEM3_GC31_HH_hist_siconc_2000_xr_trim = trim_latlon(
+      7     HadGEM3_GC31_HH_hist_siconc_2000,
+      8     save_as = 'HadGEM3_GC31_HH_hist_siconc_2000_xr_trim.nc',
+      9     map_bbox = CAA_BBOX,
+
+File /workspace/src/seaicecp/dataset/trim_dataset.py:128, in trim_latlon(dataset, map_bbox, precise_trim, save_as, verbose)
+    126     subprocess.run(cdo_command, shell=True)
+    127     # Load that file in as an xarray
+--> 128     tmp_save_file = verify_path(tmp_save_file)
+    129     xr_data_trimmed = xr.open_dataset(tmp_save_file)
+    131 # Get the list of data variables
+
+File /workspace/src/seaicecp/verify/verify_path.py:43, in verify_path(path)
+     41 path1 = '../' + path
+     42 if not os.path.exists(path1):
+---> 43     raise FileNotFoundError(f"(verify_path) The path {path} does not exist.")
+     44 else:
+     45     return path1
+
+FileNotFoundError: (verify_path) The path ./cdo_tmp/tmp_sellonlatbox_file.nc does not exist.
+```
+
 As mentioned above, I can't seem to work with the `HadGEM3-GC31-HH` data for the `siconc` variable.
 ```python
 HadGEM3_GC31_HH_hist_sithick_2000 = '/arctichoke_data/bergybits/data/CMIP6/HighResMIP/NERC/HadGEM3-GC31-HH/hist-1950/r1i1p1f1/SImon/sithick/gn/v20210416/sithick_SImon_HadGEM3-GC31-HH_hist-1950_r1i1p1f1_gn_200001-200012.nc'

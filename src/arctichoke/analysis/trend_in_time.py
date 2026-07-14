@@ -2,8 +2,7 @@ import numpy as np
 import xarray as xr
 
 from arctichoke import get_current_datetime_str
-from arctichoke.dataset.get_variable import get_variable_name
-from arctichoke.dataset.get_min_max import get_min_max
+from arctichoke.dataset import get_variable_name, get_min_max, get_epoch_times, get_date_type
 import arctichoke.params as sps
 from arctichoke.verify import verify_path
 
@@ -12,6 +11,7 @@ def trend_in_time(
     var: str = None,
     time_dim: str = 'year',
     mask_where_zero_across_time: bool = False,
+    use_xarray_polyfit: bool = True,
     save_as: str = None,
     verbose: bool = False,
     **kwargs,
@@ -35,6 +35,10 @@ def trend_in_time(
         mask_where_zero_across_time : `bool`, optional
             Whether to mask out grid cells which have zero as a value across the entire time dimension using `mask_where_all_zero()`.
             Default is `False`. 
+        use_xarray_polyfit : `bool`, optional
+            If `True`, use `xarray.polyfit()` to take trends in time, which skips `nan` values. 
+            If `False`, use `numpy.polyfit()` to take trends in time, which has `nan` values invalidate an index of the array across all time.
+            Default is `True`.
         save_as : `str`, `None`, optional
             The file name to which to save the modified dataset.
             Default is `None`, which doesn't save the dataset to a file.
@@ -76,23 +80,18 @@ def trend_in_time(
         array([[[ 0.,  1.,  2.],
                 [ 3.,  4.,  5.],
                 [ 6.,  7.,  8.]],
-
                [[ 0.,  1.,  2.],
                 [ 3.,  4.,  5.],
                 [ 6.,  7.,  8.]],
-
                [[ 1.,  2.,  3.],
                 [ 4.,  5.,  6.],
                 [ 7.,  8.,  9.]],
-
                [[ 1.,  2.,  3.],
                 [ 4.,  5.,  6.],
                 [ 7.,  8.,  9.]],
-
                [[ 3.,  4.,  5.],
                 [ 6.,  7.,  8.],
                 [ 9., 10., 11.]],
-
                [[ 3.,  4.,  5.],
                 [ 6.,  7.,  8.],
                 [ 9., 10., 11.]]])
@@ -135,6 +134,8 @@ def trend_in_time(
         raise TypeError(f"(trend_in_time) `time_dim` must be a string. Got type: {type(time_dim)}")
     if not isinstance(mask_where_zero_across_time, bool):
         raise TypeError(f"(trend_in_time) `mask_where_zero_across_time` must be a `bool`. Got type: {type(mask_where_zero_across_time)}")
+    if not isinstance(use_xarray_polyfit, bool):
+        raise TypeError(f"(trend_in_time) `use_xarray_polyfit` must be a `bool`. Got type: {type(use_xarray_polyfit)}")
     if not isinstance(save_as, (str, type(None))):
         raise TypeError(f"(trend_in_time) `save_as` must be a string or `None`. Got type: {type(save_as)}")
     elif isinstance(save_as, str) and not '.nc' in save_as:
@@ -159,52 +160,105 @@ def trend_in_time(
             verbose,
         )
 
-    # Get the time axis values
-    time_axis_vals = dataset[time_dim].values
+    # Set the appropriate correction factor for the type of time axis
     if time_dim == 'time':
-        # Define an epoch as January 1st, 1970
-        epoch = np.datetime64('1970-01-01T00:00:00')
-        # Convert datetimes to seconds from the epoch, then divide to get units of years
-        time_axis_epoch_y = [((x - epoch) / np.timedelta64(1, 's')) / (60 * 60 * 24 * 365) for x in time_axis_vals]
+        # Determine the data type of the `time` dimension
+        date_dtype = get_date_type(dataset)
+        # Check whether the data type is `np.datetime64[ns]`
+        if date_dtype == 'datetime64[ns]':
+            # Calculate the correction factor to convert nanoseconds to years
+            correction_factor = 60 * 60 * 24 * 365 * 1e9
+        elif date_dtype == 'cftime.Datetime360Day':
+            # Calculate the correction factor to convert seconds to years
+            correction_factor = 60 * 60 * 24 * 365
+        else:
+            raise TypeError(f"(trend_in_time) Correction factor not yet set for time dimension type: {date_dtype}")
+        if verbose:
+            print(f"(trend_in_time) `dataset` has date type: {date_dtype}")
     elif time_dim == 'year':
-        time_axis_epoch_y = time_axis_vals
+        correction_factor = 1
     else:
-        raise ValueError(f"(trend_in_time) `time_dim` must be `time` or `year`. Got: {time_dim}")
+        raise TypeError(f"(trend_in_time) Correction factor not yet set for `time_dim`: {time_dim}")
 
     if isinstance(dataset, xr.Dataset):
-        # Get a numpy array of the values for the given variable
-        vals = dataset[var].values
+        # Get the DataArray for the specified variable
+        tmp_pointer = dataset[var]
     else:
-        # Get a numpy array of the values for the given variable
-        vals = dataset.values
-    # Create a new dataset with just the first time slice
-    trends_dataset = dataset.isel({time_dim:0}, drop=True)
-    # Reshape to an array with as many rows as years and as many columns as there are pixels
-    vals2 = vals.reshape(len(time_axis_epoch_y), -1)
-    # Do a first-degree polyfit
-    regressions = np.polyfit(time_axis_epoch_y, vals2, 1)
-    # Get the coefficients back
-    trends = regressions[0,:].reshape(vals.shape[1], vals.shape[2])
+        tmp_pointer = dataset
+    # Store the variable attributes to put back later
+    var_attrs = tmp_pointer.attrs
+    
+    # Get the trends in time
+    if use_xarray_polyfit:
+        ## Note: When using `polyfit()`, a dimenson `degree` gets added
+        ## The index 0 of `degree` corresponds to the slope when using a 1st-order fit
+        trends = (tmp_pointer.polyfit(time_dim, 1, skipna=True).isel(degree=0, drop=True) * correction_factor)['polyfit_coefficients']
+    else:
+        # Get the time axis values
+        time_axis_epoch_y = get_epoch_times(
+            dataset,
+            time_dim,
+        )
+        if verbose:
+            print(f"(trend_in_time) Getting a numpy array of the values for the given variable")
+        if isinstance(dataset, xr.Dataset):
+            # Get a numpy array of the values for the given variable
+            vals = dataset[var].values
+        else:
+            # Get a numpy array of the values for the given variable
+            vals = dataset.values
+        if verbose:
+            print(f"(trend_in_time) Create a new dataset with just the first time slice")
+        if verbose:
+            print(f"(trend_in_time) Reshaping array")
+        # Reshape to an array with as many rows as years and as many columns as there are pixels
+        vals2 = vals.reshape(len(time_axis_epoch_y), -1)
+        if verbose:
+            print(f"(trend_in_time) Do a first-degree polyfit")
+        # Do a first-degree polyfit
+        regressions = np.polyfit(time_axis_epoch_y, vals2, 1)
+        if verbose:
+            print(f"(trend_in_time) Get the coefficients")
+        # Get the coefficients back
+        trends = regressions[0,:].reshape(vals.shape[1], vals.shape[2])
+    
+    # Set `dataset` to be just the first time slice
+    dataset = dataset.isel({time_dim:0}, drop=True)
+
     if isinstance(dataset, xr.Dataset):
         # Rename the variable, giving it the suffix `_trends`
-        trends_dataset = trends_dataset.rename_vars({var: f'{var}_trends'})
-        # Put the trends data into the dataset
-        trends_dataset[f'{var}_trends'].values = trends
-        # Get the reference to this variable
-        xr_var_to_add_attrs = trends_dataset[f'{var}_trends']
+        dataset = dataset.rename_vars({var: f'{var}_trends'})
+        # Put the trends into the original dataset
+        if use_xarray_polyfit:
+            dataset[f'{var}_trends'] = trends
+        else:
+            dataset[f'{var}_trends'].values = trends
+        # Restore the variable attributes
+        dataset[f'{var}_trends'].attrs = var_attrs
         # Add this operation to the history
-        if 'history' in trends_dataset.attrs.keys():
-            original_history = trends_dataset.attrs['history']
+        if 'history' in dataset.attrs.keys():
+            original_history = dataset.attrs['history']
         else:
             original_history = ''
-        trends_dataset.attrs['history'] = f"{get_current_datetime_str()} altered by `arctichoke`: Calculated the sum of the `{var}` values per year in `{var}_trends`. {original_history}"
-    else:
-        trends_dataset.values = trends
-        # Get the name of the variable in the dataset
-        var = trends_dataset.name
+        dataset.attrs['history'] = f"{get_current_datetime_str()} altered by `arctichoke`: Calculated trends across `{time_dim}` of `{var}` values to get `{var}_trends`. {original_history}"
         # Get the reference to this variable
-        xr_var_to_add_attrs = trends_dataset
-
+        xr_var_to_add_attrs = dataset[f'{var}_trends']
+    else:
+        # Rename the variable, giving it the suffix `_trends`
+        var = dataset.name
+        dataset.name = f"{var}_trends"
+        # Put the trends into the original dataset
+        if use_xarray_polyfit:
+            dataset = trends
+        else:
+            dataset.values = trends
+        # Restore the variable attributes
+        dataset.attrs = var_attrs
+        # Get the reference to this variable
+        xr_var_to_add_attrs = dataset
+        
+    if verbose:
+        print(f"(trend_in_time) Modifing dataset attributes")
     # Modify the attributes of the dataset to reflect the changes
     xr_var_to_add_attrs.attrs['standard_name'] = f'{var}_trends'
     if 'long_name' in xr_var_to_add_attrs.attrs.keys():
@@ -224,14 +278,14 @@ def trend_in_time(
         original_history = xr_var_to_add_attrs.attrs['history']
     else:
         original_history = ''
-    xr_var_to_add_attrs.attrs['history'] = f"{get_current_datetime_str()} altered by `arctichoke`: Calculated the sum of the `{var}` values to get `{var}_trends`. {original_history}"
+    xr_var_to_add_attrs.attrs['history'] = f"{get_current_datetime_str()} altered by `arctichoke`: Calculated trends across `{time_dim}` of `{var}` values to get `{var}_trends`. {original_history}"
 
     # Save the modified dataset, if applicable
     if not isinstance(save_as, type(None)):
         # Save the plot to file
-        trends_dataset.to_netcdf(save_as)
+        dataset.to_netcdf(save_as)
     
-    return trends_dataset
+    return dataset
 
 def mask_where_all_zero(
     dataset: (str, [str], xr.Dataset, xr.DataArray),
@@ -352,6 +406,8 @@ def mask_where_all_zero(
         # Point to the whole data array
         data_to_replace = dataset
 
+    if verbose:
+        print(f"(mask_where_all_zero) Masking cells which have zeros across all time.")
     # Replace values in grid cells that have zeros for all time with `np.nan`
     dataset_w_nan = dataset.where(
         lambda val:
