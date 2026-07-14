@@ -714,6 +714,26 @@ for this_variant_label in [
 [back to top](#calculating-siconc-from-sithick-and-sivol)
 
 The `HadGEM3-GC31-HH` model has `siconc` on the irregular grid by default, however I have been unable to figure out how to actually open those data files and work with them. 
+I suspect it might have something to do with the unnecessary and unused coordinate `type` that is only in `siconc` data files for `HadGEM3-GC31-HH` but not any other variables or models.
+It has the attributes:
+- `long_name: Sea Ice area type`
+- `standard_name: area_type`
+```python
+import xarray as xr 
+
+HadGEM3_GC31_HH_hist_1950_siconc_xr = xr.open_dataset('/arctichoke_data/bergybits/data/CMIP6/HighResMIP/NERC/HadGEM3-GC31-HH/hist-1950/r1i1p1f1/SImon/siconc/gn/v20210416/siconc_SImon_HadGEM3-GC31-HH_hist-1950_r1i1p1f1_gn_195201-195212.nc')
+HadGEM3_GC31_HH_hist_1950_siconc_xr.coords
+```
+```console
+Coordinates:
+  * time       (time) object 96B 1952-01-16 00:00:00 ... 1952-12-16 00:00:00
+  * j          (j) int32 14kB 0 1 2 3 4 5 6 ... 3598 3599 3600 3601 3602 3603
+  * i          (i) int32 17kB 0 1 2 3 4 5 6 ... 4314 4315 4316 4317 4318 4319
+    latitude   (j, i) float64 125MB ...
+    longitude  (j, i) float64 125MB ...
+    type       |S7 7B ...
+```
+
 Below, I use the code I developed above to calculate `siconc2` from `sithick` and `sivol` for the year 2000 of the `HadGEM3-GC31-HH` model.
 
 First, I'll list what variables are currently available for this model.
