@@ -1,7 +1,7 @@
 # Trim data to the CAA region
 
 Below, I describe how I sea ice variable files to cover just the Canadian Arctic Archipelago region for the `EC-Earth3P-HR` and `HadGEM3-GC31` models.
-This assumes you have already gone through {doc}`Calculating 'siconc' from 'sithick' and 'sivol'  <../docs_data/siconc_from_sithick_and_sivol>`.
+For details on how the data for those models were downloaded, see the {doc}`Downloading model data with 'esgpull' <../docs_data/esgpull_downloads>` guide. 
 
 ## Contents
 
