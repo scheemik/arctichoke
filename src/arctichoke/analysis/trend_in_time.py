@@ -50,7 +50,7 @@ def trend_in_time(
 
         Returns
         -------
-        trends_dataset : `xarray.Dataset` or `xarray.DataArray`
+        dataset : `xarray.Dataset`
             A dataset with the trends in time for the specified variable.
         
         Examples
@@ -146,6 +146,11 @@ def trend_in_time(
         actual_vars = get_variable_name(dataset)
         if var not in actual_vars:
             raise ValueError(f"(trend_in_time) `dataset` must have the specified `var` {var}. Available variables: {actual_vars}")
+    else:
+        # Get the name of the variable
+        var = dataset.name
+        # Convert `dataset` from `xr.DataArray` to `xr.Dataset`
+        dataset = dataset.to_dataset()
     
     # Information to output
     if verbose:
@@ -180,19 +185,15 @@ def trend_in_time(
     else:
         raise TypeError(f"(trend_in_time) Correction factor not yet set for `time_dim`: {time_dim}")
 
-    if isinstance(dataset, xr.Dataset):
-        # Get the DataArray for the specified variable
-        tmp_pointer = dataset[var]
-    else:
-        tmp_pointer = dataset
     # Store the variable attributes to put back later
-    var_attrs = tmp_pointer.attrs
+    var_attrs = dataset[var].attrs
     
     # Get the trends in time
     if use_xarray_polyfit:
         ## Note: When using `polyfit()`, a dimenson `degree` gets added
         ## The index 0 of `degree` corresponds to the slope when using a 1st-order fit
-        trends = (tmp_pointer.polyfit(time_dim, 1, skipna=True).isel(degree=0, drop=True) * correction_factor)['polyfit_coefficients']
+        polyfit = (dataset[var].polyfit(time_dim, 1, skipna=True, full=True).isel(degree=0, drop=True) * correction_factor)
+        trends = polyfit['polyfit_coefficients']
     else:
         # Get the time axis values
         time_axis_epoch_y = get_epoch_times(
@@ -201,14 +202,8 @@ def trend_in_time(
         )
         if verbose:
             print(f"(trend_in_time) Getting a numpy array of the values for the given variable")
-        if isinstance(dataset, xr.Dataset):
-            # Get a numpy array of the values for the given variable
-            vals = dataset[var].values
-        else:
-            # Get a numpy array of the values for the given variable
-            vals = dataset.values
-        if verbose:
-            print(f"(trend_in_time) Create a new dataset with just the first time slice")
+        # Get a numpy array of the values for the given variable
+        vals = dataset[var].values
         if verbose:
             print(f"(trend_in_time) Reshaping array")
         # Reshape to an array with as many rows as years and as many columns as there are pixels
@@ -216,46 +211,31 @@ def trend_in_time(
         if verbose:
             print(f"(trend_in_time) Do a first-degree polyfit")
         # Do a first-degree polyfit
-        regressions = np.polyfit(time_axis_epoch_y, vals2, 1)
+        polyfit = np.polyfit(time_axis_epoch_y, vals2, 1)
         if verbose:
             print(f"(trend_in_time) Get the coefficients")
-        # Get the coefficients back
-        trends = regressions[0,:].reshape(vals.shape[1], vals.shape[2])
+        trends = polyfit[0,:].reshape(vals.shape[1], vals.shape[2])
     
     # Set `dataset` to be just the first time slice
     dataset = dataset.isel({time_dim:0}, drop=True)
 
-    if isinstance(dataset, xr.Dataset):
-        # Rename the variable, giving it the suffix `_trends`
-        dataset = dataset.rename_vars({var: f'{var}_trends'})
-        # Put the trends into the original dataset
-        if use_xarray_polyfit:
-            dataset[f'{var}_trends'] = trends
-        else:
-            dataset[f'{var}_trends'].values = trends
-        # Restore the variable attributes
-        dataset[f'{var}_trends'].attrs = var_attrs
-        # Add this operation to the history
-        if 'history' in dataset.attrs.keys():
-            original_history = dataset.attrs['history']
-        else:
-            original_history = ''
-        dataset.attrs['history'] = f"{get_current_datetime_str()} altered by `arctichoke`: Calculated trends across `{time_dim}` of `{var}` values to get `{var}_trends`. {original_history}"
-        # Get the reference to this variable
-        xr_var_to_add_attrs = dataset[f'{var}_trends']
+    # Rename the variable, giving it the suffix `_trends`
+    dataset = dataset.rename_vars({var: f'{var}_trends'})
+    # Put the trends into the original dataset
+    if use_xarray_polyfit:
+        dataset[f'{var}_trends'] = trends
     else:
-        # Rename the variable, giving it the suffix `_trends`
-        var = dataset.name
-        dataset.name = f"{var}_trends"
-        # Put the trends into the original dataset
-        if use_xarray_polyfit:
-            dataset = trends
-        else:
-            dataset.values = trends
-        # Restore the variable attributes
-        dataset.attrs = var_attrs
-        # Get the reference to this variable
-        xr_var_to_add_attrs = dataset
+        dataset[f'{var}_trends'].values = trends
+    # Restore the variable attributes
+    dataset[f'{var}_trends'].attrs = var_attrs
+    # Add this operation to the history
+    if 'history' in dataset.attrs.keys():
+        original_history = dataset.attrs['history']
+    else:
+        original_history = ''
+    dataset.attrs['history'] = f"{get_current_datetime_str()} altered by `arctichoke`: Calculated trends across `{time_dim}` of `{var}` values to get `{var}_trends`. {original_history}"
+    # Get the reference to this variable
+    xr_var_to_add_attrs = dataset[f'{var}_trends']
         
     if verbose:
         print(f"(trend_in_time) Modifing dataset attributes")
