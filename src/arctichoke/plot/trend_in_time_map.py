@@ -60,25 +60,26 @@ def make_trend_map(
         verbose = verbose,
     )
     # Open those files into a multi-file dataset
-    xr_ds = xr.open_mfdataset(
+    dataset = xr.open_mfdataset(
         filelist,
         data_vars = 'all'
     )
     # Sum the data across time
-    sum_year_xr = sum_by_year(
-        xr_ds,
+    ## Overwrite the `dataset` variable to reduce memory overhead
+    dataset = sum_by_year(
+        dataset,
         verbose = verbose,
     )
     # Take the trend across time
-    sum_year_trend_xr = trend_in_time(
-        dataset = sum_year_xr,
+    dataset = trend_in_time(
+        dataset = dataset,
         var = f'{this_var}_year_sum',
         mask_where_zero_across_time = mask_where_zero_across_time,
         verbose = verbose,
     )
     # Plot the trends on a map
     sum_year_trend_map = quadmesh_map(
-        sum_year_trend_xr,
+        dataset,
         f'{this_var}_year_sum_trends',
         map_projection = map_projection,
         diverging_cbar = True,
