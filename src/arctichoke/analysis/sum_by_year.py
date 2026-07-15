@@ -10,6 +10,7 @@ def sum_by_year(
     dataset: (str, [str], xr.DataArray, xr.Dataset),
     attr_long_name: str = None,
     attr_units: str = None,
+    drop_bnds: bool = False,
     save_as: str = None,
     verbose: bool = False,
     **kwargs,
@@ -29,6 +30,9 @@ def sum_by_year(
         attr_units : `str`, `None`, optional
             The units of the variable for which to put in the `units` attribute.
             Default is `None`, which uses the original `units` plus `'_per_year'`.
+        drop_bnds : `bool`, optional
+            Whether to drop all meta variables that contain `bnds` such as `latitude_bnds`.
+            Default is `False`.
         save_as : `str`, `None`, optional
             The file name to which to save the modified dataset.
             Default is `None`, which doesn't save the dataset to a file.
@@ -88,6 +92,8 @@ def sum_by_year(
         raise TypeError(f"(sum_by_year) `attr_long_name` must be a string or `None`. Got type: {type(attr_long_name)}")
     if not isinstance(attr_units, (str, type(None))):
         raise TypeError(f"(sum_by_year) `attr_units` must be a string or `None`. Got type: {type(attr_units)}")
+    if not isinstance(drop_bnds, bool):
+        raise TypeError(f"(sum_by_year) `drop_bnds` must be a `bool`. Got type: {type(drop_bnds)}")
     if not isinstance(save_as, (str, type(None))):
         raise TypeError(f"(sum_by_year) `save_as` must be a string or `None`. Got type: {type(save_as)}")
     elif isinstance(save_as, str) and not '.nc' in save_as:
@@ -105,7 +111,7 @@ def sum_by_year(
 
         # Remove meta variables having to do with time
         for meta_var in sps.meta_vars:
-            if 'time' in meta_var:
+            if 'time' in meta_var or (drop_bnds and 'bnds' in meta_var):
                 if meta_var in data_var_list:
                     if verbose:
                         print(f"(sum_by_year) Removing `meta_var`: {meta_var}")
