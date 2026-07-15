@@ -192,7 +192,10 @@ def trend_in_time(
     if use_xarray_polyfit:
         ## Note: When using `polyfit()`, a dimenson `degree` gets added
         ## The index 0 of `degree` corresponds to the slope when using a 1st-order fit
+        if verbose:
+            print(f"(trend_in_time) Getting a first-degree polyfit")
         polyfit = (dataset[var].polyfit(time_dim, 1, skipna=True, full=True).isel(degree=0, drop=True) * correction_factor)
+        if verbose:
         trends = polyfit['polyfit_coefficients']
     else:
         # Get the time axis values
@@ -209,7 +212,7 @@ def trend_in_time(
         # Reshape to an array with as many rows as years and as many columns as there are pixels
         vals2 = vals.reshape(len(time_axis_epoch_y), -1)
         if verbose:
-            print(f"(trend_in_time) Do a first-degree polyfit")
+            print(f"(trend_in_time) Getting a first-degree polyfit")
         # Do a first-degree polyfit
         polyfit = np.polyfit(time_axis_epoch_y, vals2, 1)
         if verbose:
