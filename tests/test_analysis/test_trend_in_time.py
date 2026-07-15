@@ -25,6 +25,49 @@ def test_trend_in_time():
             time_axis=(2000+i),
             save_as=test_file_names[i],
         )
+    # Create test case with many different trends
+    if True:
+        n = 3
+        offset = 0
+        test_var_name = 'test_var'
+        # Initialize the dataset
+        test_many_trends = xr.Dataset()
+        # Add dimensions
+        j_arr = np.arange(n, dtype=np.float64)
+        test_many_trends['j'] = ('j',j_arr)
+        i_arr = np.arange(n+1,2*n+1, dtype=np.float64)
+        test_many_trends['i'] = ('i',i_arr)
+        this_year = 2026
+        time_arr = np.arange(f'{this_year}-01', f'{this_year+3}-01', dtype='datetime64[Y]')
+        time_arr = [2026, 2027, 2028]
+        test_many_trends['year'] = ('year',time_arr)
+        len_t = len(time_arr)
+
+        # Assign longitude and latitude coordinates
+        lon_arr = np.reshape([np.arange(2*n+1,3*n+1, dtype=np.float64)]*n, (n,n))
+        lat_arr = np.reshape([np.arange(3*n+1,4*n+1, dtype=np.float64)]*n, (n,n)).T
+        test_many_trends = test_many_trends.assign_coords(
+            {
+                'longitude': (['j','i'], lon_arr),
+                'latitude': (['j','i'], lat_arr),
+            }
+        )
+
+        # Add a test variable
+        test_var = np.reshape(np.arange(offset, n*n+offset, dtype=np.float64), (n,n))
+        test_var
+        test_var = np.array([
+            [[0., 1., 2.],
+            [0., 1., 2.],
+            [0., 1., 2.]],
+            [[0., 1., 2.],
+            [1., 2., 0.],
+            [2., 1., 1.]],
+            [[0., 1., 2.],
+            [0., 1., 1.],
+            [1., 2., 2.]],
+        ])
+        test_many_trends[test_var_name] = (['year','j','i'],test_var)
     # Create test case with `nan` values
     test_nan_dataset = xr.open_mfdataset(test_file_names)
     test_nan_dataset['test_var'] = test_nan_dataset['test_var'].where(
@@ -47,6 +90,7 @@ def test_trend_in_time():
             'save_as': None,
             'atol': 1e-12,
             'expected_trends': [0, np.nan],
+            'expected_residuals': [np.nan],
         },
         {
             'dataset': make_example_dataset(
@@ -61,6 +105,7 @@ def test_trend_in_time():
             'save_as': f"{test_file_dir}/example_new_0.nc",
             'atol': 1e-12,
             'expected_trends': [0],
+            'expected_residuals': [np.nan],
         },
         {
             'dataset': test_file_names,
@@ -71,6 +116,7 @@ def test_trend_in_time():
             'save_as': None,
             'atol': 1e-4,
             'expected_trends': [1.49368],
+            'expected_residuals': [1.13618e+16],
         },
         {
             'dataset': test_file_names,
@@ -81,6 +127,26 @@ def test_trend_in_time():
             'atol': 1e-4,
             'save_as': f"{test_file_dir}/example_new_1.nc",
             'expected_trends': [1.49368],
+            'expected_residuals': [1.13618e+16],
+        },
+        {
+            'dataset': test_many_trends,
+            'var': 'test_var',
+            'time_dim': 'year',
+            'mask_where_zero_across_time': True,
+            'use_xarray_polyfit': True,
+            'atol': 1e-4,
+            'save_as': None,
+            'expected_trends': [
+                 0.00000000e+00, -6.74152213e-17, -1.34830443e-16,
+                -1.00804977e-13, -1.00898639e-13, -0.499999999999,
+                 0.499999999999,  0.500000000000,  1.00617838e-13, np.nan,
+            ],
+            'expected_residuals': [
+                0.00000000e+00, 3.04386613e-33, 1.21754645e-32,
+                6.66666667e-01, 6.66666667e-01, 1.50000000e+00,
+                1.50000000e+00, 1.66666667e-01, 6.66666667e-01, np.nan
+            ],
         },
         {
             'dataset': test_nan_dataset,
@@ -91,6 +157,7 @@ def test_trend_in_time():
             'atol': 1e-4,
             'save_as': None,
             'expected_trends': [1.49368, 0.990164, 0, np.nan],
+            'expected_residuals': [2.24627e+14, 1.13618e+16, np.nan],
         },
         {
             'dataset': test_nan_dataset,
@@ -101,6 +168,7 @@ def test_trend_in_time():
             'atol': 1e-4,
             'save_as': None,
             'expected_trends': [1.49368, np.nan],
+            'expected_residuals': [0.36028, np.nan],
         },
     ]
     for test_case in test_cases:
@@ -121,6 +189,16 @@ def test_trend_in_time():
                     isclose = True
             if isclose == False:
                 assert False, f"`trend_in_time` created a dataset with the unique trends: {actual_trends}.\nExpected unique trends: {test_case['expected_trends']}\nFailed on trend: {actual_trend}"
+        # Check the residuals present on the time axis
+        actual_residuals = list(np.unique(actual_dataset[f'{test_case['var']}_residuals'].values))
+        for actual_residual in actual_residuals:
+            isclose = False
+            for expected_residual in test_case['expected_residuals']:
+                if np.isclose(actual_residual, expected_residual, atol=test_case['atol'], equal_nan=True):
+                    isclose = True
+            if isclose == False:
+                assert False, f"`trend_in_time` created a dataset with the unique residuals: {actual_residuals}.\nExpected unique residuals: {test_case['expected_residuals']}\nFailed on residual: {actual_residual}"
+        # Check whether a file was saved
         if not isinstance(test_case['save_as'], type(None)):
             try:
                 actual_save_as = verify_path(test_case['save_as'])
