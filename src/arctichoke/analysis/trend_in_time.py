@@ -196,7 +196,10 @@ def trend_in_time(
             print(f"(trend_in_time) Getting a first-degree polyfit")
         polyfit = (dataset[var].polyfit(time_dim, 1, skipna=True, full=True).isel(degree=0, drop=True) * correction_factor)
         if verbose:
+            print(f"(trend_in_time) Geting the coefficients and residuals")
+        # Get the coefficients and the residuals
         trends = polyfit['polyfit_coefficients']
+        residuals = polyfit['polyfit_residuals']
     else:
         # Get the time axis values
         time_axis_epoch_y = get_epoch_times(
@@ -214,10 +217,12 @@ def trend_in_time(
         if verbose:
             print(f"(trend_in_time) Getting a first-degree polyfit")
         # Do a first-degree polyfit
-        polyfit = np.polyfit(time_axis_epoch_y, vals2, 1)
+        polyfit = np.polyfit(time_axis_epoch_y, vals2, 1, full=True)
         if verbose:
-            print(f"(trend_in_time) Get the coefficients")
-        trends = polyfit[0,:].reshape(vals.shape[1], vals.shape[2])
+            print(f"(trend_in_time) Geting the coefficients and residuals")
+        # Get the coefficients and residuals
+        trends = polyfit[0][0,:].reshape(vals.shape[1], vals.shape[2])
+        residuals = polyfit[1].reshape(vals.shape[1], vals.shape[2])
     
     # Set `dataset` to be just the first time slice
     dataset = dataset.isel({time_dim:0}, drop=True)
@@ -227,8 +232,11 @@ def trend_in_time(
     # Put the trends into the original dataset
     if use_xarray_polyfit:
         dataset[f'{var}_trends'] = trends
+        dataset[f'{var}_residuals'] = residuals
     else:
         dataset[f'{var}_trends'].values = trends
+        dataset[f'{var}_residuals'] = dataset[f'{var}_trends']
+        dataset[f'{var}_residuals'].values = residuals
     # Restore the variable attributes
     dataset[f'{var}_trends'].attrs = var_attrs
     # Add this operation to the history
@@ -237,31 +245,37 @@ def trend_in_time(
     else:
         original_history = ''
     dataset.attrs['history'] = f"{get_current_datetime_str()} altered by `arctichoke`: Calculated trends across `{time_dim}` of `{var}` values to get `{var}_trends`. {original_history}"
-    # Get the reference to this variable
-    xr_var_to_add_attrs = dataset[f'{var}_trends']
+    # Get references to these new variables
+    xr_var_trends = dataset[f'{var}_trends']
+    xr_var_resids = dataset[f'{var}_residuals']
         
     if verbose:
         print(f"(trend_in_time) Modifing dataset attributes")
     # Modify the attributes of the dataset to reflect the changes
-    xr_var_to_add_attrs.attrs['standard_name'] = f'{var}_trends'
-    if 'long_name' in xr_var_to_add_attrs.attrs.keys():
-        xr_var_to_add_attrs.attrs['long_name'] = f'Trend in {xr_var_to_add_attrs.attrs['long_name']}'
+    xr_var_trends.attrs['standard_name'] = f'{var}_trends'
+    xr_var_resids.attrs['standard_name'] = f'{var}_residuals'
+    if 'long_name' in xr_var_trends.attrs.keys():
+        xr_var_trends.attrs['long_name'] = f'Trend in {xr_var_trends.attrs['long_name']}'
     else:
-        xr_var_to_add_attrs.attrs['long_name'] = f'Trend in {var}'
-    if 'units' in xr_var_to_add_attrs.attrs.keys():
-        xr_var_to_add_attrs.attrs['units'] = f'{xr_var_to_add_attrs.attrs['units']}/yr'
+        xr_var_trends.attrs['long_name'] = f'Trend in {var}'
+    xr_var_resids.attrs['long_name'] = f'Residual of trend in {var}'
+    if 'units' in xr_var_trends.attrs.keys():
+        xr_var_trends.attrs['units'] = f'{xr_var_trends.attrs['units']}/yr'
     else:
-        xr_var_to_add_attrs.attrs['units'] = f'N/P'
-    if 'comment' in xr_var_to_add_attrs.attrs.keys():
-        xr_var_to_add_attrs.attrs['comment'] = f'Trend in {xr_var_to_add_attrs.attrs['comment']}'
+        xr_var_trends.attrs['units'] = f'N/P'
+    xr_var_resids.attrs['units'] = f'({xr_var_trends.attrs['units']})^2'
+    if 'comment' in xr_var_trends.attrs.keys():
+        xr_var_trends.attrs['comment'] = f'Trend in {xr_var_trends.attrs['comment']}'
     else:
-        xr_var_to_add_attrs.attrs['comment'] = f'N/P'
-    xr_var_to_add_attrs.attrs['original_name'] = f'{var}_trends'
-    if 'history' in xr_var_to_add_attrs.attrs.keys():
-        original_history = xr_var_to_add_attrs.attrs['history']
+        xr_var_trends.attrs['comment'] = f'N/P'
+    xr_var_resids.attrs['comment'] = f'Sum of square residuals for the trend in {var}'
+    xr_var_trends.attrs['original_name'] = f'{var}_trends'
+    xr_var_resids.attrs['original_name'] = f'{var}_residuals'
+    if 'history' in xr_var_trends.attrs.keys():
+        original_history = xr_var_trends.attrs['history']
     else:
         original_history = ''
-    xr_var_to_add_attrs.attrs['history'] = f"{get_current_datetime_str()} altered by `arctichoke`: Calculated trends across `{time_dim}` of `{var}` values to get `{var}_trends`. {original_history}"
+    xr_var_trends.attrs['history'] = f"{get_current_datetime_str()} altered by `arctichoke`: Calculated trends across `{time_dim}` of `{var}` values to get `{var}_trends`. {original_history}"
 
     # Save the modified dataset, if applicable
     if not isinstance(save_as, type(None)):
