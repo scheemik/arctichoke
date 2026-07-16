@@ -116,9 +116,21 @@ def make_title(
         # Check whether there is more than one time slice
         if dataset[time_coord].size == 1:
             # Get the value of the time stamp as a string
-            this_time_stamp = str(dataset[time_coord].values).split('.')[0]
+            if time_coord == 'time': # Assume time format 'YYYY-MM-DDTHH:mm:ss.ns'
+                this_time_stamp = str(dataset[time_coord].values[0]).split('T')[0]
+            elif time_coord == 'year': # Assume format 'YYYY'
+                try:
+                    this_time_stamp = str(dataset[time_coord].values[0])
+                except:
+                    this_time_stamp = str(dataset[time_coord].values)
             # Add the time stamp to the title
             dataset_title = f"{dataset_title}{this_time_stamp} "
+        # Check whether the number of months was limited
+        if 'select_months' in dataset.attrs.keys():
+            selected_months = str(dataset.attrs['select_months'])
+            if selected_months == '[6, 7, 8, 9, 10]':
+                selected_months = 'summer'
+            dataset_title = f"{dataset_title}{selected_months} "
     
     return dataset_title
 
