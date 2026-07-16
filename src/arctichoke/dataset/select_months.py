@@ -1,5 +1,6 @@
 import xarray as xr
 
+from arctichoke import get_current_datetime_str
 from arctichoke.verify import verify_path
 
 def select_months(
@@ -73,6 +74,15 @@ def select_months(
     
     if verbose: 
         print(f"(select_months) Selecting months: {months}")
-
+    
     # Select just the given months
-    return dataset.sel(time=dataset.time.dt.month.isin(months))
+    dataset = dataset.sel(time=dataset.time.dt.month.isin(months))
+    # Modify attributes to mark this change
+    if 'history' in dataset.attrs.keys():
+        original_history = dataset.attrs['history']
+    else:
+        original_history = ''
+    dataset.attrs['history'] = f"{get_current_datetime_str()} altered by `arctichoke`: Kept only the months: {months}. {original_history}"
+    dataset.attrs['select_months'] = f"{months}"
+
+    return dataset
