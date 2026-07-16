@@ -1,6 +1,6 @@
 import xarray as xr
 from arctichoke.analysis import sum_by_year, trend_in_time, trend_in_time_old
-from arctichoke.analysis.trend_in_time import trend_in_time
+from arctichoke.dataset import select_months
 from arctichoke.path import list_variable_files
 from arctichoke.plot import quadmesh_map
 
@@ -11,6 +11,7 @@ def make_trend_map(
     this_modification: str,
     calc_pvals: bool = False,
     mask_where_zero_across_time: bool = True,
+    select_summer: bool = True,
     map_projection: str = 'Orthographic',
     verbose: bool = False,
 ):
@@ -61,10 +62,16 @@ def make_trend_map(
         verbose = verbose,
     )
     # Open those files into a multi-file dataset
-    dataset = xr.open_mfdataset(
-        filelist,
-        data_vars = 'all'
-    )
+    if select_summer:
+        dataset = select_months(
+            filelist,
+            verbose = verbose,
+        )
+    else:
+        dataset = xr.open_mfdataset(
+            filelist,
+            data_vars = 'all'
+        )
     # Sum the data across time
     ## Overwrite the `dataset` variable to reduce memory overhead
     dataset = sum_by_year(
