@@ -1,15 +1,17 @@
 import xarray as xr
-from arctichoke.analysis.sum_by_year import sum_by_year
-from arctichoke.analysis.trend_in_time import trend_in_time
-from arctichoke.path.file_lists import list_variable_files
-from arctichoke.plot.hvplots import quadmesh_map
+from arctichoke.analysis import sum_by_year, trend_in_time, trend_in_time_old
+from arctichoke.dataset import select_months
+from arctichoke.path import list_variable_files
+from arctichoke.plot import make_title, quadmesh_map
 
 def make_trend_map(
     this_source_id: str,
     this_var: str,
     this_variant_label: str,
     this_modification: str,
+    calc_pvals: bool = False,
     mask_where_zero_across_time: bool = True,
+    select_summer: bool = True,
     map_projection: str = 'Orthographic',
     verbose: bool = False,
 ):
@@ -31,6 +33,18 @@ def make_trend_map(
         this_modification : `str`
             The modification of the data to plot.
             Example: `'trim_CAA_'`.
+        calc_pvals : `bool`, optional
+            Whether to use the version of `trend_in_time()` which calculates p-values.
+            Default is `False`.
+        mask_where_zero_across_time : `bool`, optional
+            Whether to mask out grid cells where the values are zero across all time.
+            Default is `True`.
+        select_summer : `bool`, optional
+            Whether to use `select_months()` to only plot the summer months (June-October).
+            Default is `True`.
+        map_projection : `str`, optional
+            The map projection to use.
+            Default is `'Orthographic'`.
         verbose : `bool`, optional
             Whether to verbosely output information as the function executes.
             Default is `False`.
@@ -60,10 +74,16 @@ def make_trend_map(
         verbose = verbose,
     )
     # Open those files into a multi-file dataset
-    dataset = xr.open_mfdataset(
-        filelist,
-        data_vars = 'all'
-    )
+    if select_summer:
+        dataset = select_months(
+            filelist,
+            verbose = verbose,
+        )
+    else:
+        dataset = xr.open_mfdataset(
+            filelist,
+            data_vars = 'all'
+        )
     # Sum the data across time
     ## Overwrite the `dataset` variable to reduce memory overhead
     dataset = sum_by_year(
@@ -71,18 +91,31 @@ def make_trend_map(
         verbose = verbose,
     )
     # Take the trend across time
-    dataset = trend_in_time(
-        dataset = dataset,
-        var = f'{this_var}_year_sum',
-        mask_where_zero_across_time = mask_where_zero_across_time,
-        verbose = verbose,
-    )
+    if calc_pvals:
+        dataset = trend_in_time(
+            dataset = dataset,
+            var = f'{this_var}_year_sum',
+            mask_where_zero_across_time = False,
+            verbose = verbose,
+        )
+    else:
+        dataset = trend_in_time_old(
+            dataset = dataset,
+            var = f'{this_var}_year_sum',
+            mask_where_zero_across_time = mask_where_zero_across_time,
+            verbose = verbose,
+        )
+    if select_summer:
+        this_map_title = f"{make_title(dataset)} [summer]"
+    else:
+        this_map_title = make_title(dataset)
     # Plot the trends on a map
     sum_year_trend_map = quadmesh_map(
         dataset,
         f'{this_var}_year_sum_trends',
         map_projection = map_projection,
         diverging_cbar = True,
+        map_title=this_map_title,
         verbose = verbose,
     )
     sum_year_trend_map

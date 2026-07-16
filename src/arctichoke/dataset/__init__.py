@@ -5,4 +5,5 @@ from .field_mean import *
 from .get_min_max import *
 from .get_variable import *
 from .latlon_type import *
+from .select_months import *
 from .trim_dataset import *

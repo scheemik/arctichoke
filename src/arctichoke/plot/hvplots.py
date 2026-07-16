@@ -17,6 +17,7 @@ def quadmesh_map(
     map_projection: str = 'NorthPolarStereo',
     map_bbox: [float, float, float, float] = sps.NWP_BBOX,
     clims: [(int, float), (int, float)] = None,
+    map_title: str = None,
     diverging_cbar: bool = False, 
     verbose: bool = False,
     **kwargs,
@@ -47,6 +48,9 @@ def quadmesh_map(
             The limits to use in the colorbar.
             Note: This overrides the default method of limiting the colorbar range when `diverging_cbar=True`.
             Default is `None`, which uses the minimum / maximum values present in the data.
+        map_title : `str`, optional
+            Specify the title of the map or, if `None` is given, use the `make_title()` function to create the title.
+            Default is `None`.
         diverging_cbar : `bool`, optional
             Whether to use a diverging colormap on the colorbar.
             Default is `False`.
@@ -95,6 +99,8 @@ def quadmesh_map(
         raise TypeError(f"(quadmesh_map) `clims` must be a list, tuple, or `None`. Got type: {type(clims)}")
     elif not isinstance(clims, type(None)) and len(clims) != 2:
         raise TypeError(f"(quadmesh_map) `clims` must be a list or tuple of length 2. Got length: {len(clims)}")
+    if not isinstance(map_title, (str, type(None))):
+        raise TypeError(f"(quadmesh_map) `map_title` must be a string or `None`. Got type: {type(map_title)}")
     if not isinstance(diverging_cbar, bool):
         raise TypeError(f"(quadmesh_map) `diverging_cbar` must be a `bool`. Got type: {type(diverging_cbar)}")
     if not isinstance(verbose, bool):
@@ -136,6 +142,10 @@ def quadmesh_map(
         print(f"(quadmesh_map) `lat_var`: {lat_var}")
         print(f"(quadmesh_map) `lon_var`: {lon_var}")
 
+    # Make title, if necessary
+    if isinstance(map_title, type(None)):
+        map_title = make_title(xr_data)
+
     # Make the plot
     qm_map_plot = xr_data[var].hvplot.quadmesh(
         lon_var, 
@@ -143,7 +153,7 @@ def quadmesh_map(
         projection=map_projection, 
         project=True,
         global_extent=False, 
-        title=make_title(xr_data),
+        title=map_title,
         clabel=make_label(xr_data, var),
         cmap=this_cmap, 
         clim=clims,

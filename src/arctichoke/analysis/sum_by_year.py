@@ -81,7 +81,7 @@ def sum_by_year(
             # Verify this is a valid path
             datafile = verify_path(datafile)
             if not datafile.endswith('.nc'):
-                raise TypeError(f"(plot_time_series) `datafile` must be a `.nc` filepath. Got: {datafile}")
+                raise TypeError(f"(sum_by_year) `datafile` must be a `.nc` filepath. Got: {datafile}")
         # Load all the files at once
         if verbose:
             print(f"(sum_by_year) When passing a list of files, ensure their coordinates match as that is not verified in this function.")

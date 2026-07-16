@@ -7,12 +7,19 @@ This directly uses the `silandfast` datafiles generated in {doc}`Identifying lan
 
 - [Calculating trends in landfast ice](#calculating-trends-in-landfast-ice)
     - [Annual landfast ice months](#annual-landfast-ice-months)
+    - [Summer landfast ice months](#summer-landfast-ice-months)
     - [Annual landfast months trend for one grid cell](#annual-landfast-months-trend-for-one-grid-cell)
-- [Maps of landfast ice trends](#maps-of-landfast-ice-trends)
-    - [EC-Earth3P-HR landfast ice trend maps](#ec-earth3p-hr-landfast-ice-trend-maps)
-    - [HadGEM3-GC31-MM landfast ice trend maps](#hadgem3-gc31-mm-landfast-ice-trend-maps)
-    - [HadGEM3-GC31-HM landfast ice trend maps](#hadgem3-gc31-hm-landfast-ice-trend-maps)
-    - [HadGEM3-GC31-HH landfast ice trend map](#hadgem3-gc31-hh-landfast-ice-trend-map)
+    - [Summer landfast months trend for one grid cell](#summer-landfast-months-trend-for-one-grid-cell)
+- [Maps of annual landfast ice trends](#maps-of-annual-landfast-ice-trends)
+    - [EC-Earth3P-HR annual landfast ice trend maps](#ec-earth3p-hr-annual-landfast-ice-trend-maps)
+    - [HadGEM3-GC31-MM annual landfast ice trend maps](#hadgem3-gc31-mm-annual-landfast-ice-trend-maps)
+    - [HadGEM3-GC31-HM annual landfast ice trend maps](#hadgem3-gc31-hm-annual-landfast-ice-trend-maps)
+    - [HadGEM3-GC31-HH annual landfast ice trend map](#hadgem3-gc31-hh-annual-landfast-ice-trend-map)
+- [Maps of summer landfast ice trends](#maps-of-summer-landfast-ice-trends)
+    - [EC-Earth3P-HR summer landfast ice trend maps](#ec-earth3p-hr-summer-landfast-ice-trend-maps)
+    - [HadGEM3-GC31-MM summer landfast ice trend maps](#hadgem3-gc31-mm-summer-landfast-ice-trend-maps)
+    - [HadGEM3-GC31-HM summer landfast ice trend maps](#hadgem3-gc31-hm-summer-landfast-ice-trend-maps)
+    - [HadGEM3-GC31-HH summer landfast ice trend map](#hadgem3-gc31-hh-summer-landfast-ice-trend-map)
 
 ---
 ## Calculating trends in landfast ice
@@ -102,6 +109,51 @@ EC_Earth3P_HR_hist_silandfast_sum_2000_CAA_map
 ```
 ![EC_Earth3P-HR_silandfast_CAA_2000_sum_map.png](landfast_trends-img/EC_Earth3P-HR_silandfast_CAA_2000_sum_map.png)
 
+### Summer landfast ice months
+[back to top](#trends-in-landfast-ice-over-time)
+
+For this project, we are only interested in looking at changes that happen in the summer season which we define to be June to October, inclusive.
+
+I wrote a function called `select_months()` which picks out just those months of the year by default.
+```python
+from arctichoke.dataset import select_months 
+
+EC_Earth3P_HR_hist_silandfast_2000_CAA_xr = select_months(
+    EC_Earth3P_HR_hist_silandfast_2000_CAA_xr,
+    verbose = True,
+)
+list(EC_Earth3P_HR_hist_silandfast_2000_CAA_xr['time'].values)
+```
+```console
+(select_months) Selecting months: [6, 7, 8, 9, 10]
+
+[np.datetime64('2000-06-16T00:00:00.000000000'),
+ np.datetime64('2000-07-16T12:00:00.000000000'),
+ np.datetime64('2000-08-16T12:00:00.000000000'),
+ np.datetime64('2000-09-16T00:00:00.000000000'),
+ np.datetime64('2000-10-16T12:00:00.000000000')]
+```
+
+Filtering to the summer months leads to a slightly different map of landfast ice months.
+```python
+from arctichoke.analysis.sum_by_year import sum_by_year
+
+EC_Earth3P_HR_hist_silandfast_CAA_sum_2000_xr = sum_by_year(
+    EC_Earth3P_HR_hist_silandfast_2000_CAA_xr,
+)
+
+from arctichoke.params import CAA_BBOX
+from arctichoke.plot import quadmesh_map
+
+EC_Earth3P_HR_hist_silandfast_sum_2000_CAA_map = quadmesh_map(
+    EC_Earth3P_HR_hist_silandfast_CAA_sum_2000_xr,
+    'silandfast_year_sum',
+    projection = 'Orthographic',
+)
+EC_Earth3P_HR_hist_silandfast_sum_2000_CAA_map
+```
+![EC_Earth3P-HR_silandfast_CAA_2000_summer_sum_map.png](landfast_trends-img/EC_Earth3P-HR_silandfast_CAA_2000_summer_sum_map.png)
+
 Next, I'll load more datafiles to find the annual landfast months per year across 1950-2015.
 
 ```python
@@ -126,10 +178,17 @@ EC_Earth3P_HR_hist_silandfast_CAA_filelist
 I built the `sum_by_year()` function to handle datasets with more than one year using the `groupby` method, resulting in one time slice per year.
 Below, sum `silandfast` data in that list of files and plot the year 1950 from that summed dataset.
 ```python
+from arctichoke.dataset import select_months 
+
+EC_Earth3P_HR_hist_silandfast_2000_CAA_xr = select_months(
+    EC_Earth3P_HR_hist_silandfast_CAA_filelist,
+    verbose = True,
+)
+
 from arctichoke.analysis.sum_by_year import sum_by_year
 
 EC_Earth3P_HR_hist_silandfast_CAA_sum_xr = sum_by_year(
-    EC_Earth3P_HR_hist_silandfast_CAA_filelist,
+    EC_Earth3P_HR_hist_silandfast_2000_CAA_xr,
     verbose = True,
 )
 
@@ -143,6 +202,7 @@ EC_Earth3P_HR_hist_silandfast_sum_CAA_map = quadmesh_map(
 EC_Earth3P_HR_hist_silandfast_sum_CAA_map
 ```
 ```console
+(select_months) Selecting months: [6, 7, 8, 9, 10]
 (sum_by_year) When passing a list of files, ensure their coordinates match as that is not verified in this function.
 (sum_by_year) `save_as`: None
 (sum_by_year) `data_var_list`: ['time_bnds', 'longitude_bnds', 'latitude_bnds', 'silandfast']
@@ -150,14 +210,29 @@ EC_Earth3P_HR_hist_silandfast_sum_CAA_map
 (sum_by_year) Completed summing by year.
 (sum_by_year) Modifying the dataset attributes.
 ```
-![EC_Earth3P-HR_silandfast_CAA_1950_sum_map.png](landfast_trends-img/EC_Earth3P-HR_silandfast_CAA_1950_sum_map.png)
+![EC_Earth3P-HR_silandfast_CAA_1950_summer_sum_map.png](landfast_trends-img/EC_Earth3P-HR_silandfast_CAA_1950_summer_sum_map.png)
 
 ### Annual landfast months trend for one grid cell
 [back to top](#trends-in-landfast-ice-over-time)
 
-Next, I'll look at the `silandfast_year_sum` data from above across time for just one grid cell.
+Next, I'll look at the `silandfast_year_sum` data across time in all months for just one grid cell.
 I chose the indices of `j` and `i` below by trial and error to locate a spot near Ittoqqortoormiit, Greenland.
 ```python
+from arctichoke.path.file_lists import list_variable_files
+
+EC_Earth3P_HR_hist_silandfast_CAA_filelist = list_variable_files(
+    source_id = 'EC-Earth3P-HR',
+    variable_id = 'silandfast',
+    variant_label = 'r1i1p2f1',
+    with_modification = 'trim_CAA_',
+)
+
+from arctichoke.analysis.sum_by_year import sum_by_year
+
+EC_Earth3P_HR_hist_silandfast_CAA_sum_xr = sum_by_year(
+    EC_Earth3P_HR_hist_silandfast_CAA_filelist,
+)
+
 test_spot_xr = EC_Earth3P_HR_hist_silandfast_CAA_sum_xr.isel(j=40, i=625)
 print(f"Latitude: {test_spot_xr['latitude'].values}")
 print(f"Longitude: {test_spot_xr['longitude'].values}")
@@ -180,6 +255,7 @@ this_plot = plot_time_series(
     'silandfast_year_sum',
     plt_title = this_plot_title,
     add_regression = True,
+    marker = '.',
     verbose = True,
 )
 ```
@@ -207,6 +283,7 @@ this_plot = plot_time_series(
     'silandfast_year_sum',
     plt_title = this_plot_title,
     add_regression = True,
+    marker = '.',
     verbose = True,
 )
 ```
@@ -216,14 +293,87 @@ this_plot = plot_time_series(
 ```
 ![EC_Earth3P-HR_silandfast_CAA_sum_trend_at_78_253.png](landfast_trends-img/EC_Earth3P-HR_silandfast_CAA_sum_trend_at_78_253.png)
 
-## Maps of landfast ice trends
+### Summer landfast months trend for one grid cell
+[back to top](#trends-in-landfast-ice-over-time)
+
+To see how the trends in landfast ice are affected by limiting to the summer months, I reproduce the plots above for the two test grid cells after filtering to June-October.
+```python
+from arctichoke.path.file_lists import list_variable_files
+
+EC_Earth3P_HR_hist_silandfast_CAA_filelist = list_variable_files(
+    source_id = 'EC-Earth3P-HR',
+    variable_id = 'silandfast',
+    variant_label = 'r1i1p2f1',
+    with_modification = 'trim_CAA_',
+)
+
+from arctichoke.dataset import select_months 
+
+EC_Earth3P_HR_hist_silandfast_2000_CAA_xr = select_months(
+    EC_Earth3P_HR_hist_silandfast_CAA_filelist,
+)
+
+from arctichoke.analysis.sum_by_year import sum_by_year
+
+EC_Earth3P_HR_hist_silandfast_CAA_sum_xr = sum_by_year(
+    EC_Earth3P_HR_hist_silandfast_2000_CAA_xr,
+)
+
+test_spot_xr = EC_Earth3P_HR_hist_silandfast_CAA_sum_xr.isel(j=40, i=625)
+print(f"Latitude: {test_spot_xr['latitude'].values}")
+print(f"Longitude: {test_spot_xr['longitude'].values}")
+
+from arctichoke.plot import make_title, plot_time_series
+
+# Make the plot title
+this_lon = f"{test_spot_xr['longitude'].values:.2f}"
+this_lat = f"{test_spot_xr['latitude'].values:.2f}"
+this_plot_title = f"{make_title(test_spot_xr)} at ({this_lat}, {this_lon})"
+
+this_plot = plot_time_series(
+    test_spot_xr,
+    'silandfast_year_sum',
+    plt_title = this_plot_title,
+    add_regression = True,
+    marker = '.',
+)
+```
+```console
+Latitude: 70.64608001708984
+Longitude: 335.64935302734375
+```
+![EC_Earth3P-HR_silandfast_CAA_summer_sum_trend_at_Ittoqqortoormiit.png](landfast_trends-img/EC_Earth3P-HR_silandfast_CAA_summer_sum_trend_at_Ittoqqortoormiit.png)
+
+```python
+test_spot_xr = EC_Earth3P_HR_hist_silandfast_CAA_sum_xr.isel(j=198, i=518)
+
+from arctichoke.plot import make_title, plot_time_series
+
+# Make the plot title
+this_lon = f"{test_spot_xr['longitude'].values:.2f}"
+this_lat = f"{test_spot_xr['latitude'].values:.2f}"
+this_plot_title = f"{make_title(test_spot_xr)} at ({this_lat}, {this_lon})"
+
+this_plot = plot_time_series(
+    test_spot_xr,
+    'silandfast_year_sum',
+    plt_title = this_plot_title,
+    add_regression = True,
+    marker = '.',
+)
+```
+![EC_Earth3P-HR_silandfast_CAA_summer_sum_trend_at_78_253.png](landfast_trends-img/EC_Earth3P-HR_silandfast_CAA_summer_sum_trend_at_78_253.png)
+
+As would be expected, the trends for these two sites decreased in magnitude after filtering to just the summer months.
+
+## Maps of annual landfast ice trends
 [back to top](#trends-in-landfast-ice-over-time)
 
 Now, I will find the trend in annual landfast ice months over the `hist-1950` experiment for several models, making a map for each variant. 
 The `make_trend_map()` function calls the `trend_in_time()` function which uses the `np.polyfit()` function to get the regressions, as shown above. 
 When dealing with datasets, it also converts the time values to the expected data type and masks out grid cells that have a value of zero across all time depending on the value of the `mask_where_zero_across_time` argument. 
 
-### EC-Earth3P-HR landfast ice trend maps
+### EC-Earth3P-HR annual landfast ice trend maps
 [back to top](#trends-in-landfast-ice-over-time)
 
 It takes about 2 minutes to make all the plots.
@@ -246,7 +396,7 @@ for this_variant in [
 ![EC_Earth3P-HR_r2i1p2f1_silandfast_CAA_year_sum_trend_map.png](landfast_trends-img/EC_Earth3P-HR_r2i1p2f1_silandfast_CAA_year_sum_trend_map.png)
 ![EC_Earth3P-HR_r3i1p2f1_silandfast_CAA_year_sum_trend_map.png](landfast_trends-img/EC_Earth3P-HR_r3i1p2f1_silandfast_CAA_year_sum_trend_map.png)
 
-### HadGEM3-GC31-MM landfast ice trend maps
+### HadGEM3-GC31-MM annual landfast ice trend maps
 [back to top](#trends-in-landfast-ice-over-time)
 
 It takes about 2 minutes to make all the plots.
@@ -269,7 +419,7 @@ for this_variant in [
 ![HadGEM3-GC31-MM_r1i2p1f1_hist_silandfast_CAA_year_sum_trend_map.png](landfast_trends-img/HadGEM3-GC31-MM_r1i2p1f1_hist_silandfast_CAA_year_sum_trend_map.png)
 ![HadGEM3-GC31-MM_r1i3p1f1_hist_silandfast_CAA_year_sum_trend_map.png](landfast_trends-img/HadGEM3-GC31-MM_r1i3p1f1_hist_silandfast_CAA_year_sum_trend_map.png)
 
-### HadGEM3-GC31-HM landfast ice trend maps
+### HadGEM3-GC31-HM annual landfast ice trend maps
 [back to top](#trends-in-landfast-ice-over-time)
 
 It takes about 2 minutes to make all the plots.
@@ -292,7 +442,7 @@ for this_variant in [
 ![HadGEM3-GC31-HM_r1i2p1f1_hist_silandfast_CAA_year_sum_trend_map.png](landfast_trends-img/HadGEM3-GC31-HM_r1i2p1f1_hist_silandfast_CAA_year_sum_trend_map.png)
 ![HadGEM3-GC31-HM_r1i3p1f1_hist_silandfast_CAA_year_sum_trend_map.png](landfast_trends-img/HadGEM3-GC31-HM_r1i3p1f1_hist_silandfast_CAA_year_sum_trend_map.png)
 
-### HadGEM3-GC31-HH landfast ice trend map
+### HadGEM3-GC31-HH annual landfast ice trend map
 [back to top](#trends-in-landfast-ice-over-time)
 
 There is only one variant for HadGEM3-GC31-HM.
@@ -380,3 +530,96 @@ HadGEM3_GC31_HH_hist_silandfast_trend_map = quadmesh_map(
 HadGEM3_GC31_HH_hist_silandfast_trend_map
 ```
 ![HadGEM3-GC31-HH_r1i1p1f1_hist_silandfast_CAA_year_sum_trend_map.png](landfast_trends-img/HadGEM3-GC31-HH_r1i1p1f1_hist_silandfast_CAA_year_sum_trend_map.png)
+
+---
+
+## Maps of summer landfast ice trends
+[back to top](#trends-in-landfast-ice-over-time)
+
+Now, I will find the trend in _summer_ landfast ice months over the `hist-1950` experiment for the same models and variants as in [Maps of annual landfast ice trends](#maps-of-annual-landfast-ice-trends).
+
+### EC-Earth3P-HR summer landfast ice trend maps
+[back to top](#trends-in-landfast-ice-over-time)
+
+```python
+from arctichoke.plot import make_trend_map
+
+for this_variant in [
+    'r1i1p2f1',
+    'r2i1p2f1',
+    'r3i1p2f1',
+]:
+    make_trend_map(
+        this_source_id = 'EC-Earth3P-HR',
+        this_var = 'silandfast',
+        this_variant_label = this_variant,
+        this_modification = 'trim_CAA_',
+        select_summer = True,
+    )
+```
+![EC_Earth3P-HR_r1i1p2f1_silandfast_CAA_JJASO_sum_trend_map.png](landfast_trends-img/EC_Earth3P-HR_r1i1p2f1_silandfast_CAA_JJASO_sum_trend_map.png)
+![EC_Earth3P-HR_r2i1p2f1_silandfast_CA_JJASO_sum_trend_map.png](landfast_trends-img/EC_Earth3P-HR_r2i1p2f1_silandfast_CAA_JJASO_sum_trend_map.png)
+![EC_Earth3P-HR_r3i1p2f1_silandfast_CAA_JJASO_sum_trend_map.png](landfast_trends-img/EC_Earth3P-HR_r3i1p2f1_silandfast_CAA_JJASO_sum_trend_map.png)
+
+### HadGEM3-GC31-MM summer landfast ice trend maps
+[back to top](#trends-in-landfast-ice-over-time)
+
+```python
+from arctichoke.plot import make_trend_map
+
+for this_variant in [
+    'r1i1p1f1',
+    'r1i2p1f1',
+    'r1i3p1f1',
+]:
+    make_trend_map(
+        this_source_id = 'HadGEM3-GC31-MM',
+        this_var = 'silandfast',
+        this_variant_label = this_variant,
+        this_modification = 'trim_CAA_',
+        select_summer = True,
+    )
+```
+![HadGEM3-GC31-MM_r1i1p1f1_hist_silandfast_CAA_JJASO_sum_trend_map.png](landfast_trends-img/HadGEM3-GC31-MM_r1i1p1f1_hist_silandfast_CAA_JJASO_sum_trend_map.png)
+![HadGEM3-GC31-MM_r1i2p1f1_hist_silandfast_CAA_JJASO_sum_trend_map.png](landfast_trends-img/HadGEM3-GC31-MM_r1i2p1f1_hist_silandfast_CAA_JJASO_sum_trend_map.png)
+![HadGEM3-GC31-MM_r1i3p1f1_hist_silandfast_CAA_JJASO_sum_trend_map.png](landfast_trends-img/HadGEM3-GC31-MM_r1i3p1f1_hist_silandfast_CAA_JJASO_sum_trend_map.png)
+
+### HadGEM3-GC31-HM summer landfast ice trend maps
+[back to top](#trends-in-landfast-ice-over-time)
+
+```python
+from arctichoke.plot import make_trend_map
+
+for this_variant in [
+    'r1i1p1f1',
+    'r1i2p1f1',
+    'r1i3p1f1',
+]:
+    make_trend_map(
+        this_source_id = 'HadGEM3-GC31-HM',
+        this_var = 'silandfast',
+        this_variant_label = this_variant,
+        this_modification = 'trim_CAA_',
+        select_summer = True,
+    )
+```
+![HadGEM3-GC31-HM_r1i1p1f1_hist_silandfast_CAA_JJASO_sum_trend_map.png](landfast_trends-img/HadGEM3-GC31-HM_r1i1p1f1_hist_silandfast_CAA_JJASO_sum_trend_map.png)
+![HadGEM3-GC31-HM_r1i2p1f1_hist_silandfast_CAA_JJASO_sum_trend_map.png](landfast_trends-img/HadGEM3-GC31-HM_r1i2p1f1_hist_silandfast_CAA_JJASO_sum_trend_map.png)
+![HadGEM3-GC31-HM_r1i3p1f1_hist_silandfast_CAA_JJASO_sum_trend_map.png](landfast_trends-img/HadGEM3-GC31-HM_r1i3p1f1_hist_silandfast_CAA_JJASO_sum_trend_map.png)
+
+### HadGEM3-GC31-HH summer landfast ice trend map
+[back to top](#trends-in-landfast-ice-over-time)
+
+```python
+from arctichoke.plot import make_trend_map
+
+make_trend_map(
+    this_source_id = 'HadGEM3-GC31-HH',
+    this_var = 'silandfast',
+    this_variant_label = 'r1i1p1f1',
+    this_modification = 'trim_CAA_',
+    select_summer = True,
+    verbose = True,
+)
+```
+![HadGEM3-GC31-HH_r1i1p1f1_hist_silandfast_CAA_JJASO_sum_trend_map.png](landfast_trends-img/HadGEM3-GC31-HH_r1i1p1f1_hist_silandfast_CAA_JJASO_sum_trend_map.png)
