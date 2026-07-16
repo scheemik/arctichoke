@@ -2,7 +2,7 @@ import xarray as xr
 from arctichoke.analysis import sum_by_year, trend_in_time, trend_in_time_old
 from arctichoke.dataset import select_months
 from arctichoke.path import list_variable_files
-from arctichoke.plot import quadmesh_map
+from arctichoke.plot import make_title, quadmesh_map
 
 def make_trend_map(
     this_source_id: str,
@@ -93,12 +93,17 @@ def make_trend_map(
             mask_where_zero_across_time = mask_where_zero_across_time,
             verbose = verbose,
         )
+    if select_summer:
+        this_map_title = f"{make_title(dataset)} [summer]"
+    else:
+        this_map_title = make_title(dataset)
     # Plot the trends on a map
     sum_year_trend_map = quadmesh_map(
         dataset,
         f'{this_var}_year_sum_trends',
         map_projection = map_projection,
         diverging_cbar = True,
+        map_title=this_map_title,
         verbose = verbose,
     )
     sum_year_trend_map
