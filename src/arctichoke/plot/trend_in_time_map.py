@@ -1,8 +1,8 @@
 import xarray as xr
-from arctichoke.analysis.sum_by_year import sum_by_year
+from arctichoke.analysis import sum_by_year, trend_in_time, trend_in_time_old
 from arctichoke.analysis.trend_in_time import trend_in_time
-from arctichoke.path.file_lists import list_variable_files
-from arctichoke.plot.hvplots import quadmesh_map
+from arctichoke.path import list_variable_files
+from arctichoke.plot import quadmesh_map
 
 def make_trend_map(
     this_source_id: str,
