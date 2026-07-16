@@ -297,7 +297,7 @@ for this_variant in [
 
 There is only one variant for HadGEM3-GC31-HM.
 I turned `mask_where_zero_across_time` to `False` because when it is set to `True`, the kernel crashes due to running out of memory.
-This takes about 2 minutes to plot.
+This takes 3-4 minutes to plot.
 ```python
 from arctichoke.plot import make_trend_map
 
@@ -307,7 +307,76 @@ make_trend_map(
     this_variant_label = 'r1i1p1f1',
     this_modification = 'trim_CAA_',
     mask_where_zero_across_time = False,
-    verbose = True,
 )
 ```
 ![HadGEM3-GC31-HH_r1i1p1f1_hist_silandfast_CAA_year_sum_trend_map_no_zero_mask.png](landfast_trends-img/HadGEM3-GC31-HH_r1i1p1f1_hist_silandfast_CAA_year_sum_trend_map_no_zero_mask.png)
+
+In order to make the above trend plot with `mask_where_zero_across_time = True`, I need to do it in steps, saving a temporary netCDF file, restarting the kernel, then continuing.
+```python
+from arctichoke.path import list_variable_files
+
+filelist = list_variable_files(
+    source_id = 'HadGEM3-GC31-HH',
+    variable_id = 'silandfast',
+    variant_label = 'r1i1p1f1',
+    with_modification = 'trim_CAA',
+    verbose = True,
+)
+
+import xarray as xr 
+
+HadGEM_GC31_HH_hist_CAA_silandfast_xr = xr.open_mfdataset(filelist)
+
+from arctichoke.analysis import sum_by_year
+
+sum_by_year(
+    HadGEM_GC31_HH_hist_CAA_silandfast_xr,
+    drop_bnds = True,
+    verbose = True,
+    save_as = 'cdo_tmp/HadGEM3-GC31-HH_CAA_silandfast_sum_by_year.nc',
+)
+```
+```console
+(list_variable_files) Found 65 files.
+(sum_by_year) `save_as`: cdo_tmp/HadGEM3-GC31-HH_CAA_silandfast_sum_by_year.nc
+(sum_by_year) `data_var_list`: ['time_bnds', 'longitude_bnds', 'latitude_bnds', 'silandfast']
+(sum_by_year) Removing `meta_var`: time_bnds
+(sum_by_year) Removing `meta_var`: latitude_bnds
+(sum_by_year) Removing `meta_var`: longitude_bnds
+(sum_by_year) Completed summing by year.
+(sum_by_year) Modifying the dataset attributes.
+(sum_by_year) Saving the dataset file: cdo_tmp/HadGEM3-GC31-HH_CAA_silandfast_sum_by_year.nc
+(sum_by_year) Done saving dataset file.
+```
+
+This saves a netCDF file to the `cdo_tmp/` directory, which is regularly cleared out when using the `cdo` package.
+Next, I restart my kernel to free up memory, then run the code below.
+```python
+import xarray as xr
+
+HadGEM3_GC31_HH_hist_CAA_silandfast_sum_by_year = xr.open_dataset('cdo_tmp/HadGEM3-GC31-HH_CAA_silandfast_sum_by_year.nc')
+HadGEM3_GC31_HH_hist_CAA_silandfast_sum_by_year
+
+from arctichoke.analysis import trend_in_time
+
+HadGEM3_GC31_HH_hist_CAA_silandfast_sum_by_year_trend = trend_in_time(
+    HadGEM3_GC31_HH_hist_CAA_silandfast_sum_by_year,
+    'silandfast_year_sum',
+    mask_where_zero_across_time = True,
+    use_xarray_polyfit = True,
+    verbose = True,
+    save_as = 'cdo_tmp/HadGEM3-GC31-HH_CAA_silandfast_trends.nc',
+)
+
+from arctichoke.plot.hvplots import quadmesh_map
+
+HadGEM3_GC31_HH_hist_silandfast_trend_map = quadmesh_map(
+    HadGEM3_GC31_HH_hist_CAA_silandfast_sum_by_year_trend,
+    'silandfast_year_sum_trends',
+    map_projection = 'Orthographic',
+    diverging_cbar = True,
+    verbose = True,
+)
+HadGEM3_GC31_HH_hist_silandfast_trend_map
+```
+![HadGEM3-GC31-HH_r1i1p1f1_hist_silandfast_CAA_year_sum_trend_map.png](landfast_trends-img/HadGEM3-GC31-HH_r1i1p1f1_hist_silandfast_CAA_year_sum_trend_map.png)
