@@ -9,6 +9,7 @@ def make_trend_map(
     this_var: str,
     this_variant_label: str,
     this_modification: str,
+    calc_pvals: bool = False,
     mask_where_zero_across_time: bool = True,
     map_projection: str = 'Orthographic',
     verbose: bool = False,
@@ -71,12 +72,20 @@ def make_trend_map(
         verbose = verbose,
     )
     # Take the trend across time
-    dataset = trend_in_time(
-        dataset = dataset,
-        var = f'{this_var}_year_sum',
-        mask_where_zero_across_time = mask_where_zero_across_time,
-        verbose = verbose,
-    )
+    if calc_pvals:
+        dataset = trend_in_time(
+            dataset = dataset,
+            var = f'{this_var}_year_sum',
+            mask_where_zero_across_time = False,
+            verbose = verbose,
+        )
+    else:
+        dataset = trend_in_time_old(
+            dataset = dataset,
+            var = f'{this_var}_year_sum',
+            mask_where_zero_across_time = mask_where_zero_across_time,
+            verbose = verbose,
+        )
     # Plot the trends on a map
     sum_year_trend_map = quadmesh_map(
         dataset,
