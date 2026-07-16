@@ -33,6 +33,18 @@ def make_trend_map(
         this_modification : `str`
             The modification of the data to plot.
             Example: `'trim_CAA_'`.
+        calc_pvals : `bool`, optional
+            Whether to use the version of `trend_in_time()` which calculates p-values.
+            Default is `False`.
+        mask_where_zero_across_time : `bool`, optional
+            Whether to mask out grid cells where the values are zero across all time.
+            Default is `True`.
+        select_summer : `bool`, optional
+            Whether to use `select_months()` to only plot the summer months (June-October).
+            Default is `True`.
+        map_projection : `str`, optional
+            The map projection to use.
+            Default is `'Orthographic'`.
         verbose : `bool`, optional
             Whether to verbosely output information as the function executes.
             Default is `False`.
