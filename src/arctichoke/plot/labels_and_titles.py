@@ -117,7 +117,10 @@ def make_title(
         if dataset[time_coord].size == 1:
             # Get the value of the time stamp as a string
             if time_coord == 'time': # Assume time format 'YYYY-MM-DDTHH:mm:ss.ns'
-                this_time_stamp = str(dataset[time_coord].values[0]).split('T')[0]
+                try:
+                    this_time_stamp = str(dataset[time_coord].values[0]).split('T')[0]
+                except:
+                    this_time_stamp = str(dataset[time_coord].values).split('T')[0]
             elif time_coord == 'year': # Assume format 'YYYY'
                 try:
                     this_time_stamp = str(dataset[time_coord].values[0])
