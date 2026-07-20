@@ -18,7 +18,7 @@ from arctichoke.dataset.latlon_type import get_latlon_names, get_lon_type
 
 def trim_latlon(
     dataset: (str, xr.Dataset, xr.DataArray),
-    map_bbox: [float, float, float, float] = sps.NWP_BBOX,
+    map_bbox: [float, float, float, float] = sps.CAA_BBOX,
     precise_trim: bool = False,
     save_as: str = None,
     verbose: bool = False,
@@ -35,7 +35,7 @@ def trim_latlon(
             An array of coordinates defining the bounding box of the map in the following format:
                 - [LAT_MAX, LAT_MIN, LON_MAX, LON_MIN]
                 
-            Default is `arctichoke.params.latlon_params.NWP_BBOX`.
+            Default is `arctichoke.params.latlon_params.CAA_BBOX`.
         precise_trim : `bool`, optional
             Whether to precisely trim an irregular grid to the bounding box, making all values outside the bounding box null.
             Default is `False`.
