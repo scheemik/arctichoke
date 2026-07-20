@@ -7,6 +7,7 @@ For details on how the data for those models were downloaded, see the {doc}`Down
 
 - [Defining the CAA](#defining-the-caa)
 - [Test trim to small region](#test-trim-to-small-region)
+- [Trimming files for EC-Earth3P-HR](#trimming-files-for-ec-earth3p-hr)
 - [Trimming files for HadGEM3-GC31-HH](#trimming-files-for-hadgem3-gc31-hh)
 
 ---
@@ -189,6 +190,50 @@ For trimming to the test bounding box:
     Dimension sizes: (time:12, j:36, i:38)
 ```
 ![HadGEM3_GC31_HH_hist_sispeed_test_trim_map.png](trim_to_CAA_region-img/HadGEM3_GC31_HH_hist_sispeed_test_trim_map.png)
+
+---
+
+## Trimming files for EC-Earth3P-HR
+[back to top](#trim-data-to-the-caa-region)
+
+As an exmaple of how to use the `trim_files()` function, below I trim files from the `EC-Earth3P-HR` model for `siconc` and `sispeed`. 
+```python
+import xarray as xr
+
+from arctichoke.dataset import trim_files
+from arctichoke.params import CAA_BBOX
+from arctichoke.path import list_variable_files
+
+this_model = 'EC-Earth3P-HR'
+
+for this_variant_label in [
+    'r1i1p2f1', 
+    'r2i1p2f1', 
+    'r3i1p2f1',
+]:
+    for si_var in ['siconc', 'sispeed']:
+        for this_experiment in ['hist-1950']:
+            sivar_list = list_variable_files(
+                source_id = this_model,
+                variable_id = si_var,
+                experiment_id = this_experiment,
+                variant_label = this_variant_label,
+            )
+            trim_files(
+                files_to_trim = sivar_list,
+                name_prefix = 'trim_CAA_',
+                map_bbox = CAA_BBOX,
+                precise_trim = False,
+            )
+```
+```console
+(trim_files) `name_prefix`: trim_CAA_
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/siconc/gn/v20181212/trim_CAA_siconc_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_195001-195012.nc`.
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/siconc/gn/v20181212/trim_CAA_siconc_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_195101-195112.nc`.
+    ...
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/sispeed/gn/v20190214/trim_CAA_sispeed_SImon_EC-Earth3P-HR_hist-1950_r3i1p2f1_gn_201301-201312.nc`.
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/sispeed/gn/v20190214/trim_CAA_sispeed_SImon_EC-Earth3P-HR_hist-1950_r3i1p2f1_gn_201401-201412.nc`.
+```
 
 ---
 ## Trimming files for HadGEM3-GC31-HH
