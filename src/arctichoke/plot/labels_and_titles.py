@@ -112,22 +112,23 @@ def make_title(
         elif 'year' in coord_names:
             time_coord = 'year'
         else:
-            return dataset_title
+            time_coord = False
         # Check whether there is more than one time slice
-        if dataset[time_coord].size == 1:
-            # Get the value of the time stamp as a string
-            if time_coord == 'time': # Assume time format 'YYYY-MM-DDTHH:mm:ss.ns'
-                try:
-                    this_time_stamp = str(dataset[time_coord].values[0]).split('T')[0]
-                except:
-                    this_time_stamp = str(dataset[time_coord].values).split('T')[0]
-            elif time_coord == 'year': # Assume format 'YYYY'
-                try:
-                    this_time_stamp = str(dataset[time_coord].values[0])
-                except:
-                    this_time_stamp = str(dataset[time_coord].values)
-            # Add the time stamp to the title
-            dataset_title = f"{dataset_title}{this_time_stamp} "
+        if time_coord:
+            if dataset[time_coord].size == 1:
+                # Get the value of the time stamp as a string
+                if time_coord == 'time': # Assume time format 'YYYY-MM-DDTHH:mm:ss.ns'
+                    try:
+                        this_time_stamp = str(dataset[time_coord].values[0]).split('T')[0]
+                    except:
+                        this_time_stamp = str(dataset[time_coord].values).split('T')[0]
+                elif time_coord == 'year': # Assume format 'YYYY'
+                    try:
+                        this_time_stamp = str(dataset[time_coord].values[0])
+                    except:
+                        this_time_stamp = str(dataset[time_coord].values)
+                # Add the time stamp to the title
+                dataset_title = f"{dataset_title}{this_time_stamp} "
         # Check whether the number of months was limited
         if 'select_months' in dataset.attrs.keys():
             selected_months = str(dataset.attrs['select_months'])
