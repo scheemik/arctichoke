@@ -14,6 +14,7 @@ def make_trend_map(
     select_summer: bool = True,
     map_projection: str = 'Orthographic',
     verbose: bool = False,
+    **kwargs,
 ):
     """ Plot the trends of the given data on a map.
 
@@ -48,6 +49,8 @@ def make_trend_map(
         verbose : `bool`, optional
             Whether to verbosely output information as the function executes.
             Default is `False`.
+        **kwargs
+            Keyword arguments to pass to `list_variable_files()`.
 
         Returns
         -------
@@ -72,6 +75,7 @@ def make_trend_map(
         variant_label = this_variant_label,
         with_modification = this_modification,
         verbose = verbose,
+        **kwargs,
     )
     # Open those files into a multi-file dataset
     if select_summer:
