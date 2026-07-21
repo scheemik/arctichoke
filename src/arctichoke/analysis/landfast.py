@@ -347,6 +347,8 @@ def find_landfast_ice(
     slow_threshold: (int, float) = 0.01, 
     siconc_var: str = 'siconc',
     save_as: str = None,
+    save_packed_as: str = None,
+    save_slow_as: str = None,
     verbose: bool = False,
     **kwargs,
 ):
@@ -373,6 +375,12 @@ def find_landfast_ice(
         save_as : `str`, `None`, optional
             The file name to which to save the modified dataset.
             Default is `None`, which doesn't save the dataset to a file.
+        save_packed_as : `str`, `None`, optional
+            The file name to which to save the packed ice dataset.
+            Default is `None`, which doesn't save the packed ice dataset to a file.
+        save_slow_as : `str`, `None`, optional
+            The file name to which to save the slow ice dataset.
+            Default is `None`, which doesn't save the slow ice dataset to a file.
         verbose : `bool`, optional
             Whether to verbosely output information as the function executes.
             Default is `False`.
@@ -418,6 +426,14 @@ def find_landfast_ice(
         raise TypeError(f"(find_landfast_ice) `save_as` must be a string or `None`. Got type: {type(save_as)}")
     elif isinstance(save_as, str) and not '.nc' in save_as:
         raise TypeError(f"(find_landfast_ice) `save_as` must be a `.nc` filepath. Got: {save_as}")
+    if not isinstance(save_packed_as, (str, type(None))):
+        raise TypeError(f"(find_landfast_ice) `save_packed_as` must be a string or `None`. Got type: {type(save_packed_as)}")
+    elif isinstance(save_packed_as, str) and not '.nc' in save_packed_as:
+        raise TypeError(f"(find_landfast_ice) `save_packed_as` must be a `.nc` filepath. Got: {save_packed_as}")
+    if not isinstance(save_slow_as, (str, type(None))):
+        raise TypeError(f"(find_landfast_ice) `save_slow_as` must be a string or `None`. Got type: {type(save_slow_as)}")
+    elif isinstance(save_slow_as, str) and not '.nc' in save_slow_as:
+        raise TypeError(f"(find_landfast_ice) `save_slow_as` must be a `.nc` filepath. Got: {save_slow_as}")
     if not isinstance(verbose, bool):
         raise TypeError(f"(find_landfast_ice) `verbose` must be a `bool`. Got type: {type(verbose)}")
     
@@ -430,11 +446,13 @@ def find_landfast_ice(
         dataset = siconc_dataset,
         packed_threshold = packed_threshold,
         siconc_var = siconc_var,
+        save_as = save_packed_as,
         **kwargs,
     )
     dataset_sislow = find_slow_ice(
         dataset = sispeed_dataset,
         slow_threshold = slow_threshold,
+        save_as = save_slow_as,
         **kwargs,
     )
 
@@ -502,6 +520,7 @@ def make_landfast_files(
     version_id: str = 'v20260617',
     siconc_var: str = 'siconc',
     overwrite: bool = False,
+    save_packed_and_slow: bool = False,
     **kwargs,
 ):
     """ Make landfast files based on the lists of files given.
@@ -528,6 +547,9 @@ def make_landfast_files(
             Default is `siconc`.
         overwrite : `bool`, optional
             Whether to overwrite an existing file if it exists.
+            Default is `False`.
+        save_packed_and_slow : `bool`, optional
+            Whether to save the intermediate packed ice and slow ice data to files.
             Default is `False`.
         **kwargs
             Keyword arguments to pass to `trim_latlon()`, and `find_landfast_ice()`.
@@ -627,15 +649,23 @@ def make_landfast_files(
         # Add trimming prefix, if applicable
         if not isinstance(map_bbox, type(None)):
             if map_bbox == sps.CAA_BBOX:
-                trim_prefix = 'trim_CAA_'
+                name_prefix = 'trim_CAA_'
             elif map_bbox == sps.NWP_BBOX:
-                trim_prefix = 'trim_NWP_'
+                name_prefix = 'trim_NWP_'
             else:
-                trim_prefix = 'trim_'
+                name_prefix = 'trim_'
+            if verbose:
+                print(f"(make_landfast_files) Adding prefix to file names: {name_prefix}")
             landfast_filename = landfast_filepath.split('/')[-1]
-            landfast_filepath = landfast_filepath.replace(landfast_filename, f"{trim_prefix}{landfast_filename}")
+            landfast_filepath = landfast_filepath.replace(landfast_filename, f"{name_prefix}{landfast_filename}")
         # Make sure the directory exists
         make_file_path(landfast_filepath)
+        # Check whether to save packed ice and slow ice data
+        if save_packed_and_slow:
+            packed_filepath = landfast_filepath.replace('silandfast', 'sipacked')
+            make_file_path(packed_filepath)
+            slow_filepath = landfast_filepath.replace('silandfast', 'sislow')
+            make_file_path(slow_filepath)
         # Check whether the file exists
         try:
             verify_path(landfast_filepath)
@@ -652,12 +682,12 @@ def make_landfast_files(
         # Trim the `siconc` and `sispeed` datasets, if 
         if not isinstance(map_bbox, type(None)):
             siconc_xr = trim_latlon(
-                xr_data = siconc_xr,
+                dataset = siconc_xr,
                 map_bbox = map_bbox,
                 **kwargs,
             )
             sispeed_xr = trim_latlon(
-                xr_data = sispeed_xr,
+                dataset = sispeed_xr,
                 map_bbox = map_bbox,
                 **kwargs,
             )
@@ -667,6 +697,8 @@ def make_landfast_files(
             sispeed_dataset = sispeed_xr,
             siconc_var = siconc_var,
             save_as = landfast_filepath,
+            save_packed_as = packed_filepath,
+            save_slow_as = slow_filepath,
             **kwargs,
         )
 
