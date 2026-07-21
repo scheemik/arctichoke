@@ -30,8 +30,14 @@ def select_months(
 
         Examples
         --------
+        >>> from arctichoke.dataset import make_example_dataset
+        >>> ex_xr = make_example_dataset(n = 2, time_dim = 'time', time_len = 36, start_year = 2026)
         >>> from arctichoke.dataset import select_months
-        >>> select_months()
+        >>> ex_xr_sel = select_months(ex_xr)
+        >>> ex_xr_sel['time'].size
+        15
+        >>> ex_xr_sel.attrs['select_months']
+        '[6, 7, 8, 9, 10]'
     """
     # Verify input arguments
     if not isinstance(verbose, bool):
