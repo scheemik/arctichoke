@@ -7,7 +7,7 @@ from arctichoke.dataset import get_variable_name, get_min_max, get_epoch_times, 
 import arctichoke.params as sps
 from arctichoke.verify import verify_path
 
-def trend_in_time(
+def trend_in_time_scipy(
     dataset: (str, [str], xr.Dataset, xr.DataArray),
     var: str = None,
     time_dim: str = 'year',
@@ -56,8 +56,8 @@ def trend_in_time(
         
         Examples
         --------
-        >>> from arctichoke.dataset.example_dataset import make_example_dataset
-        >>> from arctichoke.path.manipulate_paths import make_file_path
+        >>> from arctichoke.dataset import make_example_dataset
+        >>> from arctichoke.path import make_file_path
         >>> # Create multiple example test files
         >>> test_file_dir = 'tests/test_analysis/example_datasets'
         >>> make_file_path(test_file_dir)
@@ -96,8 +96,8 @@ def trend_in_time(
                [[ 3.,  4.,  5.],
                 [ 6.,  7.,  8.],
                 [ 9., 10., 11.]]])
-        >>> from arctichoke.analysis.trend_in_time import trend_in_time
-        >>> test_trends = trend_in_time(
+        >>> from arctichoke.analysis import trend_in_time_scipy
+        >>> test_trends = trend_in_time_scipy(
         >>>     test_dataset,
         >>>     var='test_var',
         >>>     time_dim='time',
@@ -109,44 +109,44 @@ def trend_in_time(
     """
     # Verify input arguments
     if not isinstance(verbose, bool):
-        raise TypeError(f"(trend_in_time) `verbose` must be a `bool`. Got type: {type(verbose)}")
+        raise TypeError(f"(trend_in_time_scipy) `verbose` must be a `bool`. Got type: {type(verbose)}")
     if isinstance(dataset, str):
         # Wrap that string into a list
         dataset = [dataset]
     if isinstance(dataset, type([])):
         if len(dataset) < 1:
-            raise ValueError(f"(trend_in_time) `dataset` must have at least one item. Got: {dataset}")
+            raise ValueError(f"(trend_in_time_scipy) `dataset` must have at least one item. Got: {dataset}")
         for datafile in dataset:
             if not isinstance(datafile, str):
-                raise TypeError(f"(trend_in_time) Each item in `dataset` list must be a string. Got: {type(datafile)}")
+                raise TypeError(f"(trend_in_time_scipy) Each item in `dataset` list must be a string. Got: {type(datafile)}")
             # Verify this is a valid path
             datafile = verify_path(datafile)
             if not datafile.endswith('.nc'):
                 raise TypeError(f"(plot_time_series) `datafile` must be a `.nc` filepath. Got: {datafile}")
         # Load all the files at once
         if verbose:
-            print(f"(trend_in_time) When passing a list of files, ensure their coordinates match as that is not verified in this function.")
+            print(f"(trend_in_time_scipy) When passing a list of files, ensure their coordinates match as that is not verified in this function.")
         dataset = xr.open_mfdataset(dataset)
     elif not isinstance(dataset, (xr.Dataset, xr.DataArray)):
-        raise TypeError(f"(trend_in_time) `dataset` must be a string, `xr.Dataset`, or `xarray.DataArray`. Got type: {type(dataset)}")
+        raise TypeError(f"(trend_in_time_scipy) `dataset` must be a string, `xr.Dataset`, or `xarray.DataArray`. Got type: {type(dataset)}")
     if not isinstance(var, (str, type(None))):
-        raise TypeError(f"(trend_in_time) `var` must be a string or `None`. Got type: {type(var)}")
+        raise TypeError(f"(trend_in_time_scipy) `var` must be a string or `None`. Got type: {type(var)}")
     if not isinstance(time_dim, str):
-        raise TypeError(f"(trend_in_time) `time_dim` must be a string. Got type: {type(time_dim)}")
+        raise TypeError(f"(trend_in_time_scipy) `time_dim` must be a string. Got type: {type(time_dim)}")
     if not isinstance(mask_where_zero_across_time, bool):
-        raise TypeError(f"(trend_in_time) `mask_where_zero_across_time` must be a `bool`. Got type: {type(mask_where_zero_across_time)}")
+        raise TypeError(f"(trend_in_time_scipy) `mask_where_zero_across_time` must be a `bool`. Got type: {type(mask_where_zero_across_time)}")
     if not isinstance(use_xarray_polyfit, bool):
-        raise TypeError(f"(trend_in_time) `use_xarray_polyfit` must be a `bool`. Got type: {type(use_xarray_polyfit)}")
+        raise TypeError(f"(trend_in_time_scipy) `use_xarray_polyfit` must be a `bool`. Got type: {type(use_xarray_polyfit)}")
     if not isinstance(save_as, (str, type(None))):
-        raise TypeError(f"(trend_in_time) `save_as` must be a string or `None`. Got type: {type(save_as)}")
+        raise TypeError(f"(trend_in_time_scipy) `save_as` must be a string or `None`. Got type: {type(save_as)}")
     elif isinstance(save_as, str) and not '.nc' in save_as:
-        raise TypeError(f"(trend_in_time) `save_as` must be a `.nc` filepath. Got: {save_as}")
+        raise TypeError(f"(trend_in_time_scipy) `save_as` must be a `.nc` filepath. Got: {save_as}")
 
     # Verify `dataset` has the specified variable
     if isinstance(dataset, xr.Dataset):
         actual_vars = get_variable_name(dataset)
         if var not in actual_vars:
-            raise ValueError(f"(trend_in_time) `dataset` must have the specified `var` {var}. Available variables: {actual_vars}")
+            raise ValueError(f"(trend_in_time_scipy) `dataset` must have the specified `var` {var}. Available variables: {actual_vars}")
     else:
         # Get the name of the variable
         var = dataset.name
@@ -154,7 +154,7 @@ def trend_in_time(
         dataset = dataset.to_dataset()
 
     if time_dim != 'year':
-        raise NotImplementedError(f"(trend_in_time) Trend calculation not yet implemented for `time_dim`: {time_dim}")
+        raise NotImplementedError(f"(trend_in_time_scipy) Trend calculation not yet implemented for `time_dim`: {time_dim}")
     
     # Mask grid cells which have values of zero over all time
     if mask_where_zero_across_time:
@@ -167,12 +167,12 @@ def trend_in_time(
     
     # Rechunk to allow efficient calculation
     if verbose:
-        print(f"(trend_in_time) Rechunking along '{time_dim}' dimension.")
+        print(f"(trend_in_time_scipy) Rechunking along '{time_dim}' dimension.")
     dataset = dataset.chunk({time_dim: -1, "i": "auto", "j": "auto"})
     
     # Information to output
     if verbose:
-        print(f"(trend_in_time) `save_as`: {save_as}")
+        print(f"(trend_in_time_scipy) `save_as`: {save_as}")
 
     # Store the variable attributes to put back later
     var_attrs = dataset[var].attrs
@@ -228,7 +228,7 @@ def trend_in_time(
     xr_var_resids = dataset[f'{var}_pvalue']
         
     if verbose:
-        print(f"(trend_in_time) Modifing dataset attributes")
+        print(f"(trend_in_time_scipy) Modifing dataset attributes")
     # Modify the attributes of the dataset to reflect the changes
     xr_var_trends.attrs['standard_name'] = f'{var}_trends'
     xr_var_resids.attrs['standard_name'] = f'{var}_pvalue'
@@ -258,7 +258,7 @@ def trend_in_time(
     # Save the modified dataset, if applicable
     if not isinstance(save_as, type(None)):
         if verbose:
-            print(f"(trend_in_time) Saving the dataset file: {save_as}")
+            print(f"(trend_in_time_scipy) Saving the dataset file: {save_as}")
         # Save the plot to file
         dataset.to_netcdf(save_as)
     
@@ -299,7 +299,7 @@ def new_linregress(
     output_arr = np.array([slope, intercept, r_value, p_value, std_err])
     return output_arr
 
-def trend_in_time_old(
+def trend_in_time(
     dataset: (str, [str], xr.Dataset, xr.DataArray),
     var: str = None,
     time_dim: str = 'year',
@@ -348,8 +348,8 @@ def trend_in_time_old(
         
         Examples
         --------
-        >>> from arctichoke.dataset.example_dataset import make_example_dataset
-        >>> from arctichoke.path.manipulate_paths import make_file_path
+        >>> from arctichoke.dataset import make_example_dataset
+        >>> from arctichoke.path import make_file_path
         >>> # Create multiple example test files
         >>> test_file_dir = 'tests/test_analysis/example_datasets'
         >>> make_file_path(test_file_dir)
@@ -388,8 +388,8 @@ def trend_in_time_old(
                [[ 3.,  4.,  5.],
                 [ 6.,  7.,  8.],
                 [ 9., 10., 11.]]])
-        >>> from arctichoke.analysis.trend_in_time_old import trend_in_time_old
-        >>> test_trends = trend_in_time_old(
+        >>> from arctichoke.analysis import trend_in_time
+        >>> test_trends = trend_in_time(
         >>>     test_dataset,
         >>>     var='test_var',
         >>>     time_dim='time',
@@ -401,44 +401,44 @@ def trend_in_time_old(
     """
     # Verify input arguments
     if not isinstance(verbose, bool):
-        raise TypeError(f"(trend_in_time_old) `verbose` must be a `bool`. Got type: {type(verbose)}")
+        raise TypeError(f"(trend_in_time) `verbose` must be a `bool`. Got type: {type(verbose)}")
     if isinstance(dataset, str):
         # Wrap that string into a list
         dataset = [dataset]
     if isinstance(dataset, type([])):
         if len(dataset) < 1:
-            raise ValueError(f"(trend_in_time_old) `dataset` must have at least one item. Got: {dataset}")
+            raise ValueError(f"(trend_in_time) `dataset` must have at least one item. Got: {dataset}")
         for datafile in dataset:
             if not isinstance(datafile, str):
-                raise TypeError(f"(trend_in_time_old) Each item in `dataset` list must be a string. Got: {type(datafile)}")
+                raise TypeError(f"(trend_in_time) Each item in `dataset` list must be a string. Got: {type(datafile)}")
             # Verify this is a valid path
             datafile = verify_path(datafile)
             if not datafile.endswith('.nc'):
                 raise TypeError(f"(plot_time_series) `datafile` must be a `.nc` filepath. Got: {datafile}")
         # Load all the files at once
         if verbose:
-            print(f"(trend_in_time_old) When passing a list of files, ensure their coordinates match as that is not verified in this function.")
+            print(f"(trend_in_time) When passing a list of files, ensure their coordinates match as that is not verified in this function.")
         dataset = xr.open_mfdataset(dataset)
     elif not isinstance(dataset, (xr.Dataset, xr.DataArray)):
-        raise TypeError(f"(trend_in_time_old) `dataset` must be a string, `xr.Dataset`, or `xarray.DataArray`. Got type: {type(dataset)}")
+        raise TypeError(f"(trend_in_time) `dataset` must be a string, `xr.Dataset`, or `xarray.DataArray`. Got type: {type(dataset)}")
     if not isinstance(var, (str, type(None))):
-        raise TypeError(f"(trend_in_time_old) `var` must be a string or `None`. Got type: {type(var)}")
+        raise TypeError(f"(trend_in_time) `var` must be a string or `None`. Got type: {type(var)}")
     if not isinstance(time_dim, str):
-        raise TypeError(f"(trend_in_time_old) `time_dim` must be a string. Got type: {type(time_dim)}")
+        raise TypeError(f"(trend_in_time) `time_dim` must be a string. Got type: {type(time_dim)}")
     if not isinstance(mask_where_zero_across_time, bool):
-        raise TypeError(f"(trend_in_time_old) `mask_where_zero_across_time` must be a `bool`. Got type: {type(mask_where_zero_across_time)}")
+        raise TypeError(f"(trend_in_time) `mask_where_zero_across_time` must be a `bool`. Got type: {type(mask_where_zero_across_time)}")
     if not isinstance(use_xarray_polyfit, bool):
-        raise TypeError(f"(trend_in_time_old) `use_xarray_polyfit` must be a `bool`. Got type: {type(use_xarray_polyfit)}")
+        raise TypeError(f"(trend_in_time) `use_xarray_polyfit` must be a `bool`. Got type: {type(use_xarray_polyfit)}")
     if not isinstance(save_as, (str, type(None))):
-        raise TypeError(f"(trend_in_time_old) `save_as` must be a string or `None`. Got type: {type(save_as)}")
+        raise TypeError(f"(trend_in_time) `save_as` must be a string or `None`. Got type: {type(save_as)}")
     elif isinstance(save_as, str) and not '.nc' in save_as:
-        raise TypeError(f"(trend_in_time_old) `save_as` must be a `.nc` filepath. Got: {save_as}")
+        raise TypeError(f"(trend_in_time) `save_as` must be a `.nc` filepath. Got: {save_as}")
 
     # Verify `dataset` has the specified variable
     if isinstance(dataset, xr.Dataset):
         actual_vars = get_variable_name(dataset)
         if var not in actual_vars:
-            raise ValueError(f"(trend_in_time_old) `dataset` must have the specified `var` {var}. Available variables: {actual_vars}")
+            raise ValueError(f"(trend_in_time) `dataset` must have the specified `var` {var}. Available variables: {actual_vars}")
     else:
         # Get the name of the variable
         var = dataset.name
@@ -447,7 +447,7 @@ def trend_in_time_old(
     
     # Information to output
     if verbose:
-        print(f"(trend_in_time_old) `save_as`: {save_as}")
+        print(f"(trend_in_time) `save_as`: {save_as}")
     
     # Mask grid cells which have values of zero over all time
     if mask_where_zero_across_time:
@@ -470,13 +470,13 @@ def trend_in_time_old(
             # Calculate the correction factor to convert seconds to years
             correction_factor = 60 * 60 * 24 * 365
         else:
-            raise TypeError(f"(trend_in_time_old) Correction factor not yet set for time dimension type: {date_dtype}")
+            raise TypeError(f"(trend_in_time) Correction factor not yet set for time dimension type: {date_dtype}")
         if verbose:
-            print(f"(trend_in_time_old) `dataset` has date type: {date_dtype}")
+            print(f"(trend_in_time) `dataset` has date type: {date_dtype}")
     elif time_dim == 'year':
         correction_factor = 1
     else:
-        raise TypeError(f"(trend_in_time_old) Correction factor not yet set for `time_dim`: {time_dim}")
+        raise TypeError(f"(trend_in_time) Correction factor not yet set for `time_dim`: {time_dim}")
 
     # Store the variable attributes to put back later
     var_attrs = dataset[var].attrs
@@ -486,10 +486,10 @@ def trend_in_time_old(
         ## Note: When using `polyfit()`, a dimenson `degree` gets added
         ## The index 0 of `degree` corresponds to the slope when using a 1st-order fit
         if verbose:
-            print(f"(trend_in_time_old) Getting a first-degree polyfit")
+            print(f"(trend_in_time) Getting a first-degree polyfit")
         polyfit = (dataset[var].polyfit(time_dim, 1, skipna=True, full=True).isel(degree=0, drop=True) * correction_factor)
         if verbose:
-            print(f"(trend_in_time_old) Geting the coefficients and residuals")
+            print(f"(trend_in_time) Geting the coefficients and residuals")
         # Get the coefficients and the residuals
         trends = polyfit['polyfit_coefficients']
         residuals = polyfit['polyfit_residuals']
@@ -500,19 +500,19 @@ def trend_in_time_old(
             time_dim,
         )
         if verbose:
-            print(f"(trend_in_time_old) Getting a numpy array of the values for the given variable")
+            print(f"(trend_in_time) Getting a numpy array of the values for the given variable")
         # Get a numpy array of the values for the given variable
         vals = dataset[var].values
         if verbose:
-            print(f"(trend_in_time_old) Reshaping array")
+            print(f"(trend_in_time) Reshaping array")
         # Reshape to an array with as many rows as years and as many columns as there are pixels
         vals2 = vals.reshape(len(time_axis_epoch_y), -1)
         if verbose:
-            print(f"(trend_in_time_old) Getting a first-degree polyfit")
+            print(f"(trend_in_time) Getting a first-degree polyfit")
         # Do a first-degree polyfit
         polyfit = np.polyfit(time_axis_epoch_y, vals2, 1, full=True)
         if verbose:
-            print(f"(trend_in_time_old) Geting the coefficients and residuals")
+            print(f"(trend_in_time) Geting the coefficients and residuals")
         # Get the coefficients and residuals
         trends = polyfit[0][0,:].reshape(vals.shape[1], vals.shape[2])
         residuals = polyfit[1].reshape(vals.shape[1], vals.shape[2])
@@ -543,7 +543,7 @@ def trend_in_time_old(
     xr_var_resids = dataset[f'{var}_residuals']
         
     if verbose:
-        print(f"(trend_in_time_old) Modifing dataset attributes")
+        print(f"(trend_in_time) Modifing dataset attributes")
     # Modify the attributes of the dataset to reflect the changes
     xr_var_trends.attrs['standard_name'] = f'{var}_trends'
     xr_var_resids.attrs['standard_name'] = f'{var}_residuals'
@@ -573,7 +573,7 @@ def trend_in_time_old(
     # Save the modified dataset, if applicable
     if not isinstance(save_as, type(None)):
         if verbose:
-            print(f"(trend_in_time_old) Saving the dataset file: {save_as}")
+            print(f"(trend_in_time) Saving the dataset file: {save_as}")
         # Save the plot to file
         dataset.to_netcdf(save_as)
     
@@ -633,7 +633,7 @@ def mask_where_all_zero(
                [[0, 1, 1],
                 [1, 0, 0],
                 [0, 0, 0]]])
-        >>> from arctichoke.analysis.trend_in_time_old import mask_where_all_zero
+        >>> from arctichoke.analysis import mask_where_all_zero
         >>> xr_ds_nan = mask_where_all_zero(
         >>>     xr_ds,
         >>>     'test_var',

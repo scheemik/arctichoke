@@ -1,5 +1,5 @@
 import xarray as xr
-from arctichoke.analysis import sum_by_year, trend_in_time, trend_in_time_old
+from arctichoke.analysis import sum_by_year, trend_in_time, trend_in_time_scipy
 from arctichoke.dataset import select_months
 from arctichoke.path import list_variable_files
 from arctichoke.plot import make_title, quadmesh_map
@@ -96,14 +96,14 @@ def make_trend_map(
     )
     # Take the trend across time
     if calc_pvals:
-        dataset = trend_in_time(
+        dataset = trend_in_time_scipy(
             dataset = dataset,
             var = f'{this_var}_year_sum',
             mask_where_zero_across_time = False,
             verbose = verbose,
         )
     else:
-        dataset = trend_in_time_old(
+        dataset = trend_in_time(
             dataset = dataset,
             var = f'{this_var}_year_sum',
             mask_where_zero_across_time = mask_where_zero_across_time,
