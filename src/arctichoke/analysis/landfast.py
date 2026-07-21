@@ -666,6 +666,9 @@ def make_landfast_files(
             make_file_path(packed_filepath)
             slow_filepath = landfast_filepath.replace('silandfast', 'sislow')
             make_file_path(slow_filepath)
+        else:
+            packed_filepath = None
+            slow_filepath = None
         # Check whether the file exists
         try:
             verify_path(landfast_filepath)

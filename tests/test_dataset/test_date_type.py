@@ -9,7 +9,10 @@ def test_get_date_type():
     # Define test cases
     test_cases = [
         {
-            'dataset': make_example_dataset(time_axis=True),
+            'dataset': make_example_dataset(
+                time_dim='time',
+                time_len=2,
+            ),
             'expected_date_type': 'datetime64[ns]',
         },
         {
@@ -83,7 +86,10 @@ def test_get_epoch_times():
     # Define test cases
     test_cases = [
         {
-            'dataset': make_example_dataset(time_axis=True),
+            'dataset': make_example_dataset(
+                time_dim='time',
+                time_len=2,
+            ),
             'expected_epoch_times': [np.float64(56.07945205479452), np.float64(56.16438356164384)],
         },
         {

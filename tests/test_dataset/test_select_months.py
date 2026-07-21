@@ -8,41 +8,23 @@ from arctichoke.verify import verify_path
 
 def test_select_months():
     """Test the `select_months` function."""
-    # Create test case with many different trends
-    n = 2
-    # Initialize the dataset
-    test_seasons = xr.Dataset()
-    # Add dimensions
-    j_arr = np.arange(n, dtype=np.float64)
-    test_seasons['j'] = ('j',j_arr)
-    i_arr = np.arange(n+1,2*n+1, dtype=np.float64)
-
-    # Assign longitude and latitude coordinates
-    lon_arr = np.reshape([np.arange(2*n+1,3*n+1, dtype=np.float64)]*n, (n,n))
-    lat_arr = np.reshape([np.arange(3*n+1,4*n+1, dtype=np.float64)]*n, (n,n)).T
-    test_seasons = test_seasons.assign_coords(
-        {
-            'longitude': (['j','i'], lon_arr),
-            'latitude': (['j','i'], lat_arr),
-        }
-    )
-
-    # Add a test variable
-    test_var = np.reshape(np.arange(0, n*n, dtype=np.float64), (n,n))
-    test_seasons['test_var'] = (['j','i'], test_var)
-    # Add time axis
-    test_seasons['i'] = ('i',i_arr)
+    # Create test case with many months from which to select seasons
     this_year = 2026
     n_years = 3
-    time_arr = np.arange(f'{this_year}-01', f'{this_year+n_years}-01', dtype='datetime64[M]')
-    test_seasons = test_seasons.expand_dims(dim={'time': time_arr}, axis=0)
+    test_seasons = make_example_dataset(
+        n = 2,
+        time_dim = 'time',
+        time_len = 12*n_years,
+        start_year = this_year,
+    )
     # Define test cases
     test_cases = [
         {
             'dataset': make_example_dataset(
                 n=3, 
                 test_var_name='test_var',
-                time_axis=True,
+                time_dim='time',
+                time_len=2,
             ),
             'months': [1,2,3,4,5,6,7,8,9,10,11,12],
             'expected_length': 2,
@@ -51,7 +33,8 @@ def test_select_months():
             'dataset': make_example_dataset(
                 n=3, 
                 test_var_name='test_var',
-                time_axis=True,
+                time_dim='time',
+                time_len=2,
             ),
             'months': [1],
             'expected_length': 1,
@@ -60,7 +43,8 @@ def test_select_months():
             'dataset': make_example_dataset(
                 n=3, 
                 test_var_name='test_var',
-                time_axis=True,
+                time_dim='time',
+                time_len=2,
             ),
             'months': [3],
             'expected_length': 0,
@@ -89,7 +73,7 @@ def test_select_months():
     invaild_ds_no_time = make_example_dataset(
         n=2,
         test_var_name='test_var',
-        time_axis=False
+        time_dim=None,
     )
     # Take the sum by year of the example dataset
     invalid_ds_year = sum_by_year(test_seasons)

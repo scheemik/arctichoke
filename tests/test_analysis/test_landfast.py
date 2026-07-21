@@ -20,7 +20,8 @@ def test_find_packed_ice():
         make_example_dataset(
             n=3,
             test_var_name='siconc',
-            time_axis=True,
+            time_dim='time',
+            time_len=2,
             save_as=test_file,
         )
     # Define test cases
@@ -181,7 +182,8 @@ def test_find_slow_ice():
         make_example_dataset(
             n=3,
             test_var_name='sispeed',
-            time_axis=True,
+            time_dim='time',
+            time_len=2,
             save_as=test_file,
         )
     # Define test cases
@@ -322,7 +324,8 @@ def test_find_landfast_ice():
             make_example_dataset(
                 n=3,
                 test_var_name=si_var,
-                time_axis=True,
+                time_dim='time',
+                time_len=2,
                 save_as=test_file,
             )
     # Define test cases
@@ -422,7 +425,8 @@ def test_find_landfast_ice():
             'siconc_dataset': make_example_dataset(
                 n=3, 
                 test_var_name='invalid_var',
-                time_axis=True,
+                time_dim='time',
+                time_len=2,
             ),
             'sispeed_dataset': test_file_names['sispeed'][0],
         },
@@ -431,7 +435,8 @@ def test_find_landfast_ice():
             'sispeed_dataset': make_example_dataset(
                 n=3, 
                 test_var_name='invalid_var',
-                time_axis=True,
+                time_dim='time',
+                time_len=2,
             ),
         },
         {
@@ -533,7 +538,8 @@ def test_make_landfast_files():
             make_example_dataset(
                 n=4,
                 test_var_name=si_var,
-                time_axis=True,
+                time_dim='time',
+                time_len=2,
                 save_as=test_file,
             )
     # Define test cases
@@ -617,7 +623,8 @@ def test_make_landfast_files():
         make_example_dataset(
             n=4,
             test_var_name=invalid_si_var,
-            time_axis=True,
+            time_dim='time',
+            time_len=2,
             save_as=test_file,
         )
     # Define invalid test cases

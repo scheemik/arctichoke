@@ -20,7 +20,9 @@ def test_sum_by_year():
         make_example_dataset(
             n=3,
             test_var_name='test_var',
-            time_axis=(2000+i),
+            time_dim='time',
+            time_len=2,
+            start_year=(2000+i),
             save_as=test_file_names[i],
         )
     # Create test case with `nan` values
@@ -36,7 +38,8 @@ def test_sum_by_year():
             'dataset': make_example_dataset(
                 n=3, 
                 test_var_name='test_var',
-                time_axis=True,
+                time_dim='time',
+                time_len=2,
             ),
             'save_as': None,
             'unique_years': [2026],
@@ -46,7 +49,8 @@ def test_sum_by_year():
             'dataset': make_example_dataset(
                 n=3, 
                 test_var_name='test_var',
-                time_axis=True,
+                time_dim='time',
+                time_len=2,
             ),
             'save_as': f"{test_file_dir}/example_new_0.nc",
             'unique_years': [2026],
@@ -94,7 +98,9 @@ def test_sum_by_year():
     make_example_dataset(
         n=6,
         test_var_name='test_var',
-        time_axis=1999,
+        time_dim='time',
+        time_len=2,
+        start_year=1999,
         save_as=odd_size_example,
     )
     # Define invalid test cases

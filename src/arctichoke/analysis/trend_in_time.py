@@ -72,7 +72,9 @@ def trend_in_time_scipy(
         >>>         n=3,
         >>>         offset=offsets[i],
         >>>         test_var_name='test_var',
-        >>>         time_axis=(2000+i),
+        >>>         time_dim='time',
+        >>>         time_len=2,
+        >>>         start_year=(2000+i),
         >>>         save_as=test_file_names[i],
         >>>     )
         >>> import xarray as xr

@@ -65,7 +65,9 @@ def test_trend_in_time():
             n=3,
             offset=offsets[i],
             test_var_name='test_var',
-            time_axis=(2000+i),
+            time_dim='time',
+            time_len=2,
+            start_year=(2000+i),
             save_as=test_file_names[i],
         )
     # Create test case with `nan` values
@@ -81,7 +83,8 @@ def test_trend_in_time():
             'dataset': make_example_dataset(
                 n=3, 
                 test_var_name='test_var',
-                time_axis=True,
+                time_dim='time',
+                time_len=2,
             ),
             'var': 'test_var',
             'time_dim': 'time',
@@ -96,7 +99,8 @@ def test_trend_in_time():
             'dataset': make_example_dataset(
                 n=3, 
                 test_var_name='test_var',
-                time_axis=True,
+                time_dim='time',
+                time_len=2,
             ),
             'var': 'test_var',
             'time_dim': 'time',
@@ -210,7 +214,9 @@ def test_trend_in_time():
     make_example_dataset(
         n=6,
         test_var_name='test_var',
-        time_axis=1999,
+        time_dim='time',
+        time_len=2,
+        start_year=1999,
         save_as=odd_size_example,
     )
     # Define invalid test cases

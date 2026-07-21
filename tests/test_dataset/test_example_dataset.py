@@ -19,7 +19,9 @@ def test_make_example_dataset():
             'n_size': 10,
         },
         {
-            'actual': dataset.make_example_dataset(test_var_name='new_test_var'),
+            'actual': dataset.make_example_dataset(
+                test_var_name='new_test_var'
+            ),
             'keys': ['new_test_var'],
             'coords': ['j', 'i', 'longitude', 'latitude'],
             'sizes': ['j', 'i'],
@@ -28,7 +30,9 @@ def test_make_example_dataset():
             'n_size': 10,
         },
         {
-            'actual': dataset.make_example_dataset(save_as=test_filepath),
+            'actual': dataset.make_example_dataset(
+                save_as=test_filepath
+            ),
             'keys': ['test_var'],
             'coords': ['j', 'i', 'longitude', 'latitude'],
             'sizes': ['j', 'i'],
@@ -37,7 +41,10 @@ def test_make_example_dataset():
             'n_size': 10,
         },
         {
-            'actual': dataset.make_example_dataset(save_as=test_filepath, n=5),
+            'actual': dataset.make_example_dataset(
+                save_as=test_filepath, 
+                n=5,
+            ),
             'keys': ['test_var'],
             'coords': ['j', 'i', 'longitude', 'latitude'],
             'sizes': ['j', 'i'],
@@ -46,21 +53,27 @@ def test_make_example_dataset():
             'n_size': 5,
         },
         {
-            'actual': dataset.make_example_dataset(time_axis=True),
+            'actual': dataset.make_example_dataset(
+                time_dim='year',
+            ),
             'keys': ['test_var'],
-            'coords': ['time', 'j', 'i', 'longitude', 'latitude'],
-            'sizes': ['time', 'j', 'i'],
-            'test_var_size': 200,
+            'coords': ['year', 'j', 'i', 'longitude', 'latitude'],
+            'sizes': ['year', 'j', 'i'],
+            'test_var_size': 100,
             'test_latlon_size': 100,
             'n_size': 10,
-            'unique_years': [2026],
+            'unique_years': [2000],
             'expected_sums': [4950, 4950],
         },
         {
-            'actual': dataset.make_example_dataset(time_axis=2025),
+            'actual': dataset.make_example_dataset(
+                time_dim='year',
+                time_len=2,
+                start_year=2025,
+            ),
             'keys': ['test_var'],
-            'coords': ['time', 'j', 'i', 'longitude', 'latitude'],
-            'sizes': ['time', 'j', 'i'],
+            'coords': ['year', 'j', 'i', 'longitude', 'latitude'],
+            'sizes': ['year', 'j', 'i'],
             'test_var_size': 200,
             'test_latlon_size': 100,
             'n_size': 10,
@@ -68,7 +81,12 @@ def test_make_example_dataset():
             'expected_sums': [4950, 4950],
         },
         {
-            'actual': dataset.make_example_dataset(n=3, offset=2, time_axis=True),
+            'actual': dataset.make_example_dataset(
+                n=3, 
+                offset=2, 
+                time_dim='time',
+                time_len=2,
+            ),
             'keys': ['test_var'],
             'coords': ['time', 'j', 'i', 'longitude', 'latitude'],
             'sizes': ['time', 'j', 'i'],
@@ -169,28 +187,47 @@ def test_make_example_dataset():
             assert True, f"`make_example_dataset` raised an exception on invalid `n`: {e}"
         else:
             assert False, f"`make_example_dataset` did not raise an exception on invalid `n` {invalid_value}"
-        # Test for `time_axis`
-        for invalid_value in invalid_values:
+        # Test for `time_dim`
+        if not isinstance(invalid_value, type(None)):
             try:
                 actual = dataset.make_example_dataset(
                     save_as=test_filepath,
-                    time_axis = invalid_value,
+                    time_dim = invalid_value,
                 )
-            except (TypeError, ValueError) as e:
-                assert True, f"`make_example_dataset` raised an exception on invalid `time_axis`: {e}"
+            except (TypeError, ValueError, NotImplementedError) as e:
+                assert True, f"`make_example_dataset` raised an exception on invalid `time_dim`: {e}"
             else:
-                assert False, f"`make_example_dataset` did not raise an exception on invalid `time_axis` {invalid_value}"
+                assert False, f"`make_example_dataset` did not raise an exception on invalid `time_dim` {invalid_value}"
+        # Test for `time_len`
+        try:
+            actual = dataset.make_example_dataset(
+                save_as=test_filepath,
+                time_len = invalid_value,
+            )
+        except (TypeError, ValueError, NotImplementedError) as e:
+            assert True, f"`make_example_dataset` raised an exception on invalid `time_len`: {e}"
+        else:
+            assert False, f"`make_example_dataset` did not raise an exception on invalid `time_len` {invalid_value}"
+        # Test for `start_year`
+        try:
+            actual = dataset.make_example_dataset(
+                save_as=test_filepath,
+                start_year = invalid_value,
+            )
+        except (TypeError, ValueError, NotImplementedError) as e:
+            assert True, f"`make_example_dataset` raised an exception on invalid `start_year`: {e}"
+        else:
+            assert False, f"`make_example_dataset` did not raise an exception on invalid `start_year` {invalid_value}"
         # Test for `overwrite`
-        for invalid_value in invalid_values:
-            try:
-                actual = dataset.make_example_dataset(
-                    save_as=test_filepath,
-                    overwrite = invalid_value,
-                )
-            except (TypeError, ValueError) as e:
-                assert True, f"`make_example_dataset` raised an exception on invalid `overwrite`: {e}"
-            else:
-                assert False, f"`make_example_dataset` did not raise an exception on invalid `overwrite` {invalid_value}"
+        try:
+            actual = dataset.make_example_dataset(
+                save_as=test_filepath,
+                overwrite = invalid_value,
+            )
+        except (TypeError, ValueError) as e:
+            assert True, f"`make_example_dataset` raised an exception on invalid `overwrite`: {e}"
+        else:
+            assert False, f"`make_example_dataset` did not raise an exception on invalid `overwrite` {invalid_value}"
     
     # Clean up the example dataset
     os.remove(test_filepath)
