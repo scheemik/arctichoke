@@ -109,17 +109,12 @@ def make_trend_map(
             mask_where_zero_across_time = mask_where_zero_across_time,
             verbose = verbose,
         )
-    if select_summer:
-        this_map_title = f"{make_title(dataset)} [summer]"
-    else:
-        this_map_title = make_title(dataset)
     # Plot the trends on a map
     sum_year_trend_map = quadmesh_map(
         dataset,
         f'{this_var}_year_sum_trends',
         map_projection = map_projection,
         diverging_cbar = True,
-        map_title=this_map_title,
         verbose = verbose,
     )
     sum_year_trend_map
