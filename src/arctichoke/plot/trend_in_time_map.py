@@ -10,7 +10,7 @@ def make_trend_map(
     this_variant_label: str,
     this_modification: str,
     calc_pvals: bool = False,
-    mask_where_zero_across_time: bool = True,
+    mask_where_zero_across_time: (bool, xr.DataArray) = True,
     select_summer: bool = True,
     map_projection: str = 'Orthographic',
     verbose: bool = False,
@@ -37,9 +37,10 @@ def make_trend_map(
         calc_pvals : `bool`, optional
             Whether to use the version of `trend_in_time()` which calculates p-values.
             Default is `False`.
-        mask_where_zero_across_time : `bool`, optional
-            Whether to mask out grid cells where the values are zero across all time.
-            Default is `True`.
+        mask_where_zero_across_time : `bool`, `xarray.DataArray`, optional
+            Whether to mask out grid cells which have zero as a value across the entire time dimension using `mask_where_all_zero()`.
+            If a `xarray.DataArray` is given, it is used as a mask.
+            Default is `False`. 
         select_summer : `bool`, optional
             Whether to use `select_months()` to only plot the summer months (June-October).
             Default is `True`.

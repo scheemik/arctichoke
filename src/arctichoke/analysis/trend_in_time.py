@@ -305,7 +305,7 @@ def trend_in_time(
     dataset: (str, [str], xr.Dataset, xr.DataArray),
     var: str = None,
     time_dim: str = 'year',
-    mask_where_zero_across_time: bool = False,
+    mask_where_zero_across_time: (bool, xr.DataArray) = False,
     use_xarray_polyfit: bool = True,
     save_as: str = None,
     verbose: bool = False,
@@ -327,8 +327,9 @@ def trend_in_time(
         time_dim : `str`, optional
             The name of the time dimension over which to find the trend.
             Default is `year`. 
-        mask_where_zero_across_time : `bool`, optional
+        mask_where_zero_across_time : `bool`, `xarray.DataArray`, optional
             Whether to mask out grid cells which have zero as a value across the entire time dimension using `mask_where_all_zero()`.
+            If a `xarray.DataArray` is given, it is used as a mask.
             Default is `False`. 
         use_xarray_polyfit : `bool`, optional
             If `True`, use `xarray.polyfit()` to take trends in time, which skips `nan` values. 
@@ -427,8 +428,8 @@ def trend_in_time(
         raise TypeError(f"(trend_in_time) `var` must be a string or `None`. Got type: {type(var)}")
     if not isinstance(time_dim, str):
         raise TypeError(f"(trend_in_time) `time_dim` must be a string. Got type: {type(time_dim)}")
-    if not isinstance(mask_where_zero_across_time, bool):
-        raise TypeError(f"(trend_in_time) `mask_where_zero_across_time` must be a `bool`. Got type: {type(mask_where_zero_across_time)}")
+    if not isinstance(mask_where_zero_across_time, (bool, xr.DataArray)):
+        raise TypeError(f"(trend_in_time) `mask_where_zero_across_time` must be a `bool` or `xarray.DataArray`. Got type: {type(mask_where_zero_across_time)}")
     if not isinstance(use_xarray_polyfit, bool):
         raise TypeError(f"(trend_in_time) `use_xarray_polyfit` must be a `bool`. Got type: {type(use_xarray_polyfit)}")
     if not isinstance(save_as, (str, type(None))):
@@ -452,7 +453,18 @@ def trend_in_time(
         print(f"(trend_in_time) `save_as`: {save_as}")
     
     # Mask grid cells which have values of zero over all time
-    if mask_where_zero_across_time:
+    if isinstance(mask_where_zero_across_time, (xr.DataArray)):
+        if verbose:
+            print(f"(trend_in_time) `dataset[var].attrs` before mask:\n{dataset[var].attrs}")
+        # Save the attributes to put back in after
+        var_attributes = dataset[var].attrs 
+        # Apply the mask
+        dataset[var] = dataset[var] * mask_where_zero_across_time
+        # Put the attributes back in
+        dataset[var].attrs = var_attributes
+        if verbose:
+            print(f"(trend_in_time) `dataset[var].attrs` after mask:\n{dataset[var].attrs}")
+    elif mask_where_zero_across_time:
         dataset = mask_where_all_zero(
             dataset,
             var,
