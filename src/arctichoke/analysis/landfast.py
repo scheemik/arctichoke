@@ -9,9 +9,8 @@ cdo = Cdo(tempdir='./cdo_tmp/')
 cdo.cleanTempDir()
 
 from arctichoke import get_current_datetime_str
-from arctichoke.dataset.get_variable import get_variable_name
-from arctichoke.dataset.trim_dataset import trim_latlon
-from arctichoke.path.manipulate_paths import make_file_path
+from arctichoke.dataset import get_variable_name, make_mask, trim_latlon
+from arctichoke.path import make_file_path
 import arctichoke.params as sps
 from arctichoke.verify import verify_path
 
@@ -108,18 +107,6 @@ def find_packed_ice(
         raise TypeError(f"(find_packed_ice) `save_as` must be a `.nc` filepath. Got: {save_as}")
     if not isinstance(verbose, bool):
         raise TypeError(f"(find_packed_ice) `verbose` must be a `bool`. Got type: {type(verbose)}")
-
-    # Verify the dataset(s) contain(s) the `siconc` variable
-    for this_dataset in var_check_list:
-        var_name = get_variable_name(this_dataset)
-        if isinstance(var_name, str):
-            if not var_name == siconc_var:
-                raise ValueError(f"(find_packed_ice) `this_dataset` must contain the variable `{siconc_var}`. Available variables: {var_name}")
-        elif isinstance(var_name, type([])):
-            if not siconc_var in var_name:
-                raise ValueError(f"(find_packed_ice) `this_dataset` must contain the variable `{siconc_var}`. Available variables: {var_name}")
-        else:
-            raise TypeError(f"(find_packed_ice) `get_variable_name` returned something other than a string or list: {var_name}")
     
     # Information to output
     if verbose:
@@ -128,32 +115,17 @@ def find_packed_ice(
     # Get the maximum possible integer to cover all reasonable values of `siconc`
     numpy_int32_max = np.iinfo(np.int32).max
 
-    # Assemble the string to specify the range and the output values
-    range_min = packed_threshold
-    range_max = numpy_int32_max
-    val_inside_range = 1
-    val_outside_range = 0
-    range_string = f"{range_min},{range_max},{val_inside_range},{val_outside_range}"
-
-    # Create a new dataset for `sipacked`, packed ice
-    if isinstance(dataset, (xr.Dataset, xr.DataArray)):
-        if verbose:
-            print(f"(find_packed_ice) `input_command`: cdo setrtoc2,{range_string} dataset")
-        # If only processing one `xr.Dataset`, the `input` argument cannot include the range string
-        packedice_xr = cdo_command(
-            range_string,
-            input=dataset, 
-            returnXDataset='sipacked'
-        )
-    else:
-        # Assemble the `cdo` input command to pass to `mergetime`
-        input_command = f"{input_command_prefix}{range_string}{input_command_files}"
-        if verbose:
-            print(f"(find_packed_ice) `input_command`: {input_command}")
-        packedice_xr = cdo_command(
-            input = input_command,
-            returnXDataset = 'sipacked',
-        )
+    # Mask out `siconc` below the threshold
+    packedice_xr = make_mask(
+        dataset,
+        var = siconc_var,
+        mask_var_name = 'sipacked',
+        mask_this_range = [packed_threshold, numpy_int32_max],
+        val_inside_range = 1,
+        val_outside_range = 0,
+        add_mask_attrs = False,
+        verbose = verbose,
+    )
 
     # Rename `siconc` in the new dataset to `sipacked`
     packedice_xr = packedice_xr.rename_vars({siconc_var:'sipacked'})
@@ -266,18 +238,6 @@ def find_slow_ice(
         raise TypeError(f"(find_slow_ice) `save_as` must be a `.nc` filepath. Got: {save_as}")
     if not isinstance(verbose, bool):
         raise TypeError(f"(find_slow_ice) `verbose` must be a `bool`. Got type: {type(verbose)}")
-
-    # Verify the dataset(s) contain(s) the `sispeed` variable
-    for this_dataset in var_check_list:
-        var_name = get_variable_name(this_dataset)
-        if isinstance(var_name, str):
-            if not var_name == 'sispeed':
-                raise ValueError(f"(find_slow_ice) `this_dataset` must contain the variable `sispeed`. Available variables: {var_name}")
-        elif isinstance(var_name, type([])):
-            if not 'sispeed' in var_name:
-                raise ValueError(f"(find_slow_ice) `this_dataset` must contain the variable `sispeed`. Available variables: {var_name}")
-        else:
-            raise TypeError(f"(find_slow_ice) `get_variable_name` returned something other than a string or list: {var_name}")
     
     # Information to output
     if verbose:
@@ -286,32 +246,16 @@ def find_slow_ice(
     # Get the minimum possible integer to cover all reasonable values of `sispeed`
     numpy_int32_min = np.iinfo(np.int32).min
 
-    # Assemble the string to specify the range and the output values
-    range_min = numpy_int32_min
-    range_max = slow_threshold
-    val_inside_range = 1
-    val_outside_range = 0
-    range_string = f"{range_min},{range_max},{val_inside_range},{val_outside_range}"
-
-    # Create a new dataset for `sislow`, slow ice
-    if isinstance(dataset, (xr.Dataset, xr.DataArray)):
-        if verbose:
-            print(f"(find_slow_ice) `input_command`: cdo setrtoc2,{range_string} dataset")
-        # If only processing one `xr.Dataset`, the `input` argument cannot include the range string
-        slowice_xr = cdo_command(
-            range_string,
-            input=dataset, 
-            returnXDataset='sislow'
-        )
-    else:
-        # Assemble the `cdo` input command to pass to `mergetime`
-        input_command = f"{input_command_prefix}{range_string}{input_command_files}"
-        if verbose:
-            print(f"(find_slow_ice) `input_command`: {input_command}")
-        slowice_xr = cdo_command(
-            input = input_command,
-            returnXDataset = 'sislow',
-        )
+    slowice_xr = make_mask(
+        dataset,
+        var = 'sispeed',
+        mask_var_name = 'sislow',
+        mask_this_range = [numpy_int32_min, slow_threshold],
+        val_inside_range = 1,
+        val_outside_range = 0,
+        add_mask_attrs = False,
+        verbose = verbose,
+    )
 
     # Rename `sispeed` in the new dataset to `sislow`
     slowice_xr = slowice_xr.rename_vars({'sispeed':'sislow'})
