@@ -258,6 +258,19 @@ def test_make_mask():
                 assert True, f"`make_mask` raised an exception on invalid `save_as`: {e}"
             else:
                 assert False, f"`make_mask` did not raise an exception on invalid `save_as` {invalid_string}"
+        # Test with `add_mask_attrs`
+        try:
+            actual = dataset.make_mask(
+                dataset = test_cases[0]['dataset'],
+                var = test_cases[0]['var'],
+                mask_this_val = test_cases[0]['mask_this_val'],
+                mask_this_range = test_cases[0]['mask_this_range'],
+                add_mask_attrs = invalid_string,
+            )
+        except (TypeError, ValueError) as e:
+            assert True, f"`make_mask` raised an exception on invalid `add_mask_attrs`: {e}"
+        else:
+            assert False, f"`make_mask` did not raise an exception on invalid `add_mask_attrs` {invalid_string}"
         # Test with `verbose`
         try:
             actual = dataset.make_mask(

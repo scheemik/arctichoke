@@ -23,6 +23,7 @@ def make_mask(
     mask_this_range: [(int, float), (int, float)] = None,
     val_inside_range: (int, float) = 0,
     val_outside_range: (int, float) = 1,
+    add_mask_attrs: bool = True,
     save_as: str = None,
     verbose: bool = False,
     **kwargs,
@@ -58,6 +59,9 @@ def make_mask(
         val_outside_range : `int`, `float`, optional
             The value to assign to values that are not masked out.
             Default is `1`.
+        add_mask_attrs : `bool`, optional
+            Whether to call `add_mask_attributes()` to modify the attributes of the dataset to reflect the fact a mask has been made.
+            Default is `True`.
         save_as : `str`, `None`, optional
             The file name to which to save the modified dataset.
             Default is `None`, which doesn't save the dataset to a file.
@@ -70,18 +74,18 @@ def make_mask(
         Returns
         -------
         mask_xr : `xarray.Dataset`
-            A dataset where maske values are marked as `val_inside_range` and all other values are `val_outside_range`.
+            A dataset where mask values are marked as `val_inside_range` and all other values are `val_outside_range`.
         
         Examples
         --------
-        >>> from arctichoke.dataset.example_dataset import make_example_dataset
+        >>> from arctichoke.dataset import make_example_dataset
         >>> dataset = make_example_dataset(n=3)
         >>> dataset['test_var'].values
         array([[0., 1., 2.],
                [3., 4., 5.],
                [6., 7., 8.]])
-        >>> from arctichoke.analysis import make_mask
-        >>> dataset_masked = make_mask(dataset, mask_this_range=[0,4])
+        >>> from arctichoke.dataset import make_mask
+        >>> dataset_masked = make_mask(dataset, var='test_var', mask_this_range=[0,4])
         >>> dataset_masked['test_var_mask'].values
         array([[0., 0., 0.],
                [0., 0., 1.],
@@ -135,6 +139,8 @@ def make_mask(
         raise TypeError(f"(make_mask) `val_inside_range` must be `int` or `float`. Got type: {type(val_inside_range)}")
     if not isinstance(val_outside_range, (int, float)):
         raise TypeError(f"(make_mask) `val_outside_range` must be `int` or `float`. Got type: {type(val_outside_range)}")
+    if not isinstance(add_mask_attrs, bool):
+        raise TypeError(f"(make_mask) `add_mask_attrs` must be a `bool`. Got type: {type(add_mask_attrs)}")
     if not isinstance(save_as, (str, type(None))):
         raise TypeError(f"(make_mask) `save_as` must be a string or `None`. Got type: {type(save_as)}")
     elif isinstance(save_as, str) and not '.nc' in save_as:
@@ -205,16 +211,134 @@ def make_mask(
             input = input_command,
             returnXDataset = 'mask',
         )
+    # Get the long name of the original dataset, if available
+    try:
+        old_long_name = dataset[var].attrs['long_name']
+    except:
+        old_long_name = mask_var_name
+    # Modify the attributes of the dataset to reflect the changes, if applicable
+    if add_mask_attrs:
+        mask_xr = add_mask_attributes(
+            mask_xr,
+            var,
+            mask_var_name,
+            old_long_name,
+            mask_this_val,
+            mask_this_range,
+            val_mask,
+            val_inside_range,
+            val_outside_range,
+            verbose,
+        )
+
+    # Save the modified dataset, if applicable
+    if not isinstance(save_as, type(None)):
+        # Save the plot to file
+        mask_xr.to_netcdf(save_as)
+    
+    return mask_xr
+
+def add_mask_attributes(
+    mask_xr: xr.Dataset,
+    var: str,
+    mask_var_name: str,
+    old_long_name: str,
+    mask_this_val: (int, float, None),
+    mask_this_range: ([(int, float), (int, float)], None),
+    val_mask: bool,
+    val_inside_range: (int, float),
+    val_outside_range: (int, float),
+    verbose: bool,
+):
+    """ Add mask-related attributes to the given dataset.
+
+        A helper function for `make_mask()` to add attributes that specify the changes to the dataset when making a mask.
+
+        Parameters
+        ----------
+        mask_xr : `xarray.Dataset`
+            The dataset to which to add mask attributes.
+        var : `str`
+            The name of the variable from which a mask was created.
+        mask_var_name : `str`
+            The name given to the new mask variable.
+        old_long_name : `str`
+            The long name from the original dataset from which the mask was created.
+        mask_this_val : `int`, `float`, `None`
+            The value masked out.
+            If an option is given here, then `mask_this_range` must be `None`.
+        mask_this_range : list of `int` or `float`, `None`
+            The range of values masked out.
+            Must be of length 2, order does not matter.
+            If an option is given here, then `mask_this_val` must be `None`.
+        val_mask : `bool`
+            Whether or not a value for `mask_this_val` was given.
+        val_inside_range : `int`, `float`
+            The value assigned to the masked out values.
+        val_outside_range : `int`, `float`
+            The value assigned to values that are not masked out.
+        verbose : `bool`
+            Whether to verbosely output information as the function executes.
+
+        Returns
+        -------
+        mask_xr : `xarray.Dataset`
+            A dataset where mask-related attributes have been added.
+        
+        Examples
+        --------
+        >>> from arctichoke.dataset import make_example_dataset
+        >>> dataset = make_example_dataset(n=3)
+        >>> dataset['test_var'].values
+        array([[0., 1., 2.],
+               [3., 4., 5.],
+               [6., 7., 8.]])
+        >>> from arctichoke.dataset import make_mask
+        >>> dataset_masked = make_mask(dataset, var='test_var', mask_this_range=[0,4])
+        >>> dataset_masked['test_var_mask'].attrs
+        {'standard_name': 'test_var_mask',
+        'long_name': 'Mask of test_var_mask',
+        'units': '0: Masked, 1: Not masked',
+        'comment': 'Masked range [0, 4] with 0: Masked, 1: Not masked',
+        'original_name': 'test_var',
+        'history': '2026-07-22T17:58:00Z altered by `arctichoke`: Masked range [0, 4] with 0: Masked, 1: Not masked. '}
+    """
+    # Verify input arguments
+    if not isinstance(mask_xr, xr.Dataset):
+        raise TypeError(f"(add_mask_attributes) `mask_xr` must be a`xr.Dataset`. Got type: {type(mask_xr)}")
+    if not isinstance(var, str):
+        raise TypeError(f"(add_mask_attributes) `var` must be a string. Got type: {type(var)}")
+    if not isinstance(mask_var_name, str):
+        raise TypeError(f"(add_mask_attributes) `mask_var_name` must be a string. Got type: {type(mask_var_name)}")
+    if not isinstance(old_long_name, str):
+        raise TypeError(f"(add_mask_attributes) `old_long_name` must be a string. Got type: {type(old_long_name)}")
+    if not isinstance(mask_this_val, (int, float, type(None))):
+        raise TypeError(f"(add_mask_attributes) `mask_this_val` must be `int`, `float`, or `None`. Got type: {type(mask_this_val)}")
+    if isinstance(mask_this_range, type([])):
+        if len(mask_this_range) != 2:
+            raise TypeError(f"(add_mask_attributes) `mask_this_range` must be a list of length 2. Got length: {len(mask_this_range)}")
+        else:
+            for mask_range_val in mask_this_range:
+                if not isinstance(mask_range_val, (int, float)):
+                    raise TypeError(f"(add_mask_attributes) Values of `mask_this_range` must be `int` or `float`. Got type: {type(mask_range_val)}")
+    elif not isinstance(mask_this_range, (type([]), type(None))):
+        raise TypeError(f"(add_mask_attributes) `mask_this_range` must be a list or `None`. Got type: {type(mask_this_range)}")
+    if not isinstance(val_mask, bool):
+        raise TypeError(f"(add_mask_attributes) `val_mask` must be a `bool`. Got type: {type(val_mask)}")
+    if not isinstance(val_inside_range, (int, float)):
+        raise TypeError(f"(add_mask_attributes) `val_inside_range` must be `int` or `float`. Got type: {type(val_inside_range)}")
+    if not isinstance(val_outside_range, (int, float)):
+        raise TypeError(f"(add_mask_attributes) `val_outside_range` must be `int` or `float`. Got type: {type(val_outside_range)}")
+    if not isinstance(verbose, bool):
+        raise TypeError(f"(add_mask_attributes) `verbose` must be a `bool`. Got type: {type(verbose)}")
+
+    if verbose:
+        print(f"(add_mask_attributes) Adding mask-related attributes to the dataset.")
     # Rename `var` in the new dataset to append `_mask`
     mask_xr = mask_xr.rename_vars({var:mask_var_name})
-
     # Modify the attributes of the dataset to reflect the changes
     mask_xr[mask_var_name].attrs['standard_name'] = mask_var_name
-    try:
-        new_long_name = dataset[var].attrs['long_name']
-    except:
-        new_long_name = mask_var_name
-    mask_xr[mask_var_name].attrs['long_name'] = f'Mask of {new_long_name}'
+    mask_xr[mask_var_name].attrs['long_name'] = f'Mask of {old_long_name}'
     mask_xr[mask_var_name].attrs['units'] = f'{val_inside_range}: Masked, {val_outside_range}: Not masked'
     if val_mask:
         mask_xr[mask_var_name].attrs['comment'] = f'Masked value {mask_this_val} with {val_inside_range}: Masked, {val_outside_range}: Not masked'
@@ -232,9 +356,4 @@ def make_mask(
         original_history = ''
     mask_xr.attrs['history'] = f"{get_current_datetime_str()} altered by `arctichoke`: {mask_xr[mask_var_name].attrs['comment']}. {original_history}"
 
-    # Save the modified dataset, if applicable
-    if not isinstance(save_as, type(None)):
-        # Save the plot to file
-        mask_xr.to_netcdf(save_as)
-    
     return mask_xr
