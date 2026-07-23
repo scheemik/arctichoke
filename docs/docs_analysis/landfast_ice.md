@@ -58,6 +58,9 @@ from arctichoke.params import CAA_BBOX
 # Define the boundaries of the CAA
 CAA_BBOX
 ```
+```
+[85, 65, -15, -130]
+```
 
 ### Packed ice
 [back to top](#identifying-landfast-ice)
@@ -236,7 +239,7 @@ make_landfast_files(
 )
 ```
 ```console
-	(make_landfast_files) Writing file `/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/silandfast/gn/v20260617/trim_CAA_silandfast_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_200001-200012.nc`.
+	(make_landfast_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/silandfast/gn/v20260617/trim_CAA_silandfast_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_200001-200012.nc`.
 ```
 The above function created a new directory (if needed) for `silandfast` in the existing directory structure given by the provided files, then created a new netCDF file in that directory.
 ```python
@@ -263,6 +266,8 @@ This matches what I saw before, just trimmed precisely around the CAA bounding b
 
 Below, I have written a loop to calculate and write the landfast ice files for all of the ensemble members of EC-Earth3P-HR.
 I have specified `precise_trim = False` to both speed up the computations as well as keep more of the spatial area in the files. 
+I have specified `save_packed_and_slow = True` which results in the data files for `sipacked` and `sislow` to be saved in addition to the `silandfast` files.
+Saving those files takes up more space, but it does make plotting trends in those variables much quicker.
 This took 70 minutes to complete.
 ```python
 from arctichoke.path import list_variable_files
@@ -294,15 +299,53 @@ for this_variant_label in [
             sispeed_files = sispeed_list,
             map_bbox = CAA_BBOX,
             precise_trim = False,
+            save_packed_and_slow = True,
         )
 ```
 ```console
-	(make_landfast_files) Writing file `/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/silandfast/gn/v20260617/trim_CAA_silandfast_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_195001-195012.nc`.
-	(make_landfast_files) Writing file `/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/silandfast/gn/v20260617/trim_CAA_silandfast_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_195101-195112.nc`.
+	(make_landfast_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/silandfast/gn/v20260617/trim_CAA_silandfast_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_195001-195012.nc`.
+	(make_landfast_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/silandfast/gn/v20260617/trim_CAA_silandfast_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_195101-195112.nc`.
     ...
-	(make_landfast_files) Writing file `/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/silandfast/gn/v20260617/trim_CAA_silandfast_SImon_EC-Earth3P-HR_hist-1950_r3i1p2f1_gn_201301-201312.nc`.
-	(make_landfast_files) Writing file `/seaicecp_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/silandfast/gn/v20260617/trim_CAA_silandfast_SImon_EC-Earth3P-HR_hist-1950_r3i1p2f1_gn_201401-201412.nc`.
+	(make_landfast_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/silandfast/gn/v20260617/trim_CAA_silandfast_SImon_EC-Earth3P-HR_hist-1950_r3i1p2f1_gn_201301-201312.nc`.
+	(make_landfast_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/silandfast/gn/v20260617/trim_CAA_silandfast_SImon_EC-Earth3P-HR_hist-1950_r3i1p2f1_gn_201401-201412.nc`.
 ```
+If you have saved versions of the `siconc` and `sispeed` files that are trimmed to the CAA, use the following code.
+```python
+from arctichoke.path import list_variable_files
+from arctichoke.analysis.landfast import make_landfast_files
+from arctichoke.params import CAA_BBOX
+
+this_model = 'EC-Earth3P-HR'
+
+for this_variant_label in [
+    'r1i1p2f1', 
+    'r2i1p2f1', 
+    'r3i1p2f1',
+]:
+    for this_experiment in ['hist-1950']:
+        siconc_list = list_variable_files(
+            source_id = this_model,
+            variable_id = 'siconc',
+            experiment_id = this_experiment,
+            variant_label = this_variant_label,
+            with_modification = 'trim_CAA_',
+        )
+        sispeed_list = list_variable_files(
+            source_id = this_model,
+            variable_id = 'sispeed',
+            experiment_id = this_experiment,
+            variant_label = this_variant_label,
+            with_modification = 'trim_CAA_',
+        )
+        make_landfast_files(
+            siconc_files = siconc_list,
+            sispeed_files = sispeed_list,
+            precise_trim = False,
+            save_packed_and_slow = True,
+        )
+        
+```
+
 I can confirm how many landfast ice files were created using the `list_available_variables()` function.
 ```python
 from arctichoke.path.variable_paths import list_available_variables
@@ -323,7 +366,9 @@ list_available_variables(
      'sispeed': {'': 65},
      'silandfast': {'trim_CAA_': 65},
      'sivol': {'': 65},
-     'siconc2': {'trim_CAA_': 65}}},
+     'siconc2': {'trim_CAA_': 65},
+     'sipacked': {'trim_CAA_': 65},
+     'sislow': {'trim_CAA_': 65}}},
    'r2i1p2f1': {'SImon': {'siage': {'': 65},
      'sithick': {'': 65},
      'siv': {'': 65},
@@ -332,7 +377,9 @@ list_available_variables(
      'sispeed': {'': 65},
      'silandfast': {'trim_CAA_': 65},
      'sivol': {'': 65},
-     'siconc2': {'trim_CAA_': 65}}},
+     'siconc2': {'trim_CAA_': 65},
+     'sipacked': {'trim_CAA_': 65},
+     'sislow': {'trim_CAA_': 65}}},
    'r3i1p2f1': {'SImon': {'sithick': {'': 65},
      'siage': {'': 65},
      'siu': {'': 65},
@@ -341,11 +388,17 @@ list_available_variables(
      'sispeed': {'': 65},
      'silandfast': {'trim_CAA_': 65},
      'sivol': {'': 65},
-     'siconc2': {'trim_CAA_': 65}}}}}}
+     'siconc2': {'trim_CAA_': 65},
+     'sipacked': {'trim_CAA_': 65},
+     'sislow': {'trim_CAA_': 65}}}}}}
 ```
 
 ### Writing all files for HadGEM3-GC31-MM
 [back to top](#identifying-landfast-ice)
+
+For the HadGEM3-GC31 models, it is important to use the `siconc2` variable files generated in {doc}`Calculating 'siconc' from 'sithick' and 'sivol'  <../docs_data/siconc_from_sithick_and_sivol>`.
+Since those files are trimmed to the CAA region, it is important to also use the `sispeed` files created in {doc}`Trimming data to the CAA region <../docs_data/trim_to_CAA_region>` and to not specify the `map_bbox` argument in `make_landfast_files()`.
+This took approximately 30 minutes to complete.
 
 ```python
 from arctichoke.path import list_variable_files
@@ -379,16 +432,18 @@ for this_variant_label in [
             sispeed_files = sispeed_list,
             precise_trim = False,
             siconc_var = 'siconc2',
+            save_packed_and_slow = True,
         )
 ```
 ```console
-	(make_landfast_files) Writing file `/seaicecp_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i3p1f1/SImon/silandfast/gn/v20260617/trim_CAA_silandfast_SImon_HadGEM3-GC31-MM_hist-1950_r1i3p1f1_gn_195001-195012.nc`.
-	(make_landfast_files) Writing file `/seaicecp_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i3p1f1/SImon/silandfast/gn/v20260617/trim_CAA_silandfast_SImon_HadGEM3-GC31-MM_hist-1950_r1i3p1f1_gn_195101-195112.nc`.
+	(make_landfast_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i3p1f1/SImon/silandfast/gn/v20260617/trim_CAA_silandfast_SImon_HadGEM3-GC31-MM_hist-1950_r1i3p1f1_gn_195001-195012.nc`.
+	(make_landfast_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i3p1f1/SImon/silandfast/gn/v20260617/trim_CAA_silandfast_SImon_HadGEM3-GC31-MM_hist-1950_r1i3p1f1_gn_195101-195112.nc`.
     ...
-	(make_landfast_files) Writing file `/seaicecp_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i3p1f1/SImon/silandfast/gn/v20260617/trim_CAA_silandfast_SImon_HadGEM3-GC31-MM_hist-1950_r1i3p1f1_gn_201301-201312.nc`.
-	(make_landfast_files) Writing file `/seaicecp_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i3p1f1/SImon/silandfast/gn/v20260617/trim_CAA_silandfast_SImon_HadGEM3-GC31-MM_hist-1950_r1i3p1f1_gn_201401-201412.nc`.
+	(make_landfast_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i3p1f1/SImon/silandfast/gn/v20260617/trim_CAA_silandfast_SImon_HadGEM3-GC31-MM_hist-1950_r1i3p1f1_gn_201301-201312.nc`.
+	(make_landfast_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i3p1f1/SImon/silandfast/gn/v20260617/trim_CAA_silandfast_SImon_HadGEM3-GC31-MM_hist-1950_r1i3p1f1_gn_201401-201412.nc`.
 ```
 
+Again, I can confirm how many `sipacked`, `sislow` and `silandfast` files were created using the `list_available_variables()` function.
 ```python
 from arctichoke.path.variable_paths import list_available_variables
 
@@ -465,16 +520,18 @@ for this_variant_label in [
             sispeed_files = sispeed_list,
             precise_trim = False,
             siconc_var = 'siconc2',
+            save_packed_and_slow = True,
         )
 ```
 ```console
-	(make_landfast_files) Writing file `/seaicecp_data/bergybits/data/CMIP6/HighResMIP/NERC/HadGEM3-GC31-HM/hist-1950/r1i2p1f1/SImon/silandfast/gn/v20260617/trim_CAA_silandfast_SImon_HadGEM3-GC31-HM_hist-1950_r1i2p1f1_gn_195001-195012.nc`.
-	(make_landfast_files) Writing file `/seaicecp_data/bergybits/data/CMIP6/HighResMIP/NERC/HadGEM3-GC31-HM/hist-1950/r1i2p1f1/SImon/silandfast/gn/v20260617/
+	(make_landfast_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/NERC/HadGEM3-GC31-HM/hist-1950/r1i2p1f1/SImon/silandfast/gn/v20260617/trim_CAA_silandfast_SImon_HadGEM3-GC31-HM_hist-1950_r1i2p1f1_gn_195001-195012.nc`.
+	(make_landfast_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/NERC/HadGEM3-GC31-HM/hist-1950/r1i2p1f1/SImon/silandfast/gn/v20260617/
     ...
-	(make_landfast_files) Writing file `/seaicecp_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-HM/hist-1950/r1i3p1f1/SImon/silandfast/gn/v20260617/trim_CAA_silandfast_SImon_HadGEM3-GC31-HM_hist-1950_r1i3p1f1_gn_201301-201312.nc`.
-	(make_landfast_files) Writing file `/seaicecp_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-HM/hist-1950/r1i3p1f1/SImon/silandfast/gn/v20260617/trim_CAA_silandfast_SImon_HadGEM3-GC31-HM_hist-1950_r1i3p1f1_gn_201401-201412.nc`.
+	(make_landfast_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-HM/hist-1950/r1i3p1f1/SImon/silandfast/gn/v20260617/trim_CAA_silandfast_SImon_HadGEM3-GC31-HM_hist-1950_r1i3p1f1_gn_201301-201312.nc`.
+	(make_landfast_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-HM/hist-1950/r1i3p1f1/SImon/silandfast/gn/v20260617/trim_CAA_silandfast_SImon_HadGEM3-GC31-HM_hist-1950_r1i3p1f1_gn_201401-201412.nc`.
 ```
 
+The datafiles for `HadGEM3-GC31-HM` are split across `MOHC` and `NERC`, so I need to call `list_available_variables()` for each to see all the files generated above.
 ```python
 from arctichoke.path.variable_paths import list_available_variables
 
@@ -494,7 +551,9 @@ list_available_variables(
      'sispeed': {'': 65, 'trim_CAA_': 65},
      'sivol': {'': 65},
      'siconc2': {'trim_CAA_': 65},
-     'silandfast': {'trim_CAA_': 65}}},
+     'silandfast': {'trim_CAA_': 65},
+     'sipacked': {'trim_CAA_': 65},
+     'sislow': {'trim_CAA_': 65}}},
    'r1i3p1f1': {'SImon': {'siconc': {'': 65},
      'sithick': {'': 65},
      'siu': {'': 65},
@@ -503,7 +562,9 @@ list_available_variables(
      'sispeed': {'': 65, 'trim_CAA_': 65},
      'sivol': {'': 65},
      'siconc2': {'trim_CAA_': 65},
-     'silandfast': {'trim_CAA_': 65}}}}}}
+     'silandfast': {'trim_CAA_': 65},
+     'sipacked': {'trim_CAA_': 65},
+     'sislow': {'trim_CAA_': 65}}}}}}
 ```
 
 ```python
@@ -524,7 +585,9 @@ list_available_variables(
      'sispeed': {'': 65, 'trim_CAA_': 65},
      'sivol': {'': 65},
      'siconc2': {'trim_CAA_': 65},
-     'silandfast': {'trim_CAA_': 65}}}}}}
+     'silandfast': {'trim_CAA_': 65},
+     'sipacked': {'trim_CAA_': 65},
+     'sislow': {'trim_CAA_': 65}}}}}}
 ```
 
 ### Writing all files for HadGEM3-GC31-HH
@@ -560,14 +623,15 @@ for this_variant_label in [
             sispeed_files = sispeed_list,
             precise_trim = False,
             siconc_var = 'siconc2',
+            save_packed_and_slow = True,
         )
 ```
 ```console
-	(make_landfast_files) Writing file `/seaicecp_data/bergybits/data/CMIP6/HighResMIP/NERC/HadGEM3-GC31-HH/hist-1950/r1i1p1f1/SImon/silandfast/gn/v20260617/trim_CAA_silandfast_SImon_HadGEM3-GC31-HH_hist-1950_r1i1p1f1_gn_195001-195012.nc`.
-	(make_landfast_files) Writing file `/seaicecp_data/bergybits/data/CMIP6/HighResMIP/NERC/HadGEM3-GC31-HH/hist-1950/r1i1p1f1/SImon/silandfast/gn/v20260617/trim_CAA_silandfast_SImon_HadGEM3-GC31-HH_hist-1950_r1i1p1f1_gn_195101-195112.nc`.
+	(make_landfast_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/NERC/HadGEM3-GC31-HH/hist-1950/r1i1p1f1/SImon/silandfast/gn/v20260617/trim_CAA_silandfast_SImon_HadGEM3-GC31-HH_hist-1950_r1i1p1f1_gn_195001-195012.nc`.
+	(make_landfast_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/NERC/HadGEM3-GC31-HH/hist-1950/r1i1p1f1/SImon/silandfast/gn/v20260617/trim_CAA_silandfast_SImon_HadGEM3-GC31-HH_hist-1950_r1i1p1f1_gn_195101-195112.nc`.
     ...
-	(make_landfast_files) Writing file `/seaicecp_data/bergybits/data/CMIP6/HighResMIP/NERC/HadGEM3-GC31-HH/hist-1950/r1i1p1f1/SImon/silandfast/gn/v20260617/trim_CAA_silandfast_SImon_HadGEM3-GC31-HH_hist-1950_r1i1p1f1_gn_201301-201312.nc`.
-	(make_landfast_files) Writing file `/seaicecp_data/bergybits/data/CMIP6/HighResMIP/NERC/HadGEM3-GC31-HH/hist-1950/r1i1p1f1/SImon/silandfast/gn/v20260617/trim_CAA_silandfast_SImon_HadGEM3-GC31-HH_hist-1950_r1i1p1f1_gn_201401-201412.nc`.
+	(make_landfast_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/NERC/HadGEM3-GC31-HH/hist-1950/r1i1p1f1/SImon/silandfast/gn/v20260617/trim_CAA_silandfast_SImon_HadGEM3-GC31-HH_hist-1950_r1i1p1f1_gn_201301-201312.nc`.
+	(make_landfast_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/NERC/HadGEM3-GC31-HH/hist-1950/r1i1p1f1/SImon/silandfast/gn/v20260617/trim_CAA_silandfast_SImon_HadGEM3-GC31-HH_hist-1950_r1i1p1f1_gn_201401-201412.nc`.
 ```
 
 ```python
@@ -590,7 +654,9 @@ list_available_variables(
      'sispeed': {'': 65, 'trim_CAA_': 65},
      'sivol': {'': 65, 'trim_CAA_': 65},
      'siconc2': {'trim_CAA_': 65},
-     'silandfast': {'trim_CAA_': 65}}}}}}
+     'silandfast': {'trim_CAA_': 65, 'trim_test_': 65},
+     'sipacked': {'trim_CAA_': 65},
+     'sislow': {'trim_CAA_': 65}}}}}}
 ```
 
 Now, with all the landfast ice files created, I can move on to {doc}`Calculating trends in landfast ice over time <../docs_analysis/landfast_trends>`.
