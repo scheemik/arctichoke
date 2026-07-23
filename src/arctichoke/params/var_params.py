@@ -7,6 +7,9 @@ sea_ice_vars = {
     'siage': {
         'plot_range': [0, 5],
     },
+    'siage2': {
+        'plot_range': [0, 10],
+    },
     'siconc': {
         'plot_range': [0, 100],
     },
