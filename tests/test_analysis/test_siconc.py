@@ -6,8 +6,8 @@ from arctichoke.dataset.example_dataset import make_example_dataset
 from arctichoke.path.manipulate_paths import remove_non_empty_directory, make_file_path
 from arctichoke.verify import verify_path
 
-def test_calc_sithick():
-    """Test the `calc_sithick` function."""
+def test_calc_siconc():
+    """Test the `calc_siconc` function."""
     # Create multiple example test files
     test_file_dir = 'tests/test_analysis/example_datasets'
     make_file_path(test_file_dir)
@@ -138,9 +138,9 @@ def test_calc_sithick():
                 sivol_dataset = invalid_test_case['sivol_dataset'],
             )
         except (FileNotFoundError, ValueError) as e:
-            assert True, f"`calc_sithick` raised an exception on invalid test case: {e}"
+            assert True, f"`calc_siconc` raised an exception on invalid test case: {e}"
         else:
-            assert False, f"`calc_sithick` did not raise an exception on invalid test case {invalid_test_case}"
+            assert False, f"`calc_siconc` did not raise an exception on invalid test case {invalid_test_case}"
     
     # Define a list of invalid inputs
     invalid_strings = [
@@ -158,9 +158,9 @@ def test_calc_sithick():
                 sivol_dataset = test_file_names['sivol'][0],
             )
         except (TypeError, ValueError) as e:
-            assert True, f"`calc_sithick` raised an exception on invalid `sithick_dataset`: {e}"
+            assert True, f"`calc_siconc` raised an exception on invalid `sithick_dataset`: {e}"
         else:
-            assert False, f"`calc_sithick` did not raise an exception on invalid `sithick_dataset` {invalid_string}"
+            assert False, f"`calc_siconc` did not raise an exception on invalid `sithick_dataset` {invalid_string}"
         # Test with `sivol_dataset`
         try:
             actual = analysis.calc_siconc(
@@ -168,9 +168,9 @@ def test_calc_sithick():
                 sivol_dataset = invalid_string,
             )
         except (TypeError, ValueError) as e:
-            assert True, f"`calc_sithick` raised an exception on invalid `sivol_dataset`: {e}"
+            assert True, f"`calc_siconc` raised an exception on invalid `sivol_dataset`: {e}"
         else:
-            assert False, f"`calc_sithick` did not raise an exception on invalid `sivol_dataset` {invalid_string}"
+            assert False, f"`calc_siconc` did not raise an exception on invalid `sivol_dataset` {invalid_string}"
         # Test with `save_as`
         if not isinstance(invalid_string, type(None)):
             try:
@@ -180,9 +180,9 @@ def test_calc_sithick():
                     save_as = invalid_string,
                 )
             except (TypeError) as e:
-                assert True, f"`calc_sithick` raised an exception on invalid `save_as`: {e}"
+                assert True, f"`calc_siconc` raised an exception on invalid `save_as`: {e}"
             else:
-                assert False, f"`calc_sithick` did not raise an exception on invalid `save_as` {invalid_string}"
+                assert False, f"`calc_siconc` did not raise an exception on invalid `save_as` {invalid_string}"
     # Clean up test files that were created
     remove_non_empty_directory(test_file_dir)
 
