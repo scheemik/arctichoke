@@ -24,7 +24,7 @@ def get_date_type(
         Examples
         --------
         >>> from arctichoke.dataset import make_example_dataset
-        >>> ex_xr = make_example_dataset(time_axis = True)
+        >>> ex_xr = make_example_dataset(time_dim='time')
         >>> from arctichoke.dataset import get_date_type
         >>> get_date_type(ex_xr)
         'datetime64[ns]'
@@ -89,9 +89,9 @@ def get_epoch_times(
         Examples
         --------
         >>> from arctichoke.dataset import make_example_dataset
-        >>> ex_xr = make_example_dataset(time_axis = True)
+        >>> ex_xr = make_example_dataset(time_dim='time', time_len=2)
         >>> from arctichoke.dataset import get_epoch_times
-        >>> get_date_type(get_epoch_times)
+        >>> get_epoch_times(ex_xr)
         [np.float64(56.07945205479452), np.float64(56.16438356164384)]
     """
     # Verify input arguments

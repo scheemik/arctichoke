@@ -9,9 +9,8 @@ cdo = Cdo(tempdir='./cdo_tmp/')
 cdo.cleanTempDir()
 
 from arctichoke import get_current_datetime_str
-from arctichoke.dataset.get_variable import get_variable_name
-from arctichoke.dataset.trim_dataset import trim_latlon
-from arctichoke.path.manipulate_paths import make_file_path
+from arctichoke.dataset import get_variable_name, make_mask, trim_latlon
+from arctichoke.path import make_file_path
 import arctichoke.params as sps
 from arctichoke.verify import verify_path
 
@@ -108,18 +107,6 @@ def find_packed_ice(
         raise TypeError(f"(find_packed_ice) `save_as` must be a `.nc` filepath. Got: {save_as}")
     if not isinstance(verbose, bool):
         raise TypeError(f"(find_packed_ice) `verbose` must be a `bool`. Got type: {type(verbose)}")
-
-    # Verify the dataset(s) contain(s) the `siconc` variable
-    for this_dataset in var_check_list:
-        var_name = get_variable_name(this_dataset)
-        if isinstance(var_name, str):
-            if not var_name == siconc_var:
-                raise ValueError(f"(find_packed_ice) `this_dataset` must contain the variable `{siconc_var}`. Available variables: {var_name}")
-        elif isinstance(var_name, type([])):
-            if not siconc_var in var_name:
-                raise ValueError(f"(find_packed_ice) `this_dataset` must contain the variable `{siconc_var}`. Available variables: {var_name}")
-        else:
-            raise TypeError(f"(find_packed_ice) `get_variable_name` returned something other than a string or list: {var_name}")
     
     # Information to output
     if verbose:
@@ -128,32 +115,17 @@ def find_packed_ice(
     # Get the maximum possible integer to cover all reasonable values of `siconc`
     numpy_int32_max = np.iinfo(np.int32).max
 
-    # Assemble the string to specify the range and the output values
-    range_min = packed_threshold
-    range_max = numpy_int32_max
-    val_inside_range = 1
-    val_outside_range = 0
-    range_string = f"{range_min},{range_max},{val_inside_range},{val_outside_range}"
-
-    # Create a new dataset for `sipacked`, packed ice
-    if isinstance(dataset, (xr.Dataset, xr.DataArray)):
-        if verbose:
-            print(f"(find_packed_ice) `input_command`: cdo setrtoc2,{range_string} dataset")
-        # If only processing one `xr.Dataset`, the `input` argument cannot include the range string
-        packedice_xr = cdo_command(
-            range_string,
-            input=dataset, 
-            returnXDataset='sipacked'
-        )
-    else:
-        # Assemble the `cdo` input command to pass to `mergetime`
-        input_command = f"{input_command_prefix}{range_string}{input_command_files}"
-        if verbose:
-            print(f"(find_packed_ice) `input_command`: {input_command}")
-        packedice_xr = cdo_command(
-            input = input_command,
-            returnXDataset = 'sipacked',
-        )
+    # Mask out `siconc` below the threshold
+    packedice_xr = make_mask(
+        dataset,
+        var = siconc_var,
+        mask_var_name = 'sipacked',
+        mask_this_range = [packed_threshold, numpy_int32_max],
+        val_inside_range = 1,
+        val_outside_range = 0,
+        add_mask_attrs = False,
+        verbose = verbose,
+    )
 
     # Rename `siconc` in the new dataset to `sipacked`
     packedice_xr = packedice_xr.rename_vars({siconc_var:'sipacked'})
@@ -266,18 +238,6 @@ def find_slow_ice(
         raise TypeError(f"(find_slow_ice) `save_as` must be a `.nc` filepath. Got: {save_as}")
     if not isinstance(verbose, bool):
         raise TypeError(f"(find_slow_ice) `verbose` must be a `bool`. Got type: {type(verbose)}")
-
-    # Verify the dataset(s) contain(s) the `sispeed` variable
-    for this_dataset in var_check_list:
-        var_name = get_variable_name(this_dataset)
-        if isinstance(var_name, str):
-            if not var_name == 'sispeed':
-                raise ValueError(f"(find_slow_ice) `this_dataset` must contain the variable `sispeed`. Available variables: {var_name}")
-        elif isinstance(var_name, type([])):
-            if not 'sispeed' in var_name:
-                raise ValueError(f"(find_slow_ice) `this_dataset` must contain the variable `sispeed`. Available variables: {var_name}")
-        else:
-            raise TypeError(f"(find_slow_ice) `get_variable_name` returned something other than a string or list: {var_name}")
     
     # Information to output
     if verbose:
@@ -286,32 +246,16 @@ def find_slow_ice(
     # Get the minimum possible integer to cover all reasonable values of `sispeed`
     numpy_int32_min = np.iinfo(np.int32).min
 
-    # Assemble the string to specify the range and the output values
-    range_min = numpy_int32_min
-    range_max = slow_threshold
-    val_inside_range = 1
-    val_outside_range = 0
-    range_string = f"{range_min},{range_max},{val_inside_range},{val_outside_range}"
-
-    # Create a new dataset for `sislow`, slow ice
-    if isinstance(dataset, (xr.Dataset, xr.DataArray)):
-        if verbose:
-            print(f"(find_slow_ice) `input_command`: cdo setrtoc2,{range_string} dataset")
-        # If only processing one `xr.Dataset`, the `input` argument cannot include the range string
-        slowice_xr = cdo_command(
-            range_string,
-            input=dataset, 
-            returnXDataset='sislow'
-        )
-    else:
-        # Assemble the `cdo` input command to pass to `mergetime`
-        input_command = f"{input_command_prefix}{range_string}{input_command_files}"
-        if verbose:
-            print(f"(find_slow_ice) `input_command`: {input_command}")
-        slowice_xr = cdo_command(
-            input = input_command,
-            returnXDataset = 'sislow',
-        )
+    slowice_xr = make_mask(
+        dataset,
+        var = 'sispeed',
+        mask_var_name = 'sislow',
+        mask_this_range = [numpy_int32_min, slow_threshold],
+        val_inside_range = 1,
+        val_outside_range = 0,
+        add_mask_attrs = False,
+        verbose = verbose,
+    )
 
     # Rename `sispeed` in the new dataset to `sislow`
     slowice_xr = slowice_xr.rename_vars({'sispeed':'sislow'})
@@ -347,6 +291,8 @@ def find_landfast_ice(
     slow_threshold: (int, float) = 0.01, 
     siconc_var: str = 'siconc',
     save_as: str = None,
+    save_packed_as: str = None,
+    save_slow_as: str = None,
     verbose: bool = False,
     **kwargs,
 ):
@@ -373,6 +319,12 @@ def find_landfast_ice(
         save_as : `str`, `None`, optional
             The file name to which to save the modified dataset.
             Default is `None`, which doesn't save the dataset to a file.
+        save_packed_as : `str`, `None`, optional
+            The file name to which to save the packed ice dataset.
+            Default is `None`, which doesn't save the packed ice dataset to a file.
+        save_slow_as : `str`, `None`, optional
+            The file name to which to save the slow ice dataset.
+            Default is `None`, which doesn't save the slow ice dataset to a file.
         verbose : `bool`, optional
             Whether to verbosely output information as the function executes.
             Default is `False`.
@@ -418,6 +370,14 @@ def find_landfast_ice(
         raise TypeError(f"(find_landfast_ice) `save_as` must be a string or `None`. Got type: {type(save_as)}")
     elif isinstance(save_as, str) and not '.nc' in save_as:
         raise TypeError(f"(find_landfast_ice) `save_as` must be a `.nc` filepath. Got: {save_as}")
+    if not isinstance(save_packed_as, (str, type(None))):
+        raise TypeError(f"(find_landfast_ice) `save_packed_as` must be a string or `None`. Got type: {type(save_packed_as)}")
+    elif isinstance(save_packed_as, str) and not '.nc' in save_packed_as:
+        raise TypeError(f"(find_landfast_ice) `save_packed_as` must be a `.nc` filepath. Got: {save_packed_as}")
+    if not isinstance(save_slow_as, (str, type(None))):
+        raise TypeError(f"(find_landfast_ice) `save_slow_as` must be a string or `None`. Got type: {type(save_slow_as)}")
+    elif isinstance(save_slow_as, str) and not '.nc' in save_slow_as:
+        raise TypeError(f"(find_landfast_ice) `save_slow_as` must be a `.nc` filepath. Got: {save_slow_as}")
     if not isinstance(verbose, bool):
         raise TypeError(f"(find_landfast_ice) `verbose` must be a `bool`. Got type: {type(verbose)}")
     
@@ -430,11 +390,13 @@ def find_landfast_ice(
         dataset = siconc_dataset,
         packed_threshold = packed_threshold,
         siconc_var = siconc_var,
+        save_as = save_packed_as,
         **kwargs,
     )
     dataset_sislow = find_slow_ice(
         dataset = sispeed_dataset,
         slow_threshold = slow_threshold,
+        save_as = save_slow_as,
         **kwargs,
     )
 
@@ -502,6 +464,7 @@ def make_landfast_files(
     version_id: str = 'v20260617',
     siconc_var: str = 'siconc',
     overwrite: bool = False,
+    save_packed_and_slow: bool = False,
     **kwargs,
 ):
     """ Make landfast files based on the lists of files given.
@@ -528,6 +491,9 @@ def make_landfast_files(
             Default is `siconc`.
         overwrite : `bool`, optional
             Whether to overwrite an existing file if it exists.
+            Default is `False`.
+        save_packed_and_slow : `bool`, optional
+            Whether to save the intermediate packed ice and slow ice data to files.
             Default is `False`.
         **kwargs
             Keyword arguments to pass to `trim_latlon()`, and `find_landfast_ice()`.
@@ -627,15 +593,26 @@ def make_landfast_files(
         # Add trimming prefix, if applicable
         if not isinstance(map_bbox, type(None)):
             if map_bbox == sps.CAA_BBOX:
-                trim_prefix = 'trim_CAA_'
+                name_prefix = 'trim_CAA_'
             elif map_bbox == sps.NWP_BBOX:
-                trim_prefix = 'trim_NWP_'
+                name_prefix = 'trim_NWP_'
             else:
-                trim_prefix = 'trim_'
+                name_prefix = 'trim_'
+            if verbose:
+                print(f"(make_landfast_files) Adding prefix to file names: {name_prefix}")
             landfast_filename = landfast_filepath.split('/')[-1]
-            landfast_filepath = landfast_filepath.replace(landfast_filename, f"{trim_prefix}{landfast_filename}")
+            landfast_filepath = landfast_filepath.replace(landfast_filename, f"{name_prefix}{landfast_filename}")
         # Make sure the directory exists
         make_file_path(landfast_filepath)
+        # Check whether to save packed ice and slow ice data
+        if save_packed_and_slow:
+            packed_filepath = landfast_filepath.replace('silandfast', 'sipacked')
+            make_file_path(packed_filepath)
+            slow_filepath = landfast_filepath.replace('silandfast', 'sislow')
+            make_file_path(slow_filepath)
+        else:
+            packed_filepath = None
+            slow_filepath = None
         # Check whether the file exists
         try:
             verify_path(landfast_filepath)
@@ -652,12 +629,12 @@ def make_landfast_files(
         # Trim the `siconc` and `sispeed` datasets, if 
         if not isinstance(map_bbox, type(None)):
             siconc_xr = trim_latlon(
-                xr_data = siconc_xr,
+                dataset = siconc_xr,
                 map_bbox = map_bbox,
                 **kwargs,
             )
             sispeed_xr = trim_latlon(
-                xr_data = sispeed_xr,
+                dataset = sispeed_xr,
                 map_bbox = map_bbox,
                 **kwargs,
             )
@@ -667,6 +644,8 @@ def make_landfast_files(
             sispeed_dataset = sispeed_xr,
             siconc_var = siconc_var,
             save_as = landfast_filepath,
+            save_packed_as = packed_filepath,
+            save_slow_as = slow_filepath,
             **kwargs,
         )
 

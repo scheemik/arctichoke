@@ -26,8 +26,10 @@ def test_calc_sithick():
             make_example_dataset(
                 n=3,
                 test_var_name=si_var,
-                time_axis=(2000+j),
                 offset=i,
+                time_dim='time',
+                time_len=2,
+                start_year=(2000+j),
                 save_as=test_file_names[si_var][j]
             )
     # Create the expected array
@@ -104,7 +106,8 @@ def test_calc_sithick():
             'sithick_dataset': make_example_dataset(
                 n=3, 
                 test_var_name='invalid_var',
-                time_axis=True,
+                time_dim='time',
+                time_len=2,
             ),
             'sivol_dataset': test_file_names['sivol'][0],
         },
@@ -113,7 +116,8 @@ def test_calc_sithick():
             'sivol_dataset': make_example_dataset(
                 n=3, 
                 test_var_name='invalid_var',
-                time_axis=True,
+                time_dim='time',
+                time_len=2,
             ),
         },
         {
@@ -204,8 +208,10 @@ def test_make_siconc_files():
             make_example_dataset(
                 n=3,
                 test_var_name=si_var,
-                time_axis=(2000+j),
                 offset=i,
+                time_dim='time',
+                time_len=2,
+                start_year=(2000+j),
                 save_as=test_file_names[si_var][j]
             )
     # Create the expected array
@@ -272,7 +278,8 @@ def test_make_siconc_files():
         make_example_dataset(
             n=4,
             test_var_name=invalid_si_var,
-            time_axis=True,
+            time_dim='time',
+            time_len=2,
             save_as=test_file,
         )
     # Define invalid test cases

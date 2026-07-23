@@ -321,12 +321,12 @@ def make_siconc_files(
         # Trim the `sithick` and `sivol` datasets, if 
         if not isinstance(map_bbox, type(None)):
             sithick_xr = trim_latlon(
-                xr_data = sithick_xr,
+                dataset = sithick_xr,
                 map_bbox = map_bbox,
                 **kwargs,
             )
             sivol_xr = trim_latlon(
-                xr_data = sivol_xr,
+                dataset = sivol_xr,
                 map_bbox = map_bbox,
                 **kwargs,
             )

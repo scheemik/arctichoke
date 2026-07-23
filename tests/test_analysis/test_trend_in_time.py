@@ -6,6 +6,49 @@ from arctichoke.dataset.example_dataset import make_example_dataset
 from arctichoke.path.manipulate_paths import remove_non_empty_directory, make_file_path
 from arctichoke.verify import verify_path
 
+# Create test case with many different trends
+n = 3
+offset = 0
+test_var_name = 'test_var'
+# Initialize the dataset
+test_many_trends = xr.Dataset()
+# Add dimensions
+j_arr = np.arange(n, dtype=np.float64)
+test_many_trends['j'] = ('j',j_arr)
+i_arr = np.arange(n+1,2*n+1, dtype=np.float64)
+test_many_trends['i'] = ('i',i_arr)
+this_year = 2026
+time_arr = np.arange(f'{this_year}-01', f'{this_year+3}-01', dtype='datetime64[Y]')
+time_arr = [2026, 2027, 2028]
+test_many_trends['year'] = ('year',time_arr)
+len_t = len(time_arr)
+
+# Assign longitude and latitude coordinates
+lon_arr = np.reshape([np.arange(2*n+1,3*n+1, dtype=np.float64)]*n, (n,n))
+lat_arr = np.reshape([np.arange(3*n+1,4*n+1, dtype=np.float64)]*n, (n,n)).T
+test_many_trends = test_many_trends.assign_coords(
+    {
+        'longitude': (['j','i'], lon_arr),
+        'latitude': (['j','i'], lat_arr),
+    }
+)
+
+# Add a test variable
+test_var = np.reshape(np.arange(offset, n*n+offset, dtype=np.float64), (n,n))
+test_var
+test_var = np.array([
+    [[0., 1., 2.],
+    [0., 1., 2.],
+    [0., 1., 2.]],
+    [[0., 1., 2.],
+    [1., 2., 0.],
+    [2., 1., 1.]],
+    [[0., 1., 2.],
+    [0., 1., 1.],
+    [1., 2., 2.]],
+])
+test_many_trends[test_var_name] = (['year','j','i'],test_var)
+
 def test_trend_in_time():
     """Test the `trend_in_time` function."""
     # Create multiple example test files
@@ -22,52 +65,11 @@ def test_trend_in_time():
             n=3,
             offset=offsets[i],
             test_var_name='test_var',
-            time_axis=(2000+i),
+            time_dim='time',
+            time_len=2,
+            start_year=(2000+i),
             save_as=test_file_names[i],
         )
-    # Create test case with many different trends
-    if True:
-        n = 3
-        offset = 0
-        test_var_name = 'test_var'
-        # Initialize the dataset
-        test_many_trends = xr.Dataset()
-        # Add dimensions
-        j_arr = np.arange(n, dtype=np.float64)
-        test_many_trends['j'] = ('j',j_arr)
-        i_arr = np.arange(n+1,2*n+1, dtype=np.float64)
-        test_many_trends['i'] = ('i',i_arr)
-        this_year = 2026
-        time_arr = np.arange(f'{this_year}-01', f'{this_year+3}-01', dtype='datetime64[Y]')
-        time_arr = [2026, 2027, 2028]
-        test_many_trends['year'] = ('year',time_arr)
-        len_t = len(time_arr)
-
-        # Assign longitude and latitude coordinates
-        lon_arr = np.reshape([np.arange(2*n+1,3*n+1, dtype=np.float64)]*n, (n,n))
-        lat_arr = np.reshape([np.arange(3*n+1,4*n+1, dtype=np.float64)]*n, (n,n)).T
-        test_many_trends = test_many_trends.assign_coords(
-            {
-                'longitude': (['j','i'], lon_arr),
-                'latitude': (['j','i'], lat_arr),
-            }
-        )
-
-        # Add a test variable
-        test_var = np.reshape(np.arange(offset, n*n+offset, dtype=np.float64), (n,n))
-        test_var
-        test_var = np.array([
-            [[0., 1., 2.],
-            [0., 1., 2.],
-            [0., 1., 2.]],
-            [[0., 1., 2.],
-            [1., 2., 0.],
-            [2., 1., 1.]],
-            [[0., 1., 2.],
-            [0., 1., 1.],
-            [1., 2., 2.]],
-        ])
-        test_many_trends[test_var_name] = (['year','j','i'],test_var)
     # Create test case with `nan` values
     test_nan_dataset = xr.open_mfdataset(test_file_names)
     test_nan_dataset['test_var'] = test_nan_dataset['test_var'].where(
@@ -81,7 +83,8 @@ def test_trend_in_time():
             'dataset': make_example_dataset(
                 n=3, 
                 test_var_name='test_var',
-                time_axis=True,
+                time_dim='time',
+                time_len=2,
             ),
             'var': 'test_var',
             'time_dim': 'time',
@@ -96,7 +99,8 @@ def test_trend_in_time():
             'dataset': make_example_dataset(
                 n=3, 
                 test_var_name='test_var',
-                time_axis=True,
+                time_dim='time',
+                time_len=2,
             ),
             'var': 'test_var',
             'time_dim': 'time',
@@ -210,7 +214,9 @@ def test_trend_in_time():
     make_example_dataset(
         n=6,
         test_var_name='test_var',
-        time_axis=1999,
+        time_dim='time',
+        time_len=2,
+        start_year=1999,
         save_as=odd_size_example,
     )
     # Define invalid test cases
@@ -345,7 +351,7 @@ def test_mask_where_all_zero():
             [ 0,  0,  0]]]
         )
     })
-    # Create the expected array
+    # Create the expected arrays
     ex_arr = np.array(
       [[[np.nan,  0.,  0.],
         [ 1.,  1.,  1.],
@@ -354,6 +360,19 @@ def test_mask_where_all_zero():
        [[np.nan,  1.,  1.],
         [ 1.,  0.,  0.],
         [np.nan, np.nan, np.nan]]],
+    )
+    ex_arr_many_trends = np.array(
+      [[[np.nan,  1.,  2.],
+        [ 0.,     1.,  2.],
+        [ 0.,     1.,  2.]],
+
+       [[np.nan,  1.,  2.],
+        [ 1.,     2.,  0.],
+        [ 2.,     1.,  1.]],
+
+       [[np.nan,  1.,  2.],
+        [ 0.,     1.,  1.],
+        [ 1.,     2.,  2.]]],
     )
     # Define test cases
     test_cases = [
@@ -368,6 +387,12 @@ def test_mask_where_all_zero():
             'var': None,
             'time_dim': 't',
             'expected_array': ex_arr,
+        },
+        {
+            'dataset': test_many_trends,
+            'var': 'test_var',
+            'time_dim': 'year',
+            'expected_array': ex_arr_many_trends,
         },
     ]
     for test_case in test_cases:

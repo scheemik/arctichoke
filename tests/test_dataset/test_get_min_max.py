@@ -22,7 +22,9 @@ def test_get_min_max():
             n=3,
             offset=offsets[i],
             test_var_name='test_var',
-            time_axis=(2000+i),
+            time_dim='time',
+            time_len=2,
+            start_year=(2000+i),
             save_as=test_file_names[i],
         )
     # Create test case with `nan` values
@@ -38,7 +40,8 @@ def test_get_min_max():
             'dataset': make_example_dataset(
                 n=3, 
                 test_var_name='test_var',
-                time_axis=True,
+                time_dim='time',
+                time_len=2,
             ),
             'var': 'test_var',
             'expected_min': 0,

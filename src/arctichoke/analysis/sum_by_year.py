@@ -50,7 +50,7 @@ def sum_by_year(
         Examples
         --------
         >>> from arctichoke.dataset.example_dataset import make_example_dataset
-        >>> dataset = make_example_dataset(n=3, time_axis=True)
+        >>> dataset = make_example_dataset(n=3, time_dim='time', time_len=2)
         >>> dataset['test_var'].values
         array([[[0., 1., 2.],
                 [3., 4., 5.],

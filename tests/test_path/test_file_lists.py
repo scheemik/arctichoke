@@ -12,6 +12,8 @@ def test_list_variable_files():
         {
             'source_id': 'AWI-CM-1-1-HR',
             'variable_id': 'areacello',
+            'version_id': '*',
+            'with_modification': None,
             'experiment_id': 'hist-1950',
             'variant_label': None,
             'expected_list_len': 1,
@@ -19,6 +21,8 @@ def test_list_variable_files():
         {
             'source_id': 'AWI-CM-1-1-HR',
             'variable_id': 'areacello',
+            'version_id': '*',
+            'with_modification': None,
             'experiment_id': 'control-1950',
             'variant_label': None,
             'expected_list_len': 1,
@@ -26,6 +30,8 @@ def test_list_variable_files():
         {
             'source_id': 'AWI-CM-1-1-LR',
             'variable_id': 'areacello',
+            'version_id': '*',
+            'with_modification': None,
             'experiment_id': 'hist-1950',
             'variant_label': None,
             'expected_list_len': 1,
@@ -33,6 +39,8 @@ def test_list_variable_files():
         {
             'source_id': 'BCC-CSM2-HR',
             'variable_id': 'areacello',
+            'version_id': '*',
+            'with_modification': None,
             'experiment_id': 'hist-1950',
             'variant_label': None,
             'expected_list_len': 1,
@@ -40,6 +48,8 @@ def test_list_variable_files():
         {
             'source_id': 'CESM1-CAM5-SE-HR',
             'variable_id': 'areacello',
+            'version_id': '*',
+            'with_modification': None,
             'experiment_id': 'hist-1950',
             'variant_label': None,
             'expected_list_len': 1,
@@ -47,6 +57,8 @@ def test_list_variable_files():
         {
             'source_id': 'CESM1-CAM5-SE-LR',
             'variable_id': 'areacello',
+            'version_id': '*',
+            'with_modification': None,
             'experiment_id': 'control-1950',
             'variant_label': None,
             'expected_list_len': 1,
@@ -54,6 +66,8 @@ def test_list_variable_files():
         {
             'source_id': 'EC-Earth3P',
             'variable_id': 'areacello',
+            'version_id': '*',
+            'with_modification': None,
             'experiment_id': 'highres-future',
             'variant_label': None,
             'expected_list_len': 1,
@@ -61,6 +75,8 @@ def test_list_variable_files():
         {
             'source_id': 'EC-Earth3P-HR',
             'variable_id': 'areacello',
+            'version_id': '*',
+            'with_modification': None,
             'experiment_id': 'highres-future',
             'variant_label': None,
             'expected_list_len': 1,
@@ -68,13 +84,35 @@ def test_list_variable_files():
         {
             'source_id': 'EC-Earth3P-HR',
             'variable_id': 'siage',
+            'version_id': '*',
+            'with_modification': None,
             'experiment_id': 'hist-1950',
             'variant_label': 'r2i1p2f1',
             'expected_list_len': 65,
         },
         {
             'source_id': 'EC-Earth3P-HR',
+            'variable_id': 'sispeed',
+            'version_id': '*',
+            'with_modification': 'trim_CAA_',
+            'experiment_id': 'hist-1950',
+            'variant_label': 'r1i1p2f1',
+            'expected_list_len': 65,
+        },
+        {
+            'source_id': 'EC-Earth3P-HR',
+            'variable_id': 'sislow',
+            'version_id': 'v20260617',
+            'with_modification': 'trim_CAA_',
+            'experiment_id': 'hist-1950',
+            'variant_label': 'r1i1p2f1',
+            'expected_list_len': 65,
+        },
+        {
+            'source_id': 'EC-Earth3P-HR',
             'variable_id': 'siu',
+            'version_id': '*',
+            'with_modification': None,
             'experiment_id': 'hist-1950',
             'variant_label': 'r3i1p2f1',
             'expected_list_len': 65,
@@ -82,6 +120,8 @@ def test_list_variable_files():
         {
             'source_id': 'HadGEM3-GC31-HH',
             'variable_id': 'siage',
+            'version_id': '*',
+            'with_modification': None,
             'experiment_id': 'hist-1950',
             'variant_label': None,
             'expected_list_len': 65,
@@ -89,6 +129,8 @@ def test_list_variable_files():
         {
             'source_id': 'HadGEM3-GC31-HM',
             'variable_id': 'areacello',
+            'version_id': '*',
+            'with_modification': None,
             'experiment_id': 'hist-1950',
             'variant_label': None,
             'expected_list_len': 1,
@@ -96,6 +138,8 @@ def test_list_variable_files():
         {
             'source_id': 'HadGEM3-GC31-HM',
             'variable_id': 'areacello',
+            'version_id': '*',
+            'with_modification': None,
             'experiment_id': 'highres-future',
             'variant_label': None,
             'expected_list_len': 1,
@@ -103,6 +147,8 @@ def test_list_variable_files():
         {
             'source_id': 'HadGEM3-GC31-HM',
             'variable_id': 'areacello',
+            'version_id': '*',
+            'with_modification': None,
             'experiment_id': 'control-1950',
             'variant_label': None,
             'expected_list_len': 1,
@@ -110,6 +156,8 @@ def test_list_variable_files():
         {
             'source_id': 'HadGEM3-GC31-LL',
             'variable_id': 'areacello',
+            'version_id': '*',
+            'with_modification': None,
             'experiment_id': 'hist-1950',
             'variant_label': None,
             'expected_list_len': 1,
@@ -117,6 +165,8 @@ def test_list_variable_files():
         {
             'source_id': 'HadGEM3-GC31-LL',
             'variable_id': 'areacello',
+            'version_id': '*',
+            'with_modification': None,
             'experiment_id': 'highres-future',
             'variant_label': None,
             'expected_list_len': 1,
@@ -124,6 +174,8 @@ def test_list_variable_files():
         {
             'source_id': 'HadGEM3-GC31-LL',
             'variable_id': 'areacello',
+            'version_id': '*',
+            'with_modification': None,
             'experiment_id': 'control-1950',
             'variant_label': None,
             'expected_list_len': 1,
@@ -131,6 +183,8 @@ def test_list_variable_files():
         {
             'source_id': 'HadGEM3-GC31-LL',
             'variable_id': 'areacello',
+            'version_id': '*',
+            'with_modification': None,
             'experiment_id': 'spinup-1950',
             'variant_label': None,
             'expected_list_len': 1,
@@ -138,6 +192,8 @@ def test_list_variable_files():
         {
             'source_id': 'HadGEM3-GC31-MM',
             'variable_id': 'areacello',
+            'version_id': '*',
+            'with_modification': None,
             'experiment_id': 'hist-1950',
             'variant_label': None,
             'expected_list_len': 1,
@@ -145,6 +201,8 @@ def test_list_variable_files():
         {
             'source_id': 'HadGEM3-GC31-MM',
             'variable_id': 'areacello',
+            'version_id': '*',
+            'with_modification': None,
             'experiment_id': 'highres-future',
             'variant_label': None,
             'expected_list_len': 1,
@@ -152,6 +210,8 @@ def test_list_variable_files():
         {
             'source_id': 'HadGEM3-GC31-MM',
             'variable_id': 'areacello',
+            'version_id': '*',
+            'with_modification': None,
             'experiment_id': 'control-1950',
             'variant_label': None,
             'expected_list_len': 1,
@@ -159,6 +219,8 @@ def test_list_variable_files():
         {
             'source_id': 'HadGEM3-GC31-MM',
             'variable_id': 'areacello',
+            'version_id': '*',
+            'with_modification': None,
             'experiment_id': 'spinup-1950',
             'variant_label': None,
             'expected_list_len': 1,
@@ -168,6 +230,8 @@ def test_list_variable_files():
         actual = path.list_variable_files(
             source_id=test_case['source_id'], 
             variable_id=test_case['variable_id'],
+            version_id=test_case['version_id'], 
+            with_modification=test_case['with_modification'],
             experiment_id=test_case['experiment_id'],
             variant_label=test_case['variant_label'],
         )
@@ -263,6 +327,7 @@ def test_list_variable_files():
         try:
             actual = path.list_variable_files(
                 source_id = invalid_string,
+                variable_id = test_cases[0]['variable_id'],
             )
         except (TypeError) as e:
             assert True, f"`list_variable_files` raised an exception on invalid `source_id`: {e}"
@@ -271,15 +336,41 @@ def test_list_variable_files():
         # Test with `variable_id`
         try:
             actual = path.list_variable_files(
+                source_id = test_cases[0]['source_id'],
                 variable_id = invalid_string,
             )
         except (TypeError) as e:
             assert True, f"`list_variable_files` raised an exception on invalid `variable_id`: {e}"
         else:
             assert False, f"`list_variable_files` did not raise an exception on invalid `variable_id` {invalid_string}"
+        # Test with `version_id`
+        try:
+            actual = path.list_variable_files(
+                source_id = test_cases[0]['source_id'],
+                variable_id = test_cases[0]['variable_id'],
+                version_id = invalid_string,
+            )
+        except (TypeError) as e:
+            assert True, f"`list_variable_files` raised an exception on invalid `source_id`: {e}"
+        else:
+            assert False, f"`list_variable_files` did not raise an exception on invalid `source_id` {invalid_string}"
+        # Test with `with_modification`
+        if not isinstance(invalid_string, type(None)):
+            try:
+                actual = path.list_variable_files(
+                    source_id = test_cases[0]['source_id'],
+                    variable_id = test_cases[0]['variable_id'],
+                    with_modification = invalid_string,
+                )
+            except (TypeError) as e:
+                assert True, f"`list_variable_files` raised an exception on invalid `with_modification`: {e}"
+            else:
+                assert False, f"`list_variable_files` did not raise an exception on invalid `with_modification` {invalid_string}"
         # Test with `experiment_id`
         try:
             actual = path.list_variable_files(
+                source_id = test_cases[0]['source_id'],
+                variable_id = test_cases[0]['variable_id'],
                 experiment_id = invalid_string,
             )
         except (TypeError) as e:
@@ -290,6 +381,8 @@ def test_list_variable_files():
         if not isinstance(invalid_string, type(None)):
             try:
                 actual = path.list_variable_files(
+                    source_id = test_cases[0]['source_id'],
+                    variable_id = test_cases[0]['variable_id'],
                     variant_label = invalid_string,
                 )
             except (TypeError) as e:

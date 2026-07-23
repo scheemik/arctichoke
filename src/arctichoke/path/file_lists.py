@@ -83,6 +83,7 @@ This has the general structure as shown below.
 def list_variable_files(
     source_id: str,
     variable_id: str,
+    version_id: str = '*',
     with_modification: str = None,
     verbose: bool = False,
     **kwargs,
@@ -98,6 +99,9 @@ def list_variable_files(
             The name of the source ID (model) for which to get the variable files.
         variable_id : `str`
             The name of the variable ID for which to get the variable files.
+        version_id : `str`, optional
+            The version ID of the files to list.
+            Default is `'*'` which lists all files of all version ID's.
         with_modification : `str`, `None`, optional
             The prefix of a modification to the data files to find.
             Ex: `trim_NWP_`.
@@ -131,6 +135,8 @@ def list_variable_files(
         raise TypeError(f"(list_variable_files) `source_id` must be a string. Got type: {type(source_id)}")
     if not isinstance(variable_id, str):
         raise TypeError(f"(list_variable_files) `variable_id` must be a string. Got type: {type(variable_id)}")
+    if not isinstance(version_id, str):
+        raise TypeError(f"(list_variable_files) `version_id` must be a string. Got type: {type(version_id)}")
     if isinstance(with_modification, str):
         if not with_modification.endswith("_"):
             # Make sure the modificatin prefix ends with an underscore
@@ -148,7 +154,7 @@ def list_variable_files(
     )
 
     # Use glob to get a file path list down to the `data_file` depth
-    data_filepaths = glob.glob(f"{variable_path}/*/*/*")
+    data_filepaths = glob.glob(f"{variable_path}/*/{version_id}/*")
 
     # Filter files based on modification
     if isinstance(with_modification, type(None)):
