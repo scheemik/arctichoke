@@ -38,6 +38,7 @@ docs_data/siconc_from_sithick_and_sivol.md
 
 docs_analysis/landfast_ice.md
 docs_analysis/landfast_trends.md
+docs_analysis/multi_year_ice.md
 ```
 
 ```{toctree}
