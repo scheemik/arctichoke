@@ -69,6 +69,8 @@ def make_example_dataset(
         raise TypeError(f"(make_example_dataset) `save_as` must be a string or `None`. Got type: {type(save_as)}")
     if not isinstance(n, int):
         raise TypeError(f"(make_example_dataset) `n` must be an integer. Got type: {type(n)}")
+    if not isinstance(offset, (int, float)):
+        raise TypeError(f"(make_example_dataset) `offset` must be an integer or float. Got type: {type(offset)}")
     if not isinstance(test_var_name, str):
         raise TypeError(f"(make_example_dataset) `test_var_name` must be a string. Got type: {type(test_var_name)}")
     if not isinstance(time_dim, (str, type(None))):
