@@ -7,6 +7,7 @@ def make_example_dataset(
     save_as: str = None,
     n: int = 10,
     offset: (int, float) = 0, 
+    multiplier: (int, float) = 1,
     test_var_name: str = 'test_var',
     time_dim: str = None,
     time_len: int = 1,
@@ -28,6 +29,9 @@ def make_example_dataset(
         offset : `int`, `float`, optional
             A constant offset value to add to every value in the dataset.
             Default is `0`. 
+        multiplier : `int`, `float`, optional
+            A scaling factor by which to multiply every value in the dataset.
+            Default is `1`.
         test_var_name : `str`, optional
             The name to give the test variable.
             Default is `test_var`.
@@ -69,6 +73,8 @@ def make_example_dataset(
         raise TypeError(f"(make_example_dataset) `save_as` must be a string or `None`. Got type: {type(save_as)}")
     if not isinstance(n, int):
         raise TypeError(f"(make_example_dataset) `n` must be an integer. Got type: {type(n)}")
+    if not isinstance(offset, (int, float)):
+        raise TypeError(f"(make_example_dataset) `offset` must be an integer or float. Got type: {type(offset)}")
     if not isinstance(test_var_name, str):
         raise TypeError(f"(make_example_dataset) `test_var_name` must be a string. Got type: {type(test_var_name)}")
     if not isinstance(time_dim, (str, type(None))):
@@ -102,7 +108,7 @@ def make_example_dataset(
     )
 
     # Add a test variable
-    test_var = np.reshape(np.arange(offset, n*n+offset, dtype=np.float64), (n,n))
+    test_var = np.reshape(np.arange(offset, n*n+offset, dtype=np.float64), (n,n)) * multiplier
     xr_dataset[test_var_name] = (['j','i'],test_var)
 
     # Add time dimension, if applicable

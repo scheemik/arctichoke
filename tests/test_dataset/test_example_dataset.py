@@ -63,7 +63,7 @@ def test_make_example_dataset():
             'test_latlon_size': 100,
             'n_size': 10,
             'unique_years': [2000],
-            'expected_sums': [4950, 4950],
+            'expected_sums': [4950],
         },
         {
             'actual': dataset.make_example_dataset(
@@ -78,7 +78,7 @@ def test_make_example_dataset():
             'test_latlon_size': 100,
             'n_size': 10,
             'unique_years': [2025],
-            'expected_sums': [4950, 4950],
+            'expected_sums': [4950],
         },
         {
             'actual': dataset.make_example_dataset(
@@ -94,7 +94,40 @@ def test_make_example_dataset():
             'test_latlon_size': 9,
             'n_size': 3,
             'unique_years': [2026],
-            'expected_sums': [36+2*9, 54],
+            'expected_sums': [12*4+6],
+        },
+        {
+            'actual': dataset.make_example_dataset(
+                n=3, 
+                multiplier=2, 
+                time_dim='time',
+                time_len=2,
+            ),
+            'keys': ['test_var'],
+            'coords': ['time', 'j', 'i', 'longitude', 'latitude'],
+            'sizes': ['time', 'j', 'i'],
+            'test_var_size': 18,
+            'test_latlon_size': 9,
+            'n_size': 3,
+            'unique_years': [2026],
+            'expected_sums': [18*4],
+        },
+        {
+            'actual': dataset.make_example_dataset(
+                n=3, 
+                offset=1,
+                multiplier=2, 
+                time_dim='time',
+                time_len=2,
+            ),
+            'keys': ['test_var'],
+            'coords': ['time', 'j', 'i', 'longitude', 'latitude'],
+            'sizes': ['time', 'j', 'i'],
+            'test_var_size': 18,
+            'test_latlon_size': 9,
+            'n_size': 3,
+            'unique_years': [2026],
+            'expected_sums': [20*4+10],
         },
     ]
     for test_case in test_cases:
@@ -177,6 +210,16 @@ def test_make_example_dataset():
         {},
     ]
     for invalid_value in invalid_values:
+        # Test for `save_as`
+        if not isinstance(invalid_value, type(None)):
+            try:
+                actual = dataset.make_example_dataset(
+                    save_as=invalid_value,
+                )
+            except (TypeError, ValueError) as e:
+                assert True, f"`make_example_dataset` raised an exception on invalid `save_as`: {e}"
+            else:
+                assert False, f"`make_example_dataset` did not raise an exception on invalid `save_as` {invalid_value}"
         # Test for `n`
         try:
             actual = dataset.make_example_dataset(
@@ -187,6 +230,36 @@ def test_make_example_dataset():
             assert True, f"`make_example_dataset` raised an exception on invalid `n`: {e}"
         else:
             assert False, f"`make_example_dataset` did not raise an exception on invalid `n` {invalid_value}"
+        # Test for `offset`
+        if not isinstance(invalid_value, (int, float)):
+            try:
+                actual = dataset.make_example_dataset(
+                    offset=invalid_value,
+                )
+            except (TypeError, ValueError) as e:
+                assert True, f"`make_example_dataset` raised an exception on invalid `offset`: {e}"
+            else:
+                assert False, f"`make_example_dataset` did not raise an exception on invalid `offset` {invalid_value}"
+        # Test for `multiplier`
+        if not isinstance(invalid_value, (int, float)):
+            try:
+                actual = dataset.make_example_dataset(
+                    multiplier=invalid_value,
+                )
+            except (TypeError, ValueError) as e:
+                assert True, f"`make_example_dataset` raised an exception on invalid `multiplier`: {e}"
+            else:
+                assert False, f"`make_example_dataset` did not raise an exception on invalid `multiplier` {invalid_value}"
+        # Test for `test_var_name`
+        if not isinstance(invalid_value, str):
+            try:
+                actual = dataset.make_example_dataset(
+                    test_var_name=invalid_value,
+                )
+            except (TypeError, ValueError) as e:
+                assert True, f"`make_example_dataset` raised an exception on invalid `test_var_name`: {e}"
+            else:
+                assert False, f"`make_example_dataset` did not raise an exception on invalid `test_var_name` {invalid_value}"
         # Test for `time_dim`
         if not isinstance(invalid_value, type(None)):
             try:
