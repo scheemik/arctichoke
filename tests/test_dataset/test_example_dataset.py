@@ -177,6 +177,16 @@ def test_make_example_dataset():
         {},
     ]
     for invalid_value in invalid_values:
+        # Test for `save_as`
+        if not isinstance(invalid_value, type(None)):
+            try:
+                actual = dataset.make_example_dataset(
+                    save_as=invalid_value,
+                )
+            except (TypeError, ValueError) as e:
+                assert True, f"`make_example_dataset` raised an exception on invalid `save_as`: {e}"
+            else:
+                assert False, f"`make_example_dataset` did not raise an exception on invalid `save_as` {invalid_value}"
         # Test for `n`
         try:
             actual = dataset.make_example_dataset(
@@ -187,6 +197,26 @@ def test_make_example_dataset():
             assert True, f"`make_example_dataset` raised an exception on invalid `n`: {e}"
         else:
             assert False, f"`make_example_dataset` did not raise an exception on invalid `n` {invalid_value}"
+        # Test for `offset`
+        if not isinstance(invalid_value, (int, float)):
+            try:
+                actual = dataset.make_example_dataset(
+                    offset=invalid_value,
+                )
+            except (TypeError, ValueError) as e:
+                assert True, f"`make_example_dataset` raised an exception on invalid `offset`: {e}"
+            else:
+                assert False, f"`make_example_dataset` did not raise an exception on invalid `offset` {invalid_value}"
+        # Test for `test_var_name`
+        if not isinstance(invalid_value, str):
+            try:
+                actual = dataset.make_example_dataset(
+                    test_var_name=invalid_value,
+                )
+            except (TypeError, ValueError) as e:
+                assert True, f"`make_example_dataset` raised an exception on invalid `test_var_name`: {e}"
+            else:
+                assert False, f"`make_example_dataset` did not raise an exception on invalid `test_var_name` {invalid_value}"
         # Test for `time_dim`
         if not isinstance(invalid_value, type(None)):
             try:
