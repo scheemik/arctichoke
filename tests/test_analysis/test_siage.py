@@ -216,7 +216,7 @@ def test_make_siage_files():
             try:
                 actual_filepath = verify_path(expected_filepath)
             except (FileNotFoundError) as e:
-                assert True, f"`find_packed_ice` raised an exception: {e}\nExpected save file at {expected_filepath}"
+                assert True, f"`make_siage_files` raised an exception: {e}\nExpected save file at {expected_filepath}"
             # Check that the sum of the `siage2` variable is as expected
             actual_dataset = xr.open_dataset(actual_filepath)
             # Check the result versus the expectation
@@ -245,6 +245,9 @@ def test_make_siage_files():
     invalid_test_cases = [
         {   # Passing a string that isn't a file path
             'siage_files': 'invalid_var',
+        },
+        {   # Passing a file that does not exist
+            'siage_files': 'invalid_var.nc',
         },
         {   # Passing a dataset with the incorrect variable
             'siage_files': test_file_names['invalid_var'][0],
