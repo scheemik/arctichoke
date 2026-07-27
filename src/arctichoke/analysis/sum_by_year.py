@@ -151,11 +151,14 @@ def sum_by_year(
         # Get the reference to this variable
         xr_var_to_add_attrs = dataset
     
-    if var_name == 'silandfast':
-        if isinstance(attr_long_name, type(None)):
-            attr_long_name = "Annual Landfast Ice Months"
-        if isinstance(attr_units, type(None)):
-            attr_units = "months/yr"
+    # Check whether this variable is in the sea ice vars dictionary
+    if var_name in sps.sea_ice_vars.keys():
+        # Check whether this is a marker variable or not
+        if sps.sea_ice_vars[var_name]['marker_var']:
+            if isinstance(attr_long_name, type(None)):
+                attr_long_name = f"Annual {sps.sea_ice_vars[var_name]['label_name']} Months"
+            if isinstance(attr_units, type(None)):
+                attr_units = "months/yr"
 
     if verbose:
         print(f"(sum_by_year) Modifying the dataset attributes.")
