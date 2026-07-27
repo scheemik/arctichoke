@@ -69,6 +69,13 @@ def make_trend_map(
         >>>     verbose = True,
         >>> )
     """
+    # Verify input arguments
+    if not isinstance(calc_pvals, bool):
+        raise TypeError(f"(trend_in_time) `calc_pvals` must be a `bool`. Got type: {type(calc_pvals)}")
+    if not isinstance(select_summer, bool):
+        raise TypeError(f"(trend_in_time) `select_summer` must be a `bool`. Got type: {type(select_summer)}")
+    if not isinstance(verbose, bool):
+        raise TypeError(f"(trend_in_time) `verbose` must be a `bool`. Got type: {type(verbose)}")
     # Get the list of `silandfast` files
     filelist = list_variable_files(
         source_id = this_source_id,
