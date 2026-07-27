@@ -45,18 +45,22 @@ sea_ice_vars = {
     'silandfast': {
         'plot_range': None,
         'marker_var': True,
+        'label_name': 'Landfast Ice',
     },
     'simultiyear': {
         'plot_range': None,
         'marker_var': True,
+        'label_name': 'Multi-Year Ice',
     },
     'sipacked': {
         'plot_range': None,
         'marker_var': True,
+        'label_name': 'Packed Ice',
     },
     'sislow': {
         'plot_range': None,
         'marker_var': True,
+        'label_name': 'Slow Ice',
     },
 }
 
