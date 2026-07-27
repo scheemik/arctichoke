@@ -1,6 +1,8 @@
 import xarray as xr
+
 from arctichoke.analysis import sum_by_year, trend_in_time, trend_in_time_scipy
 from arctichoke.dataset import select_months
+import arctichoke.params as sps
 from arctichoke.path import list_variable_files
 from arctichoke.plot import make_title, quadmesh_map
 
@@ -102,6 +104,17 @@ def make_trend_map(
             filelist,
             data_vars = 'all'
         )
+    # 
+    if isinstance(call_sum_by_year, type(None)):
+        # Check whether this variable is in the sea ice vars dictionary
+        if this_var in sps.sea_ice_vars.keys():
+            # Check whether this is a marker variable or not
+            if sps.sea_ice_vars[this_var]['marker_var']: 
+                call_sum_by_year = True 
+            else:
+                call_sum_by_year = False
+        if verbose:
+            print(f"(make_trend_map) `this_var` ({this_var}) is marker variable: {call_sum_by_year}")
     # Sum the data across time
     if call_sum_by_year:
         ## Overwrite the `dataset` variable to reduce memory overhead
