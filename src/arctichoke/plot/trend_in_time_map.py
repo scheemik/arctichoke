@@ -12,6 +12,7 @@ def make_trend_map(
     calc_pvals: bool = False,
     mask_where_zero_across_time: (bool, xr.DataArray) = True,
     select_summer: bool = True,
+    call_sum_by_year: bool = None,
     map_projection: str = 'Orthographic',
     verbose: bool = False,
     **kwargs,
@@ -44,6 +45,9 @@ def make_trend_map(
         select_summer : `bool`, optional
             Whether to use `select_months()` to only plot the summer months (June-October).
             Default is `True`.
+        call_sum_by_year : `bool`, `None`, optional
+            Whether to use `sum_by_year()` to sum the variable across each year before taking the trends across time.
+            Default is `None`.
         map_projection : `str`, optional
             The map projection to use.
             Default is `'Orthographic'`.
@@ -74,6 +78,8 @@ def make_trend_map(
         raise TypeError(f"(trend_in_time) `calc_pvals` must be a `bool`. Got type: {type(calc_pvals)}")
     if not isinstance(select_summer, bool):
         raise TypeError(f"(trend_in_time) `select_summer` must be a `bool`. Got type: {type(select_summer)}")
+    if not isinstance(call_sum_by_year, (bool, type(None))):
+        raise TypeError(f"(trend_in_time) `call_sum_by_year` must be a `bool` or `None`. Got type: {type(call_sum_by_year)}")
     if not isinstance(verbose, bool):
         raise TypeError(f"(trend_in_time) `verbose` must be a `bool`. Got type: {type(verbose)}")
     # Get the list of `silandfast` files
@@ -97,30 +103,38 @@ def make_trend_map(
             data_vars = 'all'
         )
     # Sum the data across time
-    ## Overwrite the `dataset` variable to reduce memory overhead
-    dataset = sum_by_year(
-        dataset,
-        verbose = verbose,
-    )
+    if call_sum_by_year:
+        ## Overwrite the `dataset` variable to reduce memory overhead
+        dataset = sum_by_year(
+            dataset,
+            verbose = verbose,
+        )
+        var_for_trend = f'{this_var}_year_sum'
+        this_time_dim = 'year'
+    else:
+        var_for_trend = this_var
+        this_time_dim = 'time'
     # Take the trend across time
     if calc_pvals:
         dataset = trend_in_time_scipy(
             dataset = dataset,
-            var = f'{this_var}_year_sum',
+            var = var_for_trend,
             mask_where_zero_across_time = False,
             verbose = verbose,
+            time_dim = this_time_dim,
         )
     else:
         dataset = trend_in_time(
             dataset = dataset,
-            var = f'{this_var}_year_sum',
+            var = var_for_trend,
             mask_where_zero_across_time = mask_where_zero_across_time,
             verbose = verbose,
+            time_dim = this_time_dim,
         )
     # Plot the trends on a map
     sum_year_trend_map = quadmesh_map(
         dataset,
-        f'{this_var}_year_sum_trends',
+        f'{var_for_trend}_trends',
         map_projection = map_projection,
         diverging_cbar = True,
         verbose = verbose,
