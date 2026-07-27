@@ -154,7 +154,7 @@ def quadmesh_map(
         project=True,
         global_extent=False, 
         title=map_title,
-        clabel=make_label(xr_data, var),
+        clabel=make_label(xr_data, var, verbos=verbose),
         cmap=this_cmap, 
         clim=clims,
         bgcolor='lightgray',

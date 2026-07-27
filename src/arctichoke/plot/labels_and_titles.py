@@ -143,6 +143,8 @@ def make_label(
     var: str = None,
     add_name: bool = True,
     add_units: bool = True,
+    shorten: bool = True,
+    verbose: bool = False,
     **kwargs,
 ):
     """ Create a label for the specified variable in the given dataset for use in plots.
@@ -163,6 +165,12 @@ def make_label(
         add_units : `bool`, optional
             Whether to add the units to the label.
             Default is `True`.
+        shorten : `bool`, optional
+            Whether to shorten parts of the label for brevity.
+            Default is `True`.
+        verbose : `bool`, optional
+            Whether to verbosely output information as the function executes.
+            Default is `False`.
 
         Returns
         -------
@@ -203,6 +211,10 @@ def make_label(
         raise TypeError(f"(make_label) `add_name` must be a `bool`. Got type: {type(add_name)}")
     if not isinstance(add_units, bool):
         raise TypeError(f"(make_label) `add_units` must be a `bool`. Got type: {type(add_units)}")
+    if not isinstance(shorten, bool):
+        raise TypeError(f"(make_label) `shorten` must be a `bool`. Got type: {type(shorten)}")
+    if not isinstance(verbose, bool):
+        raise TypeError(f"(make_label) `verbose` must be a `bool`. Got type: {type(verbose)}")
 
     # Verify `dataset` has the specified variable
     if isinstance(dataset, xr.Dataset):
@@ -222,7 +234,7 @@ def make_label(
     # Start the label string
     dataset_label = ""
 
-    # Add the source ID
+    # Add the variable name
     if add_name:
         if 'long_name' in attr_keys:
             dataset_label = f"{dataset_label}{var_attrs['long_name']} "
@@ -238,11 +250,19 @@ def make_label(
                 warnings.warn(f"(make_label) `dataset` has no `long_name`, `original_name`, or `standard_name` attribute. Using xr.DataArray name: {dataset.name}", UserWarning)
                 var_name = dataset.name
             dataset_label = f"{dataset_label}{var_name} "
-    # Add the experiment ID
+    # Add the units
     if add_units:
         if 'units' in attr_keys:
             dataset_label = f"{dataset_label}({var_attrs['units']}) "
         else:
             warnings.warn(f"(make_label) `dataset` has no `units` attribute. Skipping units in label.", UserWarning)
+    # Shorten the label, if applicable
+    if shorten:
+        for phrase in [' (Ocean Grid)', ' (1: Yes, 0: No)']:
+            if phrase in dataset_label:
+                # Remove the phrase from the label by replacing it with a blank string
+                dataset_label = dataset_label.replace(phrase, '')
+                if verbose:
+                    print(f"(make_label) Removing phrase {phrase} from label: {dataset_label}")
     
     return dataset_label
