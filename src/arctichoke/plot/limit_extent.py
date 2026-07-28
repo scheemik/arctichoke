@@ -50,6 +50,9 @@ def get_limited_extent(
                 raise TypeError(f"(get_limited_extent) `map_bbox[{i}]` must be a number. Got type: {type(map_bbox[i])}")
     if not isinstance(n_samples, int):
         raise TypeError(f"(get_limited_extent) `n_samples` must be an integer. Got type: {type(n_samples)}")
+    # Get the map version of the bounding box, if applicable
+    if map_bbox == sps.CAA_BBOX:
+        map_bbox = sps.CAAM_BBOX
 
     # Unpack the bounding box values
     box_lat_max = map_bbox[0]
