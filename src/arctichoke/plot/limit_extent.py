@@ -5,7 +5,7 @@ import arctichoke.params as sps
 
 def get_limited_extent(
     map_projection : crs.CRS,
-    map_bbox : [float, float, float, float] = sps.NWP_BBOX,
+    map_bbox : [float, float, float, float] = sps.CAA_BBOX,
     n_samples : int = 100,
     **kwargs,
 ):
@@ -21,7 +21,7 @@ def get_limited_extent(
             An array of coordinates defining the bounding box of the map in the following format:
                 - [LAT_MAX, LAT_MIN, LON_MAX, LON_MIN]
                 
-            Default is `arctichoke.params.latlon_params.NWP_BBOX`.
+            Default is `arctichoke.params.latlon_params.CAA_BBOX`.
         n_sample : `int`, optional
             The number of samples to take along the edges of the bounding box.
             Use a larger number for larger bounding boxes to reduce clipping.

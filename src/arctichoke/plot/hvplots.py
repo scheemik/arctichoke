@@ -15,7 +15,7 @@ def quadmesh_map(
     var: str, 
     save_as: str = None,
     map_projection: str = 'NorthPolarStereo',
-    map_bbox: [float, float, float, float] = sps.NWP_BBOX,
+    map_bbox: [float, float, float, float] = sps.CAA_BBOX,
     clims: [(int, float), (int, float)] = None,
     map_title: str = None,
     diverging_cbar: bool = False, 
@@ -43,7 +43,7 @@ def quadmesh_map(
             An array of coordinates defining the bounding box of the map in the following format:
                 - [LAT_MAX, LAT_MIN, LON_MAX, LON_MIN]
                 
-            Default is `arctichoke.params.latlon_params.NWP_BBOX`.
+            Default is `arctichoke.params.latlon_params.CAA_BBOX`.
         clims : List or tuple of `int`, `float`, optional
             The limits to use in the colorbar.
             Note: This overrides the default method of limiting the colorbar range when `diverging_cbar=True`.
