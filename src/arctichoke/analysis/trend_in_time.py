@@ -328,7 +328,7 @@ def trend_in_time(
             The name of the time dimension over which to find the trend.
             Default is `year`. 
         mask_where_zero_across_time : `bool`, `xarray.DataArray`, optional
-            Whether to mask out grid cells which have zero as a value across the entire time dimension using `mask_where_all_zero()`.
+            Whether to mask out grid cells which have zero as a value across the entire time dimension using `mask_where_all_zero()`, which only applies to "marker" variables.
             If a `xarray.DataArray` is given, it is used as a mask.
             Default is `False`. 
         use_xarray_polyfit : `bool`, optional
@@ -465,12 +465,14 @@ def trend_in_time(
         if verbose:
             print(f"(trend_in_time) `dataset[var].attrs` after mask:\n{dataset[var].attrs}")
     elif mask_where_zero_across_time:
-        dataset = mask_where_all_zero(
-            dataset,
-            var,
-            time_dim,
-            verbose,
-        )
+        # Only call `mask_where_all_zero` if `var` is a "marker" variable
+        if sps.sea_ice_vars[var]['marker_var']:
+            dataset = mask_where_all_zero(
+                dataset,
+                var,
+                time_dim,
+                verbose,
+            )
 
     # Set the appropriate correction factor for the type of time axis
     if time_dim == 'time':

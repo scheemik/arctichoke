@@ -41,7 +41,7 @@ def make_trend_map(
             Whether to use the version of `trend_in_time()` which calculates p-values.
             Default is `False`.
         mask_where_zero_across_time : `bool`, `xarray.DataArray`, optional
-            Whether to mask out grid cells which have zero as a value across the entire time dimension using `mask_where_all_zero()`.
+            Whether to mask out grid cells which have zero as a value across the entire time dimension using `mask_where_all_zero()`, which only applies to "marker" variables.
             If a `xarray.DataArray` is given, it is used as a mask.
             Default is `False`. 
         select_summer : `bool`, optional
