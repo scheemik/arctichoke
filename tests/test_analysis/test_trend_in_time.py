@@ -9,7 +9,7 @@ from arctichoke.verify import verify_path
 # Create test case with many different trends
 n = 3
 offset = 0
-test_var_name = 'test_var'
+test_var_name = 'silandfast'
 # Initialize the dataset
 test_many_trends = xr.Dataset()
 # Add dimensions
@@ -92,7 +92,7 @@ def test_trend_in_time():
             'use_xarray_polyfit': True,
             'save_as': None,
             'atol': 1e-12,
-            'expected_trends': [0, np.nan],
+            'expected_trends': [0],
             'expected_residuals': [np.nan],
         },
         {
@@ -103,6 +103,38 @@ def test_trend_in_time():
                 time_len=2,
             ),
             'var': 'test_var',
+            'time_dim': 'time',
+            'mask_where_zero_across_time': False,
+            'use_xarray_polyfit': True,
+            'save_as': f"{test_file_dir}/example_new_0.nc",
+            'atol': 1e-12,
+            'expected_trends': [0],
+            'expected_residuals': [np.nan],
+        },
+        {
+            'dataset': make_example_dataset(
+                n=3, 
+                test_var_name='silandfast',
+                time_dim='time',
+                time_len=2,
+            ),
+            'var': 'silandfast',
+            'time_dim': 'time',
+            'mask_where_zero_across_time': True,
+            'use_xarray_polyfit': True,
+            'save_as': None,
+            'atol': 1e-12,
+            'expected_trends': [0, np.nan],
+            'expected_residuals': [np.nan],
+        },
+        {
+            'dataset': make_example_dataset(
+                n=3, 
+                test_var_name='silandfast',
+                time_dim='time',
+                time_len=2,
+            ),
+            'var': 'silandfast',
             'time_dim': 'time',
             'mask_where_zero_across_time': False,
             'use_xarray_polyfit': True,
@@ -135,7 +167,7 @@ def test_trend_in_time():
         },
         {
             'dataset': test_many_trends,
-            'var': 'test_var',
+            'var': test_var_name,
             'time_dim': 'year',
             'mask_where_zero_across_time': True,
             'use_xarray_polyfit': True,
