@@ -9,7 +9,7 @@ cdo = Cdo(tempdir='./cdo_tmp/')
 cdo.cleanTempDir()
 
 from arctichoke import get_current_datetime_str
-from arctichoke.dataset import get_variable_name, make_mask, trim_latlon
+from arctichoke.dataset import make_mask, trim_latlon
 from arctichoke.path import make_file_path
 import arctichoke.params as sps
 from arctichoke.verify import verify_path

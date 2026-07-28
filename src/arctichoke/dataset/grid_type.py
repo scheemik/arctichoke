@@ -1,7 +1,6 @@
 import xarray as xr 
 
 from arctichoke.verify import verify_path
-from arctichoke.dataset.get_variable import get_variable_name
 
 def get_grid_type(
     dataset: (str, xr.DataArray, xr.Dataset),
@@ -36,9 +35,6 @@ def get_grid_type(
             raise TypeError(f"(get_grid_type) `dataset` must be a `.nc` filepath. Got: {dataset}")
         # Open the dataset
         dataset = xr.open_dataset(dataset)
-    
-    # Get the variable name for this dataset
-    variable_id = get_variable_name(dataset)
     
     # Get the names of the dimensions of the dataset
     ## Note: Use `.sizes` instead of `.dims` for consistency across Datasets and DataArrays
