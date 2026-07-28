@@ -7,6 +7,7 @@ def get_limited_extent(
     map_projection : crs.CRS,
     map_bbox : [float, float, float, float] = sps.CAA_BBOX,
     n_samples : int = 100,
+    padding : (int, float) = 0.1,
     **kwargs,
 ):
     """ Get the extent to which to limit a plot.
@@ -26,6 +27,9 @@ def get_limited_extent(
             The number of samples to take along the edges of the bounding box.
             Use a larger number for larger bounding boxes to reduce clipping.
             Default is `100`.
+        padding : `int`, `float`, optional
+            The fractional value between 0 and 1 by which to multiply the latitude and longitude extents.
+            Default is `0.1`, or 10%.
         **kwargs
             Keyword arguments to handle extras that might have been passed by the function above this one.
 
@@ -50,6 +54,11 @@ def get_limited_extent(
                 raise TypeError(f"(get_limited_extent) `map_bbox[{i}]` must be a number. Got type: {type(map_bbox[i])}")
     if not isinstance(n_samples, int):
         raise TypeError(f"(get_limited_extent) `n_samples` must be an integer. Got type: {type(n_samples)}")
+    if not isinstance(padding, (int, float)):
+        raise TypeError(f"(get_limited_extent) `padding` must be an integer or `float`. Got type: {type(padding)}")
+    if padding < 0 or padding > 1:
+        raise TypeError(f"(get_limited_extent) `padding` must be between 0 and 1. Got: {padding}")
+
     # Get the map version of the bounding box, if applicable
     if map_bbox == sps.CAA_BBOX:
         map_bbox = sps.CAAM_BBOX
@@ -59,6 +68,16 @@ def get_limited_extent(
     box_lat_min = map_bbox[1]
     box_lon_max = map_bbox[2]
     box_lon_min = map_bbox[3]
+    # Pad the bounding box values, if applicable
+    if padding != 0:
+        lat_extent = abs(box_lat_max - box_lat_min)
+        lon_extent = abs(box_lon_max - box_lon_min)
+        lat_padding = lat_extent * padding 
+        lon_padding = lon_extent * padding 
+        box_lat_max += lat_padding / 2
+        box_lat_min -= lat_padding / 2
+        box_lon_max += lon_padding / 2
+        box_lon_min -= lon_padding / 2
     # Sample the edges of the bounding box
     edge_S_lons = np.linspace(box_lon_min, box_lon_max, n_samples)
     edge_S_lats = np.full(n_samples, box_lat_min)
