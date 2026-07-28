@@ -85,7 +85,7 @@ def sum_by_year(
         # Load all the files at once
         if verbose:
             print(f"(sum_by_year) When passing a list of files, ensure their coordinates match as that is not verified in this function.")
-        dataset = xr.open_mfdataset(dataset)
+        dataset = xr.open_mfdataset(dataset, data_vars='all')
     elif not isinstance(dataset, (xr.Dataset, xr.DataArray)):
         raise TypeError(f"(sum_by_year) `dataset` must be a string, `xr.Dataset`, or `xr.DataArray`. Got type: {type(dataset)}")
     if not isinstance(attr_long_name, (str, type(None))):

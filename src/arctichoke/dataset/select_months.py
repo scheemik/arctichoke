@@ -58,7 +58,7 @@ def select_months(
         # Load all the files at once
         if verbose:
             print(f"(select_months) When passing a list of files, ensure their coordinates match as that is not verified in this function.")
-        dataset = xr.open_mfdataset(dataset)
+        dataset = xr.open_mfdataset(dataset, data_vars='all')
     elif not isinstance(dataset, (xr.Dataset, xr.DataArray)):
         raise TypeError(f"(select_months) `dataset` must be a string, `xr.Dataset`, or `xarray.DataArray`. Got type: {type(dataset)}")
     if isinstance(months, int):

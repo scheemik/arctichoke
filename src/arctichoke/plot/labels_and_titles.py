@@ -65,7 +65,7 @@ def make_title(
             if not datafile.endswith('.nc'):
                 raise TypeError(f"(plot_time_series) `datafile` must be a `.nc` filepath. Got: {datafile}")
         # Load all the files at once
-        dataset = xr.open_mfdataset(dataset)
+        dataset = xr.open_mfdataset(dataset, data_vars='all')
     elif not isinstance(dataset, (xr.Dataset)):
         raise TypeError(f"(make_title) `dataset` must be a string, `xr.Dataset`. Got type: {type(dataset)}")
     if not isinstance(add_source_id, bool):
@@ -199,7 +199,7 @@ def make_label(
             if not datafile.endswith('.nc'):
                 raise TypeError(f"(plot_time_series) `datafile` must be a `.nc` filepath. Got: {datafile}")
         # Load all the files at once
-        dataset = xr.open_mfdataset(dataset)
+        dataset = xr.open_mfdataset(dataset, data_vars='all')
     elif not isinstance(dataset, (xr.Dataset, xr.DataArray)):
         raise TypeError(f"(make_label) `dataset` must be a string, `xr.Dataset`, or `xarray.DataArray`. Got type: {type(dataset)}")
     if isinstance(var, type(None)):

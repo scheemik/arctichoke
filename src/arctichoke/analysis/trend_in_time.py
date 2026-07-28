@@ -78,7 +78,7 @@ def trend_in_time_scipy(
         >>>         save_as=test_file_names[i],
         >>>     )
         >>> import xarray as xr
-        >>> test_dataset = xr.open_mfdataset(test_file_names)
+        >>> test_dataset = xr.open_mfdataset(test_file_names, data_vars='all')
         >>> test_dataset['test_var'].values
         array([[[ 0.,  1.,  2.],
                 [ 3.,  4.,  5.],
@@ -128,7 +128,7 @@ def trend_in_time_scipy(
         # Load all the files at once
         if verbose:
             print(f"(trend_in_time_scipy) When passing a list of files, ensure their coordinates match as that is not verified in this function.")
-        dataset = xr.open_mfdataset(dataset)
+        dataset = xr.open_mfdataset(dataset, data_vars='all')
     elif not isinstance(dataset, (xr.Dataset, xr.DataArray)):
         raise TypeError(f"(trend_in_time_scipy) `dataset` must be a string, `xr.Dataset`, or `xarray.DataArray`. Got type: {type(dataset)}")
     if not isinstance(var, (str, type(None))):
@@ -371,7 +371,7 @@ def trend_in_time(
         >>>         save_as=test_file_names[i],
         >>>     )
         >>> import xarray as xr
-        >>> test_dataset = xr.open_mfdataset(test_file_names)
+        >>> test_dataset = xr.open_mfdataset(test_file_names, data_vars='all')
         >>> test_dataset['test_var'].values
         array([[[ 0.,  1.,  2.],
                 [ 3.,  4.,  5.],
@@ -421,7 +421,7 @@ def trend_in_time(
         # Load all the files at once
         if verbose:
             print(f"(trend_in_time) When passing a list of files, ensure their coordinates match as that is not verified in this function.")
-        dataset = xr.open_mfdataset(dataset)
+        dataset = xr.open_mfdataset(dataset, data_vars='all')
     elif not isinstance(dataset, (xr.Dataset, xr.DataArray)):
         raise TypeError(f"(trend_in_time) `dataset` must be a string, `xr.Dataset`, or `xarray.DataArray`. Got type: {type(dataset)}")
     if not isinstance(var, (str, type(None))):
@@ -683,7 +683,7 @@ def mask_where_all_zero(
         # Load all the files at once
         if verbose:
             print(f"(mask_where_all_zero) When passing a list of files, ensure their coordinates match as that is not verified in this function.")
-        dataset = xr.open_mfdataset(dataset)
+        dataset = xr.open_mfdataset(dataset, data_vars='all')
     elif not isinstance(dataset, (xr.Dataset, xr.DataArray)):
         raise TypeError(f"(mask_where_all_zero) `dataset` must be a string, `xr.Dataset`, or `xarray.DataArray`. Got type: {type(dataset)}")
     if not isinstance(var, (str, type(None))):
