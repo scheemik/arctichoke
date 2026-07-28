@@ -129,6 +129,7 @@ def test_make_label():
             'var': 'test_var',
             'add_name': True,
             'add_units': True,
+            'shorten': False,
             'expected_label': 'test_var ',
         },
         {
@@ -136,6 +137,7 @@ def test_make_label():
             'var': 'test_var',
             'add_name': False,
             'add_units': False,
+            'shorten': False,
             'expected_label': '',
         },
         {
@@ -143,13 +145,23 @@ def test_make_label():
             'var': 'siconc',
             'add_name': True,
             'add_units': True,
+            'shorten': False,
             'expected_label': 'Sea Ice Area Fraction (Ocean Grid) (%) ',
         },
         {
             'dataset': '/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/siconc/gn/v20181212/siconc_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_201401-201412.nc',
             'var': 'siconc',
             'add_name': True,
+            'add_units': True,
+            'shorten': True,
+            'expected_label': 'Sea Ice Area Fraction (%) ',
+        },
+        {
+            'dataset': '/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/siconc/gn/v20181212/siconc_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_201401-201412.nc',
+            'var': 'siconc',
+            'add_name': True,
             'add_units': False,
+            'shorten': False,
             'expected_label': 'Sea Ice Area Fraction (Ocean Grid) ',
         },
         {
@@ -157,6 +169,7 @@ def test_make_label():
             'var': None,
             'add_name': True,
             'add_units': True,
+            'shorten': False,
             'expected_label': 'Sea Ice Area Fraction (Ocean Grid) (%) ',
         },
         {
@@ -164,13 +177,23 @@ def test_make_label():
             'var': 'silandfast',
             'add_name': True,
             'add_units': True,
+            'shorten': False,
             'expected_label': 'Landfast Ice (>85%, <0.01m s-1) (1: Yes, 0: No) ',
+        },
+        {
+            'dataset': '/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r2i1p2f1/SImon/silandfast/gn/v20260617/trim_CAA_silandfast_SImon_EC-Earth3P-HR_hist-1950_r2i1p2f1_gn_195001-195012.nc',
+            'var': 'silandfast',
+            'add_name': True,
+            'add_units': True,
+            'shorten': True,
+            'expected_label': 'Landfast Ice (>85%, <0.01m s-1) ',
         },
         {
             'dataset': '/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i1p1f1/Ofx/areacello/gn/v20190301/areacello_Ofx_HadGEM3-GC31-MM_hist-1950_r1i1p1f1_gn.nc',
             'var': 'areacello',
             'add_name': True,
             'add_units': True,
+            'shorten': False,
             'expected_label': 'Grid-Cell Area for Ocean Variables (m2) ',
         },
         {
@@ -178,6 +201,7 @@ def test_make_label():
             'var': 'areacello',
             'add_name': False,
             'add_units': True,
+            'shorten': False,
             'expected_label': '(m2) ',
         },
         {
@@ -185,6 +209,7 @@ def test_make_label():
             'var': 'sithick',
             'add_name': True,
             'add_units': True,
+            'shorten': False,
             'expected_label': 'Sea Ice Thickness (m) ',
         },
         {
@@ -192,6 +217,7 @@ def test_make_label():
             'var': None,
             'add_name': True,
             'add_units': True,
+            'shorten': False,
             'expected_label': 'Sea Ice Thickness (m) ',
         },
     ]
@@ -201,6 +227,7 @@ def test_make_label():
             var = test_case['var'],
             add_name = test_case['add_name'],
             add_units = test_case['add_units'],
+            shorten = test_case['shorten'],
         )
         assert actual_title == test_case['expected_label'], f"`make_label` failed on test case: {test_case}.\nExpected title: {test_case['expected_label']}\nActual title: {actual_title}"
 
@@ -277,3 +304,14 @@ def test_make_label():
             assert True, f"`make_label` raised an exception on invalid `add_units`: {e}"
         else:
             assert False, f"`make_label` did not raise an exception on invalid `add_units` {invalid_string}"
+        # Test with `shorten`
+        try:
+            actual = labels_and_titles.make_label(
+                dataset = test_cases[0]['dataset'],
+                var = test_cases[0]['var'],
+                shorten = invalid_string,
+            )
+        except (TypeError, ValueError) as e:
+            assert True, f"`make_label` raised an exception on invalid `shorten`: {e}"
+        else:
+            assert False, f"`make_label` did not raise an exception on invalid `shorten` {invalid_string}"
