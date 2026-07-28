@@ -6,6 +6,7 @@ from arctichoke.params.var_params import meta_vars
 
 def get_variable_name(
     dataset: (str, xr.DataArray, xr.Dataset),
+    remove_meta_vars : bool = True,
 ):
     """ Get the variable name of the dataset.
 
@@ -15,11 +16,14 @@ def get_variable_name(
         ----------
         dataset : `str`, `xarray.DataArray`, `xarray.Dataset`
             The dataset for which to determine the variable name.
+        remove_meta_vars : `bool`, optional
+            Whether to remove meta variables before returning the variable names.
+            Default is `False`.
 
         Returns
         -------
-        var_name : `str`
-            The name of the variable
+        var_name : `str` or list of `str`
+            The name(s) of the variable
         
         Examples
         --------
@@ -35,14 +39,17 @@ def get_variable_name(
         dataset = verify_path(dataset)
         # Open the dataset
         dataset = xr.open_dataset(dataset)
+    if not isinstance(remove_meta_vars, bool):
+        raise TypeError(f"(get_variable_name) `remove_meta_vars` must be a `bool`. Got type: {type(remove_meta_vars)}")
     
     # Get the `data_var` list
     data_var_list = list(dataset.data_vars)
 
     # Remove meta variables
-    for meta_var in meta_vars:
-        if meta_var in data_var_list:
-            data_var_list.remove(meta_var)
+    if remove_meta_vars:
+        for meta_var in meta_vars:
+            if meta_var in data_var_list:
+                data_var_list.remove(meta_var)
 
     # Check how many variables are left
     if len(data_var_list) == 1:

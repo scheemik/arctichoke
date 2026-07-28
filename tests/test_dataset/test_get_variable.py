@@ -9,40 +9,54 @@ def test_get_variable_name():
     test_cases = [
         {
             'dataset': make_example_dataset(),
+            'remove_meta_vars': True,
             'expected_var_name': 'test_var',
         },
         {
             'dataset': '/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/siconc/gn/v20181212/siconc_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_201401-201412.nc',
+            'remove_meta_vars': True,
             'expected_var_name': 'siconc',
         },
         {
             'dataset': '/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i1p1f1/Ofx/areacello/gn/v20190301/areacello_Ofx_HadGEM3-GC31-MM_hist-1950_r1i1p1f1_gn.nc',
+            'remove_meta_vars': True,
             'expected_var_name': 'areacello',
         },
         {
             'dataset': '/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i1p1f1/SImon/sithick/gn/v20170928/sithick_SImon_HadGEM3-GC31-MM_hist-1950_r1i1p1f1_gn_201401-201412.nc',
+            'remove_meta_vars': True,
             'expected_var_name': 'sithick',
         },
         {
             'dataset': '/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i1p1f1/SImon/siconc/gn/v20170928/siconc_SImon_HadGEM3-GC31-MM_hist-1950_r1i1p1f1_gn_201401-201412.nc',
+            'remove_meta_vars': True,
             'expected_var_name': 'siconc',
         },
         {
             'dataset': xr.open_dataset('/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i1p1f1/Ofx/areacello/gn/v20190301/areacello_Ofx_HadGEM3-GC31-MM_hist-1950_r1i1p1f1_gn.nc'),
+            'remove_meta_vars': True,
             'expected_var_name': 'areacello',
         },
         {
             'dataset': xr.open_dataset('/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i1p1f1/SImon/sithick/gn/v20170928/sithick_SImon_HadGEM3-GC31-MM_hist-1950_r1i1p1f1_gn_201401-201412.nc'),
+            'remove_meta_vars': True,
             'expected_var_name': 'sithick',
         },
         {
             'dataset': xr.open_dataset('/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i1p1f1/SImon/siconc/gn/v20170928/siconc_SImon_HadGEM3-GC31-MM_hist-1950_r1i1p1f1_gn_201401-201412.nc'),
+            'remove_meta_vars': True,
             'expected_var_name': 'siconc',
+        },
+        {
+            'dataset': xr.open_dataset('/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i1p1f1/SImon/siconc/gn/v20170928/siconc_SImon_HadGEM3-GC31-MM_hist-1950_r1i1p1f1_gn_201401-201412.nc'),
+            'remove_meta_vars': False,
+            'expected_var_name': ['time_bnds', 'lat_bnds', 'lon_bnds', 'siconc'],
         },
     ]
     for test_case in test_cases:
         actual = get_variable.get_variable_name(
-            dataset = test_case['dataset']
+            dataset = test_case['dataset'],
+            remove_meta_vars = test_case['remove_meta_vars'],
         )
         assert actual == test_case['expected_var_name'], f"`get_variable_name` failed on test case: {test_case}.\nExpected : {test_case['expected_var_name']}\nActual: {actual}"
 
@@ -88,3 +102,13 @@ def test_get_variable_name():
             assert True, f"`get_variable_name` raised an exception on invalid `dataset`: {e}"
         else:
             assert False, f"`get_variable_name` did not raise an exception on invalid `dataset` {invalid_string}"
+        # Test with `remove_meta_vars`
+        try:
+            actual = get_variable.get_variable_name(
+                dataset = test_cases[0]['dataset'],
+                remove_meta_vars = invalid_string,
+            )
+        except (TypeError, ValueError) as e:
+            assert True, f"`get_variable_name` raised an exception on invalid `remove_meta_vars`: {e}"
+        else:
+            assert False, f"`get_variable_name` did not raise an exception on invalid `remove_meta_vars` {invalid_string}"
