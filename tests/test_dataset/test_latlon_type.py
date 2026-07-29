@@ -308,3 +308,85 @@ def test_bound_lat():
             assert True, f"`bound_lat` raised an exception on invalid `verbose`: {e}"
         else:
             assert False, f"`bound_lat` did not raise an exception on invalid `verbose` {invalid_value}"
+
+def test_bound_lon():
+    """Test the `bound_lon` function."""
+    # Define test cases
+    test_cases = [
+        {
+            'lon': 0,
+            'lon_type': None,
+            'expected_lon': 0,
+        },
+        {
+            'lon': 3.14,
+            'lon_type': None,
+            'expected_lon': 3.14,
+        },
+        {
+            'lon': 400,
+            'lon_type': None,
+            'expected_lon': 360,
+        },
+        {
+            'lon': -200,
+            'lon_type': None,
+            'expected_lon': -180,
+        },
+        {
+            'lon': -200,
+            'lon_type': 'PM_centered',
+            'expected_lon': 0,
+        },
+        {
+            'lon': 200,
+            'lon_type': 'IDL_centered',
+            'expected_lon': 180,
+        },
+    ]
+    for test_case in test_cases:
+        actual = latlon_type.bound_lon(
+            lon = test_case['lon'],
+            lon_type = test_case['lon_type'],
+        )
+        assert actual == test_case['expected_lon'], f"`bound_lon` failed on test case: {test_case}.\nExpected: {test_case['expected_lon']}\nActual: {actual}"
+    
+    # Define a list of invalid longitudes
+    invalid_values = [
+        '180',
+        '0',
+        None,
+        [],
+        {}
+    ]
+    for invalid_value in invalid_values:
+        # Test with `lon`
+        try:
+            actual = latlon_type.bound_lon(
+                lon = invalid_value,
+            )
+        except (TypeError, ValueError) as e:
+            assert True, f"`bound_lon` raised an exception on invalid `lon`: {e}"
+        else:
+            assert False, f"`bound_lon` did not raise an exception on invalid `lon` {invalid_value}"
+        # Test with `lon_type`
+        if not isinstance(invalid_value, type(None)):
+            try:
+                actual = latlon_type.bound_lon(
+                    lon = 0,
+                    lon_type = invalid_value,
+                )
+            except (TypeError, ValueError) as e:
+                assert True, f"`bound_lon` raised an exception on invalid `lon_type`: {e}"
+            else:
+                assert False, f"`bound_lon` did not raise an exception on invalid `lon_type` {invalid_value}"
+        # Test with `verbose`
+        try:
+            actual = latlon_type.bound_lon(
+                lon = 0,
+                verbose = invalid_value,
+            )
+        except (TypeError, ValueError) as e:
+            assert True, f"`bound_lon` raised an exception on invalid `verbose`: {e}"
+        else:
+            assert False, f"`bound_lon` did not raise an exception on invalid `verbose` {invalid_value}"
