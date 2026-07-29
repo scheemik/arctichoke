@@ -193,6 +193,7 @@ def get_lon_type(
 def bound_lat(
     lat: (int, float),
     verbose: bool = False,
+    **kwargs,
 ):
     """ Make sure the given latitude is within valid bounds.
 
@@ -206,6 +207,8 @@ def bound_lat(
         verbose : `bool`, optional
             Whether to verbosely output information as the function executes.
             Default is `False`.
+        **kwargs
+            Keyword arguments to handle extras that might have been passed by the function above this one.
 
         Returns
         -------
@@ -245,6 +248,7 @@ def bound_lon(
     lon: (int, float),
     lon_type: str = None,
     verbose: bool = False,
+    **kwargs,
 ):
     """ Make sure the given longitude is within valid bounds.
 
@@ -256,11 +260,13 @@ def bound_lon(
         ----------
         lon : `int`, `float`
             The longitude value to check.
+        lon_type : `str`
+            The type of longitude which will be `'PM_centered'`, `'IDL_centered'`, or `'other'`.
         verbose : `bool`, optional
             Whether to verbosely output information as the function executes.
             Default is `False`.
-        lon_type : `str`
-            The type of longitude which will be `'PM_centered'`, `'IDL_centered'`, or `'other'`.
+        **kwargs
+            Keyword arguments to handle extras that might have been passed by the function above this one.
 
         Returns
         -------
