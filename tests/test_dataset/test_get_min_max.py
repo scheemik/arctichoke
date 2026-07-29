@@ -44,26 +44,60 @@ def test_get_min_max():
                 time_len=2,
             ),
             'var': 'test_var',
+            'ignore_val': None,
+            'ignore_tol': 1,
             'expected_min': 0,
             'expected_max': 8,
         },
         {
             'dataset': xr.open_mfdataset(test_file_names),
             'var': 'test_var',
+            'ignore_val': None,
+            'ignore_tol': 1,
             'expected_min': 0,
             'expected_max': 11,
         },
         {
             'dataset': test_nan_dataset,
             'var': 'test_var',
+            'ignore_val': None,
+            'ignore_tol': 1,
             'expected_min': 0,
             'expected_max': 6,
+        },
+        {
+            'dataset': make_example_dataset(
+                n=3, 
+                test_var_name='test_var',
+                time_dim='time',
+                time_len=2,
+            ),
+            'var': 'test_var',
+            'ignore_val': 0,
+            'ignore_tol': 0.5,
+            'expected_min': 1,
+            'expected_max': 8,
+        },
+        {
+            'dataset': make_example_dataset(
+                n=3, 
+                test_var_name='test_var',
+                time_dim='time',
+                time_len=2,
+            ),
+            'var': 'test_var',
+            'ignore_val': 0,
+            'ignore_tol': 2,
+            'expected_min': 3,
+            'expected_max': 8,
         },
     ]
     for test_case in test_cases:
         actual_min, actual_max = dataset.get_min_max(
             dataset = test_case['dataset'],
             var = test_case['var'],
+            ignore_val = test_case['ignore_val'],
+            ignore_tol = test_case['ignore_tol'],
         )
         # Check the minimum and maximum values
         assert actual_min == test_case['expected_min'], f"`get_min_max` failed on test case: {test_case}.\nExpected min: {test_case['expected_min']}\nActual min: {actual_min}"
@@ -112,12 +146,49 @@ def test_get_min_max():
         if not isinstance(invalid_string, type(None)):
             try:
                 actual = dataset.get_min_max(
-                    dataset = test_file_names,
+                    dataset = test_cases[0]['dataset'],
                     var = invalid_string,
                 )
             except (TypeError) as e:
                 assert True, f"`get_min_max` raised an exception on invalid `var`: {e}"
             else:
                 assert False, f"`get_min_max` did not raise an exception on invalid `var` {invalid_string}"
+        # Test with `ignore_val`
+        if not isinstance(invalid_string, (int, float, type(None))):
+            try:
+                actual = dataset.get_min_max(
+                    dataset = test_cases[0]['dataset'],
+                    var = 'test_var',
+                    ignore_val = invalid_string,
+                )
+            except (TypeError) as e:
+                assert True, f"`get_min_max` raised an exception on invalid `ignore_val`: {e}"
+            else:
+                assert False, f"`get_min_max` did not raise an exception on invalid `ignore_val` {invalid_string}"
+        # Test with `ignore_tol`
+        if not isinstance(invalid_string, (int, float)):
+            try:
+                actual = dataset.get_min_max(
+                    dataset = test_cases[0]['dataset'],
+                    var = 'test_var',
+                    ignore_val = 0,
+                    ignore_tol = invalid_string,
+                )
+            except (TypeError) as e:
+                assert True, f"`get_min_max` raised an exception on invalid `ignore_tol`: {e}"
+            else:
+                assert False, f"`get_min_max` did not raise an exception on invalid `ignore_tol` {invalid_string}"
+        # Test with `verbose`
+        if not isinstance(invalid_string, type(None)):
+            try:
+                actual = dataset.get_min_max(
+                    dataset = test_cases[0]['dataset'],
+                    var = 'test_var',
+                    verbose = invalid_string,
+                )
+            except (TypeError) as e:
+                assert True, f"`get_min_max` raised an exception on invalid `verbose`: {e}"
+            else:
+                assert False, f"`get_min_max` did not raise an exception on invalid `verbose` {invalid_string}"
     # Clean up test files that were created
     remove_non_empty_directory(test_file_dir)
