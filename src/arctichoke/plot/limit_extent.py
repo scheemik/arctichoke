@@ -8,11 +8,13 @@ def get_limited_extent(
     map_bbox : [float, float, float, float] = sps.CAA_BBOX,
     n_samples : int = 100,
     padding : (int, float) = 0.1,
+    verbose: bool = False,
     **kwargs,
 ):
     """ Get the extent to which to limit a plot.
 
         Using the given coordinates to define the corners of a bounding box, sample the edges, and project those points into the given projection.
+        If the value of `map_bbox` is the default value of `arctichoke.params.latlon_params.CAA_BBOX`, that bounding box will be replaced by `CAAM_BBOX` which has been manually tuned to provide a more reasonable extent definition for making plots of the CAA.
 
         Parameters
         ----------
@@ -30,6 +32,9 @@ def get_limited_extent(
         padding : `int`, `float`, optional
             The fractional value between 0 and 1 by which to multiply the latitude and longitude extents.
             Default is `0.1`, or 10%.
+        verbose : `bool`, optional
+            Whether to verbosely output information as the function executes.
+            Default is `False`.
         **kwargs
             Keyword arguments to handle extras that might have been passed by the function above this one.
 
@@ -58,10 +63,14 @@ def get_limited_extent(
         raise TypeError(f"(get_limited_extent) `padding` must be an integer or `float`. Got type: {type(padding)}")
     if padding < 0 or padding > 1:
         raise TypeError(f"(get_limited_extent) `padding` must be between 0 and 1. Got: {padding}")
+    if not isinstance(verbose, bool):
+        raise TypeError(f"(get_limited_extent) `verbose` must be a `bool`. Got type: {type(verbose)}")
 
     # Get the map version of the bounding box, if applicable
     if map_bbox == sps.CAA_BBOX:
         map_bbox = sps.CAAM_BBOX
+        if verbose:
+            print(f"(get_limited_extent) Given `map_bbox` of `CAA_BBOX`, so replacing with `CAAM_BBOX`.")
 
     # Unpack the bounding box values
     box_lat_max = map_bbox[0]
@@ -70,6 +79,8 @@ def get_limited_extent(
     box_lon_min = map_bbox[3]
     # Pad the bounding box values, if applicable
     if padding != 0:
+        if verbose:
+            print(f"(get_limited_extent) Adding a padding of {padding} to the bounding box.")
         lat_extent = abs(box_lat_max - box_lat_min)
         lon_extent = abs(box_lon_max - box_lon_min)
         lat_padding = lat_extent * padding 
