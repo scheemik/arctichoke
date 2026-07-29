@@ -10,7 +10,7 @@ def sum_by_year(
     dataset: (str, [str], xr.DataArray, xr.Dataset),
     attr_long_name: str = None,
     attr_units: str = None,
-    drop_bnds: bool = False,
+    drop_bnds: bool = True,
     save_as: str = None,
     verbose: bool = False,
     **kwargs,
