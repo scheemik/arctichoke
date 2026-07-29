@@ -1,6 +1,7 @@
 import numpy as np 
 import cartopy.crs as crs
 
+from arctichoke.dataset import bound_lat, bound_lon
 import arctichoke.params as sps
 
 def get_limited_extent(
@@ -66,6 +67,10 @@ def get_limited_extent(
     if not isinstance(verbose, bool):
         raise TypeError(f"(get_limited_extent) `verbose` must be a `bool`. Got type: {type(verbose)}")
 
+    # Information to output
+    if verbose:
+        print(f"(get_limited_extent) Caution: The full range of possibilities of longitude values have not been accounted for, if using longitude values near the limits of the valid range, `nan` values may occur in the returned `map_extent`.")
+
     # Get the map version of the bounding box, if applicable
     if map_bbox == sps.CAA_BBOX:
         map_bbox = sps.CAAM_BBOX
@@ -90,22 +95,10 @@ def get_limited_extent(
         box_lon_max += lon_padding / 2
         box_lon_min -= lon_padding / 2
     # Make sure the the coordinates aren't outside valid ranges
-    if box_lat_max > 90:
-        box_lat_max = 90
-        if verbose:
-            print(f"(get_limited_extent) 'box_lat_max = {box_lat_max}' is outside valid range. Setting to 90.")
-    if box_lat_min < -90:
-        box_lat_min = -90
-        if verbose:
-            print(f"(get_limited_extent) 'box_lat_min = {box_lat_min}' is outside valid range. Setting to -90.")
-    if box_lon_max > 360:
-        box_lat_max = 360
-        if verbose:
-            print(f"(get_limited_extent) 'box_lon_max = {box_lon_max}' is outside valid range. Setting to 360.")
-    if box_lon_min < -180:
-        box_lon_min = -180
-        if verbose:
-            print(f"(get_limited_extent) 'box_lon_min = {box_lon_min}' is outside valid range. Setting to -180.")
+    box_lat_max = bound_lat(box_lat_max, **kwargs)
+    box_lat_min = bound_lat(box_lat_min, **kwargs)
+    box_lon_max = bound_lon(box_lon_max, **kwargs)
+    box_lon_min = bound_lon(box_lon_min, **kwargs)
     if verbose:
         print(f"(get_limited_extent) Bounding box: \n\tlat_max = {box_lat_max}, lat_min = {box_lat_min}, lon_max = {box_lon_max}, lon_min = {box_lon_min}")
     # Sample the edges of the bounding box
@@ -120,6 +113,8 @@ def get_limited_extent(
     # Concatenate the edge samples
     edge_lons = np.concatenate([edge_S_lons, edge_N_lons, edge_W_lons, edge_E_lons])
     edge_lats = np.concatenate([edge_S_lats, edge_N_lats, edge_W_lats, edge_E_lats])
+    # if verbose:
+    #     print(f"(get_limited_extent) Edge points: \n\tedge_lons = {edge_lons}\n\tedge_lats = {edge_lats}")
     # Transform the edge samples
     edge_pts = map_projection.transform_points(crs.PlateCarree(), edge_lons, edge_lats)
     edge_xs = edge_pts[:, 0]
