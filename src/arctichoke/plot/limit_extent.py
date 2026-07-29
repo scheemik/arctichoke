@@ -80,7 +80,7 @@ def get_limited_extent(
     # Pad the bounding box values, if applicable
     if padding != 0:
         if verbose:
-            print(f"(get_limited_extent) Adding a padding of {padding} to the bounding box.")
+            print(f"(get_limited_extent) Adding a padding of {padding*100}% to the bounding box.")
         lat_extent = abs(box_lat_max - box_lat_min)
         lon_extent = abs(box_lon_max - box_lon_min)
         lat_padding = lat_extent * padding 
@@ -89,6 +89,25 @@ def get_limited_extent(
         box_lat_min -= lat_padding / 2
         box_lon_max += lon_padding / 2
         box_lon_min -= lon_padding / 2
+    # Make sure the the coordinates aren't outside valid ranges
+    if box_lat_max > 90:
+        box_lat_max = 90
+        if verbose:
+            print(f"(get_limited_extent) 'box_lat_max = {box_lat_max}' is outside valid range. Setting to 90.")
+    if box_lat_min < -90:
+        box_lat_min = -90
+        if verbose:
+            print(f"(get_limited_extent) 'box_lat_min = {box_lat_min}' is outside valid range. Setting to -90.")
+    if box_lon_max > 360:
+        box_lat_max = 360
+        if verbose:
+            print(f"(get_limited_extent) 'box_lon_max = {box_lon_max}' is outside valid range. Setting to 360.")
+    if box_lon_min < -180:
+        box_lon_min = -180
+        if verbose:
+            print(f"(get_limited_extent) 'box_lon_min = {box_lon_min}' is outside valid range. Setting to -180.")
+    if verbose:
+        print(f"(get_limited_extent) Bounding box: \n\tlat_max = {box_lat_max}, lat_min = {box_lat_min}, lon_max = {box_lon_max}, lon_min = {box_lon_min}")
     # Sample the edges of the bounding box
     edge_S_lons = np.linspace(box_lon_min, box_lon_max, n_samples)
     edge_S_lats = np.full(n_samples, box_lat_min)
