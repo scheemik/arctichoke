@@ -500,14 +500,16 @@ def trend_in_time(
     # Get the trends in time
     if use_xarray_polyfit:
         ## Note: When using `polyfit()`, a dimenson `degree` gets added
-        ## The index 0 of `degree` corresponds to the slope when using a 1st-order fit
         if verbose:
             print(f"(trend_in_time) Getting a first-degree polyfit")
-        polyfit = (dataset[var].polyfit(time_dim, 1, skipna=True, full=True).isel(degree=0, drop=True) * correction_factor)
+        polyfit = (dataset[var].polyfit(time_dim, 1, skipna=True, full=True) )
         if verbose:
             print(f"(trend_in_time) Geting the coefficients and residuals")
         # Get the coefficients and the residuals
-        trends = polyfit['polyfit_coefficients']
+        ## The index 0 of `degree` corresponds to the slope and the index of
+        ## 1 corresponds to the intercept when using a 1st-order fit
+        trends = polyfit.isel(degree=0)['polyfit_coefficients'] * correction_factor
+        intercepts = polyfit.isel(degree=1)['polyfit_coefficients']
         residuals = polyfit['polyfit_residuals']
     else:
         # Get the time axis values
@@ -531,6 +533,7 @@ def trend_in_time(
             print(f"(trend_in_time) Geting the coefficients and residuals")
         # Get the coefficients and residuals
         trends = polyfit[0][0,:].reshape(vals.shape[1], vals.shape[2])
+        intercepts = polyfit[0][1,:].reshape(vals.shape[1], vals.shape[2])
         residuals = polyfit[1].reshape(vals.shape[1], vals.shape[2])
     
     # Set `dataset` to be just the first time slice
@@ -541,9 +544,11 @@ def trend_in_time(
     # Put the trends into the original dataset
     if use_xarray_polyfit:
         dataset[f'{var}_trends'] = trends
+        dataset[f'{var}_intercepts'] = intercepts
         dataset[f'{var}_residuals'] = residuals
     else:
         dataset[f'{var}_trends'].values = trends
+        dataset[f'{var}_intercepts'].values = intercepts
         dataset[f'{var}_residuals'] = dataset[f'{var}_trends']
         dataset[f'{var}_residuals'].values = residuals
     # Restore the variable attributes
@@ -556,29 +561,37 @@ def trend_in_time(
     dataset.attrs['history'] = f"{get_current_datetime_str()} altered by `arctichoke`: Calculated trends across `{time_dim}` of `{var}` values to get `{var}_trends`. {original_history}"
     # Get references to these new variables
     xr_var_trends = dataset[f'{var}_trends']
+    xr_var_interc = dataset[f'{var}_intercepts']
     xr_var_resids = dataset[f'{var}_residuals']
         
     if verbose:
         print(f"(trend_in_time) Modifing dataset attributes")
     # Modify the attributes of the dataset to reflect the changes
     xr_var_trends.attrs['standard_name'] = f'{var}_trends'
+    xr_var_interc.attrs['standard_name'] = f'{var}_intercepts'
     xr_var_resids.attrs['standard_name'] = f'{var}_residuals'
     if 'long_name' in xr_var_trends.attrs.keys():
         xr_var_trends.attrs['long_name'] = f'Trend in {xr_var_trends.attrs['long_name']}'
+        xr_var_interc.attrs['long_name'] = f'Intercept for {xr_var_trends.attrs['long_name']}'
     else:
         xr_var_trends.attrs['long_name'] = f'Trend in {var}'
+        xr_var_interc.attrs['long_name'] = f'Intercept for {var}'
     xr_var_resids.attrs['long_name'] = f'Residual of trend in {var}'
     if 'units' in xr_var_trends.attrs.keys():
         xr_var_trends.attrs['units'] = f'{xr_var_trends.attrs['units']}/yr'
+        xr_var_interc.attrs['units'] = f'{xr_var_trends.attrs['units']}'
     else:
         xr_var_trends.attrs['units'] = f'N/P'
+        xr_var_interc.attrs['units'] = f'N/P'
     xr_var_resids.attrs['units'] = f'({xr_var_trends.attrs['units']})^2'
     if 'comment' in xr_var_trends.attrs.keys():
         xr_var_trends.attrs['comment'] = f'Trend in {xr_var_trends.attrs['comment']}'
+        xr_var_interc.attrs['comment'] = f'Intercept for {xr_var_trends.attrs['comment']}'
     else:
         xr_var_trends.attrs['comment'] = f'N/P'
     xr_var_resids.attrs['comment'] = f'Sum of square residuals for the trend in {var}'
     xr_var_trends.attrs['original_name'] = f'{var}_trends'
+    xr_var_interc.attrs['original_name'] = f'{var}_intercepts'
     xr_var_resids.attrs['original_name'] = f'{var}_residuals'
     if 'history' in xr_var_trends.attrs.keys():
         original_history = xr_var_trends.attrs['history']
