@@ -1,9 +1,8 @@
+import cartopy.crs as crs
 import hvplot.xarray
 import xarray as xr
-import cartopy.crs as crs
 
-from arctichoke.dataset.get_min_max import get_min_max
-from arctichoke.dataset.latlon_type import get_latlon_names
+from arctichoke.dataset import  bound_lat, bound_lon, get_latlon_names, get_min_max
 import arctichoke.params as sps
 from arctichoke.plot.cbar_limits import set_cbar_lims
 from arctichoke.plot.labels_and_titles import make_title, make_label
@@ -110,23 +109,39 @@ def quadmesh_map(
     if verbose:
         print(f"(quadmesh_map) `save_as`: {save_as}")
 
-    map_extent = None
-    if map_projection == 'Orthographic':
-        # Define the projection for the plot
-        map_projection = crs.Orthographic(-90, 77)
-    elif map_projection == 'NorthPolarStereo':
-        # Unpack the bounding box values
+    # Unpack the bounding box values
+    if not isinstance(map_bbox, type(None)):
         box_lat_max = map_bbox[0]
         box_lat_min = map_bbox[1]
         box_lon_max = map_bbox[2]
         box_lon_min = map_bbox[3]
-
-        # Get the central longitude
-        box_lon_cent = (box_lon_max-box_lon_min)/2 + box_lon_min
+    else:
+        box_lat_min, box_lat_max = get_min_max(xr_data, 'latitude')
+        box_lon_min, box_lon_max = get_min_max(xr_data, 'longitude')
+        map_bbox = [box_lat_max, box_lat_min, box_lon_max, box_lon_min]
+    # Make sure the the coordinates aren't outside valid ranges
+    box_lat_max = bound_lat(box_lat_max, **kwargs)
+    box_lat_min = bound_lat(box_lat_min, **kwargs)
+    box_lon_max = bound_lon(box_lon_max, **kwargs)
+    box_lon_min = bound_lon(box_lon_min, **kwargs)
+    # Get the central latitude and longitude
+    box_lat_cent = (box_lat_max-box_lat_min)/2 + box_lat_min
+    box_lon_cent = (box_lon_max-box_lon_min)/2 + box_lon_min
+    if verbose:
+        print(f"(quadmesh_map) Central latitude: {box_lat_cent}, central longitude: {box_lon_cent}")
+    if map_projection == 'Orthographic':
+        # Define the projection for the plot
+        # box_lon_cent = -90
+        # box_lat_cent = 77
+        map_projection = crs.Orthographic(central_longitude = box_lon_cent, central_latitude = box_lat_cent)
+    elif map_projection == 'NorthPolarStereo':
         # Define the projection for the plot
         map_projection = crs.NorthPolarStereo(central_longitude = box_lon_cent)
-        # Get the extent to which to limit the map plot
-        map_extent = get_limited_extent(map_projection)
+    # Get the extent to which to limit the map plot
+    map_extent = get_limited_extent(map_projection, map_bbox, padding=0, verbose = verbose)
+    if verbose:
+        print(f"(quadmesh_map) Map bounding box: {map_bbox}")
+        print(f"(quadmesh_map) Map extent: {map_extent}")
 
     # Set colormap
     if diverging_cbar == True:
