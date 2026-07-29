@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import xarray as xr
 
+from arctichoke.analysis import trend_in_time
 from arctichoke.dataset import get_epoch_times
 import arctichoke.params as sps
 from arctichoke.verify import verify_path
@@ -169,12 +170,17 @@ def plot_time_series(
             ))
         else:
             x_vals = dataset[x_var].values
-        # Take the regression
-        regressions = np.polyfit(x_vals, np.array(dataset.values), 1)
-        reg_m = regressions[0]
-        reg_b = regressions[1]
+        # Take the regression 
+        regressions = trend_in_time(
+            dataset,
+            time_dim = x_var,
+            verbose = verbose,
+        )
+        reg_m = regressions[f'{variable_id}_trends'].values
+        reg_b = regressions[f'{variable_id}_intercepts'].values
         if verbose:
             print(f"(plot_time_series) Slope of regression line: {reg_m}")
+            print(f"(plot_time_series) Intercept of regression line: {reg_b}")
         # Format the label
         reg_label = f"{str(reg_m)[:6]}x+{str(reg_b)[:6]}"
         # Plot the regression line
