@@ -484,7 +484,7 @@ def trend_in_time(
             correction_factor = 60 * 60 * 24 * 365 * 1e9
         elif date_dtype == 'cftime.Datetime360Day':
             # Calculate the correction factor to convert seconds to years
-            correction_factor = 60 * 60 * 24 * 365
+            correction_factor = 60 * 60 * 24 * 365 * 1e9
         else:
             raise TypeError(f"(trend_in_time) Correction factor not yet set for time dimension type: {date_dtype}")
         if verbose:
