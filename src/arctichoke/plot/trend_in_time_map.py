@@ -151,5 +151,6 @@ def make_trend_map(
         map_projection = map_projection,
         diverging_cbar = True,
         verbose = verbose,
+        **kwargs,
     )
     sum_year_trend_map
