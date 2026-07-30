@@ -65,14 +65,14 @@ def test_find_standard_error():
     test_xr['score'].values = [[[76]], [[78]], [[74]], [[80]], [[84]], [[79]], [[86]], [[90]], [[92]], [[84]], [[83]], [[97]]]
     test_xr_polyfit = test_xr['score'].polyfit('hours', 1, skipna=True, full=True)
     # Get an example with many different trends
-    test_many_trends_polyfit = test_many_trends['si_var'].polyfit('year', 1, skipna=True, full=True)
+    test_many_trends_polyfit = test_many_trends[test_var_name].polyfit('year', 1, skipna=True, full=True)
     # Create test case with `nan` values
-    # test_nan_dataset = xr.open_mfdataset(test_file_names)
-    # test_nan_dataset['test_var'] = test_nan_dataset['test_var'].where(
-    #     lambda val:
-    #         (test_nan_dataset['test_var'] < 7),
-    #     lambda val: np.nan
-    # )
+    test_many_trends[test_var_name] = test_many_trends[test_var_name].where(
+        lambda val:
+            (test_many_trends[test_var_name] != 0),
+        lambda val: np.nan
+    )
+    test_nan_polyfit = test_many_trends[test_var_name].polyfit('year', 1, skipna=True, full=True)
     # Define test cases
     test_cases = [
         {
@@ -96,8 +96,15 @@ def test_find_standard_error():
         },
         {
             'polyfit_residuals': test_many_trends_polyfit['polyfit_residuals'],
-            'n_dof': test_many_trends['si_var'].sizes['year'],
+            'n_dof': test_many_trends[test_var_name].sizes['year'],
             'expected_stderr': [0, 0.816496581, 1.22474487, 0.408248290],
+            'expected_dtype': xr.DataArray,
+            'atol': 1e-6,
+        },
+        {
+            'polyfit_residuals': test_nan_polyfit['polyfit_residuals'],
+            'n_dof': test_many_trends[test_var_name].sizes['year'],
+            'expected_stderr': [0, 0.816496581, np.nan, 0.408248290],
             'expected_dtype': xr.DataArray,
             'atol': 1e-6,
         },
