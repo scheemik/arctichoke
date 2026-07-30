@@ -57,7 +57,7 @@ def quadmesh_map(
             Whether to verbosely output information as the function executes.
             Default is `False`.
         **kwargs
-            Keyword arguments to pass to `hvplot.quadmesh()` and `arctichoke.plot.limit_extent.get_limited_extent()`
+            Keyword arguments to pass to `bound_lat()`, `bound_lon`, `hvplot.quadmesh()`, and `arctichoke.plot.limit_extent.get_limited_extent()`
 
         Returns
         -------

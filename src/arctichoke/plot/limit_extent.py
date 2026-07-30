@@ -37,7 +37,7 @@ def get_limited_extent(
             Whether to verbosely output information as the function executes.
             Default is `False`.
         **kwargs
-            Keyword arguments to handle extras that might have been passed by the function above this one.
+            Keyword arguments to pass to `bound_lat()` and `bound_lon()`.
 
         Returns
         -------

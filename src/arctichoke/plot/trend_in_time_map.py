@@ -57,7 +57,7 @@ def make_trend_map(
             Whether to verbosely output information as the function executes.
             Default is `False`.
         **kwargs
-            Keyword arguments to pass to `list_variable_files()`.
+            Keyword arguments to pass to `list_variable_files()` and `quadmesh_map()`.
 
         Returns
         -------

@@ -41,7 +41,7 @@ def calc_siconc(
             Whether to verbosely output information as the function executes.
             Default is `False`.
         **kwargs
-            Keyword arguments.
+            Keyword arguments to handle extras that might have been passed by the function above this one.
 
         Returns
         -------

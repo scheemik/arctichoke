@@ -331,7 +331,7 @@ def multi_seasonal_cycle(
             If `True`, the function exists before making a plot for use in testing.
             Default is `False`.
         **kwargs
-            Keyword arguments to pass to `xr.DataArray.plot()`.
+            Keyword arguments to handle extras that might have been passed by the function above this one.
 
         Returns
         -------

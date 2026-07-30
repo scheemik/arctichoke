@@ -47,7 +47,7 @@ def trend_in_time_scipy(
             Whether to verbosely output information as the function executes.
             Default is `False`.
         **kwargs
-            Keyword arguments to pass to `xr.sum()`.
+            Keyword arguments to handle extras that might have been passed by the function above this one.
 
         Returns
         -------
@@ -342,7 +342,7 @@ def trend_in_time(
             Whether to verbosely output information as the function executes.
             Default is `False`.
         **kwargs
-            Keyword arguments to pass to `xr.sum()`.
+            Keyword arguments to handle extras that might have been passed by the function above this one.
 
         Returns
         -------

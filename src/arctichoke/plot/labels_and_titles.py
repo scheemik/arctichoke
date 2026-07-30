@@ -33,6 +33,8 @@ def make_title(
             Whether to add the time stamp to the title. 
             This is only done if the given dataset only has one time value. 
             Default is `True`.
+        **kwargs
+            Keyword arguments to handle extras that might have been passed by the function above this one.
 
         Returns
         -------
@@ -171,6 +173,8 @@ def make_label(
         verbose : `bool`, optional
             Whether to verbosely output information as the function executes.
             Default is `False`.
+        **kwargs
+            Keyword arguments to handle extras that might have been passed by the function above this one.
 
         Returns
         -------
