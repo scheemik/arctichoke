@@ -287,6 +287,8 @@ def trim_files(
             save_as = new_filepath,
             **kwargs,
         )
+    # Clean out the `cdo` temporary directory to avoid running out of room on subsequent calls to `trim_files()`
+    cdo.cleanTempDir()
 
     return None
 

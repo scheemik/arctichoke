@@ -27,7 +27,7 @@ def get_latlon_names(
         
         Examples
         --------
-        >>> from arctichoke.dataset.grid_type import get_latlon_names
+        >>> from arctichoke.dataset import get_latlon_names
         >>> get_latlon_names('/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i1p1f1/SImon/siconc/gn/v20170928/siconc_SImon_HadGEM3-GC31-MM_hist-1950_r1i1p1f1_gn_201401-201412.nc')
         ('lat', 'lon')
         >>> get_latlon_names('/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i1p1f1/SImon/sithick/gn/v20170928/sithick_SImon_HadGEM3-GC31-MM_hist-1950_r1i1p1f1_gn_201401-201412.nc')
@@ -86,7 +86,7 @@ def determine_lon_type(
         
         Examples
         --------
-        >>> from arctichoke.dataset.grid_type import determine_lon_type
+        >>> from arctichoke.dataset import determine_lon_type
         >>> determine_lon_type(lon_min = 0, lon_max = 360)
         PM_centered
         >>> determine_lon_type(lon_min = -180, lon_max = 180)
@@ -146,7 +146,7 @@ def get_lon_type(
         
         Examples
         --------
-        >>> from arctichoke.dataset.grid_type import get_lon_type
+        >>> from arctichoke.dataset import get_lon_type
         >>> get_lon_type('/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/siconc/gn/v20181212/siconc_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_201401-201412.nc')
         IDL_centered
     """
@@ -189,3 +189,136 @@ def get_lon_type(
         lon_max,
     )
     return lon_type
+
+def bound_lat(
+    lat: (int, float),
+    verbose: bool = False,
+    **kwargs,
+):
+    """ Make sure the given latitude is within valid bounds.
+
+        If the given latitude is outside the bounds [-90, 90], then it is modified to be -90 or 90, whichever is closer. 
+        Otherwise, the original latitude value is returned.
+
+        Parameters
+        ----------
+        lat : `int`, `float`
+            The latitude value to check.
+        verbose : `bool`, optional
+            Whether to verbosely output information as the function executes.
+            Default is `False`.
+        **kwargs
+            Keyword arguments to handle extras that might have been passed by the function above this one.
+
+        Returns
+        -------
+        lat : `int`, `float`
+            The latitude value within valid bounds.
+        
+        Examples
+        --------
+        >>> from arctichoke.dataset import bound_lat
+        >>> bound_lat(0)
+        0
+        >>> bound_lat(90)
+        90
+        >>> bound_lat(91)
+        90
+        >>> bound_lat(-100)
+        -90
+    """
+    # Verify input arguments
+    if not isinstance(lat, (int, float)):
+        raise TypeError(f"(bound_lat) `lat` must be an integer or `float`. Got type: {type(lat)}")
+    if not isinstance(verbose, bool):
+        raise TypeError(f"(get_limited_extent) `verbose` must be a `bool`. Got type: {type(verbose)}")
+    
+    if lat > 90:
+        if verbose:
+            print(f"(bound_lat) Given `lat = {lat}' is outside valid range. Setting to 90.")
+        return 90
+    elif lat < -90:
+        if verbose:
+            print(f"(bound_lat) Given `lat = {lat}' is outside valid range. Setting to 90.")
+        return -90
+    else:
+        return lat
+
+def bound_lon(
+    lon: (int, float),
+    lon_type: str = None,
+    verbose: bool = False,
+    **kwargs,
+):
+    """ Make sure the given longitude is within valid bounds.
+
+        If the given longitude is outside the bounds [-180, 360], then it is modified to be -180 or 360, whichever is closer. 
+        If the value of `lon_type` is given, then those bounds are adjusted accordingly.
+        Otherwise, the original longitude value is returned.
+
+        Parameters
+        ----------
+        lon : `int`, `float`
+            The longitude value to check.
+        lon_type : `str`
+            The type of longitude which will be `'PM_centered'`, `'IDL_centered'`, or `'other'`.
+        verbose : `bool`, optional
+            Whether to verbosely output information as the function executes.
+            Default is `False`.
+        **kwargs
+            Keyword arguments to handle extras that might have been passed by the function above this one.
+
+        Returns
+        -------
+        lon : `int`, `float`
+            The longitude value within valid bounds.
+        
+        Examples
+        --------
+        >>> from arctichoke.dataset import bound_lon
+        >>> bound_lon(0)
+        0
+        >>> bound_lon(90)
+        90
+        >>> bound_lon(91)
+        90
+        >>> bound_lon(-100)
+        -90
+    """
+    # Verify input arguments
+    if not isinstance(lon, (int, float)):
+        raise TypeError(f"(bound_lon) `lon` must be an integer or `float`. Got type: {type(lon)}")
+    if isinstance(lon_type, str):
+        if not lon_type in ['PM_centered', 'IDL_centered', 'other']:
+            raise ValueError(f"(bound_lon) The value of `lon_type = {lon_type}` is not recognized. Must be one of: `'PM_centered'`, `'IDL_centered'`, or `'other'`")
+    elif not isinstance(lon_type, (str, type(None))):
+        raise TypeError(f"(bound_lon) `lon_type` must be a string or `None`. Got type: {type(lon_type)}")
+    if not isinstance(verbose, bool):
+        raise TypeError(f"(get_limited_extent) `verbose` must be a `bool`. Got type: {type(verbose)}")
+    
+    # Set the appropriate longitude bounds
+    if isinstance(lon_type, type(None)):
+        lon_max = 360
+        lon_min = -180
+    elif lon_type == 'PM_centered':
+        lon_max = 360
+        lon_min = 0
+    elif lon_type == 'IDL_centered':
+        lon_max = 180
+        lon_min = -180
+    elif lon_type == 'other':
+        lon_max = 360
+        lon_min = -180
+    else:
+        raise ValueError(f"(bound_lon) The value of `lon_type = {lon_type}` is not recognized. Must be one of: `'PM_centered'`, `'IDL_centered'`, or `'other'`")
+    
+    if lon > lon_max:
+        if verbose:
+            print(f"(bound_lon) Given `lon = {lon}' is outside valid range. Setting to {lon_max}.")
+        return lon_max
+    elif lon < lon_min:
+        if verbose:
+            print(f"(bound_lon) Given `lon = {lon}' is outside valid range. Setting to {lon_min}.")
+        return lon_min
+    else:
+        return lon

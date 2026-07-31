@@ -41,7 +41,7 @@ def calc_siconc(
             Whether to verbosely output information as the function executes.
             Default is `False`.
         **kwargs
-            Keyword arguments.
+            Keyword arguments to handle extras that might have been passed by the function above this one.
 
         Returns
         -------
@@ -84,7 +84,7 @@ def calc_siconc(
             if not datafile.endswith('.nc'):
                 raise TypeError(f"(calc_siconc) `datafile` must be a `.nc` filepath. Got: {datafile}")
         # Load all the files at once
-        sithick_dataset = xr.open_mfdataset(sithick_dataset)
+        sithick_dataset = xr.open_mfdataset(sithick_dataset, data_vars='all')
     elif not isinstance(sithick_dataset, (str, xr.Dataset, xr.DataArray)):
         raise TypeError(f"(calc_siconc) `sithick_dataset` must be a string, `xr.Dataset`, or `xr.DataArray`. Got type: {type(sithick_dataset)}")
     if isinstance(sivol_dataset, str):
@@ -102,7 +102,7 @@ def calc_siconc(
             if not datafile.endswith('.nc'):
                 raise TypeError(f"(calc_siconc) `datafile` must be a `.nc` filepath. Got: {datafile}")
         # Load all the files at once
-        sivol_dataset = xr.open_mfdataset(sivol_dataset)
+        sivol_dataset = xr.open_mfdataset(sivol_dataset, data_vars='all')
     elif not isinstance(sivol_dataset, (str, xr.Dataset, xr.DataArray)):
         raise TypeError(f"(calc_siconc) `sivol_dataset` must be a string, `xr.Dataset`, or `xr.DataArray`. Got type: {type(sivol_dataset)}")
     if not isinstance(save_as, (str, type(None))):

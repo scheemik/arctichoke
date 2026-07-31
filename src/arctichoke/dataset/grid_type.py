@@ -1,7 +1,6 @@
 import xarray as xr 
 
 from arctichoke.verify import verify_path
-from arctichoke.dataset.get_variable import get_variable_name
 
 def get_grid_type(
     dataset: (str, xr.DataArray, xr.Dataset),
@@ -37,13 +36,12 @@ def get_grid_type(
         # Open the dataset
         dataset = xr.open_dataset(dataset)
     
-    # Get the variable name for this dataset
-    variable_id = get_variable_name(dataset)
-    
     # Get the names of the dimensions of the dataset
     ## Note: Use `.sizes` instead of `.dims` for consistency across Datasets and DataArrays
     dims = list(dataset.sizes.keys())
 
+    if len(dims) < 1:
+        raise ValueError(f"(get_grid_type) `dataset` has no valid dimensions. Got: {dataset}")
     # Determine the type of spatial grid the dataset has
     if 'j' in dims and 'i' in dims:
         return 'irregular'

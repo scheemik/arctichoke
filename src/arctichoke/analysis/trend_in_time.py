@@ -47,7 +47,7 @@ def trend_in_time_scipy(
             Whether to verbosely output information as the function executes.
             Default is `False`.
         **kwargs
-            Keyword arguments to pass to `xr.sum()`.
+            Keyword arguments to handle extras that might have been passed by the function above this one.
 
         Returns
         -------
@@ -78,7 +78,7 @@ def trend_in_time_scipy(
         >>>         save_as=test_file_names[i],
         >>>     )
         >>> import xarray as xr
-        >>> test_dataset = xr.open_mfdataset(test_file_names)
+        >>> test_dataset = xr.open_mfdataset(test_file_names, data_vars='all')
         >>> test_dataset['test_var'].values
         array([[[ 0.,  1.,  2.],
                 [ 3.,  4.,  5.],
@@ -128,7 +128,7 @@ def trend_in_time_scipy(
         # Load all the files at once
         if verbose:
             print(f"(trend_in_time_scipy) When passing a list of files, ensure their coordinates match as that is not verified in this function.")
-        dataset = xr.open_mfdataset(dataset)
+        dataset = xr.open_mfdataset(dataset, data_vars='all')
     elif not isinstance(dataset, (xr.Dataset, xr.DataArray)):
         raise TypeError(f"(trend_in_time_scipy) `dataset` must be a string, `xr.Dataset`, or `xarray.DataArray`. Got type: {type(dataset)}")
     if not isinstance(var, (str, type(None))):
@@ -328,7 +328,7 @@ def trend_in_time(
             The name of the time dimension over which to find the trend.
             Default is `year`. 
         mask_where_zero_across_time : `bool`, `xarray.DataArray`, optional
-            Whether to mask out grid cells which have zero as a value across the entire time dimension using `mask_where_all_zero()`.
+            Whether to mask out grid cells which have zero as a value across the entire time dimension using `mask_where_all_zero()`, which only applies to "marker" variables.
             If a `xarray.DataArray` is given, it is used as a mask.
             Default is `False`. 
         use_xarray_polyfit : `bool`, optional
@@ -342,7 +342,7 @@ def trend_in_time(
             Whether to verbosely output information as the function executes.
             Default is `False`.
         **kwargs
-            Keyword arguments to pass to `xr.sum()`.
+            Keyword arguments to handle extras that might have been passed by the function above this one.
 
         Returns
         -------
@@ -353,7 +353,6 @@ def trend_in_time(
         --------
         >>> from arctichoke.dataset import make_example_dataset
         >>> from arctichoke.path import make_file_path
-        >>> # Create multiple example test files
         >>> test_file_dir = 'tests/test_analysis/example_datasets'
         >>> make_file_path(test_file_dir)
         >>> test_file_names = [
@@ -367,11 +366,13 @@ def trend_in_time(
         >>>         n=3,
         >>>         offset=offsets[i],
         >>>         test_var_name='test_var',
-        >>>         time_axis=(2000+i),
+        >>>         time_axis='year',
+        >>>         time_len=2,
+        >>>         start_year=(2000+i),
         >>>         save_as=test_file_names[i],
         >>>     )
         >>> import xarray as xr
-        >>> test_dataset = xr.open_mfdataset(test_file_names)
+        >>> test_dataset = xr.open_mfdataset(test_file_names, data_vars='all')
         >>> test_dataset['test_var'].values
         array([[[ 0.,  1.,  2.],
                 [ 3.,  4.,  5.],
@@ -417,11 +418,11 @@ def trend_in_time(
             # Verify this is a valid path
             datafile = verify_path(datafile)
             if not datafile.endswith('.nc'):
-                raise TypeError(f"(plot_time_series) `datafile` must be a `.nc` filepath. Got: {datafile}")
+                raise TypeError(f"(trend_in_time) `datafile` must be a `.nc` filepath. Got: {datafile}")
         # Load all the files at once
         if verbose:
             print(f"(trend_in_time) When passing a list of files, ensure their coordinates match as that is not verified in this function.")
-        dataset = xr.open_mfdataset(dataset)
+        dataset = xr.open_mfdataset(dataset, data_vars='all')
     elif not isinstance(dataset, (xr.Dataset, xr.DataArray)):
         raise TypeError(f"(trend_in_time) `dataset` must be a string, `xr.Dataset`, or `xarray.DataArray`. Got type: {type(dataset)}")
     if not isinstance(var, (str, type(None))):
@@ -465,12 +466,14 @@ def trend_in_time(
         if verbose:
             print(f"(trend_in_time) `dataset[var].attrs` after mask:\n{dataset[var].attrs}")
     elif mask_where_zero_across_time:
-        dataset = mask_where_all_zero(
-            dataset,
-            var,
-            time_dim,
-            verbose,
-        )
+        # Only call `mask_where_all_zero` if `var` is a "marker" variable
+        if sps.sea_ice_vars[var]['marker_var']:
+            dataset = mask_where_all_zero(
+                dataset,
+                var,
+                time_dim,
+                verbose,
+            )
 
     # Set the appropriate correction factor for the type of time axis
     if time_dim == 'time':
@@ -482,7 +485,7 @@ def trend_in_time(
             correction_factor = 60 * 60 * 24 * 365 * 1e9
         elif date_dtype == 'cftime.Datetime360Day':
             # Calculate the correction factor to convert seconds to years
-            correction_factor = 60 * 60 * 24 * 365
+            correction_factor = 60 * 60 * 24 * 365 * 1e9
         else:
             raise TypeError(f"(trend_in_time) Correction factor not yet set for time dimension type: {date_dtype}")
         if verbose:
@@ -498,14 +501,16 @@ def trend_in_time(
     # Get the trends in time
     if use_xarray_polyfit:
         ## Note: When using `polyfit()`, a dimenson `degree` gets added
-        ## The index 0 of `degree` corresponds to the slope when using a 1st-order fit
         if verbose:
             print(f"(trend_in_time) Getting a first-degree polyfit")
-        polyfit = (dataset[var].polyfit(time_dim, 1, skipna=True, full=True).isel(degree=0, drop=True) * correction_factor)
+        polyfit = (dataset[var].polyfit(time_dim, 1, skipna=True, full=True) )
         if verbose:
             print(f"(trend_in_time) Geting the coefficients and residuals")
         # Get the coefficients and the residuals
-        trends = polyfit['polyfit_coefficients']
+        ## The index 0 of `degree` corresponds to the slope and the index of
+        ## 1 corresponds to the intercept when using a 1st-order fit
+        trends = polyfit.isel(degree=0)['polyfit_coefficients'] * correction_factor
+        intercepts = polyfit.isel(degree=1)['polyfit_coefficients']
         residuals = polyfit['polyfit_residuals']
     else:
         # Get the time axis values
@@ -529,8 +534,11 @@ def trend_in_time(
             print(f"(trend_in_time) Geting the coefficients and residuals")
         # Get the coefficients and residuals
         trends = polyfit[0][0,:].reshape(vals.shape[1], vals.shape[2])
+        intercepts = polyfit[0][1,:].reshape(vals.shape[1], vals.shape[2])
         residuals = polyfit[1].reshape(vals.shape[1], vals.shape[2])
     
+    # Save the length of the time dimension
+    len_time = dataset[var].sizes[time_dim]
     # Set `dataset` to be just the first time slice
     dataset = dataset.isel({time_dim:0}, drop=True)
 
@@ -539,9 +547,12 @@ def trend_in_time(
     # Put the trends into the original dataset
     if use_xarray_polyfit:
         dataset[f'{var}_trends'] = trends
+        dataset[f'{var}_intercepts'] = intercepts
         dataset[f'{var}_residuals'] = residuals
     else:
         dataset[f'{var}_trends'].values = trends
+        dataset[f'{var}_intercepts'] = dataset[f'{var}_trends']
+        dataset[f'{var}_intercepts'].values = intercepts
         dataset[f'{var}_residuals'] = dataset[f'{var}_trends']
         dataset[f'{var}_residuals'].values = residuals
     # Restore the variable attributes
@@ -554,35 +565,49 @@ def trend_in_time(
     dataset.attrs['history'] = f"{get_current_datetime_str()} altered by `arctichoke`: Calculated trends across `{time_dim}` of `{var}` values to get `{var}_trends`. {original_history}"
     # Get references to these new variables
     xr_var_trends = dataset[f'{var}_trends']
+    xr_var_interc = dataset[f'{var}_intercepts']
     xr_var_resids = dataset[f'{var}_residuals']
         
     if verbose:
         print(f"(trend_in_time) Modifing dataset attributes")
     # Modify the attributes of the dataset to reflect the changes
     xr_var_trends.attrs['standard_name'] = f'{var}_trends'
+    xr_var_interc.attrs['standard_name'] = f'{var}_intercepts'
     xr_var_resids.attrs['standard_name'] = f'{var}_residuals'
     if 'long_name' in xr_var_trends.attrs.keys():
         xr_var_trends.attrs['long_name'] = f'Trend in {xr_var_trends.attrs['long_name']}'
+        xr_var_interc.attrs['long_name'] = f'Intercept for {xr_var_trends.attrs['long_name']}'
+        xr_var_resids.attrs['long_name'] = f'Residual of trend in {xr_var_trends.attrs['long_name']}'
     else:
         xr_var_trends.attrs['long_name'] = f'Trend in {var}'
-    xr_var_resids.attrs['long_name'] = f'Residual of trend in {var}'
+        xr_var_interc.attrs['long_name'] = f'Intercept for {var}'
+        xr_var_resids.attrs['long_name'] = f'Residual of trend in {var}'
     if 'units' in xr_var_trends.attrs.keys():
         xr_var_trends.attrs['units'] = f'{xr_var_trends.attrs['units']}/yr'
+        xr_var_interc.attrs['units'] = f'{xr_var_trends.attrs['units']}'
+        xr_var_resids.attrs['units'] = f'({xr_var_trends.attrs['units']})^2'
     else:
         xr_var_trends.attrs['units'] = f'N/P'
-    xr_var_resids.attrs['units'] = f'({xr_var_trends.attrs['units']})^2'
+        xr_var_interc.attrs['units'] = f'N/P'
+        xr_var_resids.attrs['units'] = f'N/P'
     if 'comment' in xr_var_trends.attrs.keys():
         xr_var_trends.attrs['comment'] = f'Trend in {xr_var_trends.attrs['comment']}'
+        xr_var_interc.attrs['comment'] = f'Intercept for {xr_var_trends.attrs['comment']}'
+        xr_var_resids.attrs['comment'] = f'Sum of square residuals for the trend in {xr_var_trends.attrs['comment']}'
     else:
-        xr_var_trends.attrs['comment'] = f'N/P'
-    xr_var_resids.attrs['comment'] = f'Sum of square residuals for the trend in {var}'
+        xr_var_trends.attrs['comment'] = f'Trend in {var}'
+        xr_var_interc.attrs['comment'] = f'Intercept for {var}'
+        xr_var_resids.attrs['comment'] = f'Sum of square residuals for the trend in {var}'
     xr_var_trends.attrs['original_name'] = f'{var}_trends'
+    xr_var_interc.attrs['original_name'] = f'{var}_intercepts'
     xr_var_resids.attrs['original_name'] = f'{var}_residuals'
     if 'history' in xr_var_trends.attrs.keys():
         original_history = xr_var_trends.attrs['history']
     else:
         original_history = ''
     xr_var_trends.attrs['history'] = f"{get_current_datetime_str()} altered by `arctichoke`: Calculated trends across `{time_dim}` of `{var}` values to get `{var}_trends`. {original_history}"
+    dataset.attrs['original_variable'] = var 
+    dataset.attrs['original_time_length'] = len_time
 
     # Save the modified dataset, if applicable
     if not isinstance(save_as, type(None)):
@@ -681,7 +706,7 @@ def mask_where_all_zero(
         # Load all the files at once
         if verbose:
             print(f"(mask_where_all_zero) When passing a list of files, ensure their coordinates match as that is not verified in this function.")
-        dataset = xr.open_mfdataset(dataset)
+        dataset = xr.open_mfdataset(dataset, data_vars='all')
     elif not isinstance(dataset, (xr.Dataset, xr.DataArray)):
         raise TypeError(f"(mask_where_all_zero) `dataset` must be a string, `xr.Dataset`, or `xarray.DataArray`. Got type: {type(dataset)}")
     if not isinstance(var, (str, type(None))):

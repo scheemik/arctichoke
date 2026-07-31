@@ -9,7 +9,7 @@ from arctichoke.verify import verify_path
 # Create test case with many different trends
 n = 3
 offset = 0
-test_var_name = 'test_var'
+test_var_name = 'silandfast'
 # Initialize the dataset
 test_many_trends = xr.Dataset()
 # Add dimensions
@@ -92,7 +92,7 @@ def test_trend_in_time():
             'use_xarray_polyfit': True,
             'save_as': None,
             'atol': 1e-12,
-            'expected_trends': [0, np.nan],
+            'expected_trends': [0],
             'expected_residuals': [np.nan],
         },
         {
@@ -112,6 +112,38 @@ def test_trend_in_time():
             'expected_residuals': [np.nan],
         },
         {
+            'dataset': make_example_dataset(
+                n=3, 
+                test_var_name='silandfast',
+                time_dim='time',
+                time_len=2,
+            ),
+            'var': 'silandfast',
+            'time_dim': 'time',
+            'mask_where_zero_across_time': True,
+            'use_xarray_polyfit': True,
+            'save_as': None,
+            'atol': 1e-12,
+            'expected_trends': [0, np.nan],
+            'expected_residuals': [np.nan],
+        },
+        {
+            'dataset': make_example_dataset(
+                n=3, 
+                test_var_name='silandfast',
+                time_dim='time',
+                time_len=2,
+            ),
+            'var': 'silandfast',
+            'time_dim': 'time',
+            'mask_where_zero_across_time': False,
+            'use_xarray_polyfit': True,
+            'save_as': f"{test_file_dir}/example_new_0.nc",
+            'atol': 1e-12,
+            'expected_trends': [0],
+            'expected_residuals': [np.nan],
+        },
+        {
             'dataset': test_file_names,
             'var': 'test_var',
             'time_dim': 'time',
@@ -120,7 +152,7 @@ def test_trend_in_time():
             'save_as': None,
             'atol': 1e-4,
             'expected_trends': [1.49368],
-            'expected_residuals': [1.13618e+16],
+            'expected_residuals': [0.36028054],
         },
         {
             'dataset': test_file_names,
@@ -131,25 +163,21 @@ def test_trend_in_time():
             'atol': 1e-4,
             'save_as': f"{test_file_dir}/example_new_1.nc",
             'expected_trends': [1.49368],
-            'expected_residuals': [1.13618e+16],
+            'expected_residuals': [0.36028054],
         },
         {
             'dataset': test_many_trends,
-            'var': 'test_var',
+            'var': test_var_name,
             'time_dim': 'year',
             'mask_where_zero_across_time': True,
             'use_xarray_polyfit': True,
             'atol': 1e-4,
             'save_as': None,
             'expected_trends': [
-                 0.00000000e+00, -6.74152213e-17, -1.34830443e-16,
-                -1.00804977e-13, -1.00898639e-13, -0.499999999999,
-                 0.499999999999,  0.500000000000,  1.00617838e-13, np.nan,
+                 0.0, -0.499999999999, 0.499999999999, 0.500000000000, np.nan,
             ],
             'expected_residuals': [
-                0.00000000e+00, 3.04386613e-33, 1.21754645e-32,
-                6.66666667e-01, 6.66666667e-01, 1.50000000e+00,
-                1.50000000e+00, 1.66666667e-01, 6.66666667e-01, np.nan
+                0.0, 6.66666667e-01, 1.5, 1.66666667e-01, 6.66666667e-01, np.nan
             ],
         },
         {
@@ -161,7 +189,7 @@ def test_trend_in_time():
             'atol': 1e-4,
             'save_as': None,
             'expected_trends': [1.49368, 0.990164, 0, np.nan],
-            'expected_residuals': [2.24627e+14, 1.13618e+16, np.nan],
+            'expected_residuals': [0.0071229, 0.36028054, np.nan],
         },
         {
             'dataset': test_nan_dataset,
@@ -390,7 +418,7 @@ def test_mask_where_all_zero():
         },
         {
             'dataset': test_many_trends,
-            'var': 'test_var',
+            'var': test_var_name,
             'time_dim': 'year',
             'expected_array': ex_arr_many_trends,
         },

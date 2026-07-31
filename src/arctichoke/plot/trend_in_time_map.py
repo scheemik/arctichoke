@@ -1,6 +1,8 @@
 import xarray as xr
+
 from arctichoke.analysis import sum_by_year, trend_in_time, trend_in_time_scipy
 from arctichoke.dataset import select_months
+import arctichoke.params as sps
 from arctichoke.path import list_variable_files
 from arctichoke.plot import make_title, quadmesh_map
 
@@ -12,7 +14,9 @@ def make_trend_map(
     calc_pvals: bool = False,
     mask_where_zero_across_time: (bool, xr.DataArray) = True,
     select_summer: bool = True,
+    call_sum_by_year: bool = None,
     map_projection: str = 'Orthographic',
+    return_map: bool = False,
     verbose: bool = False,
     **kwargs,
 ):
@@ -38,20 +42,26 @@ def make_trend_map(
             Whether to use the version of `trend_in_time()` which calculates p-values.
             Default is `False`.
         mask_where_zero_across_time : `bool`, `xarray.DataArray`, optional
-            Whether to mask out grid cells which have zero as a value across the entire time dimension using `mask_where_all_zero()`.
+            Whether to mask out grid cells which have zero as a value across the entire time dimension using `mask_where_all_zero()`, which only applies to "marker" variables.
             If a `xarray.DataArray` is given, it is used as a mask.
             Default is `False`. 
         select_summer : `bool`, optional
             Whether to use `select_months()` to only plot the summer months (June-October).
             Default is `True`.
+        call_sum_by_year : `bool`, `None`, optional
+            Whether to use `sum_by_year()` to sum the variable across each year before taking the trends across time.
+            Default is `None`.
         map_projection : `str`, optional
             The map projection to use.
             Default is `'Orthographic'`.
+        return_map : `bool`, optional
+            Whether to return the map object or not.
+            Default is `False`.
         verbose : `bool`, optional
             Whether to verbosely output information as the function executes.
             Default is `False`.
         **kwargs
-            Keyword arguments to pass to `list_variable_files()`.
+            Keyword arguments to pass to `list_variable_files()` and `quadmesh_map()`.
 
         Returns
         -------
@@ -69,6 +79,17 @@ def make_trend_map(
         >>>     verbose = True,
         >>> )
     """
+    # Verify input arguments
+    if not isinstance(calc_pvals, bool):
+        raise TypeError(f"(trend_in_time) `calc_pvals` must be a `bool`. Got type: {type(calc_pvals)}")
+    if not isinstance(select_summer, bool):
+        raise TypeError(f"(trend_in_time) `select_summer` must be a `bool`. Got type: {type(select_summer)}")
+    if not isinstance(call_sum_by_year, (bool, type(None))):
+        raise TypeError(f"(trend_in_time) `call_sum_by_year` must be a `bool` or `None`. Got type: {type(call_sum_by_year)}")
+    if not isinstance(return_map, bool):
+        raise TypeError(f"(trend_in_time) `return_map` must be a `bool`. Got type: {type(return_map)}")
+    if not isinstance(verbose, bool):
+        raise TypeError(f"(trend_in_time) `verbose` must be a `bool`. Got type: {type(verbose)}")
     # Get the list of `silandfast` files
     filelist = list_variable_files(
         source_id = this_source_id,
@@ -89,33 +110,55 @@ def make_trend_map(
             filelist,
             data_vars = 'all'
         )
+    # 
+    if isinstance(call_sum_by_year, type(None)):
+        # Check whether this variable is in the sea ice vars dictionary
+        if this_var in sps.sea_ice_vars.keys():
+            # Check whether this is a marker variable or not
+            if sps.sea_ice_vars[this_var]['marker_var']: 
+                call_sum_by_year = True 
+            else:
+                call_sum_by_year = False
+        if verbose:
+            print(f"(make_trend_map) `this_var` ({this_var}) is marker variable: {call_sum_by_year}")
     # Sum the data across time
-    ## Overwrite the `dataset` variable to reduce memory overhead
-    dataset = sum_by_year(
-        dataset,
-        verbose = verbose,
-    )
+    if call_sum_by_year:
+        ## Overwrite the `dataset` variable to reduce memory overhead
+        dataset = sum_by_year(
+            dataset,
+            verbose = verbose,
+        )
+        var_for_trend = f'{this_var}_year_sum'
+        this_time_dim = 'year'
+    else:
+        var_for_trend = this_var
+        this_time_dim = 'time'
     # Take the trend across time
     if calc_pvals:
         dataset = trend_in_time_scipy(
             dataset = dataset,
-            var = f'{this_var}_year_sum',
+            var = var_for_trend,
             mask_where_zero_across_time = False,
             verbose = verbose,
+            time_dim = this_time_dim,
         )
     else:
         dataset = trend_in_time(
             dataset = dataset,
-            var = f'{this_var}_year_sum',
+            var = var_for_trend,
             mask_where_zero_across_time = mask_where_zero_across_time,
             verbose = verbose,
+            time_dim = this_time_dim,
         )
     # Plot the trends on a map
     sum_year_trend_map = quadmesh_map(
         dataset,
-        f'{this_var}_year_sum_trends',
+        f'{var_for_trend}_trends',
         map_projection = map_projection,
         diverging_cbar = True,
         verbose = verbose,
+        **kwargs,
     )
+    if return_map:
+        return sum_year_trend_map
     sum_year_trend_map

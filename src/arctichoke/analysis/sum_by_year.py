@@ -10,7 +10,7 @@ def sum_by_year(
     dataset: (str, [str], xr.DataArray, xr.Dataset),
     attr_long_name: str = None,
     attr_units: str = None,
-    drop_bnds: bool = False,
+    drop_bnds: bool = True,
     save_as: str = None,
     verbose: bool = False,
     **kwargs,
@@ -85,7 +85,7 @@ def sum_by_year(
         # Load all the files at once
         if verbose:
             print(f"(sum_by_year) When passing a list of files, ensure their coordinates match as that is not verified in this function.")
-        dataset = xr.open_mfdataset(dataset)
+        dataset = xr.open_mfdataset(dataset, data_vars='all')
     elif not isinstance(dataset, (xr.Dataset, xr.DataArray)):
         raise TypeError(f"(sum_by_year) `dataset` must be a string, `xr.Dataset`, or `xr.DataArray`. Got type: {type(dataset)}")
     if not isinstance(attr_long_name, (str, type(None))):
@@ -151,11 +151,14 @@ def sum_by_year(
         # Get the reference to this variable
         xr_var_to_add_attrs = dataset
     
-    if var_name == 'silandfast':
-        if isinstance(attr_long_name, type(None)):
-            attr_long_name = "Annual Landfast Ice Months"
-        if isinstance(attr_units, type(None)):
-            attr_units = "months/yr"
+    # Check whether this variable is in the sea ice vars dictionary
+    if var_name in sps.sea_ice_vars.keys():
+        # Check whether this is a marker variable or not
+        if sps.sea_ice_vars[var_name]['marker_var']:
+            if isinstance(attr_long_name, type(None)):
+                attr_long_name = f"Annual {sps.sea_ice_vars[var_name]['label_name']} Months"
+            if isinstance(attr_units, type(None)):
+                attr_units = "months/yr"
 
     if verbose:
         print(f"(sum_by_year) Modifying the dataset attributes.")

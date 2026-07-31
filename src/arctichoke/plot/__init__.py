@@ -1,5 +1,6 @@
 # Import all functions from submodules
 from .cbar_limits import *
+from .diverging_cmap import *
 from .hvplots import *
 from .labels_and_titles import *
 from .limit_extent import *

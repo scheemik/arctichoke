@@ -331,7 +331,7 @@ def multi_seasonal_cycle(
             If `True`, the function exists before making a plot for use in testing.
             Default is `False`.
         **kwargs
-            Keyword arguments to pass to `xr.DataArray.plot()`.
+            Keyword arguments to handle extras that might have been passed by the function above this one.
 
         Returns
         -------
@@ -419,7 +419,7 @@ def multi_seasonal_cycle(
                         variable_id = this_variable,
                         experiment_id = this_experiment,
                         variant_label = this_variant_label,
-                        with_modification = 'trim_NWP_',
+                        with_modification = 'trim_CAA_',
                     )
 
                     just_these_files = select_files_by_time(
@@ -441,7 +441,7 @@ def multi_seasonal_cycle(
                 variable_id = this_variable,
                 take_mean = True,
                 ax = this_ax[j,i],
-                plt_title = f"{source_id} ({this_experiment}) NWP Region",
+                plt_title = f"{source_id} ({this_experiment}) CAA Region",
                 line_labels = these_line_labels,
                 line_styles = these_line_styles,
             )

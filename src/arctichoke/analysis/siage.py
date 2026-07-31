@@ -73,7 +73,7 @@ def calc_siage(
             if not datafile.endswith('.nc'):
                 raise TypeError(f"(calc_siage) `datafile` must be a `.nc` filepath. Got: {datafile}")
         # Load all the files at once
-        siage_dataset = xr.open_mfdataset(siage_dataset)
+        siage_dataset = xr.open_mfdataset(siage_dataset, data_vars='all')
     elif not isinstance(siage_dataset, (str, xr.Dataset, xr.DataArray)):
         raise TypeError(f"(calc_siage) `siage_dataset` must be a string, `xr.Dataset`, or `xr.DataArray`. Got type: {type(siage_dataset)}")
     if not isinstance(save_as, (str, type(None))):

@@ -179,7 +179,7 @@ def get_variable_path(
             If `None` is given, the file path for the first variant with the variable is returned.
             Default is `None`.
         **kwargs
-            Keyword arguments to pass to `get_model_path()`.
+            Keyword arguments to handle extras that might have been passed by the function above this one.
 
         Returns
         -------
