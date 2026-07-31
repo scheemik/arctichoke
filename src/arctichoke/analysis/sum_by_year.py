@@ -133,6 +133,8 @@ def sum_by_year(
         dataset = dataset.groupby('time.year').mean(dim='time', **kwargs)
         if verbose:
             print(f"(sum_by_year) Completed taking the mean by year.")
+        # Set attribute variables
+        mod_suffix = 'mean'
     else:
         # Sum the dataset by year
         ## Passing `min_count=1` prevents grid cells with all `nan` values across time from being set to zero instead of the expected `nan`
@@ -140,22 +142,24 @@ def sum_by_year(
         dataset = dataset.groupby('time.year').sum(dim='time', min_count=1, **kwargs)
         if verbose:
             print(f"(sum_by_year) Completed summing by year.")
+        # Set attribute variables
+        mod_suffix = 'sum'
 
     if dataset_is_Dataset:
         # Get the name of the variable in the dataset
         var_name = get_variable_name(dataset)
         if not isinstance(var_name, str):
             raise ValueError(f"(sum_by_year) `dataset` must only have one variable. Available variables: {var_name}")
-        # Rename the variable, giving it the suffix `_year_sum`
-        dataset = dataset.rename_vars({var_name: f'{var_name}_year_sum'})
+        # Rename the variable, giving it the suffix `_year_{mod_suffix}`
+        dataset = dataset.rename_vars({var_name: f'{var_name}_year_{mod_suffix}'})
         # Get the reference to this variable
-        xr_var_to_add_attrs = dataset[f'{var_name}_year_sum']
+        xr_var_to_add_attrs = dataset[f'{var_name}_year_{mod_suffix}']
         # Add this operation to the history
         if 'history' in dataset.attrs.keys():
             original_history = dataset.attrs['history']
         else:
             original_history = ''
-        dataset.attrs['history'] = f"{get_current_datetime_str()} altered by `arctichoke`: Calculated the sum of the `{var_name}` values per year in `{var_name}_year_sum`. {original_history}"
+        dataset.attrs['history'] = f"{get_current_datetime_str()} altered by `arctichoke`: Calculated the {mod_suffix} of the `{var_name}` values per year in `{var_name}_year_{mod_suffix}`. {original_history}"
     else:
         # Get the name of the variable in the dataset
         var_name = dataset.name
@@ -174,13 +178,13 @@ def sum_by_year(
     if verbose:
         print(f"(sum_by_year) Modifying the dataset attributes.")
     # Modify the attributes of the dataset to reflect the changes
-    xr_var_to_add_attrs.attrs['standard_name'] = f'{var_name}_year_sum'
+    xr_var_to_add_attrs.attrs['standard_name'] = f'{var_name}_year_{mod_suffix}'
     if not isinstance(attr_long_name, type(None)):
         xr_var_to_add_attrs.attrs['long_name'] = attr_long_name
     elif 'long_name' in xr_var_to_add_attrs.attrs.keys():
-        xr_var_to_add_attrs.attrs['long_name'] = f'Yearly Sum of {xr_var_to_add_attrs.attrs['long_name']}'
+        xr_var_to_add_attrs.attrs['long_name'] = f'Yearly {mod_suffix} of {xr_var_to_add_attrs.attrs['long_name']}'
     else:
-        xr_var_to_add_attrs.attrs['long_name'] = f'Yearly Sum of {var_name}'
+        xr_var_to_add_attrs.attrs['long_name'] = f'Yearly {mod_suffix} of {var_name}'
     if not isinstance(attr_units, type(None)):
         xr_var_to_add_attrs.attrs['units'] = attr_units
     elif 'units' in xr_var_to_add_attrs.attrs.keys():
@@ -188,15 +192,15 @@ def sum_by_year(
     else:
         xr_var_to_add_attrs.attrs['units'] = f'N/P'
     if 'comment' in xr_var_to_add_attrs.attrs.keys():
-        xr_var_to_add_attrs.attrs['comment'] = f'Yearly Sum of {xr_var_to_add_attrs.attrs['comment']}'
+        xr_var_to_add_attrs.attrs['comment'] = f'Yearly {mod_suffix} of {xr_var_to_add_attrs.attrs['comment']}'
     else:
         xr_var_to_add_attrs.attrs['comment'] = f'N/P'
-    xr_var_to_add_attrs.attrs['original_name'] = f'{var_name}_year_sum'
+    xr_var_to_add_attrs.attrs['original_name'] = f'{var_name}_year_{mod_suffix}'
     if 'history' in xr_var_to_add_attrs.attrs.keys():
         original_history = xr_var_to_add_attrs.attrs['history']
     else:
         original_history = ''
-    xr_var_to_add_attrs.attrs['history'] = f"{get_current_datetime_str()} altered by `arctichoke`: Calculated the sum of the `{var_name}` values to get `{var_name}_year_sum`. {original_history}"
+    xr_var_to_add_attrs.attrs['history'] = f"{get_current_datetime_str()} altered by `arctichoke`: Calculated the {mod_suffix} of the `{var_name}` values to get `{var_name}_year_{mod_suffix}`. {original_history}"
     
     # Save the modified dataset, if applicable
     if not isinstance(save_as, type(None)):
