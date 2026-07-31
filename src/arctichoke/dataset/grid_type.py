@@ -40,6 +40,8 @@ def get_grid_type(
     ## Note: Use `.sizes` instead of `.dims` for consistency across Datasets and DataArrays
     dims = list(dataset.sizes.keys())
 
+    if len(dims) < 1:
+        raise ValueError(f"(get_grid_type) `dataset` has no valid dimensions. Got: {dataset}")
     # Determine the type of spatial grid the dataset has
     if 'j' in dims and 'i' in dims:
         return 'irregular'
