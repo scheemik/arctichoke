@@ -11,6 +11,7 @@ def sum_by_year(
     attr_long_name: str = None,
     attr_units: str = None,
     drop_bnds: bool = True,
+    find_mean: bool = False,
     save_as: str = None,
     verbose: bool = False,
     **kwargs,
@@ -32,6 +33,9 @@ def sum_by_year(
             Default is `None`, which uses the original `units` plus `'_per_year'`.
         drop_bnds : `bool`, optional
             Whether to drop all meta variables that contain `bnds` such as `latitude_bnds`.
+            Default is `False`.
+        find_mean : `boo`, optional
+            Whether to take the mean instead of the sum by year.
             Default is `False`.
         save_as : `str`, `None`, optional
             The file name to which to save the modified dataset.
@@ -94,6 +98,8 @@ def sum_by_year(
         raise TypeError(f"(sum_by_year) `attr_units` must be a string or `None`. Got type: {type(attr_units)}")
     if not isinstance(drop_bnds, bool):
         raise TypeError(f"(sum_by_year) `drop_bnds` must be a `bool`. Got type: {type(drop_bnds)}")
+    if not isinstance(find_mean, bool):
+        raise TypeError(f"(sum_by_year) `find_mean` must be a `bool`. Got type: {type(find_mean)}")
     if not isinstance(save_as, (str, type(None))):
         raise TypeError(f"(sum_by_year) `save_as` must be a string or `None`. Got type: {type(save_as)}")
     elif isinstance(save_as, str) and not '.nc' in save_as:
@@ -122,13 +128,18 @@ def sum_by_year(
     else:
         dataset_is_Dataset = False
 
-    # Sum the dataset by year
-    ## Passing `min_count=1` prevents grid cells with all `nan` values across time from being set to zero instead of the expected `nan`
-    ## Removing the `min_count` argument results in a spiky artifact on maps
-    dataset = dataset.groupby('time.year').sum(dim='time', min_count=1, **kwargs)
-    if verbose:
-        print(f"(sum_by_year) Completed summing by year.")
-    # return dataset
+    if find_mean:
+        # Take the mean of the dataset by year
+        dataset = dataset.groupby('time.year').mean(dim='time', **kwargs)
+        if verbose:
+            print(f"(sum_by_year) Completed taking the mean by year.")
+    else:
+        # Sum the dataset by year
+        ## Passing `min_count=1` prevents grid cells with all `nan` values across time from being set to zero instead of the expected `nan`
+        ## Removing the `min_count` argument results in a spiky artifact on maps
+        dataset = dataset.groupby('time.year').sum(dim='time', min_count=1, **kwargs)
+        if verbose:
+            print(f"(sum_by_year) Completed summing by year.")
 
     if dataset_is_Dataset:
         # Get the name of the variable in the dataset

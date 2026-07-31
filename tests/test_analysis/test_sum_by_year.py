@@ -42,6 +42,7 @@ def test_sum_by_year():
                 time_dim='time',
                 time_len=2,
             ),
+            'find_mean': False,
             'save_as': None,
             'unique_years': [2026],
             'expected_sums': [
@@ -56,6 +57,7 @@ def test_sum_by_year():
                 time_dim='time',
                 time_len=2,
             ),
+            'find_mean': False,
             'save_as': f"{test_file_dir}/example_new_0.nc",
             'unique_years': [2026],
             'expected_sums': [
@@ -65,6 +67,7 @@ def test_sum_by_year():
         },
         {
             'dataset': test_file_names,
+            'find_mean': False,
             'save_as': None,
             'unique_years': [2000, 2001, 2002],
             'expected_sums': [
@@ -78,6 +81,7 @@ def test_sum_by_year():
         },
         {
             'dataset': test_file_names,
+            'find_mean': False,
             'save_as': f"{test_file_dir}/example_new_1.nc",
             'unique_years': [2000, 2001, 2002],
             'expected_sums': [
@@ -91,6 +95,7 @@ def test_sum_by_year():
         },
         {
             'dataset': test_nan_dataset,
+            'find_mean': False,
             'save_as': None,
             'unique_years': [2000, 2001, 2002],
             'expected_sums': [
@@ -102,10 +107,39 @@ def test_sum_by_year():
                 [np.nan, np.nan,],],
             ],
         },
+        {
+            'dataset': test_file_names,
+            'find_mean': True,
+            'save_as': f"{test_file_dir}/example_new_1.nc",
+            'unique_years': [2000, 2001, 2002],
+            'expected_sums': [
+               [[0, 1,],
+                [2, 3,],],
+               [[1, 2,],
+                [3, 4,],],
+               [[2, 3,],
+                [4, 5,],],
+            ],
+        },
+        {
+            'dataset': test_nan_dataset,
+            'find_mean': True,
+            'save_as': None,
+            'unique_years': [2000, 2001, 2002],
+            'expected_sums': [
+               [[0, 1,],
+                [2, 3,],],
+               [[1, 2,],
+                [3, np.nan,],],
+               [[2, 3,],
+                [np.nan, np.nan,],],
+            ],
+        },
     ]
     for test_case in test_cases:
         actual_dataset = analysis.sum_by_year(
             dataset = test_case['dataset'],
+            find_mean = test_case['find_mean'],
             save_as = test_case['save_as'],
         )
         # Check the years present on the time axis
@@ -191,6 +225,16 @@ def test_sum_by_year():
                 assert True, f"`sum_by_year` raised an exception on invalid `save_as`: {e}"
             else:
                 assert False, f"`sum_by_year` did not raise an exception on invalid `save_as` {invalid_string}"
+        # Test with `find_mean`
+        try:
+            actual = analysis.sum_by_year(
+                dataset = test_cases[0]['dataset'],
+                find_mean = invalid_string,
+            )
+        except (TypeError) as e:
+            assert True, f"`sum_by_year` raised an exception on invalid `find_mean`: {e}"
+        else:
+            assert False, f"`sum_by_year` did not raise an exception on invalid `find_mean` {invalid_string}"
         # Test with `verbose`
         try:
             actual = analysis.sum_by_year(
