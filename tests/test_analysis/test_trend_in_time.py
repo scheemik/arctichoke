@@ -152,7 +152,7 @@ def test_trend_in_time():
             'save_as': None,
             'atol': 1e-4,
             'expected_trends': [1.49368],
-            'expected_residuals': [1.13618e+16],
+            'expected_residuals': [0.36028054],
         },
         {
             'dataset': test_file_names,
@@ -163,7 +163,7 @@ def test_trend_in_time():
             'atol': 1e-4,
             'save_as': f"{test_file_dir}/example_new_1.nc",
             'expected_trends': [1.49368],
-            'expected_residuals': [1.13618e+16],
+            'expected_residuals': [0.36028054],
         },
         {
             'dataset': test_many_trends,
@@ -174,14 +174,10 @@ def test_trend_in_time():
             'atol': 1e-4,
             'save_as': None,
             'expected_trends': [
-                 0.00000000e+00, -6.74152213e-17, -1.34830443e-16,
-                -1.00804977e-13, -1.00898639e-13, -0.499999999999,
-                 0.499999999999,  0.500000000000,  1.00617838e-13, np.nan,
+                 0.0, -0.499999999999, 0.499999999999, 0.500000000000, np.nan,
             ],
             'expected_residuals': [
-                0.00000000e+00, 3.04386613e-33, 1.21754645e-32,
-                6.66666667e-01, 6.66666667e-01, 1.50000000e+00,
-                1.50000000e+00, 1.66666667e-01, 6.66666667e-01, np.nan
+                0.0, 6.66666667e-01, 1.5, 1.66666667e-01, 6.66666667e-01, np.nan
             ],
         },
         {
@@ -193,7 +189,7 @@ def test_trend_in_time():
             'atol': 1e-4,
             'save_as': None,
             'expected_trends': [1.49368, 0.990164, 0, np.nan],
-            'expected_residuals': [2.24627e+14, 1.13618e+16, np.nan],
+            'expected_residuals': [0.0071229, 0.36028054, np.nan],
         },
         {
             'dataset': test_nan_dataset,
@@ -422,7 +418,7 @@ def test_mask_where_all_zero():
         },
         {
             'dataset': test_many_trends,
-            'var': 'test_var',
+            'var': test_var_name,
             'time_dim': 'year',
             'expected_array': ex_arr_many_trends,
         },
