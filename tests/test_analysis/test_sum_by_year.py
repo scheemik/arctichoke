@@ -18,61 +18,89 @@ def test_sum_by_year():
     ]
     for i in range(len(test_file_names)):
         make_example_dataset(
-            n=3,
+            n=2,
             test_var_name='test_var',
             time_dim='time',
             time_len=2,
             start_year=(2000+i),
+            offset=i,
             save_as=test_file_names[i],
         )
     # Create test case with `nan` values
     test_nan_dataset = xr.open_mfdataset(test_file_names)
     test_nan_dataset['test_var'] = test_nan_dataset['test_var'].where(
         lambda val:
-            (test_nan_dataset['test_var'] < 7),
+            (test_nan_dataset['test_var'] < 4),
         lambda val: np.nan
     )
     # Define test cases
     test_cases = [
         {
             'dataset': make_example_dataset(
-                n=3, 
+                n=2, 
                 test_var_name='test_var',
                 time_dim='time',
                 time_len=2,
             ),
             'save_as': None,
             'unique_years': [2026],
-            'expected_sum': 72,
+            'expected_sums': [
+               [[0, 2,],
+                [4, 6,],]
+            ],
         },
         {
             'dataset': make_example_dataset(
-                n=3, 
+                n=2, 
                 test_var_name='test_var',
                 time_dim='time',
                 time_len=2,
             ),
             'save_as': f"{test_file_dir}/example_new_0.nc",
             'unique_years': [2026],
-            'expected_sum': 72,
+            'expected_sums': [
+               [[0, 2,],
+                [4, 6,],]
+            ],
         },
         {
             'dataset': test_file_names,
             'save_as': None,
             'unique_years': [2000, 2001, 2002],
-            'expected_sum': 72,
+            'expected_sums': [
+               [[0, 2,],
+                [4, 6,],],
+               [[2, 4,],
+                [6, 8,],],
+               [[4, 6,],
+                [8, 10,],],
+            ],
         },
         {
             'dataset': test_file_names,
-            'save_as': f"{test_file_dir}/example_new_0.nc",
+            'save_as': f"{test_file_dir}/example_new_1.nc",
             'unique_years': [2000, 2001, 2002],
-            'expected_sum': 72,
+            'expected_sums': [
+               [[0, 2,],
+                [4, 6,],],
+               [[2, 4,],
+                [6, 8,],],
+               [[4, 6,],
+                [8, 10,],],
+            ],
         },
         {
             'dataset': test_nan_dataset,
             'save_as': None,
             'unique_years': [2000, 2001, 2002],
-            'expected_sum': 42,
+            'expected_sums': [
+               [[0, 2,],
+                [4, 6,],],
+               [[2, 4,],
+                [6, np.nan,],],
+               [[4, 6,],
+                [np.nan, np.nan,],],
+            ],
         },
     ]
     for test_case in test_cases:
@@ -84,25 +112,15 @@ def test_sum_by_year():
         actual_years = list(np.unique(actual_dataset['year'].values))
         assert actual_years == test_case['unique_years'], f"`sum_by_year` created a dataset with the unique years: {actual_years}.\nExpected unique years: {test_case['unique_years']}"
         # Check each year
-        for year in actual_years:
-            actual_sum = actual_dataset['test_var_year_sum'].sel(year=year).sum(skipna=True).values
-            assert actual_sum == test_case['expected_sum'], f"`sum_by_year` failed on test case: {test_case}.\nExpected: {test_case['expected_sum']}\nActual: {actual_sum}"
+        for i in range(len(actual_years)):
+            actual_sums = actual_dataset['test_var_year_sum'].sel(year=actual_years[i]).values
+            assert np.array_equal(actual_sums, test_case['expected_sums'][i], equal_nan=True), f"`sum_by_year` failed on test case: {test_case}.\nExpected sums {i}: {test_case['expected_sums'][i]}\nActual sums {i}: {actual_sums}"
         if not isinstance(test_case['save_as'], type(None)):
             try:
                 actual_save_as = verify_path(test_case['save_as'])
             except (FileNotFoundError) as e:
                 assert True, f"`sum_by_year` raised an exception: {e}\nExpected save file at {test_case['save_as']}"
 
-    # Create differently sized example file
-    odd_size_example = f"{test_file_dir}/example_dataset_3.nc"
-    make_example_dataset(
-        n=6,
-        test_var_name='test_var',
-        time_dim='time',
-        time_len=2,
-        start_year=1999,
-        save_as=odd_size_example,
-    )
     # Define invalid test cases
     invalid_test_cases = [
         {   # Passing a file that does not exist
@@ -111,9 +129,6 @@ def test_sum_by_year():
         {   # Passing a string that isn't a file path
             'dataset': 'invalid_dataset',
         },
-        # {   # Passing a list of files that don't have the same dimensions
-        #     'dataset': test_file_names + [odd_size_example],
-        # },
     ]
     for invalid_test_case in invalid_test_cases:
         try:
