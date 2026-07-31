@@ -353,7 +353,6 @@ def trend_in_time(
         --------
         >>> from arctichoke.dataset import make_example_dataset
         >>> from arctichoke.path import make_file_path
-        >>> # Create multiple example test files
         >>> test_file_dir = 'tests/test_analysis/example_datasets'
         >>> make_file_path(test_file_dir)
         >>> test_file_names = [
@@ -367,7 +366,9 @@ def trend_in_time(
         >>>         n=3,
         >>>         offset=offsets[i],
         >>>         test_var_name='test_var',
-        >>>         time_axis=(2000+i),
+        >>>         time_axis='year',
+        >>>         time_len=2,
+        >>>         start_year=(2000+i),
         >>>         save_as=test_file_names[i],
         >>>     )
         >>> import xarray as xr
@@ -417,7 +418,7 @@ def trend_in_time(
             # Verify this is a valid path
             datafile = verify_path(datafile)
             if not datafile.endswith('.nc'):
-                raise TypeError(f"(plot_time_series) `datafile` must be a `.nc` filepath. Got: {datafile}")
+                raise TypeError(f"(trend_in_time) `datafile` must be a `.nc` filepath. Got: {datafile}")
         # Load all the files at once
         if verbose:
             print(f"(trend_in_time) When passing a list of files, ensure their coordinates match as that is not verified in this function.")
@@ -548,6 +549,7 @@ def trend_in_time(
         dataset[f'{var}_residuals'] = residuals
     else:
         dataset[f'{var}_trends'].values = trends
+        dataset[f'{var}_intercepts'] = dataset[f'{var}_trends']
         dataset[f'{var}_intercepts'].values = intercepts
         dataset[f'{var}_residuals'] = dataset[f'{var}_trends']
         dataset[f'{var}_residuals'].values = residuals
@@ -573,23 +575,27 @@ def trend_in_time(
     if 'long_name' in xr_var_trends.attrs.keys():
         xr_var_trends.attrs['long_name'] = f'Trend in {xr_var_trends.attrs['long_name']}'
         xr_var_interc.attrs['long_name'] = f'Intercept for {xr_var_trends.attrs['long_name']}'
+        xr_var_resids.attrs['long_name'] = f'Residual of trend in {xr_var_trends.attrs['long_name']}'
     else:
         xr_var_trends.attrs['long_name'] = f'Trend in {var}'
         xr_var_interc.attrs['long_name'] = f'Intercept for {var}'
-    xr_var_resids.attrs['long_name'] = f'Residual of trend in {var}'
+        xr_var_resids.attrs['long_name'] = f'Residual of trend in {var}'
     if 'units' in xr_var_trends.attrs.keys():
         xr_var_trends.attrs['units'] = f'{xr_var_trends.attrs['units']}/yr'
         xr_var_interc.attrs['units'] = f'{xr_var_trends.attrs['units']}'
+        xr_var_resids.attrs['units'] = f'({xr_var_trends.attrs['units']})^2'
     else:
         xr_var_trends.attrs['units'] = f'N/P'
         xr_var_interc.attrs['units'] = f'N/P'
-    xr_var_resids.attrs['units'] = f'({xr_var_trends.attrs['units']})^2'
+        xr_var_resids.attrs['units'] = f'N/P'
     if 'comment' in xr_var_trends.attrs.keys():
         xr_var_trends.attrs['comment'] = f'Trend in {xr_var_trends.attrs['comment']}'
         xr_var_interc.attrs['comment'] = f'Intercept for {xr_var_trends.attrs['comment']}'
+        xr_var_resids.attrs['comment'] = f'Sum of square residuals for the trend in {xr_var_trends.attrs['comment']}'
     else:
-        xr_var_trends.attrs['comment'] = f'N/P'
-    xr_var_resids.attrs['comment'] = f'Sum of square residuals for the trend in {var}'
+        xr_var_trends.attrs['comment'] = f'Trend in {var}'
+        xr_var_interc.attrs['comment'] = f'Intercept for {var}'
+        xr_var_resids.attrs['comment'] = f'Sum of square residuals for the trend in {var}'
     xr_var_trends.attrs['original_name'] = f'{var}_trends'
     xr_var_interc.attrs['original_name'] = f'{var}_intercepts'
     xr_var_resids.attrs['original_name'] = f'{var}_residuals'
@@ -598,6 +604,7 @@ def trend_in_time(
     else:
         original_history = ''
     xr_var_trends.attrs['history'] = f"{get_current_datetime_str()} altered by `arctichoke`: Calculated trends across `{time_dim}` of `{var}` values to get `{var}_trends`. {original_history}"
+    dataset.attrs['original_variable'] = var 
 
     # Save the modified dataset, if applicable
     if not isinstance(save_as, type(None)):
