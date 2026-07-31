@@ -16,6 +16,7 @@ def make_trend_map(
     select_summer: bool = True,
     call_sum_by_year: bool = None,
     map_projection: str = 'Orthographic',
+    return_map: bool = False,
     verbose: bool = False,
     **kwargs,
 ):
@@ -53,6 +54,9 @@ def make_trend_map(
         map_projection : `str`, optional
             The map projection to use.
             Default is `'Orthographic'`.
+        return_map : `bool`, optional
+            Whether to return the map object or not.
+            Default is `False`.
         verbose : `bool`, optional
             Whether to verbosely output information as the function executes.
             Default is `False`.
@@ -82,6 +86,8 @@ def make_trend_map(
         raise TypeError(f"(trend_in_time) `select_summer` must be a `bool`. Got type: {type(select_summer)}")
     if not isinstance(call_sum_by_year, (bool, type(None))):
         raise TypeError(f"(trend_in_time) `call_sum_by_year` must be a `bool` or `None`. Got type: {type(call_sum_by_year)}")
+    if not isinstance(return_map, bool):
+        raise TypeError(f"(trend_in_time) `return_map` must be a `bool`. Got type: {type(return_map)}")
     if not isinstance(verbose, bool):
         raise TypeError(f"(trend_in_time) `verbose` must be a `bool`. Got type: {type(verbose)}")
     # Get the list of `silandfast` files
@@ -153,4 +159,6 @@ def make_trend_map(
         verbose = verbose,
         **kwargs,
     )
+    if return_map:
+        return sum_year_trend_map
     sum_year_trend_map
