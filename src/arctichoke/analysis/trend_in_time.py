@@ -537,6 +537,8 @@ def trend_in_time(
         intercepts = polyfit[0][1,:].reshape(vals.shape[1], vals.shape[2])
         residuals = polyfit[1].reshape(vals.shape[1], vals.shape[2])
     
+    # Save the length of the time dimension
+    len_time = dataset[var].sizes[time_dim]
     # Set `dataset` to be just the first time slice
     dataset = dataset.isel({time_dim:0}, drop=True)
 
@@ -605,6 +607,7 @@ def trend_in_time(
         original_history = ''
     xr_var_trends.attrs['history'] = f"{get_current_datetime_str()} altered by `arctichoke`: Calculated trends across `{time_dim}` of `{var}` values to get `{var}_trends`. {original_history}"
     dataset.attrs['original_variable'] = var 
+    dataset.attrs['original_time_length'] = len_time
 
     # Save the modified dataset, if applicable
     if not isinstance(save_as, type(None)):
