@@ -467,6 +467,8 @@ def trend_in_time(
             print(f"(trend_in_time) `dataset[var].attrs` after mask:\n{dataset[var].attrs}")
     elif mask_where_zero_across_time:
         # Only call `mask_where_all_zero` if `var` is a "marker" variable
+        if not var in sps.sea_ice_vars.keys():
+            raise NotImplementedError(f"(trend_in_time) The `var` {var} has not been yet added to `params.sea_ice_vars`.")
         if sps.sea_ice_vars[var]['marker_var']:
             dataset = mask_where_all_zero(
                 dataset,
