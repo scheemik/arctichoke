@@ -28,12 +28,12 @@ sea_ice_vars = {
     },
     'sispeed': {
         'plot_range': None,
-        'trend_clims': [-0.002, 0.003],
+        'trend_clims': [-0.003, 0.003],
         'marker_var': False,
     },
     'sithick': {
         'plot_range': [0, 10],
-        'trend_clims': None,
+        'trend_clims': [-0.3, 0.1],
         'marker_var': False,
     },
     'siu': {
@@ -72,7 +72,7 @@ sea_ice_vars = {
     },
     'sislow': {
         'plot_range': None,
-        'trend_clims': [-0.05, 0.03],
+        'trend_clims': [-0.05, 0.05],
         'marker_var': True,
         'label_name': 'Slow Ice',
     },
