@@ -14,7 +14,8 @@ def make_trend_map(
     calc_pvals: bool = False,
     mask_where_zero_across_time: (bool, xr.DataArray) = True,
     select_summer: bool = True,
-    call_sum_by_year: bool = None,
+    call_sum_by_year: bool = True,
+    find_mean: bool = False,
     map_projection: str = 'Orthographic',
     return_map: bool = False,
     verbose: bool = False,
@@ -50,7 +51,11 @@ def make_trend_map(
             Default is `True`.
         call_sum_by_year : `bool`, `None`, optional
             Whether to use `sum_by_year()` to sum the variable across each year before taking the trends across time.
-            Default is `None`.
+            Default is `True`.
+        find_mean : `bool`, optional
+            Whether to find the mean instead of sum when calling `sum_by_year.
+            This is only relevant when `call_sum_by_year` is `True` or when it is `None` and `this_var` is a marker variable.
+            Default is `False`.
         map_projection : `str`, optional
             The map projection to use.
             Default is `'Orthographic'`.
@@ -86,6 +91,8 @@ def make_trend_map(
         raise TypeError(f"(trend_in_time) `select_summer` must be a `bool`. Got type: {type(select_summer)}")
     if not isinstance(call_sum_by_year, (bool, type(None))):
         raise TypeError(f"(trend_in_time) `call_sum_by_year` must be a `bool` or `None`. Got type: {type(call_sum_by_year)}")
+    if not isinstance(find_mean, (bool, type(None))):
+        raise TypeError(f"(trend_in_time) `find_mean` must be a `bool` or `None`. Got type: {type(find_mean)}")
     if not isinstance(return_map, bool):
         raise TypeError(f"(trend_in_time) `return_map` must be a `bool`. Got type: {type(return_map)}")
     if not isinstance(verbose, bool):
@@ -126,9 +133,13 @@ def make_trend_map(
         ## Overwrite the `dataset` variable to reduce memory overhead
         dataset = sum_by_year(
             dataset,
+            find_mean = find_mean,
             verbose = verbose,
         )
-        var_for_trend = f'{this_var}_year_sum'
+        if find_mean:
+            var_for_trend = f'{this_var}_year_mean'
+        else:
+            var_for_trend = f'{this_var}_year_sum'
         this_time_dim = 'year'
     else:
         var_for_trend = this_var
