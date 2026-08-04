@@ -135,6 +135,7 @@ def sum_by_year(
             print(f"(sum_by_year) Completed taking the mean by year.")
         # Set attribute variables
         mod_suffix = 'mean'
+        units_suffix = ''
     else:
         # Sum the dataset by year
         ## Passing `min_count=1` prevents grid cells with all `nan` values across time from being set to zero instead of the expected `nan`
@@ -144,6 +145,7 @@ def sum_by_year(
             print(f"(sum_by_year) Completed summing by year.")
         # Set attribute variables
         mod_suffix = 'sum'
+        units_suffix = '/yr'
 
     if dataset_is_Dataset:
         # Get the name of the variable in the dataset
@@ -173,7 +175,8 @@ def sum_by_year(
             if isinstance(attr_long_name, type(None)):
                 attr_long_name = f"Annual {sps.sea_ice_vars[var_name]['label_name']} Months"
             if isinstance(attr_units, type(None)):
-                attr_units = "months/yr"
+                if not find_mean:
+                    attr_units = "months/yr"
 
     if verbose:
         print(f"(sum_by_year) Modifying the dataset attributes.")
@@ -188,7 +191,7 @@ def sum_by_year(
     if not isinstance(attr_units, type(None)):
         xr_var_to_add_attrs.attrs['units'] = attr_units
     elif 'units' in xr_var_to_add_attrs.attrs.keys():
-        xr_var_to_add_attrs.attrs['units'] = f'{xr_var_to_add_attrs.attrs['units']}/yr'
+        xr_var_to_add_attrs.attrs['units'] = f'{xr_var_to_add_attrs.attrs['units']}{units_suffix}'
     else:
         xr_var_to_add_attrs.attrs['units'] = f'N/P'
     if 'comment' in xr_var_to_add_attrs.attrs.keys():
