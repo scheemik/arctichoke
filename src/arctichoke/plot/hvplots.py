@@ -206,7 +206,11 @@ def quadmesh_map(
     # Save the plot, if applicable
     if not isinstance(save_as, type(None)):
         # Save the plot to file
-        save_hvplot(qm_map_plot, save_as)
+        save_hvplot(
+            qm_map_plot,
+            save_as,
+            verbose = verbose,
+        )
 
     return qm_map_plot
 
