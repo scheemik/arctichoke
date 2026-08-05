@@ -23,7 +23,7 @@ sea_ice_vars = {
     },
     'siconc2': {
         'plot_range': [0, 100],
-        'trend_clims': None,
+        'trend_clims': [-0.8, 0.1],
         'marker_var': False,
     },
     'sispeed': {
