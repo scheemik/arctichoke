@@ -463,6 +463,16 @@ def trend_in_time(
         dataset[var] = dataset[var] * mask_where_zero_across_time
         # Put the attributes back in
         dataset[var].attrs = var_attributes
+        # Add this operation to the history
+        if 'history' in dataset.attrs.keys():
+            original_history = dataset.attrs['history']
+        else:
+            original_history = ''
+        dataset.attrs['history'] = f"{get_current_datetime_str()} altered by `arctichoke`: Applied custom mask to `{var}` variable. {original_history}"
+        if 'long_name' in dataset[var].attrs.keys():
+            dataset[var].attrs['long_name'] = f'Masked {dataset[var].attrs['long_name']}'
+        else:
+            dataset[var].attrs['long_name'] = f'Masked {var}'
         if verbose:
             print(f"(trend_in_time) `dataset[var].attrs` after mask:\n{dataset[var].attrs}")
     elif mask_where_zero_across_time:
