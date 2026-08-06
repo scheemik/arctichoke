@@ -476,10 +476,17 @@ def trend_in_time(
         if verbose:
             print(f"(trend_in_time) `dataset[var].attrs` after mask:\n{dataset[var].attrs}")
     elif mask_where_zero_across_time:
+        # Clean the variable name, if necessary
+        if '_year_sum' in var:
+            clean_var = var.replace('_year_sum', '')
+        elif '_year_mean' in var:
+            clean_var = var.replace('_year_mean', '')
+        else:
+            clean_var = var
         # Only call `mask_where_all_zero` if `var` is a "marker" variable
-        if not var in sps.sea_ice_vars.keys():
-            raise NotImplementedError(f"(trend_in_time) The `var` {var} has not been yet added to `params.sea_ice_vars`.")
-        if sps.sea_ice_vars[var]['marker_var']:
+        if not clean_var in sps.sea_ice_vars.keys():
+            raise NotImplementedError(f"(trend_in_time) The `clean_var` {clean_var} has not been yet added to `params.sea_ice_vars`.")
+        if sps.sea_ice_vars[clean_var]['marker_var']:
             dataset = mask_where_all_zero(
                 dataset,
                 var,
