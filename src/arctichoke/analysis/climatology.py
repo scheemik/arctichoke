@@ -119,4 +119,9 @@ def make_climatology(
         find_mean = find_mean,
         verbose = verbose,
     )
+
+    # Add marker attributes
+    dataset_clim.attrs['climatology_start'] = start_year
+    dataset_clim.attrs['climatology_end'] = end_year
+
     return dataset_clim
