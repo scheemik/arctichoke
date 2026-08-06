@@ -73,7 +73,6 @@ from arctichoke.plot.hvplots import quadmesh_map
 EC_Earth3P_HR_hist_silandfast_sum_2000_CAA_map = quadmesh_map(
     EC_Earth3P_HR_hist_silandfast_CAA_sum_2000_xr,
     'silandfast',
-    projection = 'Orthographic',
 )
 EC_Earth3P_HR_hist_silandfast_sum_2000_CAA_map
 ```
@@ -96,7 +95,6 @@ from arctichoke.plot.hvplots import quadmesh_map
 EC_Earth3P_HR_hist_silandfast_sum_2000_CAA_map = quadmesh_map(
     EC_Earth3P_HR_hist_silandfast_CAA_sum_2000_xr,
     'silandfast_year_sum',
-    projection = 'Orthographic',
 )
 EC_Earth3P_HR_hist_silandfast_sum_2000_CAA_map
 ```
@@ -104,6 +102,8 @@ EC_Earth3P_HR_hist_silandfast_sum_2000_CAA_map
 (sum_by_year) `save_as`: None
 (sum_by_year) `data_var_list`: ['time_bnds', 'longitude_bnds', 'latitude_bnds', 'silandfast']
 (sum_by_year) Removing `meta_var`: time_bnds
+(sum_by_year) Removing `meta_var`: latitude_bnds
+(sum_by_year) Removing `meta_var`: longitude_bnds
 (sum_by_year) Completed summing by year.
 (sum_by_year) Modifying the dataset attributes.
 ```
@@ -148,7 +148,6 @@ from arctichoke.plot import quadmesh_map
 EC_Earth3P_HR_hist_silandfast_sum_2000_CAA_map = quadmesh_map(
     EC_Earth3P_HR_hist_silandfast_CAA_sum_2000_xr,
     'silandfast_year_sum',
-    projection = 'Orthographic',
 )
 EC_Earth3P_HR_hist_silandfast_sum_2000_CAA_map
 ```
@@ -197,16 +196,17 @@ from arctichoke.plot.hvplots import quadmesh_map
 EC_Earth3P_HR_hist_silandfast_sum_CAA_map = quadmesh_map(
     EC_Earth3P_HR_hist_silandfast_CAA_sum_xr.sel(year=1950),
     'silandfast_year_sum',
-    projection = 'Orthographic',
 )
 EC_Earth3P_HR_hist_silandfast_sum_CAA_map
 ```
 ```console
+(select_months) When passing a list of files, ensure their coordinates match as that is not verified in this function.
 (select_months) Selecting months: [6, 7, 8, 9, 10]
-(sum_by_year) When passing a list of files, ensure their coordinates match as that is not verified in this function.
 (sum_by_year) `save_as`: None
 (sum_by_year) `data_var_list`: ['time_bnds', 'longitude_bnds', 'latitude_bnds', 'silandfast']
 (sum_by_year) Removing `meta_var`: time_bnds
+(sum_by_year) Removing `meta_var`: latitude_bnds
+(sum_by_year) Removing `meta_var`: longitude_bnds
 (sum_by_year) Completed summing by year.
 (sum_by_year) Modifying the dataset attributes.
 ```
@@ -266,7 +266,7 @@ this_plot = plot_time_series(
 ![EC_Earth3P-HR_silandfast_CAA_sum_trend_at_Ittoqqortoormiit.png](landfast_trends-img/EC_Earth3P-HR_silandfast_CAA_sum_trend_at_Ittoqqortoormiit.png)
 
 For this particular spot, the trend in landfast ice is -0.10376 months per year per year, meaning it has approximately 1 fewer months of annual landfast ice per decade. 
-I deliberately chose that location to demonstrate one of the largest trends I find.
+I deliberately chose that location to demonstrate one of the largest trends I've found.
 Most of the trends in the CAA are much smaller, for example the one below for a spot between the smaller islands of the northwestern CAA.
 ```python
 test_spot_xr = EC_Earth3P_HR_hist_silandfast_CAA_sum_xr.isel(j=198, i=518)
@@ -376,8 +376,9 @@ When dealing with datasets, it also converts the time values to the expected dat
 ### EC-Earth3P-HR annual landfast ice trend maps
 [back to top](#trends-in-landfast-ice-over-time)
 
-It takes about 2 minutes to make all the plots.
+It takes about 2 minutes to make the three plots below.
 ```python
+from arctichoke.params import sea_ice_vars
 from arctichoke.plot import make_trend_map
 
 for this_variant in [
@@ -390,6 +391,8 @@ for this_variant in [
         this_var = 'silandfast',
         this_variant_label = this_variant,
         this_modification = 'trim_CAA_',
+        clims = sea_ice_vars['silandfast']['trend_clims'],
+        select_summer = False,
     )
 ```
 ![EC_Earth3P-HR_r1i1p2f1_silandfast_CAA_year_sum_trend_map.png](landfast_trends-img/EC_Earth3P-HR_r1i1p2f1_silandfast_CAA_year_sum_trend_map.png)
@@ -399,8 +402,9 @@ for this_variant in [
 ### HadGEM3-GC31-MM annual landfast ice trend maps
 [back to top](#trends-in-landfast-ice-over-time)
 
-It takes about 2 minutes to make all the plots.
+It takes about 2 minutes to make the three plots below.
 ```python
+from arctichoke.params import sea_ice_vars
 from arctichoke.plot import make_trend_map
 
 for this_variant in [
@@ -413,6 +417,8 @@ for this_variant in [
         this_var = 'silandfast',
         this_variant_label = this_variant,
         this_modification = 'trim_CAA_',
+        clims = sea_ice_vars['silandfast']['trend_clims'],
+        select_summer = False,
     )
 ```
 ![HadGEM3-GC31-MM_r1i1p1f1_hist_silandfast_CAA_year_sum_trend_map.png](landfast_trends-img/HadGEM3-GC31-MM_r1i1p1f1_hist_silandfast_CAA_year_sum_trend_map.png)
@@ -422,8 +428,9 @@ for this_variant in [
 ### HadGEM3-GC31-HM annual landfast ice trend maps
 [back to top](#trends-in-landfast-ice-over-time)
 
-It takes about 2 minutes to make all the plots.
+It takes about 2 minutes to make the three plots below.
 ```python
+from arctichoke.params import sea_ice_vars
 from arctichoke.plot import make_trend_map
 
 for this_variant in [
@@ -436,6 +443,8 @@ for this_variant in [
         this_var = 'silandfast',
         this_variant_label = this_variant,
         this_modification = 'trim_CAA_',
+        clims = sea_ice_vars['silandfast']['trend_clims'],
+        select_summer = False,
     )
 ```
 ![HadGEM3-GC31-HM_r1i1p1f1_hist_silandfast_CAA_year_sum_trend_map.png](landfast_trends-img/HadGEM3-GC31-HM_r1i1p1f1_hist_silandfast_CAA_year_sum_trend_map.png)
@@ -446,9 +455,10 @@ for this_variant in [
 [back to top](#trends-in-landfast-ice-over-time)
 
 There is only one variant for HadGEM3-GC31-HM.
-I turned `mask_where_zero_across_time` to `False` because when it is set to `True`, the kernel crashes due to running out of memory.
 This takes 3-4 minutes to plot.
+Note that it might be necessary to restart the kernel before making this plot to avoid running out of memory.
 ```python
+from arctichoke.params import sea_ice_vars
 from arctichoke.plot import make_trend_map
 
 make_trend_map(
@@ -456,12 +466,15 @@ make_trend_map(
     this_var = 'silandfast',
     this_variant_label = 'r1i1p1f1',
     this_modification = 'trim_CAA_',
-    mask_where_zero_across_time = False,
+    clims = sea_ice_vars['silandfast']['trend_clims'],
+    select_summer = False,
 )
 ```
-![HadGEM3-GC31-HH_r1i1p1f1_hist_silandfast_CAA_year_sum_trend_map_no_zero_mask.png](landfast_trends-img/HadGEM3-GC31-HH_r1i1p1f1_hist_silandfast_CAA_year_sum_trend_map_no_zero_mask.png)
+![HadGEM3-GC31-HH_r1i1p1f1_hist_silandfast_CAA_year_sum_trend_map.png](landfast_trends-img/HadGEM3-GC31-HH_r1i1p1f1_hist_silandfast_CAA_year_sum_trend_map.png)
 
-In order to make the above trend plot with `mask_where_zero_across_time = True`, I need to do it in steps, saving a temporary netCDF file, restarting the kernel, then continuing.
+Sometimes, the kernel crashes due to running out of memory.
+In those cases, I turned `mask_where_zero_across_time` to `False` because when it is set to `True`, it takes a lot more processing.
+In order to make the above trend plot with `mask_where_zero_across_time = True` if the kernel keeps crashing, I need to do it in steps, saving a temporary netCDF file, restarting the kernel, then continuing.
 ```python
 from arctichoke.path import list_variable_files
 
@@ -514,18 +527,17 @@ HadGEM3_GC31_HH_hist_CAA_silandfast_sum_by_year_trend = trend_in_time(
     'silandfast_year_sum',
     mask_where_zero_across_time = True,
     use_xarray_polyfit = True,
-    verbose = True,
     save_as = 'cdo_tmp/HadGEM3-GC31-HH_CAA_silandfast_trends.nc',
 )
 
+from arctichoke.params import sea_ice_vars
 from arctichoke.plot.hvplots import quadmesh_map
 
 HadGEM3_GC31_HH_hist_silandfast_trend_map = quadmesh_map(
     HadGEM3_GC31_HH_hist_CAA_silandfast_sum_by_year_trend,
     'silandfast_year_sum_trends',
-    map_projection = 'Orthographic',
     diverging_cbar = True,
-    verbose = True,
+    clims = sea_ice_vars['silandfast']['trend_clims'],
 )
 HadGEM3_GC31_HH_hist_silandfast_trend_map
 ```
@@ -542,6 +554,7 @@ Now, I will find the trend in _summer_ landfast ice months over the `hist-1950` 
 [back to top](#trends-in-landfast-ice-over-time)
 
 ```python
+from arctichoke.params import sea_ice_vars
 from arctichoke.plot import make_trend_map
 
 for this_variant in [
@@ -554,6 +567,7 @@ for this_variant in [
         this_var = 'silandfast',
         this_variant_label = this_variant,
         this_modification = 'trim_CAA_',
+        clims = sea_ice_vars['silandfast']['trend_clims'],
         select_summer = True,
     )
 ```
@@ -565,6 +579,7 @@ for this_variant in [
 [back to top](#trends-in-landfast-ice-over-time)
 
 ```python
+from arctichoke.params import sea_ice_vars
 from arctichoke.plot import make_trend_map
 
 for this_variant in [
@@ -577,6 +592,7 @@ for this_variant in [
         this_var = 'silandfast',
         this_variant_label = this_variant,
         this_modification = 'trim_CAA_',
+        clims = sea_ice_vars['silandfast']['trend_clims'],
         select_summer = True,
     )
 ```
@@ -588,6 +604,7 @@ for this_variant in [
 [back to top](#trends-in-landfast-ice-over-time)
 
 ```python
+from arctichoke.params import sea_ice_vars
 from arctichoke.plot import make_trend_map
 
 for this_variant in [
@@ -600,6 +617,7 @@ for this_variant in [
         this_var = 'silandfast',
         this_variant_label = this_variant,
         this_modification = 'trim_CAA_',
+        clims = sea_ice_vars['silandfast']['trend_clims'],
         select_summer = True,
     )
 ```
@@ -611,6 +629,7 @@ for this_variant in [
 [back to top](#trends-in-landfast-ice-over-time)
 
 ```python
+from arctichoke.params import sea_ice_vars
 from arctichoke.plot import make_trend_map
 
 make_trend_map(
@@ -618,8 +637,8 @@ make_trend_map(
     this_var = 'silandfast',
     this_variant_label = 'r1i1p1f1',
     this_modification = 'trim_CAA_',
+    clims = sea_ice_vars['silandfast']['trend_clims'],
     select_summer = True,
-    verbose = True,
 )
 ```
 ![HadGEM3-GC31-HH_r1i1p1f1_hist_silandfast_CAA_JJASO_sum_trend_map.png](landfast_trends-img/HadGEM3-GC31-HH_r1i1p1f1_hist_silandfast_CAA_JJASO_sum_trend_map.png)
