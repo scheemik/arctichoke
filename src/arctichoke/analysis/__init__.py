@@ -1,4 +1,5 @@
 # Import all functions from submodules
+from .climatology import *
 from .landfast import *
 from .multi_year_ice import *
 from .siage import *
