@@ -13,7 +13,7 @@ def quadmesh_map(
     xr_data: xr.Dataset,
     var: str, 
     save_as: str = None,
-    map_projection: str = 'NorthPolarStereo',
+    map_projection: str = 'Orthographic',
     map_bbox: [float, float, float, float] = sps.CAA_BBOX,
     clims: [(int, float), (int, float)] = None,
     map_title: str = None,
@@ -36,8 +36,8 @@ def quadmesh_map(
             Default is `None`, which doesn't save the plot to a file.
         map_projection : `str`, optional
             A string naming the map projection to use in the plot.
-            Must be one of the following: 'NorthPolarStereo', 'Orthograpic'.
-            Default is 'NorthPolarStereo'.
+            Must be one of the following: 'NorthPolarStereo', 'Orthographic'.
+            Default is 'Orthographic'.
         map_bbox : Array of `float`, optional
             An array of coordinates defining the bounding box of the map in the following format:
                 - [LAT_MAX, LAT_MIN, LON_MAX, LON_MIN]
@@ -206,7 +206,11 @@ def quadmesh_map(
     # Save the plot, if applicable
     if not isinstance(save_as, type(None)):
         # Save the plot to file
-        save_hvplot(qm_map_plot, save_as)
+        save_hvplot(
+            qm_map_plot,
+            save_as,
+            verbose = verbose,
+        )
 
     return qm_map_plot
 

@@ -8,6 +8,7 @@ from arctichoke.verify import verify_path
 def save_hvplot(
     hvplot_to_save,
     save_as: str,
+    verbose: bool = False,
 ):
     """ Save an `hvplot` to file.
 
@@ -20,6 +21,9 @@ def save_hvplot(
         save_as : `str`
             The file path within the `outputs/` directory to which to save the plot.
             Must end in either `.html` or `.png`.
+        verbose : `bool`, optional
+            Whether to verbosely output information as the function executes.
+            Default is `False`.
 
         Returns
         -------
@@ -43,15 +47,19 @@ def save_hvplot(
         save_as_png = save_as
     else:
         raise ValueError(f"(save_hvplot) `save_as` must be a string ending in either `.html` or `.png`. Got: {save_as}")
+    if not isinstance(verbose, bool):
+        raise TypeError(f"(trend_in_time) `verbose` must be a `bool`. Got type: {type(verbose)}")
     
-    print('(save_hvplot) save_as_html:', save_as_html)
-    print('(save_hvplot) save_as_png:', save_as_png)
-    
+    if verbose:
+        print('(save_hvplot) save_as_html:', save_as_html)
+        print('(save_hvplot) save_as_png:', save_as_png)
+        print(f"(save_hvplot) Saving to {save_as_html}")
     # Save as an `html`, which is needed either way
-    print(f"(save_hvplot) Saving to {save_as_html}")
     hv_save(hvplot_to_save, save_as_html)
     # Save as a `png`, if applicable
     if not isinstance(save_as_png, type(None)):
+        if verbose:
+            print(f"(save_hvplot) Saving to {save_as_png}")
         html_to_png(save_as_html, save_as_png)
 
 def html_to_png(
