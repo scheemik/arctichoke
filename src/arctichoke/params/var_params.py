@@ -54,7 +54,7 @@ sea_ice_vars = {
     # Marker variables
     'silandfast': {
         'plot_range': None,
-        'trend_clims': None,
+        'trend_clims': [-0.07, 0.04],
         'marker_var': True,
         'label_name': 'Landfast Ice',
     },
