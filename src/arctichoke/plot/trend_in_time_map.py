@@ -86,17 +86,17 @@ def make_trend_map(
     """
     # Verify input arguments
     if not isinstance(calc_pvals, bool):
-        raise TypeError(f"(trend_in_time) `calc_pvals` must be a `bool`. Got type: {type(calc_pvals)}")
+        raise TypeError(f"(make_trend_map) `calc_pvals` must be a `bool`. Got type: {type(calc_pvals)}")
     if not isinstance(select_summer, bool):
-        raise TypeError(f"(trend_in_time) `select_summer` must be a `bool`. Got type: {type(select_summer)}")
+        raise TypeError(f"(make_trend_map) `select_summer` must be a `bool`. Got type: {type(select_summer)}")
     if not isinstance(call_sum_by_year, (bool, type(None))):
-        raise TypeError(f"(trend_in_time) `call_sum_by_year` must be a `bool` or `None`. Got type: {type(call_sum_by_year)}")
+        raise TypeError(f"(make_trend_map) `call_sum_by_year` must be a `bool` or `None`. Got type: {type(call_sum_by_year)}")
     if not isinstance(find_mean, (bool, type(None))):
-        raise TypeError(f"(trend_in_time) `find_mean` must be a `bool` or `None`. Got type: {type(find_mean)}")
+        raise TypeError(f"(make_trend_map) `find_mean` must be a `bool` or `None`. Got type: {type(find_mean)}")
     if not isinstance(return_map, bool):
-        raise TypeError(f"(trend_in_time) `return_map` must be a `bool`. Got type: {type(return_map)}")
+        raise TypeError(f"(make_trend_map) `return_map` must be a `bool`. Got type: {type(return_map)}")
     if not isinstance(verbose, bool):
-        raise TypeError(f"(trend_in_time) `verbose` must be a `bool`. Got type: {type(verbose)}")
+        raise TypeError(f"(make_trend_map) `verbose` must be a `bool`. Got type: {type(verbose)}")
     # Get the list of `silandfast` files
     filelist = list_variable_files(
         source_id = this_source_id,
