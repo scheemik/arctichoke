@@ -138,8 +138,6 @@ def make_title(
                         this_time_stamp = datetime.date(1900, dataset[time_coord].values, 1).strftime('%B')
                     except:
                         this_time_stamp = 'Month'
-                    if 'climatology_start' in attr_keys and 'climatology_end' in attr_keys:
-                        this_time_stamp = f"{this_time_stamp} ({dataset.attrs['climatology_start']}-{dataset.attrs['climatology_end']})"
                 # Add the time stamp to the title
                 dataset_title = f"{dataset_title}{this_time_stamp} "
         # Check whether the number of months was limited
@@ -148,6 +146,9 @@ def make_title(
             if selected_months == '[6, 7, 8, 9, 10]':
                 selected_months = 'summer'
             dataset_title = f"{dataset_title}{selected_months} "
+        # Check whether this was a climatology
+        if 'climatology_start' in attr_keys and 'climatology_end' in attr_keys:
+            dataset_title = f"{dataset_title}({dataset.attrs['climatology_start']}-{dataset.attrs['climatology_end']}) "
     
     return dataset_title
 
