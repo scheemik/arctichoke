@@ -1,3 +1,4 @@
+import datetime
 import warnings
 import xarray as xr
 
@@ -113,6 +114,8 @@ def make_title(
             time_coord = 'time'
         elif 'year' in coord_names:
             time_coord = 'year'
+        elif 'month' in coord_names:
+            time_coord = 'month'
         else:
             time_coord = False
         # Check whether there is more than one time slice
@@ -129,6 +132,12 @@ def make_title(
                         this_time_stamp = str(dataset[time_coord].values[0])
                     except:
                         this_time_stamp = str(dataset[time_coord].values)
+                elif time_coord == 'month': # Assume an integer
+                    try:
+                        # The year (1900) and day (1) are dummy values here
+                        this_time_stamp = datetime.date(1900, dataset[time_coord].values, 1).strftime('%B')
+                    except:
+                        this_time_stamp = 'Month'
                 # Add the time stamp to the title
                 dataset_title = f"{dataset_title}{this_time_stamp} "
         # Check whether the number of months was limited
