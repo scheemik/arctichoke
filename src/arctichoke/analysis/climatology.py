@@ -1,10 +1,12 @@
 import os
+import warnings
 import xarray as xr
 
 # Need to specify the sub-module when pulling from the same parent module
 from arctichoke.analysis.sum_by_month import sum_by_month
 from arctichoke.dataset import select_months
 from arctichoke.path import list_variable_files, make_file_path, select_files_by_time
+from arctichoke.verify import verify_path
 
 def make_climatology(
     this_source_id: str,
@@ -151,6 +153,7 @@ def save_climatology_files(
     this_var: str,
     this_variant_label: str,
     this_modification: str,
+    overwrite: bool = False,
     verbose: bool = False,
     **kwargs,
 ):
@@ -175,6 +178,9 @@ def save_climatology_files(
         this_modification : `str`
             The modification of the data to save to file.
             Example: `'trim_CAA_'`.
+        overwrite : `bool`, optional
+            Whether to overwrite an existing file if it exists.
+            Default is `False`.
         verbose : `bool`, optional
             Whether to verbosely output information as the function executes.
             Default is `False`.
@@ -197,6 +203,8 @@ def save_climatology_files(
         >>> )
     """
     # Verify input arguments
+    if not isinstance(overwrite, bool):
+        raise TypeError(f"(make_climatology) `overwrite` must be a `bool`. Got type: {type(overwrite)}")
     if not isinstance(verbose, bool):
         raise TypeError(f"(make_climatology) `verbose` must be a `bool`. Got type: {type(verbose)}")
 
@@ -223,7 +231,16 @@ def save_climatology_files(
     # Make sure the directory structure exists for this base file path
     make_file_path(base_filepath)
 
-    # Save the climatology dataset to the base filepath
-    if verbose:
-        print(f"(save_climatology_files) Saving dataset to base file path:\n\t{base_filepath}")
-    dataset_clim.to_netcdf(base_filepath)
+    # Check whether the file climatology file already exists
+    try:
+        verify_path(base_filepath)
+        if overwrite == False:
+            warnings.warn(f"(save_climatology_files) File `{base_filepath}` \n\texists already. To overwrite this file, set `overwrite` to `True`.", UserWarning)
+        else:
+            if verbose:
+                print(f"\t(save_climatology_files) Overwriting file `{base_filepath}`")
+            dataset_clim.to_netcdf(base_filepath)
+    except (FileNotFoundError):
+        if verbose:
+            print(f"\t(save_climatology_files) Writing file `{base_filepath}`")
+        dataset_clim.to_netcdf(base_filepath)
