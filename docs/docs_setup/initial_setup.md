@@ -343,6 +343,18 @@ To start your machine run:
 	podman machine start
 ```
 That took about 3 minutes.
+
+Before starting the machine, I increased its allowed memory so that I am less likely to run out when processing large amounts of data.
+```console
+user@local:~$ podman machine list
+NAME                     VM TYPE     CREATED        LAST UP     CPUS        MEMORY      DISK SIZE
+podman-machine-default*  applehv     2 minutes ago  Never       4           2GiB        100GiB
+user@local:~$ podman machine set --memory 8192
+user@local:~$ podman machine list
+NAME                     VM TYPE     CREATED        LAST UP     CPUS        MEMORY      DISK SIZE
+podman-machine-default*  applehv     4 minutes ago  Never       4           8GiB        100GiB
+```
+
 Next, I started the virtual machine.
 ```console
 user@local:~$ podman machine start
