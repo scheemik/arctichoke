@@ -5,7 +5,9 @@ set -euo pipefail
 # ---- Ensure podman machine is running (macOS) ----
 if ! podman machine inspect >/dev/null 2>&1; then
   echo "No podman machine found. Initializing..."
-  podman machine init
+  # Each volume the container need access to must be specified with `-v` flags
+  # Adding the `--memory=8192` allots 8GiB of memory for the virtual machine
+  podman machine init -v $HOME:$HOME -v /Volumes:/Volumes --memory=8192
 fi
 
 MACHINE_STATE=$(podman machine inspect --format '{{.State}}')
