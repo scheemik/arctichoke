@@ -157,6 +157,7 @@ def find_packed_ice(
 def find_slow_ice(
     dataset: (str, [str], xr.DataArray, xr.Dataset),
     slow_threshold: (int, float) = 0.01, 
+    sispeed_var: str = 'sispeed',
     save_as: str = None,
     verbose: bool = False,
     **kwargs,
@@ -172,6 +173,10 @@ def find_slow_ice(
         slow_threshold : `int`, `float`, optional
             The threshold above which to mark slow ice.
             Default is `0.01` m s-1, following Laliberté et al. 2018.
+        sispeed_var : `str`, optional
+            The name of the variable to use from the provided sea ice speed dataset.
+            Must be `sispeed` or `sispeed_month_mean`.
+            Default is `sispeed`.
         save_as : `str`, `None`, optional
             The file name to which to save the modified dataset.
             Default is `None`, which doesn't save the dataset to a file.
@@ -232,6 +237,10 @@ def find_slow_ice(
         raise TypeError(f"(find_slow_ice) `dataset` must be a string, `xr.Dataset`, or `xr.DataArray`. Got type: {type(dataset)}")
     if not isinstance(slow_threshold, (int, float)):
         raise TypeError(f"(find_slow_ice) `slow_threshold` must be `int` or `float`. Got type: {type(slow_threshold)}")
+    if not isinstance(sispeed_var, str):
+        raise TypeError(f"(find_slow_ice) `sispeed_var` must be a string. Got type: {type(sispeed_var)}")
+    elif not sispeed_var in ['sispeed', 'sispeed_month_mean']:
+        raise ValueError(f"(find_slow_ice) `sispeed_var` must be either `sispeed` or `sispeed_month_mean`. Got: {sispeed_var}")
     if not isinstance(save_as, (str, type(None))):
         raise TypeError(f"(find_slow_ice) `save_as` must be a string or `None`. Got type: {type(save_as)}")
     elif isinstance(save_as, str) and not '.nc' in save_as:
@@ -248,7 +257,7 @@ def find_slow_ice(
 
     slowice_xr = make_mask(
         dataset,
-        var = 'sispeed',
+        var = sispeed_var,
         mask_var_name = 'sislow',
         mask_this_range = [numpy_int32_min, slow_threshold],
         val_inside_range = 1,
@@ -258,24 +267,24 @@ def find_slow_ice(
     )
 
     # Rename `sispeed` in the new dataset to `sislow`
-    slowice_xr = slowice_xr.rename_vars({'sispeed':'sislow'})
+    slowice_xr = slowice_xr.rename_vars({sispeed_var:'sislow'})
 
     # Modify the attributes of the dataset to reflect the changes
     slowice_xr['sislow'].attrs['standard_name'] = 'sea_ice_slow_marker'
     slowice_xr['sislow'].attrs['long_name'] = f'Speed of Ice < {slow_threshold} m s-1'
     slowice_xr['sislow'].attrs['units'] = '1: Yes, 0: No'
-    slowice_xr['sislow'].attrs['comment'] = f'Marker of slow ice, where sea ice speed (`sispeed`) <{slow_threshold} m s-1'
+    slowice_xr['sislow'].attrs['comment'] = f'Marker of slow ice, where sea ice speed (`{sispeed_var}`) <{slow_threshold} m s-1'
     slowice_xr['sislow'].attrs['original_name'] = 'sislow'
     if 'history' in slowice_xr['sislow'].attrs.keys():
         original_history = slowice_xr['sislow'].attrs['history']
     else:
         original_history = ''
-    slowice_xr['sislow'].attrs['history'] = f"{get_current_datetime_str()} altered by `arctichoke`: Calculated slow ice, marking `sispeed` > {slow_threshold} as 1 and 0 otherwise. {original_history}"
+    slowice_xr['sislow'].attrs['history'] = f"{get_current_datetime_str()} altered by `arctichoke`: Calculated slow ice, marking `{sispeed_var}` > {slow_threshold} as 1 and 0 otherwise. {original_history}"
     if 'history' in slowice_xr.attrs.keys():
         original_history = slowice_xr.attrs['history']
     else:
         original_history = ''
-    slowice_xr.attrs['history'] = f"{get_current_datetime_str()} altered by `arctichoke`: Calculated slow ice, marking `sispeed` > {slow_threshold} as 1 and 0 otherwise. {original_history}"
+    slowice_xr.attrs['history'] = f"{get_current_datetime_str()} altered by `arctichoke`: Calculated slow ice, marking `{sispeed_var}` > {slow_threshold} as 1 and 0 otherwise. {original_history}"
 
     # Save the modified dataset, if applicable
     if not isinstance(save_as, type(None)):
