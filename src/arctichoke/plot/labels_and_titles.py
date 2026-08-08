@@ -135,7 +135,7 @@ def make_title(
                 elif time_coord == 'month': # Assume an integer
                     try:
                         # The year (1900) and day (1) are dummy values here
-                        this_time_stamp = datetime.date(1900, dataset[time_coord].values, 1).strftime('%B')
+                        this_time_stamp = datetime.date(1900, int(dataset[time_coord].values), 1).strftime('%B')
                     except:
                         this_time_stamp = 'Month'
                 # Add the time stamp to the title
