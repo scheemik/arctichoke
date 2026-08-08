@@ -149,7 +149,14 @@ def make_title(
         # Check whether this was a climatology
         if 'climatology_start' in attr_keys and 'climatology_end' in attr_keys:
             dataset_title = f"{dataset_title}({dataset.attrs['climatology_start']}-{dataset.attrs['climatology_end']}) "
-    
+    # Check whether a climatology variable was used
+    if 'climatology_var' in attr_keys:
+        if dataset.attrs['climatology_var'] == 'sipacked':
+            clim_title_suffix = 'Packed Ice Clim.'
+        elif dataset.attrs['climatology_var'] == 'sislow':
+            clim_title_suffix = 'Slow Ice Clim.'
+        dataset_title = f"{dataset_title}{clim_title_suffix} "
+
     return dataset_title
 
 def make_label(
