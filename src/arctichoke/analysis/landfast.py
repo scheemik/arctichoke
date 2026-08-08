@@ -314,7 +314,7 @@ def find_landfast_ice(
             Default is `0.01` m s-1, following Laliberté et al. 2018.
         siconc_var : `str`, optional
             The name of the variable to use from the provided sea ice concentration dataset.
-            Must be either `siconc` or `siconc2`.
+            Must be `siconc`, `siconc2`, `siconc_month_mean`, or `siconc2_month_mean`.
             Default is `siconc`.
         save_as : `str`, `None`, optional
             The file name to which to save the modified dataset.
@@ -364,7 +364,7 @@ def find_landfast_ice(
         raise TypeError(f"(find_landfast_ice) `slow_threshold` must be `int` or `float`. Got type: {type(slow_threshold)}")
     if not isinstance(siconc_var, str):
         raise TypeError(f"(find_landfast_ice) `siconc_var` must be a string. Got type: {type(siconc_var)}")
-    elif not siconc_var in ['siconc', 'siconc2']:
+    elif not siconc_var in ['siconc', 'siconc2', 'siconc_month_mean', 'siconc2_month_mean']:
         raise ValueError(f"(find_landfast_ice) `siconc_var` must be either `siconc` or `siconc2`. Got: {siconc_var}")
     if not isinstance(save_as, (str, type(None))):
         raise TypeError(f"(find_landfast_ice) `save_as` must be a string or `None`. Got type: {type(save_as)}")
