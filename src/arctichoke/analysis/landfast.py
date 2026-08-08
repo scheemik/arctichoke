@@ -421,7 +421,7 @@ def find_landfast_ice(
 
     # Check to make sure they are the same size data set
     if dataset_sipacked.sizes != dataset_sislow.sizes:
-        raise ValueError(f"(find_landfast_ice) `siconc_dataset` and `sispeed_dataset` must have the same dimension sizes.\n`siconc_dataset.sizes`: {siconc_dataset.sizes}\n`sispeed_dataset.sizes`: {sispeed_dataset.sizes}")
+        raise ValueError(f"(find_landfast_ice) `dataset_sipacked` and `dataset_sislow` must have the same dimension sizes.\n`dataset_sipacked.sizes`: {dataset_sipacked.sizes}\n`dataset_sislow.sizes`: {dataset_sislow.sizes}")
 
     # Combine these datasets
     dataset_sipacked['sipacked'] = dataset_sipacked['sipacked'] + dataset_sislow['sislow']
