@@ -299,6 +299,7 @@ def find_landfast_ice(
     packed_threshold: (int, float) = 85, 
     slow_threshold: (int, float) = 0.01, 
     siconc_var: str = 'siconc',
+    sispeed_var: str = 'sispeed',
     save_as: str = None,
     save_packed_as: str = None,
     save_slow_as: str = None,
@@ -307,7 +308,7 @@ def find_landfast_ice(
 ):
     """ Calculate where landfast ice is from the dataset(s).
 
-        Verify the dataset(s) contains the `siconc`/`siconc2` and `sispeed` variables, calculates `sipacked` and `sislow` using `find_packed_ice()` and `find_landfast_ice()`, then takes the overlap of these to define `silandfast`.
+        Verify the dataset(s) contains the specified `siconc` and `sispeed` variables, calculates `sipacked` and `sislow` using `find_packed_ice()` and `find_landfast_ice()`, then takes the overlap of these to define `silandfast`.
 
         Parameters
         ----------
@@ -325,6 +326,10 @@ def find_landfast_ice(
             The name of the variable to use from the provided sea ice concentration dataset.
             Must be `siconc`, `siconc2`, `siconc_month_mean`, or `siconc2_month_mean`.
             Default is `siconc`.
+        sispeed_var : `str`, optional
+            The name of the variable to use from the provided sea ice speed dataset.
+            Must be `sispeed` or `sispeed_month_mean`.
+            Default is `sispeed`.
         save_as : `str`, `None`, optional
             The file name to which to save the modified dataset.
             Default is `None`, which doesn't save the dataset to a file.
@@ -375,6 +380,10 @@ def find_landfast_ice(
         raise TypeError(f"(find_landfast_ice) `siconc_var` must be a string. Got type: {type(siconc_var)}")
     elif not siconc_var in ['siconc', 'siconc2', 'siconc_month_mean', 'siconc2_month_mean']:
         raise ValueError(f"(find_landfast_ice) `siconc_var` must be either `siconc` or `siconc2`. Got: {siconc_var}")
+    if not isinstance(sispeed_var, str):
+        raise TypeError(f"(find_landfast_ice) `sispeed_var` must be a string. Got type: {type(sispeed_var)}")
+    elif not sispeed_var in ['sispeed', 'sispeed_month_mean']:
+        raise ValueError(f"(find_landfast_ice) `sispeed_var` must be either `siconc` or `siconc2`. Got: {sispeed_var}")
     if not isinstance(save_as, (str, type(None))):
         raise TypeError(f"(find_landfast_ice) `save_as` must be a string or `None`. Got type: {type(save_as)}")
     elif isinstance(save_as, str) and not '.nc' in save_as:
@@ -405,6 +414,7 @@ def find_landfast_ice(
     dataset_sislow = find_slow_ice(
         dataset = sispeed_dataset,
         slow_threshold = slow_threshold,
+        sispeed_var = sispeed_var,
         save_as = save_slow_as,
         **kwargs,
     )
