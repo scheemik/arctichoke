@@ -71,7 +71,7 @@ def make_climatology(
         
         Examples
         --------
-        >>> from arctichoke.plot import make_climatology
+        >>> from arctichoke.analysis import make_climatology
         >>> make_climatology(
         >>>     this_source_id = 'EC-Earth3P-HR',
         >>>     this_var = 'silandfast',
@@ -141,6 +141,7 @@ def make_climatology(
             this_var,
             this_variant_label,
             this_modification,
+            find_mean,
             verbose = verbose,
             **kwargs,
         )
@@ -153,6 +154,7 @@ def save_climatology_files(
     this_var: str,
     this_variant_label: str,
     this_modification: str,
+    find_mean: bool,
     overwrite: bool = False,
     verbose: bool = False,
     **kwargs,
@@ -178,6 +180,9 @@ def save_climatology_files(
         this_modification : `str`
             The modification of the data to save to file.
             Example: `'trim_CAA_'`.
+        find_mean : `bool`
+            Whether the climatology data were means or sums.
+            Default is `True`.
         overwrite : `bool`, optional
             Whether to overwrite an existing file if it exists.
             Default is `False`.
@@ -193,8 +198,8 @@ def save_climatology_files(
         
         Examples
         --------
-        >>> from arctichoke.plot import make_climatology
-        >>> make_climatology(
+        >>> from arctichoke.analysis import save_climatology_files
+        >>> save_climatology_files(
         >>>     this_source_id = 'EC-Earth3P-HR',
         >>>     this_var = 'silandfast',
         >>>     this_variant_label = 'r1i1p2f1',
@@ -203,6 +208,8 @@ def save_climatology_files(
         >>> )
     """
     # Verify input arguments
+    if not isinstance(find_mean, bool):
+        raise TypeError(f"(make_climatology) `find_mean` must be a `bool`. Got type: {type(find_mean)}")
     if not isinstance(overwrite, bool):
         raise TypeError(f"(make_climatology) `overwrite` must be a `bool`. Got type: {type(overwrite)}")
     if not isinstance(verbose, bool):
@@ -221,7 +228,11 @@ def save_climatology_files(
     ## Assemble base filepath
     base_filepath = filelist[0]
     # Update the variable name
-    base_filepath = base_filepath.replace(this_var, f"{this_var}_clim")
+    if find_mean:
+        var_suffix = 'month_mean'
+    else:
+        var_suffix = 'month_sum'
+    base_filepath = base_filepath.replace(this_var, f"{this_var}_{var_suffix}")
     # Get the base file stem, which is the filepath without the time stamp
     ## NOTE: This assumes a time stamp in the format `YYYYMM-YYYYMM.nc`
     base_filestem = base_filepath[:-16]
