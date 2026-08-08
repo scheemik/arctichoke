@@ -9,6 +9,7 @@ cdo = Cdo(tempdir='./cdo_tmp/')
 cdo.cleanTempDir()
 
 from arctichoke import get_current_datetime_str
+from arctichoke.analysis.clim_overwrite_axis import overwrite_month_with_time
 from arctichoke.dataset import make_mask, trim_latlon
 from arctichoke.path import make_file_path
 import arctichoke.params as sps
@@ -421,10 +422,37 @@ def find_landfast_ice(
 
     # Check to make sure they are the same size data set
     if dataset_sipacked.sizes != dataset_sislow.sizes:
-        raise ValueError(f"(find_landfast_ice) `dataset_sipacked` and `dataset_sislow` must have the same dimension sizes.\n`dataset_sipacked.sizes`: {dataset_sipacked.sizes}\n`dataset_sislow.sizes`: {dataset_sislow.sizes}")
+        # Check to see if one of these is a climatology
+        if 'month' in list(dataset_sipacked.coords):
+            # Overwrite the `month` axis in the `sipacked` dataset with the `time` axis from the `sislow` dataset
+            # Assign the `sislow` dataset as the input dataset to keep auxiliary coordinates
+            dataset_sipacked, input_xr = overwrite_month_with_time(
+                dataset_sipacked, 
+                dataset_sislow, 
+                siconc_dataset,
+                verbose = verbose,
+            )
+            # Add climatology variable to input dataset
+            input_xr.attrs['climatology_var'] = 'sipacked'
+        elif 'month' in list(dataset_sislow.coords):
+            # Overwrite the `month` axis in the `sipacked` dataset with the `time` axis from the `sislow` dataset
+            # Assign the `sislow` dataset as the input dataset to keep auxiliary coordinates
+            dataset_sislow, input_xr = overwrite_month_with_time(
+                dataset_sislow, 
+                dataset_sipacked, 
+                sispeed_dataset,
+                verbose = verbose,
+            )
+            # Add climatology variable to input dataset
+            input_xr.attrs['climatology_var'] = 'sislow'
+        else:
+            raise ValueError(f"(find_landfast_ice) `dataset_sipacked` and `dataset_sislow` must have the same dimension sizes.\n`dataset_sipacked.sizes`: {dataset_sipacked.sizes}\n`dataset_sislow.sizes`: {dataset_sislow.sizes}")
+
+    # Save attributes to put back 
+    ds_attrs = input_xr.attrs
 
     # Combine these datasets
-    dataset_sipacked['sipacked'] = dataset_sipacked['sipacked'] + dataset_sislow['sislow']
+    input_xr['sipacked'] = dataset_sipacked['sipacked'] + dataset_sislow['sislow']
 
     # Assemble the string to specify the range and the output values
     range_min = 1.5
@@ -439,7 +467,7 @@ def find_landfast_ice(
     # If only processing one `xr.Dataset`, the `input` argument cannot include the range string
     landfastice_xr = cdo.setrtoc2(
         range_string,
-        input=dataset_sipacked, 
+        input=input_xr, 
         returnXDataset='silandfast'
     )
     # # Set 0 as the missing value
@@ -449,6 +477,8 @@ def find_landfast_ice(
     #     returnXDataset='silandfast'
     # )
 
+    # Put the attributes back in
+    landfastice_xr.attrs = ds_attrs
     # Rename `sipacked` in the new dataset to `silandfast`
     landfastice_xr = landfastice_xr.rename_vars({'sipacked':'silandfast'})
 
