@@ -142,6 +142,8 @@ def make_climatology(
             this_variant_label,
             this_modification,
             find_mean,
+            start_year,
+            end_year,
             verbose = verbose,
             **kwargs,
         )
@@ -155,6 +157,8 @@ def save_climatology_files(
     this_variant_label: str,
     this_modification: str,
     find_mean: bool,
+    start_year: int,
+    end_year: int,
     overwrite: bool = False,
     verbose: bool = False,
     **kwargs,
@@ -183,6 +187,11 @@ def save_climatology_files(
         find_mean : `bool`
             Whether the climatology data were means or sums.
             Default is `True`.
+        start_year : `int`
+            The first year of the climatology.
+        end_year : `int`
+            The final year of the climatology.
+            This is inclusive, meaning the year given here will be included in the climatology.
         overwrite : `bool`, optional
             Whether to overwrite an existing file if it exists.
             Default is `False`.
@@ -236,9 +245,8 @@ def save_climatology_files(
     # Get the base file stem, which is the filepath without the time stamp
     ## NOTE: This assumes a time stamp in the format `YYYYMM-YYYYMM.nc`
     base_filestem = base_filepath[:-16]
-    # Verify that this is the file path for the year 1950
-    if not base_filepath.endswith('195001-195012.nc'):
-        base_filepath = f"{base_filestem}195001-195012.nc"
+    # Set the time stamp to include the start and end years
+    base_filepath = f"{base_filestem}{start_year}01-{end_year}12.nc"
     # Make sure the directory structure exists for this base file path
     make_file_path(base_filepath)
 
