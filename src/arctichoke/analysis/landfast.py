@@ -516,6 +516,7 @@ def make_landfast_files(
     siconc_var: str = 'siconc',
     overwrite: bool = False,
     save_packed_and_slow: bool = False,
+    verbose: bool = False,
     **kwargs,
 ):
     """ Make landfast files based on the lists of files given.
@@ -545,6 +546,9 @@ def make_landfast_files(
             Default is `False`.
         save_packed_and_slow : `bool`, optional
             Whether to save the intermediate packed ice and slow ice data to files.
+            Default is `False`.
+        verbose : `bool`, optional
+            Whether to verbosely output information as the function executes.
             Default is `False`.
         **kwargs
             Keyword arguments to pass to `trim_latlon()`, and `find_landfast_ice()`.
@@ -625,6 +629,8 @@ def make_landfast_files(
         raise ValueError(f"(make_landfast_files) `siconc_var` must be either `siconc` or `siconc2`. Got: {siconc_var}")
     if not isinstance(overwrite, bool):
         raise TypeError(f"(make_landfast_files) `overwrite` must be a `bool`. Got type: {type(overwrite)}")
+    if not isinstance(verbose, bool):
+        raise TypeError(f"(make_landfast_files) `verbose` must be a `bool`. Got type: {type(verbose)}")
 
     # Loop across each file in the list
     for i in range(len(siconc_files)):
