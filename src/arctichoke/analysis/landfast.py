@@ -447,6 +447,8 @@ def find_landfast_ice(
             input_xr.attrs['climatology_var'] = 'sislow'
         else:
             raise ValueError(f"(find_landfast_ice) `dataset_sipacked` and `dataset_sislow` must have the same dimension sizes.\n`dataset_sipacked.sizes`: {dataset_sipacked.sizes}\n`dataset_sislow.sizes`: {dataset_sislow.sizes}")
+    else:
+        input_xr = dataset_sipacked
 
     # Save attributes to put back 
     ds_attrs = input_xr.attrs
