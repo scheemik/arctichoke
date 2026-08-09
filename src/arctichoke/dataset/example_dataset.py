@@ -126,6 +126,12 @@ def make_example_dataset(
             time_arr = time_arr.astype('datetime64[ns]')
             # Add 15 days to each date to match monthly average datetimes
             time_arr += np.timedelta64(15, 'D')
+        elif time_dim == 'month':
+            # Make sure `time_len` is between 1 and 12
+            if time_len < 1 or time_len > 13:
+                raise ValueError(f"(make_example_dataset) With `time_dim={time_dim}`, `time_len` must be between 1-12. Got `time_len`: {time_len}.")
+            # Create an array of integers, one per month
+            time_arr = np.arange(1, 1+time_len)
         else:
             raise NotImplementedError(f"(make_example_dataset) `time_dim={time_dim}` not yet implemented. Current `time_dim` options: `year`, `time`")
         # Expand the dimensions to include time
