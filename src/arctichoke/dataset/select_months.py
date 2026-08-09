@@ -6,6 +6,7 @@ from arctichoke.verify import verify_path
 def select_months(
     dataset: (str, [str], xr.Dataset, xr.DataArray),
     months: [int] = [6,7,8,9,10],
+    time_dim: str = 'time',
     verbose: bool = False,
 ):
     """ Select only the given months of the year from the dataset.
@@ -19,6 +20,9 @@ def select_months(
         months: list of `int`, optional
             The months of the year to select where 1 = January, 2 = February, etc.
             Default is `[6,7,8,9,10]`.
+        time_dim : `str`, optional
+            The name of the time dimension to expect in the given dataset.
+            Default is `'time'`.
         verbose : `bool`, optional
             Whether to verbosely output information as the function executes.
             Default is `False`.
@@ -73,16 +77,21 @@ def select_months(
                 raise ValueError(f"(select_months) `months` values must be 1 to 12. Got month: {month}")
     else:
         raise TypeError(f"(select_months) `months` must be a list. Got type: {type(months)}")
+    if not isinstance(time_dim, (str, type(None))):
+        raise TypeError(f"(make_example_dataset) `time_dim` must be a string or `None`. Got type: {type(time_dim)}")
     
-    # Ensure `dataset` has a `time` dimension
-    if 'time' not in list(dataset.dims):
-        raise ValueError(f"(select_months) `dataset` must have a `time` dimension. Available dimensions: {list(dataset.dims)}")
+    # Ensure `dataset` has the `time_dim` dimension
+    if time_dim not in list(dataset.dims):
+        raise ValueError(f"(select_months) `dataset` must have a `{time_dim}` dimension. Available dimensions: {list(dataset.dims)}")
     
     if verbose: 
         print(f"(select_months) Selecting months: {months}")
     
     # Select just the given months
-    dataset = dataset.sel(time=dataset.time.dt.month.isin(months))
+    if time_dim == 'time':
+        dataset = dataset.sel(time=dataset.time.dt.month.isin(months))
+    elif time_dim == 'month':
+        dataset = dataset.sel(month=dataset.month.isin(months))
     # Modify attributes to mark this change
     if 'history' in dataset.attrs.keys():
         original_history = dataset.attrs['history']

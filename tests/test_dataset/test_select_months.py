@@ -27,6 +27,7 @@ def test_select_months():
                 time_len=2,
             ),
             'months': [1,2,3,4,5,6,7,8,9,10,11,12],
+            'time_dim': 'time',
             'expected_length': 2,
         },
         {
@@ -37,6 +38,7 @@ def test_select_months():
                 time_len=2,
             ),
             'months': [1],
+            'time_dim': 'time',
             'expected_length': 1,
         },
         {
@@ -47,16 +49,41 @@ def test_select_months():
                 time_len=2,
             ),
             'months': [3],
+            'time_dim': 'time',
+            'expected_length': 0,
+        },
+        {
+            'dataset': make_example_dataset(
+                n=3, 
+                test_var_name='test_var',
+                time_dim='month',
+                time_len=12,
+            ),
+            'months': [1,2,3],
+            'time_dim': 'month',
+            'expected_length': 3,
+        },
+        {
+            'dataset': make_example_dataset(
+                n=3, 
+                test_var_name='test_var',
+                time_dim='month',
+                time_len=2,
+            ),
+            'months': [3],
+            'time_dim': 'month',
             'expected_length': 0,
         },
         {
             'dataset': test_seasons,
             'months': [1,2,3,4,5,6,7,8,9,10,11,12],
+            'time_dim': 'time',
             'expected_length': 12*n_years,
         },
         {
             'dataset': test_seasons,
             'months': [6,7,8,9,10],
+            'time_dim': 'time',
             'expected_length': 5*n_years,
         },
     ]
@@ -64,9 +91,10 @@ def test_select_months():
         actual_dataset = dataset.select_months(
             dataset = test_case['dataset'],
             months = test_case['months'],
+            time_dim = test_case['time_dim'],
         )
         # Check the length of the time axis
-        actual_length = actual_dataset['time'].size
+        actual_length = actual_dataset[test_case['time_dim']].size
         assert actual_length == test_case['expected_length'], f"`select_months` created a dataset with a `time` axis of length: {actual_length}.\nExpected length: {test_case['expected_length']}"
 
     # Create an example dataset without a `time` axis
