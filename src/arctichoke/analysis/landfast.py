@@ -410,6 +410,7 @@ def find_landfast_ice(
         packed_threshold = packed_threshold,
         siconc_var = siconc_var,
         save_as = save_packed_as,
+        verbose = verbose,
         **kwargs,
     )
     dataset_sislow = find_slow_ice(
@@ -417,6 +418,7 @@ def find_landfast_ice(
         slow_threshold = slow_threshold,
         sispeed_var = sispeed_var,
         save_as = save_slow_as,
+        verbose = verbose,
         **kwargs,
     )
 
@@ -703,6 +705,7 @@ def make_landfast_files(
             save_as = landfast_filepath,
             save_packed_as = packed_filepath,
             save_slow_as = slow_filepath,
+            verbose = verbose,
             **kwargs,
         )
 
