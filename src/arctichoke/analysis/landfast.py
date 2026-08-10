@@ -618,8 +618,6 @@ def make_landfast_files(
     for item in sispeed_files:
         if not isinstance(item, str):
             raise TypeError(f"(make_landfast_files) `sispeed_files` must be a list of strings. Got type: {type(item)} for item {item}")
-    if len(siconc_files) != len(sispeed_files):
-        raise ValueError(f"(make_landfast_files) `siconc_files` and `sispeed_files` must be the same length. Got `len(siconc_files)`: {len(siconc_files)}, `len(sispeed_files)`: {len(sispeed_files)}")
     if isinstance(map_bbox, type([])):
         if not len(map_bbox) == 4:
             raise ValueError(f"(make_landfast_files) `map_bbox` must have a length of 4. Got length: {len(map_bbox)}")
@@ -633,7 +631,7 @@ def make_landfast_files(
         raise TypeError(f"(make_landfast_files) `version_id` must be a string. Got type: {type(version_id)}")
     if not isinstance(siconc_var, str):
         raise TypeError(f"(make_landfast_files) `siconc_var` must be a string. Got type: {type(siconc_var)}")
-    elif not siconc_var in ['siconc', 'siconc2']:
+    elif not siconc_var in ['siconc', 'siconc2', 'siconc_month_mean', 'siconc2_month_mean']:
         raise ValueError(f"(make_landfast_files) `siconc_var` must be either `siconc` or `siconc2`. Got: {siconc_var}")
     if not isinstance(sispeed_var, str):
         raise TypeError(f"(make_landfast_files) `sispeed_var` must be a string. Got type: {type(sispeed_var)}")
@@ -644,6 +642,35 @@ def make_landfast_files(
     if not isinstance(verbose, bool):
         raise TypeError(f"(make_landfast_files) `verbose` must be a `bool`. Got type: {type(verbose)}")
 
+    siconc_is_climatology = False
+    sispeed_is_climatology = False
+    # Compare the lengths of the two lists of files 
+    if len(siconc_files) != len(sispeed_files):
+        # Check to see whether `siconc_files`is a climatology file
+        if len(siconc_files) == 1:
+            siconc_dataset = xr.open_dataset(siconc_files[0])
+            for clim_attr in ['climatology_start', 'climatology_end', 'climatology_var']:
+                if clim_attr in siconc_dataset.attrs.keys():
+                    siconc_is_climatology = True
+            if verbose:
+                if siconc_is_climatology:
+                    print(f"(make_landfast_files) `siconc_files` is a climatology.")
+            # Duplicate `siconc_files` to be the same length of `sispeed_files`
+            siconc_files = siconc_files * len(sispeed_files)
+        # Check to see whether `siconc_files`is a climatology file
+        if len(sispeed_files) == 1:
+            sispeed_dataset = xr.open_dataset(sispeed_files[0])
+            for clim_attr in ['climatology_start', 'climatology_end', 'climatology_var']:
+                if clim_attr in sispeed_dataset.attrs.keys():
+                    sispeed_is_climatology = True
+            if verbose:
+                if sispeed_is_climatology:
+                    print(f"(make_landfast_files) `sispeed_files` is a climatology.")
+            # Duplicate `sispeed_files` to be the same length of `siconc_files`
+            sispeed_files = sispeed_files * len(siconc_files)
+        if not siconc_is_climatology and not sispeed_is_climatology:
+            raise ValueError(f"(make_landfast_files) `siconc_files` and `sispeed_files` must be the same length. Got `len(siconc_files)`: {len(siconc_files)}, `len(sispeed_files)`: {len(sispeed_files)}")
+
     # Loop across each file in the list
     for i in range(len(siconc_files)):
         # Verify the filepaths exist
@@ -652,13 +679,23 @@ def make_landfast_files(
         # Verify the filepaths are for the same model run
         siconc_filestem = siconc_filepath.replace(siconc_var, '')
         sispeed_filestem = sispeed_filepath.replace(sispeed_var, '')
+        if siconc_is_climatology or sispeed_is_climatology:
+            # NOTE: This assumes a time stamp in the format `YYYYMM-YYYYMM.nc`
+            siconc_filestem = siconc_filestem[:-16]
+            sispeed_filestem = sispeed_filestem[:-16]
         if siconc_filestem != sispeed_filestem:
             raise ValueError(f"(make_landfast_files) `{siconc_var}` and `sispeed` files for index i={i} are not from the same run.\n`siconc_filepath`: {siconc_filepath}\n`sispeed_filepath`:{sispeed_filepath}\n`siconc_filestem`: {siconc_filestem}\n`sispeed_filestem`:{sispeed_filestem}")
+        if siconc_is_climatology:
+            this_filepath = sispeed_filepath
+            replace_this_si_var = sispeed_var
+        else:
+            this_filepath = siconc_filepath
+            replace_this_si_var = siconc_var
         # Get the version ID to replace
-        replace_this_version_ID = siconc_filepath.split('/')[-2]
+        replace_this_version_ID = this_filepath.split('/')[-2]
         # Assemble the landfast filename
-        landfast_filepath = siconc_filepath.replace(replace_this_version_ID, version_id)
-        landfast_filepath = landfast_filepath.replace(siconc_var, 'silandfast')
+        landfast_filepath = this_filepath.replace(replace_this_version_ID, version_id)
+        landfast_filepath = landfast_filepath.replace(replace_this_si_var, 'silandfast')
         # Add trimming prefix, if applicable
         if not isinstance(map_bbox, type(None)):
             if map_bbox == sps.CAA_BBOX:
