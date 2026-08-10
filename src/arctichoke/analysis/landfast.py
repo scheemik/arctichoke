@@ -485,6 +485,11 @@ def find_landfast_ice(
     landfastice_xr.attrs = ds_attrs
     # Rename `sipacked` in the new dataset to `silandfast`
     landfastice_xr = landfastice_xr.rename_vars({'sipacked':'silandfast'})
+    # Check whether there is a `sislow` variable
+    if 'sislow' in list(landfastice_xr.data_vars):
+        if verbose:
+            print(f"(find_landfast_ice) Removing `sislow` variable from `landfastice_xr`.")
+        landfastice_xr = landfastice_xr.drop_vars('sislow')
 
     # Modify the attributes of the dataset to reflect the changes
     landfastice_xr['silandfast'].attrs['standard_name'] = 'sea_ice_landfast_marker'
