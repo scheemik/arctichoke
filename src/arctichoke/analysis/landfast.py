@@ -521,6 +521,7 @@ def make_landfast_files(
     map_bbox: [float, float, float, float] = None,
     version_id: str = 'v20260617',
     siconc_var: str = 'siconc',
+    sispeed_var: str = 'sispeed',
     overwrite: bool = False,
     save_packed_and_slow: bool = False,
     verbose: bool = False,
@@ -634,6 +635,10 @@ def make_landfast_files(
         raise TypeError(f"(make_landfast_files) `siconc_var` must be a string. Got type: {type(siconc_var)}")
     elif not siconc_var in ['siconc', 'siconc2']:
         raise ValueError(f"(make_landfast_files) `siconc_var` must be either `siconc` or `siconc2`. Got: {siconc_var}")
+    if not isinstance(sispeed_var, str):
+        raise TypeError(f"(make_landfast_files) `sispeed_var` must be a string. Got type: {type(sispeed_var)}")
+    elif not sispeed_var in ['sispeed', 'sispeed_month_mean']:
+        raise ValueError(f"(make_landfast_files) `sispeed_var` must be either `siconc` or `siconc2`. Got: {sispeed_var}")
     if not isinstance(overwrite, bool):
         raise TypeError(f"(make_landfast_files) `overwrite` must be a `bool`. Got type: {type(overwrite)}")
     if not isinstance(verbose, bool):
@@ -646,7 +651,7 @@ def make_landfast_files(
         sispeed_filepath = verify_path(sispeed_files[i])
         # Verify the filepaths are for the same model run
         siconc_filestem = siconc_filepath.replace(siconc_var, '')
-        sispeed_filestem = sispeed_filepath.replace('sispeed', '')
+        sispeed_filestem = sispeed_filepath.replace(sispeed_var, '')
         if siconc_filestem != sispeed_filestem:
             raise ValueError(f"(make_landfast_files) `{siconc_var}` and `sispeed` files for index i={i} are not from the same run.\n`siconc_filepath`: {siconc_filepath}\n`sispeed_filepath`:{sispeed_filepath}\n`siconc_filestem`: {siconc_filestem}\n`sispeed_filestem`:{sispeed_filestem}")
         # Get the version ID to replace
@@ -707,6 +712,7 @@ def make_landfast_files(
             siconc_dataset = siconc_xr,
             sispeed_dataset = sispeed_xr,
             siconc_var = siconc_var,
+            sispeed_var = sispeed_var,
             save_as = landfast_filepath,
             save_packed_as = packed_filepath,
             save_slow_as = slow_filepath,
