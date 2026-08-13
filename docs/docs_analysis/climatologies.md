@@ -12,9 +12,6 @@ This assumes you have already gone through {doc}`Trimming data to the CAA region
 - [Plotting Climatologies](#plotting-climatologies)
     - [Plotting Climatologies for EC-Earth3P-HR](#plotting-climatologies-for-ec-earth3p-hr)
     - [Plotting Climatologies for HadGEM3-GC31-MM](#plotting-climatologies-for-hadgem3-gc31-mm)
-- [Climatology of landfast ice](#climatology-of-landfast-ice)
-    - [Climatology of landfast ice for EC-Earth3P-HR](#climatology-of-landfast-ice-for-ec-earth3p-hr)
-    - [Climatology of landfast ice for HadGEM3-GC31-MM](#climatology-of-landfast-ice-for-hadgem3-gc31-mm)
 
 ---
 

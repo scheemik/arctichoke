@@ -40,6 +40,7 @@ docs_analysis/landfast_ice.md
 docs_analysis/landfast_trends.md
 docs_analysis/multi_year_ice.md
 docs_analysis/climatologies.md
+docs_analysis/landfast_attributing_changes.md
 ```
 
 ```{toctree}
