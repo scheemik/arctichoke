@@ -326,10 +326,16 @@ This process also added an item from "Red Hat" in Settings -> Login Items & Exte
 I assume this is necessary for this to actually run properly. 
 I then moved the `.pkg` file to the trash.
 
-The next step in the [Podman Installation Instructions](https://podman.io/docs/installation) for macOS is to setup the Podman virtual machine.
+The next step in the [Podman Installation Instructions](https://podman.io/docs/installation) for macOS is to setup the Podman virtual machine with `podman init`.
 This is necessary when running Podman on macOS or Windows as it needs to run on a Linux system, therefore I need to initialize a virtual machine to actually run Podman.
+By default, the machine is only initialized to access the home directory. 
+Since I have a lot of data, I'll be storing that on an external volume which, on a Mac, is mounted in the `/Volumes` directory.
+I can specify volumes to mount using `-v` flags but, by doing this, I need to explicitly map each volume I want to mount, including the default of `$HOME`.
+Each volume is mounted with the syntax `-v source:target` where I have chosen to match the `source` and `target` names for both volumes.
+Also by default, the machine is only given 2G of memory, however I want to increase its allowed memory so that I am less likely to run out when processing large amounts of data.
+I do this with the `--memory` flag and specify the size of memory to allot. 
 ```console
-user@local:~$ podman machine init
+user@local:~$ podman machine init -v $HOME:$HOME -v /Volumes:/Volumes --memory=8192
 Looking up Podman Machine image at quay.io/podman/machine-os:5.8 to create VM
 Getting image source signatures
 Copying blob 5efcf56a5999 done   | 
@@ -343,6 +349,14 @@ To start your machine run:
 	podman machine start
 ```
 That took about 3 minutes.
+
+I can now list out the Podman machines to verify the properties were set as expected.
+```console
+user@local:~$ podman machine list
+NAME                     VM TYPE     CREATED        LAST UP     CPUS        MEMORY      DISK SIZE
+podman-machine-default*  applehv     4 minutes ago  Never       4           8GiB        100GiB
+```
+
 Next, I started the virtual machine.
 ```console
 user@local:~$ podman machine start
@@ -1307,7 +1321,9 @@ MACHINE_STATE=$(podman machine inspect --format '{{.State}}')
 
 if [[ "$MACHINE_STATE" != "running" ]]; then
   echo "Starting podman machine..."
-  podman machine start
+  # Each volume the container need access to must be specified with `-v` flags
+  # Adding the `--memory=8192` allots 8GiB of memory for the virtual machine
+  podman machine init -v $HOME:$HOME -v /Volumes:/Volumes --memory=8192
 fi
 ...
 ```

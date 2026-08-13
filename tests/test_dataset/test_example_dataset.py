@@ -62,7 +62,7 @@ def test_make_example_dataset():
             'test_var_size': 100,
             'test_latlon_size': 100,
             'n_size': 10,
-            'unique_years': [2000],
+            'unique_years': [2026],
             'expected_sums': [4950],
         },
         {
@@ -77,8 +77,37 @@ def test_make_example_dataset():
             'test_var_size': 200,
             'test_latlon_size': 100,
             'n_size': 10,
-            'unique_years': [2025],
+            'unique_years': [2025, 2026],
             'expected_sums': [4950],
+        },
+        {
+            'actual': dataset.make_example_dataset(
+                time_dim='month',
+                time_len=2,
+            ),
+            'keys': ['test_var'],
+            'coords': ['month', 'j', 'i', 'longitude', 'latitude'],
+            'sizes': ['month', 'j', 'i'],
+            'test_var_size': 200,
+            'test_latlon_size': 100,
+            'n_size': 10,
+            'unique_months': [1,2],
+            'expected_sums': [4950],
+        },
+        {
+            'actual': dataset.make_example_dataset(
+                n=2,
+                time_dim='month',
+                time_len=12,
+            ),
+            'keys': ['test_var'],
+            'coords': ['month', 'j', 'i', 'longitude', 'latitude'],
+            'sizes': ['month', 'j', 'i'],
+            'test_var_size': 48,
+            'test_latlon_size': 4,
+            'n_size': 2,
+            'unique_months': [1,2,3,4,5,6,7,8,9,10,11,12],
+            'expected_sums': [6],
         },
         {
             'actual': dataset.make_example_dataset(
@@ -152,6 +181,26 @@ def test_make_example_dataset():
                 for i in range(len(test_case['keys'])):
                     this_var = test_case['keys'][i]
                     actual_sum = test_case['actual'][this_var].sel(time=datetime).sum(skipna=True).values
+                    assert actual_sum == test_case['expected_sums'][i], f"`make_example_dataset` failed on test case: {test_case}.\nExpected: {test_case['expected_sums'][i]}\nActual: {actual_sum}"
+        elif 'year' in test_case['coords']:
+            # Check the years present on the `year` axis
+            actual_years = np.unique(test_case['actual']['year'].values)
+            assert np.array_equal(actual_years, test_case['unique_years']), f"`make_example_dataset` created a dataset with the unique years: {actual_years}.\nExpected unique years: {test_case['unique_years']}"
+            # Check each year
+            for this_year in test_case['actual']['year'].values:
+                for i in range(len(test_case['keys'])):
+                    this_var = test_case['keys'][i]
+                    actual_sum = test_case['actual'][this_var].sel(year=this_year).sum(skipna=True).values
+                    assert actual_sum == test_case['expected_sums'][i], f"`make_example_dataset` failed on test case: {test_case}.\nExpected: {test_case['expected_sums'][i]}\nActual: {actual_sum}"
+        elif 'month' in test_case['coords']:
+            # Check the months present on the `month` axis
+            actual_months = np.unique(test_case['actual']['month'].values)
+            assert np.array_equal(actual_months, test_case['unique_months']), f"`make_example_dataset` created a dataset with the unique months: {actual_months}.\nExpected unique months: {test_case['unique_months']}"
+            # Check each month
+            for this_month in test_case['actual']['month'].values:
+                for i in range(len(test_case['keys'])):
+                    this_var = test_case['keys'][i]
+                    actual_sum = test_case['actual'][this_var].sel(month=this_month).sum(skipna=True).values
                     assert actual_sum == test_case['expected_sums'][i], f"`make_example_dataset` failed on test case: {test_case}.\nExpected: {test_case['expected_sums'][i]}\nActual: {actual_sum}"
     
     # Test setting overwrite to `False`

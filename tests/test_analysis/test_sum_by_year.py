@@ -145,9 +145,14 @@ def test_sum_by_year():
         # Check the years present on the time axis
         actual_years = list(np.unique(actual_dataset['year'].values))
         assert actual_years == test_case['unique_years'], f"`sum_by_year` created a dataset with the unique years: {actual_years}.\nExpected unique years: {test_case['unique_years']}"
+        # Get the name of the new variable
+        if test_case['find_mean']:
+            new_var = 'test_var_year_mean'
+        else:
+            new_var = 'test_var_year_sum'
         # Check each year
         for i in range(len(actual_years)):
-            actual_sums = actual_dataset['test_var_year_sum'].sel(year=actual_years[i]).values
+            actual_sums = actual_dataset[new_var].sel(year=actual_years[i]).values
             assert np.array_equal(actual_sums, test_case['expected_sums'][i], equal_nan=True), f"`sum_by_year` failed on test case: {test_case}.\nExpected sums {i}: {test_case['expected_sums'][i]}\nActual sums {i}: {actual_sums}"
         if not isinstance(test_case['save_as'], type(None)):
             try:

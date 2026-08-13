@@ -1,3 +1,4 @@
+import datetime
 import warnings
 import xarray as xr
 
@@ -113,6 +114,8 @@ def make_title(
             time_coord = 'time'
         elif 'year' in coord_names:
             time_coord = 'year'
+        elif 'month' in coord_names:
+            time_coord = 'month'
         else:
             time_coord = False
         # Check whether there is more than one time slice
@@ -129,6 +132,12 @@ def make_title(
                         this_time_stamp = str(dataset[time_coord].values[0])
                     except:
                         this_time_stamp = str(dataset[time_coord].values)
+                elif time_coord == 'month': # Assume an integer
+                    try:
+                        # The year (1900) and day (1) are dummy values here
+                        this_time_stamp = datetime.date(1900, int(dataset[time_coord].values), 1).strftime('%B')
+                    except:
+                        this_time_stamp = 'Month'
                 # Add the time stamp to the title
                 dataset_title = f"{dataset_title}{this_time_stamp} "
         # Check whether the number of months was limited
@@ -137,7 +146,17 @@ def make_title(
             if selected_months == '[6, 7, 8, 9, 10]':
                 selected_months = 'summer'
             dataset_title = f"{dataset_title}{selected_months} "
-    
+        # Check whether this was a climatology
+        if 'climatology_start' in attr_keys and 'climatology_end' in attr_keys:
+            dataset_title = f"{dataset_title}({dataset.attrs['climatology_start']}-{dataset.attrs['climatology_end']}) "
+    # Check whether a climatology variable was used
+    if 'climatology_var' in attr_keys:
+        if dataset.attrs['climatology_var'] == 'sipacked':
+            clim_title_suffix = 'Packed Ice Clim.'
+        elif dataset.attrs['climatology_var'] == 'sislow':
+            clim_title_suffix = 'Slow Ice Clim.'
+        dataset_title = f"{dataset_title}{clim_title_suffix} "
+
     return dataset_title
 
 def make_label(

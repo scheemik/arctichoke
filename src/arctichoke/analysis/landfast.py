@@ -9,6 +9,7 @@ cdo = Cdo(tempdir='./cdo_tmp/')
 cdo.cleanTempDir()
 
 from arctichoke import get_current_datetime_str
+from arctichoke.analysis.clim_overwrite_axis import overwrite_month_with_time
 from arctichoke.dataset import make_mask, trim_latlon
 from arctichoke.path import make_file_path
 import arctichoke.params as sps
@@ -35,7 +36,7 @@ def find_packed_ice(
             Default is `85` percent, following Laliberté et al. 2018.
         siconc_var : `str`, optional
             The name of the variable to use from the provided dataset.
-            Must be either `siconc` or `siconc2`.
+            Must be `siconc`, `siconc2`, `siconc_month_mean`, or `siconc2_month_mean`.
             Default is `siconc`.
         save_as : `str`, `None`, optional
             The file name to which to save the modified dataset.
@@ -99,7 +100,7 @@ def find_packed_ice(
         raise TypeError(f"(find_packed_ice) `packed_threshold` must be `int` or `float`. Got type: {type(packed_threshold)}")
     if not isinstance(siconc_var, str):
         raise TypeError(f"(find_packed_ice) `siconc_var` must be a string. Got type: {type(siconc_var)}")
-    elif not siconc_var in ['siconc', 'siconc2']:
+    elif not siconc_var in ['siconc', 'siconc2', 'siconc_month_mean', 'siconc2_month_mean']:
         raise ValueError(f"(find_packed_ice) `siconc_var` must be either `siconc` or `siconc2`. Got: {siconc_var}")
     if not isinstance(save_as, (str, type(None))):
         raise TypeError(f"(find_packed_ice) `save_as` must be a string or `None`. Got type: {type(save_as)}")
@@ -157,6 +158,7 @@ def find_packed_ice(
 def find_slow_ice(
     dataset: (str, [str], xr.DataArray, xr.Dataset),
     slow_threshold: (int, float) = 0.01, 
+    sispeed_var: str = 'sispeed',
     save_as: str = None,
     verbose: bool = False,
     **kwargs,
@@ -172,6 +174,10 @@ def find_slow_ice(
         slow_threshold : `int`, `float`, optional
             The threshold above which to mark slow ice.
             Default is `0.01` m s-1, following Laliberté et al. 2018.
+        sispeed_var : `str`, optional
+            The name of the variable to use from the provided sea ice speed dataset.
+            Must be `sispeed` or `sispeed_month_mean`.
+            Default is `sispeed`.
         save_as : `str`, `None`, optional
             The file name to which to save the modified dataset.
             Default is `None`, which doesn't save the dataset to a file.
@@ -232,6 +238,10 @@ def find_slow_ice(
         raise TypeError(f"(find_slow_ice) `dataset` must be a string, `xr.Dataset`, or `xr.DataArray`. Got type: {type(dataset)}")
     if not isinstance(slow_threshold, (int, float)):
         raise TypeError(f"(find_slow_ice) `slow_threshold` must be `int` or `float`. Got type: {type(slow_threshold)}")
+    if not isinstance(sispeed_var, str):
+        raise TypeError(f"(find_slow_ice) `sispeed_var` must be a string. Got type: {type(sispeed_var)}")
+    elif not sispeed_var in ['sispeed', 'sispeed_month_mean']:
+        raise ValueError(f"(find_slow_ice) `sispeed_var` must be either `sispeed` or `sispeed_month_mean`. Got: {sispeed_var}")
     if not isinstance(save_as, (str, type(None))):
         raise TypeError(f"(find_slow_ice) `save_as` must be a string or `None`. Got type: {type(save_as)}")
     elif isinstance(save_as, str) and not '.nc' in save_as:
@@ -248,7 +258,7 @@ def find_slow_ice(
 
     slowice_xr = make_mask(
         dataset,
-        var = 'sispeed',
+        var = sispeed_var,
         mask_var_name = 'sislow',
         mask_this_range = [numpy_int32_min, slow_threshold],
         val_inside_range = 1,
@@ -258,24 +268,24 @@ def find_slow_ice(
     )
 
     # Rename `sispeed` in the new dataset to `sislow`
-    slowice_xr = slowice_xr.rename_vars({'sispeed':'sislow'})
+    slowice_xr = slowice_xr.rename_vars({sispeed_var:'sislow'})
 
     # Modify the attributes of the dataset to reflect the changes
     slowice_xr['sislow'].attrs['standard_name'] = 'sea_ice_slow_marker'
     slowice_xr['sislow'].attrs['long_name'] = f'Speed of Ice < {slow_threshold} m s-1'
     slowice_xr['sislow'].attrs['units'] = '1: Yes, 0: No'
-    slowice_xr['sislow'].attrs['comment'] = f'Marker of slow ice, where sea ice speed (`sispeed`) <{slow_threshold} m s-1'
+    slowice_xr['sislow'].attrs['comment'] = f'Marker of slow ice, where sea ice speed (`{sispeed_var}`) <{slow_threshold} m s-1'
     slowice_xr['sislow'].attrs['original_name'] = 'sislow'
     if 'history' in slowice_xr['sislow'].attrs.keys():
         original_history = slowice_xr['sislow'].attrs['history']
     else:
         original_history = ''
-    slowice_xr['sislow'].attrs['history'] = f"{get_current_datetime_str()} altered by `arctichoke`: Calculated slow ice, marking `sispeed` > {slow_threshold} as 1 and 0 otherwise. {original_history}"
+    slowice_xr['sislow'].attrs['history'] = f"{get_current_datetime_str()} altered by `arctichoke`: Calculated slow ice, marking `{sispeed_var}` > {slow_threshold} as 1 and 0 otherwise. {original_history}"
     if 'history' in slowice_xr.attrs.keys():
         original_history = slowice_xr.attrs['history']
     else:
         original_history = ''
-    slowice_xr.attrs['history'] = f"{get_current_datetime_str()} altered by `arctichoke`: Calculated slow ice, marking `sispeed` > {slow_threshold} as 1 and 0 otherwise. {original_history}"
+    slowice_xr.attrs['history'] = f"{get_current_datetime_str()} altered by `arctichoke`: Calculated slow ice, marking `{sispeed_var}` > {slow_threshold} as 1 and 0 otherwise. {original_history}"
 
     # Save the modified dataset, if applicable
     if not isinstance(save_as, type(None)):
@@ -290,6 +300,7 @@ def find_landfast_ice(
     packed_threshold: (int, float) = 85, 
     slow_threshold: (int, float) = 0.01, 
     siconc_var: str = 'siconc',
+    sispeed_var: str = 'sispeed',
     save_as: str = None,
     save_packed_as: str = None,
     save_slow_as: str = None,
@@ -298,7 +309,7 @@ def find_landfast_ice(
 ):
     """ Calculate where landfast ice is from the dataset(s).
 
-        Verify the dataset(s) contains the `siconc`/`siconc2` and `sispeed` variables, calculates `sipacked` and `sislow` using `find_packed_ice()` and `find_landfast_ice()`, then takes the overlap of these to define `silandfast`.
+        Verify the dataset(s) contains the specified `siconc` and `sispeed` variables, calculates `sipacked` and `sislow` using `find_packed_ice()` and `find_landfast_ice()`, then takes the overlap of these to define `silandfast`.
 
         Parameters
         ----------
@@ -314,8 +325,12 @@ def find_landfast_ice(
             Default is `0.01` m s-1, following Laliberté et al. 2018.
         siconc_var : `str`, optional
             The name of the variable to use from the provided sea ice concentration dataset.
-            Must be either `siconc` or `siconc2`.
+            Must be `siconc`, `siconc2`, `siconc_month_mean`, or `siconc2_month_mean`.
             Default is `siconc`.
+        sispeed_var : `str`, optional
+            The name of the variable to use from the provided sea ice speed dataset.
+            Must be `sispeed` or `sispeed_month_mean`.
+            Default is `sispeed`.
         save_as : `str`, `None`, optional
             The file name to which to save the modified dataset.
             Default is `None`, which doesn't save the dataset to a file.
@@ -364,8 +379,12 @@ def find_landfast_ice(
         raise TypeError(f"(find_landfast_ice) `slow_threshold` must be `int` or `float`. Got type: {type(slow_threshold)}")
     if not isinstance(siconc_var, str):
         raise TypeError(f"(find_landfast_ice) `siconc_var` must be a string. Got type: {type(siconc_var)}")
-    elif not siconc_var in ['siconc', 'siconc2']:
+    elif not siconc_var in ['siconc', 'siconc2', 'siconc_month_mean', 'siconc2_month_mean']:
         raise ValueError(f"(find_landfast_ice) `siconc_var` must be either `siconc` or `siconc2`. Got: {siconc_var}")
+    if not isinstance(sispeed_var, str):
+        raise TypeError(f"(find_landfast_ice) `sispeed_var` must be a string. Got type: {type(sispeed_var)}")
+    elif not sispeed_var in ['sispeed', 'sispeed_month_mean']:
+        raise ValueError(f"(find_landfast_ice) `sispeed_var` must be either `siconc` or `siconc2`. Got: {sispeed_var}")
     if not isinstance(save_as, (str, type(None))):
         raise TypeError(f"(find_landfast_ice) `save_as` must be a string or `None`. Got type: {type(save_as)}")
     elif isinstance(save_as, str) and not '.nc' in save_as:
@@ -391,21 +410,53 @@ def find_landfast_ice(
         packed_threshold = packed_threshold,
         siconc_var = siconc_var,
         save_as = save_packed_as,
+        verbose = verbose,
         **kwargs,
     )
     dataset_sislow = find_slow_ice(
         dataset = sispeed_dataset,
         slow_threshold = slow_threshold,
+        sispeed_var = sispeed_var,
         save_as = save_slow_as,
+        verbose = verbose,
         **kwargs,
     )
 
     # Check to make sure they are the same size data set
     if dataset_sipacked.sizes != dataset_sislow.sizes:
-        raise ValueError(f"(find_landfast_ice) `siconc_dataset` and `sispeed_dataset` must have the same dimension sizes.\n`siconc_dataset.sizes`: {siconc_dataset.sizes}\n`sispeed_dataset.sizes`: {sispeed_dataset.sizes}")
+        # Check to see if one of these is a climatology
+        if 'month' in list(dataset_sipacked.coords):
+            # Overwrite the `month` axis in the `sipacked` dataset with the `time` axis from the `sislow` dataset
+            # Assign the `sislow` dataset as the input dataset to keep auxiliary coordinates
+            dataset_sipacked, input_xr = overwrite_month_with_time(
+                dataset_sipacked, 
+                dataset_sislow, 
+                siconc_dataset,
+                verbose = verbose,
+            )
+            # Add climatology variable to input dataset
+            input_xr.attrs['climatology_var'] = 'sipacked'
+        elif 'month' in list(dataset_sislow.coords):
+            # Overwrite the `month` axis in the `sipacked` dataset with the `time` axis from the `sislow` dataset
+            # Assign the `sislow` dataset as the input dataset to keep auxiliary coordinates
+            dataset_sislow, input_xr = overwrite_month_with_time(
+                dataset_sislow, 
+                dataset_sipacked, 
+                sispeed_dataset,
+                verbose = verbose,
+            )
+            # Add climatology variable to input dataset
+            input_xr.attrs['climatology_var'] = 'sislow'
+        else:
+            raise ValueError(f"(find_landfast_ice) `dataset_sipacked` and `dataset_sislow` must have the same dimension sizes.\n`dataset_sipacked.sizes`: {dataset_sipacked.sizes}\n`dataset_sislow.sizes`: {dataset_sislow.sizes}")
+    else:
+        input_xr = dataset_sipacked
+
+    # Save attributes to put back 
+    ds_attrs = input_xr.attrs
 
     # Combine these datasets
-    dataset_sipacked['sipacked'] = dataset_sipacked['sipacked'] + dataset_sislow['sislow']
+    input_xr['sipacked'] = dataset_sipacked['sipacked'] + dataset_sislow['sislow']
 
     # Assemble the string to specify the range and the output values
     range_min = 1.5
@@ -420,7 +471,7 @@ def find_landfast_ice(
     # If only processing one `xr.Dataset`, the `input` argument cannot include the range string
     landfastice_xr = cdo.setrtoc2(
         range_string,
-        input=dataset_sipacked, 
+        input=input_xr, 
         returnXDataset='silandfast'
     )
     # # Set 0 as the missing value
@@ -430,8 +481,15 @@ def find_landfast_ice(
     #     returnXDataset='silandfast'
     # )
 
+    # Put the attributes back in
+    landfastice_xr.attrs = ds_attrs
     # Rename `sipacked` in the new dataset to `silandfast`
     landfastice_xr = landfastice_xr.rename_vars({'sipacked':'silandfast'})
+    # Check whether there is a `sislow` variable
+    if 'sislow' in list(landfastice_xr.data_vars):
+        if verbose:
+            print(f"(find_landfast_ice) Removing `sislow` variable from `landfastice_xr`.")
+        landfastice_xr = landfastice_xr.drop_vars('sislow')
 
     # Modify the attributes of the dataset to reflect the changes
     landfastice_xr['silandfast'].attrs['standard_name'] = 'sea_ice_landfast_marker'
@@ -463,8 +521,10 @@ def make_landfast_files(
     map_bbox: [float, float, float, float] = None,
     version_id: str = 'v20260617',
     siconc_var: str = 'siconc',
+    sispeed_var: str = 'sispeed',
     overwrite: bool = False,
     save_packed_and_slow: bool = False,
+    verbose: bool = False,
     **kwargs,
 ):
     """ Make landfast files based on the lists of files given.
@@ -494,6 +554,9 @@ def make_landfast_files(
             Default is `False`.
         save_packed_and_slow : `bool`, optional
             Whether to save the intermediate packed ice and slow ice data to files.
+            Default is `False`.
+        verbose : `bool`, optional
+            Whether to verbosely output information as the function executes.
             Default is `False`.
         **kwargs
             Keyword arguments to pass to `trim_latlon()`, and `find_landfast_ice()`.
@@ -555,8 +618,6 @@ def make_landfast_files(
     for item in sispeed_files:
         if not isinstance(item, str):
             raise TypeError(f"(make_landfast_files) `sispeed_files` must be a list of strings. Got type: {type(item)} for item {item}")
-    if len(siconc_files) != len(sispeed_files):
-        raise ValueError(f"(make_landfast_files) `siconc_files` and `sispeed_files` must be the same length. Got `len(siconc_files)`: {len(siconc_files)}, `len(sispeed_files)`: {len(sispeed_files)}")
     if isinstance(map_bbox, type([])):
         if not len(map_bbox) == 4:
             raise ValueError(f"(make_landfast_files) `map_bbox` must have a length of 4. Got length: {len(map_bbox)}")
@@ -570,10 +631,45 @@ def make_landfast_files(
         raise TypeError(f"(make_landfast_files) `version_id` must be a string. Got type: {type(version_id)}")
     if not isinstance(siconc_var, str):
         raise TypeError(f"(make_landfast_files) `siconc_var` must be a string. Got type: {type(siconc_var)}")
-    elif not siconc_var in ['siconc', 'siconc2']:
+    elif not siconc_var in ['siconc', 'siconc2', 'siconc_month_mean', 'siconc2_month_mean']:
         raise ValueError(f"(make_landfast_files) `siconc_var` must be either `siconc` or `siconc2`. Got: {siconc_var}")
+    if not isinstance(sispeed_var, str):
+        raise TypeError(f"(make_landfast_files) `sispeed_var` must be a string. Got type: {type(sispeed_var)}")
+    elif not sispeed_var in ['sispeed', 'sispeed_month_mean']:
+        raise ValueError(f"(make_landfast_files) `sispeed_var` must be either `siconc` or `siconc2`. Got: {sispeed_var}")
     if not isinstance(overwrite, bool):
         raise TypeError(f"(make_landfast_files) `overwrite` must be a `bool`. Got type: {type(overwrite)}")
+    if not isinstance(verbose, bool):
+        raise TypeError(f"(make_landfast_files) `verbose` must be a `bool`. Got type: {type(verbose)}")
+
+    siconc_is_climatology = False
+    sispeed_is_climatology = False
+    # Compare the lengths of the two lists of files 
+    if len(siconc_files) != len(sispeed_files):
+        # Check to see whether `siconc_files`is a climatology file
+        if len(siconc_files) == 1:
+            siconc_dataset = xr.open_dataset(siconc_files[0])
+            for clim_attr in ['climatology_start', 'climatology_end', 'climatology_var']:
+                if clim_attr in siconc_dataset.attrs.keys():
+                    siconc_is_climatology = True
+            if verbose:
+                if siconc_is_climatology:
+                    print(f"(make_landfast_files) `siconc_files` is a climatology.")
+            # Duplicate `siconc_files` to be the same length of `sispeed_files`
+            siconc_files = siconc_files * len(sispeed_files)
+        # Check to see whether `siconc_files`is a climatology file
+        if len(sispeed_files) == 1:
+            sispeed_dataset = xr.open_dataset(sispeed_files[0])
+            for clim_attr in ['climatology_start', 'climatology_end', 'climatology_var']:
+                if clim_attr in sispeed_dataset.attrs.keys():
+                    sispeed_is_climatology = True
+            if verbose:
+                if sispeed_is_climatology:
+                    print(f"(make_landfast_files) `sispeed_files` is a climatology.")
+            # Duplicate `sispeed_files` to be the same length of `siconc_files`
+            sispeed_files = sispeed_files * len(siconc_files)
+        if not siconc_is_climatology and not sispeed_is_climatology:
+            raise ValueError(f"(make_landfast_files) `siconc_files` and `sispeed_files` must be the same length. Got `len(siconc_files)`: {len(siconc_files)}, `len(sispeed_files)`: {len(sispeed_files)}")
 
     # Loop across each file in the list
     for i in range(len(siconc_files)):
@@ -582,14 +678,24 @@ def make_landfast_files(
         sispeed_filepath = verify_path(sispeed_files[i])
         # Verify the filepaths are for the same model run
         siconc_filestem = siconc_filepath.replace(siconc_var, '')
-        sispeed_filestem = sispeed_filepath.replace('sispeed', '')
+        sispeed_filestem = sispeed_filepath.replace(sispeed_var, '')
+        if siconc_is_climatology or sispeed_is_climatology:
+            # NOTE: This assumes a time stamp in the format `YYYYMM-YYYYMM.nc`
+            siconc_filestem = siconc_filestem[:-16]
+            sispeed_filestem = sispeed_filestem[:-16]
         if siconc_filestem != sispeed_filestem:
             raise ValueError(f"(make_landfast_files) `{siconc_var}` and `sispeed` files for index i={i} are not from the same run.\n`siconc_filepath`: {siconc_filepath}\n`sispeed_filepath`:{sispeed_filepath}\n`siconc_filestem`: {siconc_filestem}\n`sispeed_filestem`:{sispeed_filestem}")
+        if siconc_is_climatology:
+            this_filepath = sispeed_filepath
+            replace_this_si_var = sispeed_var
+        else:
+            this_filepath = siconc_filepath
+            replace_this_si_var = siconc_var
         # Get the version ID to replace
-        replace_this_version_ID = siconc_filepath.split('/')[-2]
+        replace_this_version_ID = this_filepath.split('/')[-2]
         # Assemble the landfast filename
-        landfast_filepath = siconc_filepath.replace(replace_this_version_ID, version_id)
-        landfast_filepath = landfast_filepath.replace(siconc_var, 'silandfast')
+        landfast_filepath = this_filepath.replace(replace_this_version_ID, version_id)
+        landfast_filepath = landfast_filepath.replace(replace_this_si_var, 'silandfast')
         # Add trimming prefix, if applicable
         if not isinstance(map_bbox, type(None)):
             if map_bbox == sps.CAA_BBOX:
@@ -643,9 +749,11 @@ def make_landfast_files(
             siconc_dataset = siconc_xr,
             sispeed_dataset = sispeed_xr,
             siconc_var = siconc_var,
+            sispeed_var = sispeed_var,
             save_as = landfast_filepath,
             save_packed_as = packed_filepath,
             save_slow_as = slow_filepath,
+            verbose = verbose,
             **kwargs,
         )
 

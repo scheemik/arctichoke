@@ -173,6 +173,7 @@ def select_files_by_time(
     start: (str, int),
     end: (str, int),
     test: bool = False,
+    verbose: bool = False,
 ):
     """ Filter the list to be only the files in the given date range. 
 
@@ -189,6 +190,9 @@ def select_files_by_time(
             The end date of the time range, either a string in the format `YYYY-MM-DD` or an integer of a year.
         test : `bool`, optional
             If `True`, the function skips verifying the `data_filepaths` exist for use in testing.
+            Default is `False`.
+        verbose : `bool`, optional
+            Whether to verbosely output information as the function executes.
             Default is `False`.
 
         Returns
@@ -245,6 +249,8 @@ def select_files_by_time(
         raise ValueError(f"(select_files_by_time) `start` must be before `end`. Got `start`: {start} and `end`: {end}")
     if not isinstance(test, (type(True))):
         raise TypeError(f"(select_files_by_time) `test` must be a `bool`. Got type: {type(test)}")
+    if not isinstance(verbose, bool):
+        raise TypeError(f"(select_files_by_time) `verbose` must be a `bool``. Got type: {type(verbose)}")
 
     data_filepaths_in_date_range = []
     # Check each file in the list
@@ -257,5 +263,7 @@ def select_files_by_time(
         # If the span of this file crosses the specified date range, include it in the list of files
         if start_year >= start and end_year <= end:
             data_filepaths_in_date_range.append(data_file)
+    if verbose:
+        print(f"(select_files_by_time) Found {len(data_filepaths_in_date_range)} files.")
 
     return sorted(data_filepaths_in_date_range)
