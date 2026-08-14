@@ -6,6 +6,7 @@ import xarray as xr
 from arctichoke.analysis import trend_in_time
 from arctichoke.dataset import get_epoch_times
 import arctichoke.params as sps
+from arctichoke.plot.labels_and_titles import make_title
 from arctichoke.verify import verify_path
 
 def plot_time_series(
@@ -89,7 +90,8 @@ def plot_time_series(
         else:
             variable_id = dataset.name
     if isinstance(plt_title, type(None)):
-        plt_title = f"Time series of '{variable_id}'"
+        # plt_title = f"Time series of '{variable_id}'"
+        plt_title = make_title(dataset)
     elif not isinstance(plt_title, str):
         raise TypeError(f"(plot_time_series) `plt_title` must be a string or `None`. Got type: {type(plt_title)}")
     if isinstance(xlims, type([])):
