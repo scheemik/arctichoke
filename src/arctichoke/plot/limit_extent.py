@@ -8,7 +8,7 @@ def get_limited_extent(
     map_projection : crs.CRS,
     map_bbox : [float, float, float, float] = sps.CAA_BBOX,
     n_samples : int = 100,
-    padding : (int, float) = 0.1,
+    padding : (int, float) = 0.0,
     verbose: bool = False,
     **kwargs,
 ):
@@ -32,7 +32,7 @@ def get_limited_extent(
             Default is `100`.
         padding : `int`, `float`, optional
             The fractional value between 0 and 1 by which to multiply the latitude and longitude extents.
-            Default is `0.1`, or 10%.
+            Default is `0.0`, or 10%.
         verbose : `bool`, optional
             Whether to verbosely output information as the function executes.
             Default is `False`.
