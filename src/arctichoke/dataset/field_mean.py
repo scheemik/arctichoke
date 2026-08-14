@@ -5,6 +5,7 @@ cdo = Cdo()
 cdo = Cdo(tempdir='./cdo_tmp/')
 cdo.cleanTempDir()
 
+from arctichoke.dataset.latlon_type import get_latlon_names
 from arctichoke.verify import verify_path
 
 def get_field_mean(
@@ -87,5 +88,11 @@ def get_field_mean(
         output = save_as,
         **kwargs,
     )
+
+    # Drop the now length-1 latitude and longitude coordinates
+    latlon_names = get_latlon_names(fldmean_xr)
+    if verbose:
+        print(f"(get_field_mean) Dropping now-unnecessary dimensions: {latlon_names}")
+    fldmean_xr = fldmean_xr.squeeze(dim=latlon_names, drop=True)
 
     return fldmean_xr
