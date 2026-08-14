@@ -1,5 +1,7 @@
 import cartopy.crs as crs
+import hvplot.pandas
 import hvplot.xarray
+import pandas as pd
 import xarray as xr
 
 from arctichoke.dataset import  bound_lat, bound_lon, get_latlon_names, get_min_max
@@ -17,6 +19,7 @@ def quadmesh_map(
     map_bbox: [float, float, float, float] = sps.CAA_BBOX,
     clims: [(int, float), (int, float)] = None,
     map_title: str = None,
+    mark_bbox: (bool, [float, float, float, float]) = False,
     diverging_cbar: bool = False, 
     verbose: bool = False,
     **kwargs,
@@ -50,6 +53,11 @@ def quadmesh_map(
         map_title : `str`, optional
             Specify the title of the map or, if `None` is given, use the `make_title()` function to create the title.
             Default is `None`.
+        mark_bbox : `bool`, Array of `float`, optional
+            If given an array of coordinates in the same format as `map_bbox`, a bounding box is marked on the map.
+            If given `True`, the bounding box given as `map_bbox` is marked on the map.
+            If given `False`, no bounding box is marked on the map. 
+            Default is `False`.
         diverging_cbar : `bool`, optional
             Whether to use a diverging colormap on the colorbar.
             Default is `False`.
@@ -100,6 +108,18 @@ def quadmesh_map(
         raise TypeError(f"(quadmesh_map) `clims` must be a list or tuple of length 2. Got length: {len(clims)}")
     if not isinstance(map_title, (str, type(None))):
         raise TypeError(f"(quadmesh_map) `map_title` must be a string or `None`. Got type: {type(map_title)}")
+    if isinstance(mark_bbox, type([])):
+        if not len(mark_bbox) == 4:
+            raise ValueError(f"(quadmesh_map) `mark_bbox` must have a length of 4. Got length: {len(mark_bbox)}")
+        else: 
+            for i in range(len(mark_bbox)):
+                if not isinstance(mark_bbox[i], (int, float)):
+                    raise TypeError(f"(quadmesh_map) `mark_bbox[{i}]` must be a number. Got type: {type(mark_bbox[i])}")
+    elif isinstance(mark_bbox, bool):
+        if mark_bbox:
+            mark_bbox = map_bbox
+    else:
+        raise TypeError(f"(quadmesh_map) `mark_bbox` must be a list or `bool`. Got type: {type(mark_bbox)}")
     if not isinstance(diverging_cbar, bool):
         raise TypeError(f"(quadmesh_map) `diverging_cbar` must be a `bool`. Got type: {type(diverging_cbar)}")
     if not isinstance(verbose, bool):
@@ -207,6 +227,29 @@ def quadmesh_map(
             verbose = verbose,
             # **kwargs,
         )
+
+    # Add bounding box to the map
+    if mark_bbox:
+        bbox_df = pd.DataFrame({
+            'lon': [mark_bbox[3], mark_bbox[2], mark_bbox[2], mark_bbox[3], mark_bbox[3]],
+            'lat': [mark_bbox[1], mark_bbox[1], mark_bbox[0], mark_bbox[0], mark_bbox[1]]
+        })
+        # Shared plot args
+        common_kwargs = dict(
+            x='lon', y='lat', geo=True,
+        )
+        # Create paths, points, and labels
+        shortest_path = bbox_df.hvplot.paths(
+            color='blue', crs=map_projection,
+            features=['coastline'], #**common_kwargs
+        )
+        straight_path = bbox_df.hvplot.paths(
+            color='grey', crs=crs.PlateCarree(), line_dash='dashed',
+            line_width=2, #**common_kwargs
+        )
+        points = bbox_df.hvplot.points(color='red', size=10, geo=True)
+        # Compose the map with the bounding box
+        qm_map_plot = qm_map_plot * shortest_path * straight_path * points
 
     # Save the plot, if applicable
     if not isinstance(save_as, type(None)):
