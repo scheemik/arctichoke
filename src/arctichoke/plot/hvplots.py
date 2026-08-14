@@ -92,14 +92,15 @@ def quadmesh_map(
         raise TypeError(f"(quadmesh_map) `map_projection` must be a string. Got type: {type(map_projection)}")
     elif map_projection not in ['NorthPolarStereo', 'Orthographic']:
         raise ValueError(f"(quadmesh_map) `map_projection` must be one of the following: 'NorthPolarStereo', 'Orthographic'. Got: {map_projection}")
-    if not isinstance(map_bbox, type([])):
-        raise TypeError(f"(quadmesh_map) `map_bbox` must be a list. Got type: {type(map_bbox)}")
-    elif not len(map_bbox) == 4:
-        raise ValueError(f"(quadmesh_map) `map_bbox` must have a length of 4. Got length: {len(map_bbox)}")
-    else: 
-        for i in range(len(map_bbox)):
-            if not isinstance(map_bbox[i], (int, float)):
-                raise TypeError(f"(quadmesh_map) `map_bbox[{i}]` must be a number. Got type: {type(map_bbox[i])}")
+    if isinstance(map_bbox, type([])):
+        if not len(map_bbox) == 4:
+            raise ValueError(f"(quadmesh_map) `map_bbox` must have a length of 4. Got length: {len(map_bbox)}")
+        else: 
+            for i in range(len(map_bbox)):
+                if not isinstance(map_bbox[i], (int, float)):
+                    raise TypeError(f"(quadmesh_map) `map_bbox[{i}]` must be a number. Got type: {type(map_bbox[i])}")
+    elif not isinstance(map_bbox, (type([]), type(None))):
+        raise TypeError(f"(quadmesh_map) `map_bbox` must be a list or `None`. Got type: {type(map_bbox)}")
     if isinstance(clims, type([])):
         clims = tuple(clims)
     if not isinstance(clims, (tuple, type(None))):
