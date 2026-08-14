@@ -10,6 +10,7 @@ from arctichoke.verify import verify_path
 def get_field_mean(
     dataset: (str, [str], xr.DataArray, xr.Dataset),
     save_as: str = None,
+    verbose: bool = False,
     **kwargs,
 ):
     """ Get the field mean of the dataset.
@@ -23,6 +24,9 @@ def get_field_mean(
         save_as : `str`, `None`, optional
             The file name to pass to `cdo.fldmean(output=save_as)`.
             Default is `None`, which doesn't save the dataset to a file.
+        verbose : `bool`, optional
+            Whether to verbosely output information as the function executes.
+            Default is `False`.
         **kwargs
             Keyword arguments to pass to `cdo.fldmean()`.
 
@@ -60,7 +64,8 @@ def get_field_mean(
                 raise TypeError(f"(plot_time_series) `datafile` must be a `.nc` filepath. Got: {datafile}")
             input_command = f"{input_command} {datafile}"
         input_command = f"{input_command} ]"
-        print(f"(get_field_mean) `input`: {input_command}")
+        if verbose:
+            print(f"(get_field_mean) `input`: {input_command}")
         cdo_command = cdo.mergetime
     else:
         raise TypeError(f"(get_field_mean) `dataset` must be a string, `xr.Dataset`, or `xr.DataArray`. Got type: {type(dataset)}")
@@ -68,9 +73,12 @@ def get_field_mean(
         raise TypeError(f"(get_field_mean) `save_as` must be a string or `None`. Got type: {type(save_as)}")
     elif isinstance(save_as, str) and not '.nc' in save_as:
         raise TypeError(f"(get_field_mean) `save_as` must be a `.nc` filepath. Got: {save_as}")
+    if not isinstance(verbose, bool):
+        raise TypeError(f"(get_field_mean) `verbose` must be a `bool`. Got type: {type(verbose)}")
     
     # Information to output
-    print(f"(get_field_mean) `save_as`: {save_as}")
+    if verbose:
+        print(f"(get_field_mean) `save_as`: {save_as}")
 
     # Use `cdo` to calculate the field mean
     fldmean_xr = cdo_command(
