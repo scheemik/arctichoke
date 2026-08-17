@@ -98,6 +98,8 @@ def plot_time_series(
             raise ValueError(f"(plot_time_series) `variable_id` must be a string if `dataset` is `xr.Dataset`. Got type: {type(variable_id)}")
         else:
             variable_id = dataset.name
+    if not isinstance(add_regression, (type(True))):
+        raise TypeError(f"(plot_time_series) `add_regression` must be a `bool`. Got type: {type(add_regression)}")
     if isinstance(reg_label, type(None)):
         reg_label = make_title(dataset)
     elif not isinstance(reg_label, str):
