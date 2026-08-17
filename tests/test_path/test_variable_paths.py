@@ -588,3 +588,232 @@ def test_list_variable_modifications():
             assert True, f"`list_variable_modifications` raised an exception on invalid `list_filenames`: {e}"
         else:
             assert False, f"`list_variable_modifications` did not raise an exception on invalid `list_filenames` {invalid_string}"
+
+def test_list_variant_labels():
+    """Test the `list_variant_labels` function."""
+    # Define test cases that should not raise warnings
+    ## Note: The expected output of these test cases is manually kept up to date
+    test_cases = [
+        {
+            'source_id': 'AWI-CM-1-1-HR',
+            'experiment_id': 'hist-1950',
+            'expected_variant_labels': ['r1i1p1f2'],
+        },
+        {
+            'source_id': 'AWI-CM-1-1-HR',
+            'experiment_id': 'control-1950',
+            'expected_variant_labels': ['r1i1p1f2'],
+        },
+        {
+            'source_id': 'AWI-CM-1-1-LR',
+            'experiment_id': 'hist-1950',
+            'expected_variant_labels': ['r1i1p1f2'],
+        },
+        {
+            'source_id': 'BCC-CSM2-HR',
+            'experiment_id': 'hist-1950',
+            'expected_variant_labels': ['r1i1p1f1'],
+        },
+        {
+            'source_id': 'CESM1-CAM5-SE-HR',
+            'experiment_id': 'hist-1950',
+            'expected_variant_labels': ['r1i1p1f1'],
+        },
+        {
+            'source_id': 'CESM1-CAM5-SE-LR',
+            'experiment_id': 'control-1950',
+            'expected_variant_labels': ['r1i1p1f1'],
+        },
+        {
+            'source_id': 'EC-Earth3P',
+            'experiment_id': 'highres-future',
+            'expected_variant_labels': ['r2i1p2f1'],
+        },
+        {
+            'source_id': 'EC-Earth3P-HR',
+            'experiment_id': 'highres-future',
+            'expected_variant_labels': ['r1i1p2f1', 'r2i1p2f1', 'r3i1p2f1'],
+        },
+        {
+            'source_id': 'EC-Earth3P-HR',
+            'experiment_id': 'hist-1950',
+            'expected_variant_labels': ['r1i1p2f1', 'r2i1p2f1', 'r3i1p2f1'],
+        },
+        {
+            'source_id': 'EC-Earth3P-HR',
+            'experiment_id': 'hist-1950',
+            'expected_variant_labels': ['r1i1p2f1', 'r2i1p2f1', 'r3i1p2f1'],
+        },
+        {
+            'source_id': 'HadGEM3-GC31-HM',
+            'experiment_id': 'hist-1950',
+            'expected_variant_labels': ['r1i1p1f1', 'r1i2p1f1', 'r1i3p1f1'],
+        },
+        {
+            'source_id': 'HadGEM3-GC31-HM',
+            'experiment_id': 'highres-future',
+            'expected_variant_labels': ['r1i1p1f1', 'r1i2p1f1', 'r1i3p1f1'],
+        },
+        {
+            'source_id': 'HadGEM3-GC31-HM',
+            'experiment_id': 'control-1950',
+            'expected_variant_labels': ['r1i1p1f1'],
+        },
+        {
+            'source_id': 'HadGEM3-GC31-LL',
+            'experiment_id': 'hist-1950',
+            'expected_variant_labels': ['r1i1p1f1'],
+        },
+        {
+            'source_id': 'HadGEM3-GC31-LL',
+            'experiment_id': 'highres-future',
+            'expected_variant_labels': ['r1i1p1f1'],
+        },
+        {
+            'source_id': 'HadGEM3-GC31-LL',
+            'experiment_id': 'control-1950',
+            'expected_variant_labels': ['r1i1p1f1'],
+        },
+        {
+            'source_id': 'HadGEM3-GC31-LL',
+            'experiment_id': 'spinup-1950',
+            'expected_variant_labels': ['r1i1p1f1'],
+        },
+        {
+            'source_id': 'HadGEM3-GC31-MM',
+            'experiment_id': 'hist-1950',
+            'expected_variant_labels': ['r1i1p1f1', 'r1i2p1f1', 'r1i3p1f1'],
+        },
+        {
+            'source_id': 'HadGEM3-GC31-MM',
+            'experiment_id': 'highres-future',
+            'expected_variant_labels': ['r1i1p1f1', 'r1i2p1f1', 'r1i3p1f1'],
+        },
+        {
+            'source_id': 'HadGEM3-GC31-MM',
+            'experiment_id': 'control-1950',
+            'expected_variant_labels': ['r1i1p1f1'],
+        },
+        {
+            'source_id': 'HadGEM3-GC31-MM',
+            'experiment_id': 'spinup-1950',
+            'expected_variant_labels': ['r1i1p1f1'],
+        },
+    ]
+    for test_case in test_cases:
+        actual = path.list_variant_labels(
+            source_id=test_case['source_id'], 
+            experiment_id=test_case['experiment_id'],
+        )
+        assert actual == test_case['expected_variant_labels'], f"`list_variant_labels` failed on test case: {test_case}. \nExpected: {test_case['expected_variant_labels']} \nActual: {actual}"
+
+    # Define invalid test cases
+    invalid_test_cases = [
+        {
+            'source_id': 'invalid_string',
+            'data_dir': '/arctichoke_data/bergybits/data',
+            'project': 'CMIP6',
+            'activity_id': 'HighResMIP',
+            'experiment_id': 'hist-1950',
+        },
+        {
+            'source_id': 'EC-Earth3P-HR',
+            'data_dir': 'invalid_string',
+            'project': 'CMIP6',
+            'activity_id': 'HighResMIP',
+            'experiment_id': 'hist-1950',
+        },
+        {
+            'source_id': 'EC-Earth3P-HR',
+            'data_dir': '/arctichoke_data/bergybits/data',
+            'project': 'invalid_string',
+            'activity_id': 'HighResMIP',
+            'experiment_id': 'hist-1950',
+        },
+        {
+            'source_id': 'EC-Earth3P-HR',
+            'data_dir': '/arctichoke_data/bergybits/data',
+            'project': 'CMIP6',
+            'activity_id': 'invalid_string',
+            'experiment_id': 'hist-1950',
+        },
+        {
+            'source_id': 'EC-Earth3P-HR',
+            'data_dir': '/arctichoke_data/bergybits/data',
+            'project': 'CMIP6',
+            'activity_id': 'HighResMIP',
+            'experiment_id': 'invalid_string',
+        },
+    ]
+    for invalid_test_case in invalid_test_cases:
+        try:
+            actual = path.list_variant_labels(
+                source_id = invalid_test_case['source_id'],
+                data_dir = invalid_test_case['data_dir'],
+                project = invalid_test_case['project'],
+                activity_id = invalid_test_case['activity_id'],
+                experiment_id = invalid_test_case['experiment_id'],
+            )
+        except (FileNotFoundError, ValueError) as e:
+            assert True, f"`list_variant_labels` raised an exception on invalid test case: {e}"
+        else:
+            assert False, f"`list_variant_labels` did not raise an exception on invalid test case {invalid_test_case}"
+    
+    # Define a list of invalid strings
+    invalid_strings = [
+        1234,
+        3.14,
+        None,
+        [],
+        {}
+    ]
+    for invalid_string in invalid_strings:
+        # Test with `source_id`
+        try:
+            actual = path.list_variant_labels(
+                source_id = invalid_string,
+            )
+        except (TypeError) as e:
+            assert True, f"`list_variant_labels` raised an exception on invalid `source_id`: {e}"
+        else:
+            assert False, f"`list_variant_labels` did not raise an exception on invalid `source_id` {invalid_string}"
+        # Test with `data_dir`
+        try:
+            actual = path.list_variant_labels(
+                source_id = test_cases[0]['source_id'],
+                data_dir = invalid_string,
+            )
+        except (TypeError) as e:
+            assert True, f"`list_variant_labels` raised an exception on invalid `data_dir`: {e}"
+        else:
+            assert False, f"`list_variant_labels` did not raise an exception on invalid `data_dir` {invalid_string}"
+        # Test with `project`
+        try:
+            actual = path.list_variant_labels(
+                source_id = test_cases[0]['source_id'],
+                project = invalid_string,
+            )
+        except (TypeError) as e:
+            assert True, f"`list_variant_labels` raised an exception on invalid `project`: {e}"
+        else:
+            assert False, f"`list_variant_labels` did not raise an exception on invalid `project` {invalid_string}"
+        # Test with `activity_id`
+        try:
+            actual = path.list_variant_labels(
+                source_id = test_cases[0]['source_id'],
+                activity_id = invalid_string,
+            )
+        except (TypeError) as e:
+            assert True, f"`list_variant_labels` raised an exception on invalid `activity_id`: {e}"
+        else:
+            assert False, f"`list_variant_labels` did not raise an exception on invalid `experiment_id` {invalid_string}"
+        # Test with `experiment_id`
+        try:
+            actual = path.list_variant_labels(
+                source_id = test_cases[0]['source_id'],
+                experiment_id = invalid_string,
+            )
+        except (TypeError) as e:
+            assert True, f"`list_variant_labels` raised an exception on invalid `experiment_id`: {e}"
+        else:
+            assert False, f"`list_variant_labels` did not raise an exception on invalid `experiment_id` {invalid_string}"

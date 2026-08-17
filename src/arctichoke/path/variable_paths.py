@@ -351,3 +351,95 @@ def list_variable_modifications(
             var_mod_dict[mod_prefix] = len(these_data_filepaths)
 
     return var_mod_dict
+
+def list_variant_labels(
+    source_id: str,
+    data_dir: str = '/arctichoke_data/bergybits/data',
+    project: str = 'CMIP6',
+    activity_id: str = 'HighResMIP',
+    experiment_id: str = 'hist-1950',
+    **kwargs,
+):
+    """ Find the names of the variant labels for the specified model.
+
+        Search the data directory that has been populated by `esgpull` for a model's `source_id` and return a list of the available variant labels.
+        This assumes the `esgpull` convention of subdirectories: `data/project/activity_id/institution_id/source_id/experiment_id/variant_label/table_id/variable_id`.
+
+        Parameters
+        ----------
+        source_id : `str`
+            The name of the source ID (model) for which to find the variable path.
+        data_dir : `str`, optional
+            The absolute file path to the data directory.
+            The `esgpull` convention means this should end in `/data`.
+            Default is `/arctichoke_data/bergybits/data`.
+        project : `str`, optional
+            The name of the project in which to search for available models.
+            Default is `CMIP6`.
+        activity_id : `str`, optional
+            The name of the activity ID in which to search for available models.
+            Default is `HighResMIP`.
+        experiment_id : `str`, optional
+            The name of the experiment ID in which to search for available variables.
+            Default is `hist-1950`.
+        **kwargs
+            Keyword arguments to handle extras that might have been passed by the function above this one.
+
+        Returns
+        -------
+        variant_label_list : List of `str`
+            The list of variant labels available from the specified model.
+        
+        Examples
+        --------
+        >>> from arctichoke.path.find_data import list_variant_labels
+        >>> list_variant_labels(source_id = 'HadGEM3-GC31-HM')
+        ['r1i1p1f1', 'r1i2p1f1', 'r1i3p1f1']
+        >>> list_variant_labels(source_id = 'HadGEM3-GC31-HH')
+        ['r1i1p1f1']
+        >>> list_variant_labels(source_id = 'EC-Earth3P-HR')
+        ['r1i1p2f1', 'r2i1p2f1', 'r3i1p2f1']
+    """
+    # Verify input arguments
+    if not isinstance(source_id, str):
+        raise TypeError(f"(list_variant_labels) `source_id` must be a string. Got type: {type(source_id)}")
+    if not isinstance(data_dir, str):
+        raise TypeError(f"(list_variant_labels) `data_dir` must be a string. Got type: {type(data_dir)}")
+    if not isinstance(project, str):
+        raise TypeError(f"(list_variant_labels) `project` must be a string. Got type: {type(project)}")
+    if not isinstance(activity_id, str):
+        raise TypeError(f"(list_variant_labels) `activity_id` must be a string. Got type: {type(activity_id)}")
+    if not isinstance(experiment_id, str):
+        raise TypeError(f"(list_variant_labels) `experiment_id` must be a string. Got type: {type(experiment_id)}")
+
+    # Get the model path
+    model_paths = get_model_path(
+        source_id = source_id,
+        data_dir = data_dir,
+        project = project,
+        activity_id = activity_id,
+    )
+
+    variant_label_list = []
+    # Loop across model paths
+    for model_path in model_paths:
+        # Use glob to get a file path list down to the `variant_label` depth
+        model_filepaths = glob.glob(f"{model_path}/*/*")
+
+        # Filter to just those with the specified experiment ID
+        model_filepaths = [item for item in model_filepaths if experiment_id in item]
+
+        for this_filepath in model_filepaths:
+            # Get the variant label, which will be after the last slash character
+            this_variant_label = this_filepath.split('/')[-1]
+            # Add this list to the full list
+            variant_label_list.append(this_variant_label)
+    # Keep only the unique variant labels
+    variant_label_list = list(set(variant_label_list))
+    # Sort the list
+    variant_label_list = sorted(variant_label_list)
+    # Return the list
+    if len(variant_label_list) < 1:
+        raise ValueError(f"(list_variant_labels) No variant labels were found.")
+    else:
+        return variant_label_list
