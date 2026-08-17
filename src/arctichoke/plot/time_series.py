@@ -16,6 +16,7 @@ def plot_time_series(
     plt_title: str = None,
     xlims: [str, str] = None,
     ylims: [float, float] = None,
+    line_clr: str = None,
     save_as: str = None,
     verbose: bool = False,
     test: bool = False,
@@ -48,6 +49,9 @@ def plot_time_series(
                 - [y_min, y_max]
                 
             Default is `None`, which expands the y-axis to include all the data.
+        line_clr: `str`, `None`, optional
+            The color of line to use in the plot. 
+            Default is `None` which uses the default `matplotlib` colors. 
         save_as : `str`, `None`, optional
             The name of the file to which to save the plot.
             Default is `None`, which doesn't save the plot to a file.
@@ -119,6 +123,8 @@ def plot_time_series(
         raise TypeError(f"(plot_time_series) `ylims` must be a list or `None`. Got type: {type(ylims)}")
     if not isinstance(save_as, (str, type(None))):
         raise TypeError(f"(plot_time_series) `save_as` must be a string or `None`. Got type: {type(save_as)}")
+    if not isinstance(line_clr, (str, type(None))):
+        raise TypeError(f"(plot_time_series) `line_clr` must be a string or `None`. Got type: {type(line_clr)}")
     elif isinstance(save_as, str) and not '.png' in save_as:
         raise TypeError(f"(plot_time_series) `save_as` must be a `.png` filepath. Got: {save_as}")
     if not isinstance(verbose, bool):
@@ -150,6 +156,7 @@ def plot_time_series(
     dataset.plot(
         xlim = xlims,
         ylim = ylims,
+        color = line_clr,
         **kwargs,
     )
 
@@ -186,7 +193,13 @@ def plot_time_series(
         # Format the label
         reg_label = f"{str(reg_m)[:6]}x+{str(reg_b)[:6]}"
         # Plot the regression line
-        plt.plot(dataset[x_var].values, x_vals * reg_m + reg_b, label=reg_label)
+        plt.plot(
+            dataset[x_var].values, 
+            x_vals * reg_m + reg_b, 
+            color = line_clr,
+            linewidth = 3,
+            label=reg_label,
+        )
         plt.legend()
 
     # Modify the plot
