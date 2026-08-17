@@ -53,7 +53,7 @@ def make_trend_map(
             Whether to use `sum_by_year()` to sum the variable across each year before taking the trends across time.
             Default is `True`.
         find_mean : `bool`, optional
-            Whether to find the mean instead of sum when calling `sum_by_year.
+            Whether to find the mean instead of sum when calling `sum_by_year()`.
             This is only relevant when `call_sum_by_year` is `True` or when it is `None` and `this_var` is a marker variable.
             Default is `False`.
         map_projection : `str`, optional
