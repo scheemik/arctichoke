@@ -13,6 +13,7 @@ def plot_time_series(
     dataset: (str, xr.DataArray, xr.Dataset),
     variable_id: str = None,
     add_regression: bool = False,
+    reg_label: str = None,
     plt_title: str = None,
     xlims: [str, str] = None,
     ylims: [float, float] = None,
@@ -35,6 +36,10 @@ def plot_time_series(
         add_regression : `bool`, optional
             Whether to add a linear regression line to the plot.
             Default is `False`.
+        reg_label : `str`, `None`, optional
+            The label to use for the regression line.
+            Note that this has no effect when `add_regression` is `False`.
+            Default is `None`, which uses a default label, the equation of the regression line.
         plt_title : `str`, `None`, optional
             The title to use for the plot.
             Default is `None`, which uses a default title for the plot.
@@ -93,8 +98,11 @@ def plot_time_series(
             raise ValueError(f"(plot_time_series) `variable_id` must be a string if `dataset` is `xr.Dataset`. Got type: {type(variable_id)}")
         else:
             variable_id = dataset.name
+    if isinstance(reg_label, type(None)):
+        reg_label = make_title(dataset)
+    elif not isinstance(reg_label, str):
+        raise TypeError(f"(plot_time_series) `reg_label` must be a string or `None`. Got type: {type(reg_label)}")
     if isinstance(plt_title, type(None)):
-        # plt_title = f"Time series of '{variable_id}'"
         plt_title = make_title(dataset)
     elif not isinstance(plt_title, str):
         raise TypeError(f"(plot_time_series) `plt_title` must be a string or `None`. Got type: {type(plt_title)}")
@@ -190,8 +198,9 @@ def plot_time_series(
         if verbose:
             print(f"(plot_time_series) Slope of regression line: {reg_m}")
             print(f"(plot_time_series) Intercept of regression line: {reg_b}")
-        # Format the label
-        reg_label = f"{str(reg_m)[:6]}x+{str(reg_b)[:6]}"
+        if isinstance(reg_label, type(None)):
+            # Format the label
+            reg_label = f"{str(reg_m)[:6]}x+{str(reg_b)[:6]}"
         # Plot the regression line
         plt.plot(
             dataset[x_var].values, 
