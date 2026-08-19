@@ -65,7 +65,7 @@ def quadmesh_map(
             Whether to verbosely output information as the function executes.
             Default is `False`.
         **kwargs
-            Keyword arguments to pass to `bound_lat()`, `bound_lon`, `hvplot.quadmesh()`, and `arctichoke.plot.limit_extent.get_limited_extent()`
+            Keyword arguments to pass to `bound_lat()`, `bound_lon`, `hvplot.quadmesh()`, `arctichoke.plot.limit_extent.get_limited_extent()`, and `make_title()`
 
         Returns
         -------
@@ -185,7 +185,7 @@ def quadmesh_map(
 
     # Make title, if necessary
     if isinstance(map_title, type(None)):
-        map_title = make_title(xr_data)
+        map_title = make_title(xr_data, **kwargs)
 
     # Make the plot
     qm_map_plot = xr_data[var].hvplot.quadmesh(
