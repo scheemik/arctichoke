@@ -1,6 +1,7 @@
 import cartopy.crs as crs
 import hvplot.pandas
 import hvplot.xarray
+import numpy as np
 import pandas as pd
 import xarray as xr
 
@@ -231,9 +232,26 @@ def quadmesh_map(
 
     # Add bounding box to the map
     if mark_bbox:
+        # Set the corners of the bounding box
         bbox_df = pd.DataFrame({
             'lon': [mark_bbox[3], mark_bbox[2], mark_bbox[2], mark_bbox[3], mark_bbox[3]],
             'lat': [mark_bbox[1], mark_bbox[1], mark_bbox[0], mark_bbox[0], mark_bbox[1]]
+        })
+        # Set the number of points per side of the frame of the bounding box
+        n = 10
+        frame_df = pd.DataFrame({
+            'lon': np.concatenate([
+                np.linspace(mark_bbox[3], mark_bbox[2], n),
+                [mark_bbox[2]]*(n-1), 
+                np.linspace(mark_bbox[2], mark_bbox[3], n),
+                [mark_bbox[3]]*(n-1), 
+            ]),
+            'lat': np.concatenate([
+                [mark_bbox[1]]*(n-1), 
+                np.linspace(mark_bbox[1], mark_bbox[0], n),
+                [mark_bbox[0]]*(n-1), 
+                np.linspace(mark_bbox[0], mark_bbox[1], n),
+            ]),
         })
         # Create paths, points, and labels
         shortest_path = bbox_df.hvplot.paths(
@@ -241,7 +259,7 @@ def quadmesh_map(
             crs=map_projection,
             features=['coastline'],
         )
-        straight_path = bbox_df.hvplot.paths(
+        straight_path = frame_df.hvplot.paths(
             color='grey', 
             crs=crs.PlateCarree(), 
             line_dash='dashed',
@@ -261,4 +279,3 @@ def quadmesh_map(
         )
 
     return qm_map_plot
-
