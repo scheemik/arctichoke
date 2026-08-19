@@ -235,18 +235,17 @@ def quadmesh_map(
             'lon': [mark_bbox[3], mark_bbox[2], mark_bbox[2], mark_bbox[3], mark_bbox[3]],
             'lat': [mark_bbox[1], mark_bbox[1], mark_bbox[0], mark_bbox[0], mark_bbox[1]]
         })
-        # Shared plot args
-        common_kwargs = dict(
-            x='lon', y='lat', geo=True,
-        )
         # Create paths, points, and labels
         shortest_path = bbox_df.hvplot.paths(
-            color='blue', crs=map_projection,
-            features=['coastline'], #**common_kwargs
+            color='blue', 
+            crs=map_projection,
+            features=['coastline'],
         )
         straight_path = bbox_df.hvplot.paths(
-            color='grey', crs=crs.PlateCarree(), line_dash='dashed',
-            line_width=2, #**common_kwargs
+            color='grey', 
+            crs=crs.PlateCarree(), 
+            line_dash='dashed',
+            line_width=2,
         )
         points = bbox_df.hvplot.points(color='red', size=10, geo=True)
         # Compose the map with the bounding box
