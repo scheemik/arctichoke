@@ -6,15 +6,18 @@ import xarray as xr
 from arctichoke.analysis import trend_in_time
 from arctichoke.dataset import get_epoch_times
 import arctichoke.params as sps
+from arctichoke.plot.labels_and_titles import make_title
 from arctichoke.verify import verify_path
 
 def plot_time_series(
     dataset: (str, xr.DataArray, xr.Dataset),
     variable_id: str = None,
     add_regression: bool = False,
+    reg_label: str = None,
     plt_title: str = None,
     xlims: [str, str] = None,
     ylims: [float, float] = None,
+    line_clr: str = None,
     save_as: str = None,
     verbose: bool = False,
     test: bool = False,
@@ -33,6 +36,10 @@ def plot_time_series(
         add_regression : `bool`, optional
             Whether to add a linear regression line to the plot.
             Default is `False`.
+        reg_label : `str`, `None`, optional
+            The label to use for the regression line.
+            Note that this has no effect when `add_regression` is `False`.
+            Default is `None`, which uses a default label, the equation of the regression line.
         plt_title : `str`, `None`, optional
             The title to use for the plot.
             Default is `None`, which uses a default title for the plot.
@@ -47,6 +54,9 @@ def plot_time_series(
                 - [y_min, y_max]
                 
             Default is `None`, which expands the y-axis to include all the data.
+        line_clr: `str`, `None`, optional
+            The color of line to use in the plot. 
+            Default is `None` which uses the default `matplotlib` colors. 
         save_as : `str`, `None`, optional
             The name of the file to which to save the plot.
             Default is `None`, which doesn't save the plot to a file.
@@ -88,8 +98,14 @@ def plot_time_series(
             raise ValueError(f"(plot_time_series) `variable_id` must be a string if `dataset` is `xr.Dataset`. Got type: {type(variable_id)}")
         else:
             variable_id = dataset.name
+    if not isinstance(add_regression, (type(True))):
+        raise TypeError(f"(plot_time_series) `add_regression` must be a `bool`. Got type: {type(add_regression)}")
+    if isinstance(reg_label, type(None)):
+        reg_label = make_title(dataset)
+    elif not isinstance(reg_label, str):
+        raise TypeError(f"(plot_time_series) `reg_label` must be a string or `None`. Got type: {type(reg_label)}")
     if isinstance(plt_title, type(None)):
-        plt_title = f"Time series of '{variable_id}'"
+        plt_title = make_title(dataset)
     elif not isinstance(plt_title, str):
         raise TypeError(f"(plot_time_series) `plt_title` must be a string or `None`. Got type: {type(plt_title)}")
     if isinstance(xlims, type([])):
@@ -117,6 +133,8 @@ def plot_time_series(
         raise TypeError(f"(plot_time_series) `ylims` must be a list or `None`. Got type: {type(ylims)}")
     if not isinstance(save_as, (str, type(None))):
         raise TypeError(f"(plot_time_series) `save_as` must be a string or `None`. Got type: {type(save_as)}")
+    if not isinstance(line_clr, (str, type(None))):
+        raise TypeError(f"(plot_time_series) `line_clr` must be a string or `None`. Got type: {type(line_clr)}")
     elif isinstance(save_as, str) and not '.png' in save_as:
         raise TypeError(f"(plot_time_series) `save_as` must be a `.png` filepath. Got: {save_as}")
     if not isinstance(verbose, bool):
@@ -148,6 +166,7 @@ def plot_time_series(
     dataset.plot(
         xlim = xlims,
         ylim = ylims,
+        color = line_clr,
         **kwargs,
     )
 
@@ -181,10 +200,17 @@ def plot_time_series(
         if verbose:
             print(f"(plot_time_series) Slope of regression line: {reg_m}")
             print(f"(plot_time_series) Intercept of regression line: {reg_b}")
-        # Format the label
-        reg_label = f"{str(reg_m)[:6]}x+{str(reg_b)[:6]}"
+        if isinstance(reg_label, type(None)):
+            # Format the label
+            reg_label = f"{str(reg_m)[:6]}x+{str(reg_b)[:6]}"
         # Plot the regression line
-        plt.plot(dataset[x_var].values, x_vals * reg_m + reg_b, label=reg_label)
+        plt.plot(
+            dataset[x_var].values, 
+            x_vals * reg_m + reg_b, 
+            color = line_clr,
+            linewidth = 3,
+            label=reg_label,
+        )
         plt.legend()
 
     # Modify the plot

@@ -4,7 +4,7 @@ from arctichoke.analysis import sum_by_year, trend_in_time, trend_in_time_scipy
 from arctichoke.dataset import select_months
 import arctichoke.params as sps
 from arctichoke.path import list_variable_files
-from arctichoke.plot import make_title, quadmesh_map
+from arctichoke.plot import quadmesh_map
 
 def make_trend_map(
     this_source_id: str,
@@ -53,7 +53,7 @@ def make_trend_map(
             Whether to use `sum_by_year()` to sum the variable across each year before taking the trends across time.
             Default is `True`.
         find_mean : `bool`, optional
-            Whether to find the mean instead of sum when calling `sum_by_year.
+            Whether to find the mean instead of sum when calling `sum_by_year()`.
             This is only relevant when `call_sum_by_year` is `True` or when it is `None` and `this_var` is a marker variable.
             Default is `False`.
         map_projection : `str`, optional

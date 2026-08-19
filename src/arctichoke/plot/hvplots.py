@@ -1,5 +1,8 @@
 import cartopy.crs as crs
+import hvplot.pandas
 import hvplot.xarray
+import numpy as np
+import pandas as pd
 import xarray as xr
 
 from arctichoke.dataset import  bound_lat, bound_lon, get_latlon_names, get_min_max
@@ -17,6 +20,7 @@ def quadmesh_map(
     map_bbox: [float, float, float, float] = sps.CAA_BBOX,
     clims: [(int, float), (int, float)] = None,
     map_title: str = None,
+    mark_bbox: (bool, [float, float, float, float]) = False,
     diverging_cbar: bool = False, 
     verbose: bool = False,
     **kwargs,
@@ -50,6 +54,11 @@ def quadmesh_map(
         map_title : `str`, optional
             Specify the title of the map or, if `None` is given, use the `make_title()` function to create the title.
             Default is `None`.
+        mark_bbox : `bool`, Array of `float`, optional
+            If given an array of coordinates in the same format as `map_bbox`, a bounding box is marked on the map.
+            If given `True`, the bounding box given as `map_bbox` is marked on the map.
+            If given `False`, no bounding box is marked on the map. 
+            Default is `False`.
         diverging_cbar : `bool`, optional
             Whether to use a diverging colormap on the colorbar.
             Default is `False`.
@@ -57,7 +66,7 @@ def quadmesh_map(
             Whether to verbosely output information as the function executes.
             Default is `False`.
         **kwargs
-            Keyword arguments to pass to `bound_lat()`, `bound_lon`, `hvplot.quadmesh()`, and `arctichoke.plot.limit_extent.get_limited_extent()`
+            Keyword arguments to pass to `bound_lat()`, `bound_lon`, `hvplot.quadmesh()`, `arctichoke.plot.limit_extent.get_limited_extent()`, and `make_title()`
 
         Returns
         -------
@@ -84,14 +93,15 @@ def quadmesh_map(
         raise TypeError(f"(quadmesh_map) `map_projection` must be a string. Got type: {type(map_projection)}")
     elif map_projection not in ['NorthPolarStereo', 'Orthographic']:
         raise ValueError(f"(quadmesh_map) `map_projection` must be one of the following: 'NorthPolarStereo', 'Orthographic'. Got: {map_projection}")
-    if not isinstance(map_bbox, type([])):
-        raise TypeError(f"(quadmesh_map) `map_bbox` must be a list. Got type: {type(map_bbox)}")
-    elif not len(map_bbox) == 4:
-        raise ValueError(f"(quadmesh_map) `map_bbox` must have a length of 4. Got length: {len(map_bbox)}")
-    else: 
-        for i in range(len(map_bbox)):
-            if not isinstance(map_bbox[i], (int, float)):
-                raise TypeError(f"(quadmesh_map) `map_bbox[{i}]` must be a number. Got type: {type(map_bbox[i])}")
+    if isinstance(map_bbox, type([])):
+        if not len(map_bbox) == 4:
+            raise ValueError(f"(quadmesh_map) `map_bbox` must have a length of 4. Got length: {len(map_bbox)}")
+        else: 
+            for i in range(len(map_bbox)):
+                if not isinstance(map_bbox[i], (int, float)):
+                    raise TypeError(f"(quadmesh_map) `map_bbox[{i}]` must be a number. Got type: {type(map_bbox[i])}")
+    elif not isinstance(map_bbox, (type([]), type(None))):
+        raise TypeError(f"(quadmesh_map) `map_bbox` must be a list or `None`. Got type: {type(map_bbox)}")
     if isinstance(clims, type([])):
         clims = tuple(clims)
     if not isinstance(clims, (tuple, type(None))):
@@ -100,6 +110,18 @@ def quadmesh_map(
         raise TypeError(f"(quadmesh_map) `clims` must be a list or tuple of length 2. Got length: {len(clims)}")
     if not isinstance(map_title, (str, type(None))):
         raise TypeError(f"(quadmesh_map) `map_title` must be a string or `None`. Got type: {type(map_title)}")
+    if isinstance(mark_bbox, type([])):
+        if not len(mark_bbox) == 4:
+            raise ValueError(f"(quadmesh_map) `mark_bbox` must have a length of 4. Got length: {len(mark_bbox)}")
+        else: 
+            for i in range(len(mark_bbox)):
+                if not isinstance(mark_bbox[i], (int, float)):
+                    raise TypeError(f"(quadmesh_map) `mark_bbox[{i}]` must be a number. Got type: {type(mark_bbox[i])}")
+    elif isinstance(mark_bbox, bool):
+        if mark_bbox:
+            mark_bbox = map_bbox
+    else:
+        raise TypeError(f"(quadmesh_map) `mark_bbox` must be a list or `bool`. Got type: {type(mark_bbox)}")
     if not isinstance(diverging_cbar, bool):
         raise TypeError(f"(quadmesh_map) `diverging_cbar` must be a `bool`. Got type: {type(diverging_cbar)}")
     if not isinstance(verbose, bool):
@@ -138,7 +160,12 @@ def quadmesh_map(
         # Define the projection for the plot
         map_projection = crs.NorthPolarStereo(central_longitude = box_lon_cent)
     # Get the extent to which to limit the map plot
-    map_extent = get_limited_extent(map_projection, map_bbox, padding=0, verbose = verbose)
+    map_extent = get_limited_extent(
+        map_projection, 
+        map_bbox,
+        verbose=verbose,
+        **kwargs,
+    )
     if verbose:
         print(f"(quadmesh_map) Map bounding box: {map_bbox}")
         print(f"(quadmesh_map) Map extent: {map_extent}")
@@ -159,7 +186,7 @@ def quadmesh_map(
 
     # Make title, if necessary
     if isinstance(map_title, type(None)):
-        map_title = make_title(xr_data)
+        map_title = make_title(xr_data, **kwargs)
 
     # Make the plot
     qm_map_plot = xr_data[var].hvplot.quadmesh(
@@ -203,6 +230,45 @@ def quadmesh_map(
             # **kwargs,
         )
 
+    # Add bounding box to the map
+    if mark_bbox:
+        # Set the corners of the bounding box
+        bbox_df = pd.DataFrame({
+            'lon': [mark_bbox[3], mark_bbox[2], mark_bbox[2], mark_bbox[3], mark_bbox[3]],
+            'lat': [mark_bbox[1], mark_bbox[1], mark_bbox[0], mark_bbox[0], mark_bbox[1]]
+        })
+        # Set the number of points per side of the frame of the bounding box
+        n = 10
+        frame_df = pd.DataFrame({
+            'lon': np.concatenate([
+                np.linspace(mark_bbox[3], mark_bbox[2], n),
+                [mark_bbox[2]]*(n-1), 
+                np.linspace(mark_bbox[2], mark_bbox[3], n),
+                [mark_bbox[3]]*(n-1), 
+            ]),
+            'lat': np.concatenate([
+                [mark_bbox[1]]*(n-1), 
+                np.linspace(mark_bbox[1], mark_bbox[0], n),
+                [mark_bbox[0]]*(n-1), 
+                np.linspace(mark_bbox[0], mark_bbox[1], n),
+            ]),
+        })
+        # Create paths, points, and labels
+        shortest_path = bbox_df.hvplot.paths(
+            color='blue', 
+            crs=map_projection,
+            features=['coastline'],
+        )
+        straight_path = frame_df.hvplot.paths(
+            color='grey', 
+            crs=crs.PlateCarree(), 
+            line_dash='dashed',
+            line_width=2,
+        )
+        points = bbox_df.hvplot.points(color='red', size=10, geo=True)
+        # Compose the map with the bounding box
+        qm_map_plot = qm_map_plot * shortest_path * straight_path * points
+
     # Save the plot, if applicable
     if not isinstance(save_as, type(None)):
         # Save the plot to file
@@ -213,4 +279,3 @@ def quadmesh_map(
         )
 
     return qm_map_plot
-

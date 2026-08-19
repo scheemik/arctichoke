@@ -3,6 +3,7 @@ import warnings
 import xarray as xr
 
 from arctichoke.dataset.get_variable import get_variable_name
+from arctichoke.params import NS_BBOX, PC_BBOX
 from arctichoke.verify.verify_path import verify_path
 
 def make_title(
@@ -10,6 +11,7 @@ def make_title(
     add_source_id: bool = True,
     add_experiment_id: bool = True,
     add_variant_label: bool = True,
+    add_region: bool = True,
     add_time_stamp: bool = True,
     **kwargs,
 ):
@@ -29,6 +31,11 @@ def make_title(
             Default is `True`.
         add_variant_label : `bool`, optional
             Whether to add the variant label to the title.
+            Default is `True`.
+        add_region : `bool`, optional
+            Whether to add the region, if applicable, to the title.
+            Checks for specific usage of `sellonlatbox` in the `history` attribute of the dataset.
+            If the specific usage is not found, no region is added to the title.
             Default is `True`.
         add_time_stamp : `bool`, optional
             Whether to add the time stamp to the title. 
@@ -77,6 +84,8 @@ def make_title(
         raise TypeError(f"(make_title) `add_experiment_id` must be a `bool`. Got type: {type(add_experiment_id)}")
     if not isinstance(add_variant_label, bool):
         raise TypeError(f"(make_title) `add_variant_label` must be a `bool`. Got type: {type(add_variant_label)}")
+    if not isinstance(add_region, bool):
+        raise TypeError(f"(make_title) `add_region` must be a `bool`. Got type: {type(add_region)}")
     if not isinstance(add_time_stamp, bool):
         raise TypeError(f"(make_title) `add_time_stamp` must be a `bool`. Got type: {type(add_time_stamp)}")
 
@@ -105,6 +114,16 @@ def make_title(
         else:
             raise KeyError(f"(make_label) `dataset` has no `variant_label` or `parent_variant_label` attribute. Available attributes: {attr_keys}")
         dataset_title = f"{dataset_title}{dataset.attrs[variant_label_attr]} "
+    # Add region
+    if add_region:
+        if 'history' in attr_keys:
+            if f"-sellonlatbox,{NS_BBOX[3]+360},{NS_BBOX[2]+360},{NS_BBOX[1]},{NS_BBOX[0]}" in dataset.attrs['history']:
+                region_label = 'Nares Strait '
+            elif f"-sellonlatbox,{PC_BBOX[3]+360},{PC_BBOX[2]+360},{PC_BBOX[1]},{PC_BBOX[0]}" in dataset.attrs['history']:
+                region_label = 'Parry Channel '
+            else:
+                region_label = ''
+            dataset_title = f"{dataset_title}{region_label}"
     # Add the time stamp
     if add_time_stamp:
         # Get the coordinate names
