@@ -3,7 +3,7 @@ import warnings
 import xarray as xr
 
 from arctichoke.dataset.get_variable import get_variable_name
-from arctichoke.params import NS_BBOX
+from arctichoke.params import NS_BBOX, PC_BBOX
 from arctichoke.verify.verify_path import verify_path
 
 def make_title(
@@ -118,10 +118,12 @@ def make_title(
     if add_region:
         if 'history' in attr_keys:
             if f"-sellonlatbox,{NS_BBOX[3]+360},{NS_BBOX[2]+360},{NS_BBOX[1]},{NS_BBOX[0]}" in dataset.attrs['history']:
-                region_label = 'Nares Strait'
+                region_label = 'Nares Strait '
+            elif f"-sellonlatbox,{PC_BBOX[3]+360},{PC_BBOX[2]+360},{PC_BBOX[1]},{PC_BBOX[0]}" in dataset.attrs['history']:
+                region_label = 'Parry Channel '
             else:
                 region_label = ''
-            dataset_title = f"{dataset_title}{region_label} "
+            dataset_title = f"{dataset_title}{region_label}"
     # Add the time stamp
     if add_time_stamp:
         # Get the coordinate names
