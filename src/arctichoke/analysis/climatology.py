@@ -428,8 +428,8 @@ def make_sithick_masked_climatology(
 
     # Get the maximum possible integer to cover all reasonable values of `sithick`
     numpy_int32_max = np.iinfo(np.int32).max
-    # Make the mask of sea ice thicker than 2 meters
-    si2mthick_var = 'si2mthick'
+    # Make the mask of sea ice thicker than the specified threshold
+    si2mthick_var = f'si{str(sithick_threshold)}mthick'
     sithick_mask_dataset = make_mask(
         sithick_dataset,
         var = 'sithick',
