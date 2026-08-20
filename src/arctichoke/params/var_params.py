@@ -26,6 +26,11 @@ sea_ice_vars = {
         'trend_clims': [-0.8, 0.1],
         'marker_var': False,
     },
+    'siconc_si2mthick': {
+        'plot_range': [0, 100],
+        'trend_clims': [-0.8, 0.1],
+        'marker_var': False,
+    },
     'sispeed': {
         'plot_range': [0, 0.25],
         'trend_clims': [-0.003, 0.003],
