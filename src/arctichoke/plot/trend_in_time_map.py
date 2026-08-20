@@ -97,7 +97,7 @@ def make_trend_map(
         raise TypeError(f"(make_trend_map) `return_map` must be a `bool`. Got type: {type(return_map)}")
     if not isinstance(verbose, bool):
         raise TypeError(f"(make_trend_map) `verbose` must be a `bool`. Got type: {type(verbose)}")
-    # Get the list of `silandfast` files
+    # Get the list of `this_var` files
     filelist = list_variable_files(
         source_id = this_source_id,
         variable_id = this_var,
