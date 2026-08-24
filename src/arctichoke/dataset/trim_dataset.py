@@ -196,6 +196,7 @@ def trim_latlon(
 def trim_files(
     files_to_trim: [str],
     name_prefix: str = 'trim_',
+    replace_prefix: str = '',
     use_cdo_python: bool = True,
     overwrite: bool = False,
     **kwargs,
@@ -211,6 +212,9 @@ def trim_files(
         name_prefix : `str`, optional
             The prefix to be prepended to each file name when saving.
             Default is `trim_`.
+        replace_prefix : `str`, optional
+            A pre-existing prefix of the given files to replace with `name_prefix`.
+            Default is `''`, which effectively does nothing.
         use_cdo_python : `bool`, optional
             Whether to tell `trim_latlon()` to use the Python implementation of `cdo` or use `subprocess` to run a shell command.
             Default is `True` which uses the Python implementation of `cdo`.
@@ -250,6 +254,8 @@ def trim_files(
         name_prefix = f"{name_prefix}_"
     # Replace any spaces in `name_prefix` with underscores
     name_prefix = name_prefix.replace(" ", "_")
+    if not isinstance(replace_prefix, str):
+        raise TypeError(f"(trim_files) `replace_prefix` must be a string. Got type: {type(replace_prefix)}")
     if not isinstance(use_cdo_python, bool):
         raise TypeError(f"(trim_files) `use_cdo_python` must be a `bool`. Got type: {type(use_cdo_python)}")
     if not isinstance(overwrite, bool):
@@ -265,6 +271,7 @@ def trim_files(
         # Assemble the new file name
         filename = filepath.split('/')[-1]
         new_filename = f"{name_prefix}{filename}"
+        new_filename = new_filename.replace(replace_prefix, '')
         new_filepath = filepath.replace(filename, new_filename)
         # Check whether the file exists
         try:
