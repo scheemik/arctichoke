@@ -11,6 +11,7 @@ def plot_multi_time_series(
     this_source_id: str,
     this_var: str,
     this_modification: str,
+    this_version_id: str = '*',
     add_regression: bool = True,
     select_summer: bool = True,
     call_sum_by_year: bool = True,
@@ -33,6 +34,9 @@ def plot_multi_time_series(
         this_modification : `str`
             The modification of the data to plot.
             Example: `'trim_CAA_'`.
+        this_version_id : `str`, optional
+            The version ID of the files to list from `list_variable_files()`.
+            Default is `'*'` which lists all files of all version ID's.
         add_regression : `bool`, optional
             Whether to add a linear regression line to the plot.
             Default is `True`.
@@ -93,6 +97,7 @@ def plot_multi_time_series(
             variable_id = this_var,
             variant_label = this_variant_label,
             with_modification = this_modification,
+            version_id = this_version_id,
             verbose = verbose,
             **kwargs,
         )
