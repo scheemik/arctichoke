@@ -159,6 +159,54 @@ for this_variant_label in [
 	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/sithick/gn/v20190214/trim_NS_sithick_SImon_EC-Earth3P-HR_hist-1950_r3i1p2f1_gn_201401-201412.nc`.
 ```
 
+When trimming the marker variables, I specify `with_modification` to be `trim_CAA_` as I only calculated `sislow`, `sipacked`, and `silandfast` over the CAA.
+This takes about 20 minutes. 
+```python
+import xarray as xr
+
+from arctichoke.dataset import trim_files
+from arctichoke.params import NS_BBOX
+from arctichoke.path import list_variable_files
+
+this_model = 'EC-Earth3P-HR'
+this_experiment = 'hist-1950'
+this_modification = 'trim_CAA_'
+
+for this_variant_label in [
+    'r1i1p2f1', 
+    'r2i1p2f1', 
+    'r3i1p2f1',
+]:
+    for si_var in [
+        'sislow',
+        'sipacked',
+        'silandfast',
+    ]:
+        sivar_list = list_variable_files(
+            source_id = this_model,
+            variable_id = si_var,
+            experiment_id = this_experiment,
+            variant_label = this_variant_label,
+            with_modification = this_modification,
+        )
+        trim_files(
+            files_to_trim = sivar_list,
+            name_prefix = 'trim_NS_',
+            map_bbox = NS_BBOX,
+            precise_trim = True,
+        )
+```
+```console
+(trim_files) `name_prefix`: trim_NS_
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/sislow/gn/v20260617/trim_NS_sislow_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_195001-195012.nc`.
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/sislow/gn/v20260617/trim_NS_sislow_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_195101-195112.nc`.
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/sislow/gn/v20260617/trim_NS_sislow_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_195201-195212.nc`.
+    ...
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/silandfast/gn/with_sispeed_clim/trim_NS_silandfast_SImon_EC-Earth3P-HR_hist-1950_r3i1p2f1_gn_201201-201212.nc`.
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/silandfast/gn/with_sispeed_clim/trim_NS_silandfast_SImon_EC-Earth3P-HR_hist-1950_r3i1p2f1_gn_201301-201312.nc`.
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/silandfast/gn/with_sispeed_clim/trim_NS_silandfast_SImon_EC-Earth3P-HR_hist-1950_r3i1p2f1_gn_201401-201412.nc`.
+```
+
 I can use my `list_available_variables()` function to confirm how many trimmed files were created for each variable.
 ```python
 from arctichoke.path import list_available_variables
@@ -177,6 +225,10 @@ list_available_variables(
      'siage': {'': 65},
      'siconc': {'': 130, 'trim_CAA_': 65, 'trim_NS_': 65,},
      'sispeed': {'': 130, 'trim_CAA_': 65, 'trim_NS_': 65,},
+     'silandfast': {'trim_CAA_': 195, 'trim_NS_': 195},
+     'sipacked': {'trim_CAA_': 65, 'trim_NS_': 65},
+     'sislow': {'trim_CAA_': 65, 'trim_NS_': 65},
+     ...
 ...
 ```
 
@@ -247,6 +299,52 @@ for this_variant_label in [
 	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/sithick/gn/v20190214/trim_PC_sithick_SImon_EC-Earth3P-HR_hist-1950_r3i1p2f1_gn_201301-201312.nc`.
 	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/sithick/gn/v20190214/trim_PC_sithick_SImon_EC-Earth3P-HR_hist-1950_r3i1p2f1_gn_201401-201412.nc`.
 ```
+```python
+import xarray as xr
+
+from arctichoke.dataset import trim_files
+from arctichoke.params import PC_BBOX
+from arctichoke.path import list_variable_files
+
+this_model = 'EC-Earth3P-HR'
+this_experiment = 'hist-1950'
+this_modification = 'trim_CAA_'
+
+for this_variant_label in [
+    'r1i1p2f1', 
+    'r2i1p2f1', 
+    'r3i1p2f1',
+]:
+    for si_var in [
+        'sislow',
+        'sipacked',
+        'silandfast',
+    ]:
+        sivar_list = list_variable_files(
+            source_id = this_model,
+            variable_id = si_var,
+            experiment_id = this_experiment,
+            variant_label = this_variant_label,
+            with_modification = this_modification,
+        )
+        trim_files(
+            files_to_trim = sivar_list,
+            name_prefix = 'trim_PC_',
+            replace_prefix = this_modification,
+            map_bbox = PC_BBOX,
+            precise_trim = True,
+        )
+```
+```console
+(trim_files) `name_prefix`: trim_PC_
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/sislow/gn/v20260617/trim_PC_sislow_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_195001-195012.nc`.
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/sislow/gn/v20260617/trim_PC_sislow_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_195101-195112.nc`.
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/sislow/gn/v20260617/trim_PC_sislow_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_195201-195212.nc`.
+    ...
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/silandfast/gn/with_sispeed_clim/trim_PC_silandfast_SImon_EC-Earth3P-HR_hist-1950_r3i1p2f1_gn_201201-201212.nc`.
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/silandfast/gn/with_sispeed_clim/trim_PC_silandfast_SImon_EC-Earth3P-HR_hist-1950_r3i1p2f1_gn_201301-201312.nc`.
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/silandfast/gn/with_sispeed_clim/trim_PC_silandfast_SImon_EC-Earth3P-HR_hist-1950_r3i1p2f1_gn_201401-201412.nc`.
+```
 
 I can use my `list_available_variables()` function to confirm how many trimmed files were created for each variable.
 ```python
@@ -275,11 +373,11 @@ list_available_variables(
       'trim_CAA_': 65,
       'trim_NS_': 65,
       'trim_PC_': 65},
-     'silandfast': {'trim_CAA_': 195},
+     'silandfast': {'trim_CAA_': 195, 'trim_NS_': 195, 'trim_PC_': 195},
      'sivol': {'': 65, 'trim_CAA_': 65},
      'siconc2': {'trim_CAA_': 65},
-     'sipacked': {'trim_CAA_': 65},
-     'sislow': {'trim_CAA_': 65},
+     'sipacked': {'trim_CAA_': 65, 'trim_NS_': 65, 'trim_PC_': 65},
+     'sislow': {'trim_CAA_': 65, 'trim_NS_': 65, 'trim_PC_': 65},
      'siage2': {'trim_CAA_': 65},
      'simultiyear': {'trim_CAA_': 65},
 ...
@@ -450,26 +548,60 @@ import matplotlib.pyplot as plt
 
 from arctichoke.plot import plot_multi_time_series
 
+this_model = 'EC-Earth3P-HR'
+this_modification = 'trim_NS_'
+set_verbose = False
+
 for variable_id in [
-    'sithick',
     'sispeed',
     'siconc',
+    'sislow',
+    'sipacked',
 ]:
     plot_multi_time_series(
-        this_source_id = 'EC-Earth3P-HR',
+        this_source_id = this_model,
         this_var = variable_id,
-        this_modification = 'trim_NS_',
-        verbose = False,
+        this_modification = this_modification,
+        verbose = set_verbose,
     )
     # Need to show, then clear the figure so they aren't plotted on top of one another
     plt.show()
     plt.clf()
+
+for variable_id in [
+    'silandfast',
+]:
+    for this_version_id in [
+        'v20260617',
+        'with_sispeed_clim',
+        'with_siconc_clim',
+    ]:
+        plot_multi_time_series(
+            this_source_id = this_model,
+            this_var = variable_id,
+            this_modification = this_modification,
+            this_version_id = this_version_id,
+            verbose = set_verbose,
+        )
+        # Need to show, then clear the figure so they aren't plotted on top of one another
+        plt.show()
+        plt.clf()
 ```
-![EC-Earth3P-HR_all_variants_sithick_NS_JJASO_fldmean_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_sithick_NS_JJASO_fldmean_trend.png)
+<!-- ![EC-Earth3P-HR_all_variants_sithick_NS_JJASO_fldmean_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_sithick_NS_JJASO_fldmean_trend.png) -->
 
 ![EC-Earth3P-HR_all_variants_sispeed_NS_JJASO_fldmean_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_sispeed_NS_JJASO_fldmean_trend.png)
 
 ![EC-Earth3P-HR_all_variants_siconc_NS_JJASO_fldmean_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_siconc_NS_JJASO_fldmean_trend.png)
+
+![EC-Earth3P-HR_all_variants_sislow_NS_JJASO_fldmean_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_sislow_NS_JJASO_fldmean_trend.png)
+
+![EC-Earth3P-HR_all_variants_sipacked_NS_JJASO_fldmean_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_sipacked_NS_JJASO_fldmean_trend.png)
+
+![EC-Earth3P-HR_all_variants_silandfast_NS_JJASO_fldmean_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_silandfast_NS_JJASO_fldmean_trend.png)
+
+![EC-Earth3P-HR_all_variants_silandfast_NS_JJASO_fldmean_slow_clim_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_silandfast_NS_JJASO_fldmean_slow_clim_trend.png)
+
+![EC-Earth3P-HR_all_variants_silandfast_NS_JJASO_fldmean_packed_clim_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_silandfast_NS_JJASO_fldmean_packed_clim_trend.png)
 
 ### Time series plots for Parry Channel
 [back to top](#investigating-specific-regions)
@@ -481,23 +613,57 @@ import matplotlib.pyplot as plt
 
 from arctichoke.plot import plot_multi_time_series
 
+this_model = 'EC-Earth3P-HR'
+this_modification = 'trim_PC_'
+set_verbose = False
+
 for variable_id in [
-    'sithick',
     'sispeed',
     'siconc',
+    'sislow',
+    'sipacked',
 ]:
     plot_multi_time_series(
-        this_source_id = 'EC-Earth3P-HR',
+        this_source_id = this_model,
         this_var = variable_id,
-        this_modification = 'trim_PC_',
-        verbose = False,
+        this_modification = this_modification,
+        verbose = set_verbose,
     )
     # Need to show, then clear the figure so they aren't plotted on top of one another
     plt.show()
     plt.clf()
+
+for variable_id in [
+    'silandfast',
+]:
+    for this_version_id in [
+        'v20260617',
+        'with_sispeed_clim',
+        'with_siconc_clim',
+    ]:
+        plot_multi_time_series(
+            this_source_id = this_model,
+            this_var = variable_id,
+            this_modification = this_modification,
+            this_version_id = this_version_id,
+            verbose = set_verbose,
+        )
+        # Need to show, then clear the figure so they aren't plotted on top of one another
+        plt.show()
+        plt.clf()
 ```
-![EC-Earth3P-HR_all_variants_sithick_PC_JJASO_fldmean_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_sithick_PC_JJASO_fldmean_trend.png)
+<!-- ![EC-Earth3P-HR_all_variants_sithick_PC_JJASO_fldmean_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_sithick_PC_JJASO_fldmean_trend.png) -->
 
 ![EC-Earth3P-HR_all_variants_sispeed_PC_JJASO_fldmean_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_sispeed_PC_JJASO_fldmean_trend.png)
 
 ![EC-Earth3P-HR_all_variants_siconc_PC_JJASO_fldmean_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_siconc_PC_JJASO_fldmean_trend.png)
+
+![EC-Earth3P-HR_all_variants_sislow_PC_JJASO_fldmean_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_sislow_PC_JJASO_fldmean_trend.png)
+
+![EC-Earth3P-HR_all_variants_sipacked_PC_JJASO_fldmean_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_sipacked_PC_JJASO_fldmean_trend.png)
+
+![EC-Earth3P-HR_all_variants_silandfast_PC_JJASO_fldmean_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_silandfast_PC_JJASO_fldmean_trend.png)
+
+![EC-Earth3P-HR_all_variants_silandfast_PC_JJASO_fldmean_slow_clim_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_silandfast_PC_JJASO_fldmean_slow_clim_trend.png)
+
+![EC-Earth3P-HR_all_variants_silandfast_PC_JJASO_fldmean_packed_clim_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_silandfast_PC_JJASO_fldmean_packed_clim_trend.png)
