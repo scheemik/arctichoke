@@ -8,6 +8,7 @@ This assumes you have already gone through {doc}`Trimming data to the CAA region
 - [Introduction](#introduction)
 - [Making a climatology](#making-a-climatology)
     - [Finding means of each month](#finding-means-of-each-month)
+    - [Sea ice concentration where thickness is > 2m](#sea-ice-concentration-where-thickness-is--2m)
     - [Saving climatologies to file](#saving-climatologies-to-file)
 - [Plotting Climatologies](#plotting-climatologies)
     - [Plotting Climatologies for EC-Earth3P-HR](#plotting-climatologies-for-ec-earth3p-hr)
@@ -210,6 +211,67 @@ quadmesh_map(
 ```
 ![EC-Earth3P-HR_r1i1p2f1_sithick_CAA_September_climatology_map.png](climatologies-img/EC-Earth3P-HR_r1i1p2f1_sithick_CAA_September_climatology_map.png)
 
+### Sea ice concentration where thickness is > 2m
+[back to top](#making-sea-ice-climatologies)
+
+In addition to finding the climatology of sea ice concentration `siconc`, I want to also find the climatology of `siconc` but only where sea ice thickness `sithick` is greater than 2 meters. 
+The threshold of thickness being greater than 2 meters will be a proxy for multi-year ice.
+I wrote a function called `make_sithick_masked_climatology()` to do the following steps:
+- Load the data files for both the specified variable and sea ice thickness for the specified time frame (default is 1950-1969).
+- Make a monthly mask from the sea ice thickness dataset, setting values above the specified threshold to 1 and values below to `nan`.
+- Apply that sea ice thickness mask to the data from the specified variable.
+- Modify the attributes to reflect the changes made.
+- Save this masked climatology to a file, if specified.
+
+Below, I'll make two climatologies of sea ice concentration, one with the sea ice thickness mask applied and one without.
+I'll then plot both climatologies for September to show the difference between them.
+```python
+from arctichoke.analysis import make_climatology, make_sithick_masked_climatology
+from arctichoke.params import sea_ice_vars
+from arctichoke.plot import quadmesh_map
+
+source_id = 'EC-Earth3P-HR'
+variable_id = 'siconc'
+variant_label = 'r1i1p2f1'
+with_modification = 'trim_CAA_'
+set_verbose = False
+
+siconc_dataset_clim = make_climatology(
+    this_source_id = source_id,
+    this_var = variable_id,
+    this_variant_label = variant_label,
+    this_modification = with_modification,
+    verbose = set_verbose,
+)
+
+this_map = quadmesh_map(
+    siconc_dataset_clim.sel(month=9),
+    'siconc_month_mean',
+    clims = sea_ice_vars['siconc']['plot_range'],
+    verbose = set_verbose,
+)
+display(this_map)
+
+siconc_dataset_clim = make_sithick_masked_climatology(
+    this_source_id = source_id,
+    this_var = variable_id,
+    this_variant_label = variant_label,
+    this_modification = with_modification,
+    verbose = set_verbose,
+)
+
+this_map = quadmesh_map(
+    siconc_dataset_clim.sel(month=9),
+    'siconc_month_mean',
+    clims = sea_ice_vars['siconc']['plot_range'],
+    verbose = set_verbose,
+)
+display(this_map)
+```
+![EC-Earth3P-HR_r1i1p2f1_siconc_CAA_September_climatology_map.png](climatologies-img/EC-Earth3P-HR_r1i1p2f1_siconc_CAA_September_climatology_map.png)
+
+![EC-Earth3P-HR_r1i1p2f1_siconc_si2mthick_CAA_September_climatology_map.png](climatologies-img/EC-Earth3P-HR_r1i1p2f1_siconc_si2mthick_CAA_September_climatology_map.png)
+
 ### Saving climatologies to file
 [back to top](#making-sea-ice-climatologies)
 
@@ -302,6 +364,33 @@ for this_si_var in [
 	(save_climatology_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/simultiyear_month_mean/gn/v20260617/trim_CAA_simultiyear_month_mean_SImon_EC-Earth3P-HR_hist-1950_r3i1p2f1_gn_195001-196912.nc`
 ```
 
+Now, I'll generate the climatology files for sea ice concentration where sea ice thickness is greater than 2 meters.
+```python
+from arctichoke.analysis import make_sithick_masked_climatology
+
+this_model = 'EC-Earth3P-HR'
+set_verbose = False
+
+for this_variant_label in [
+        'r1i1p2f1', 
+        'r2i1p2f1', 
+        'r3i1p2f1',
+    ]:
+    make_sithick_masked_climatology(
+        this_source_id = this_model,
+        this_var = 'siconc',
+        this_variant_label = this_variant_label,
+        this_modification = 'trim_CAA_',
+        save_files = True,
+        verbose = set_verbose,
+    )
+```
+```console
+	(save_climatology_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/siconc_si2mthick_month_mean/gn/v20181212/trim_CAA_siconc_si2mthick_month_mean_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_195001-196912.nc`
+	(save_climatology_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r2i1p2f1/SImon/siconc_si2mthick_month_mean/gn/v20190625/trim_CAA_siconc_si2mthick_month_mean_SImon_EC-Earth3P-HR_hist-1950_r2i1p2f1_gn_195001-196912.nc`
+	(save_climatology_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/siconc_si2mthick_month_mean/gn/v20190214/trim_CAA_siconc_si2mthick_month_mean_SImon_EC-Earth3P-HR_hist-1950_r3i1p2f1_gn_195001-196912.nc`
+```
+
 I'll now repeat the above process of generating climatology files for both regular and marker variables for the `HadGEM3-GC31-MM` model.
 I am careful to specify the correct variant labels as well as `siconc2` as opposed to `siconc`, as was detailed in {doc}`Calculating 'siconc' from 'sithick' and 'sivol' <../docs_data/siconc_from_sithick_and_sivol>`.
 ```python
@@ -387,6 +476,32 @@ for this_si_var in [
 	(save_climatology_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i3p1f1/SImon/simultiyear_month_mean/gn/v20190710/trim_CAA_simultiyear_month_mean_SImon_HadGEM3-GC31-MM_hist-1950_r1i3p1f1_gn_195001-196912.nc`
 ```
 
+```python
+from arctichoke.analysis import make_sithick_masked_climatology
+
+this_model = 'HadGEM3-GC31-MM'
+set_verbose = True
+
+for this_variant_label in [
+        'r1i1p1f1', 
+        'r1i2p1f1', 
+        'r1i3p1f1',
+    ]:
+    make_sithick_masked_climatology(
+        this_source_id = this_model,
+        this_var = 'siconc2',
+        this_variant_label = this_variant_label,
+        this_modification = 'trim_CAA_',
+        save_files = True,
+        verbose = set_verbose,
+    )
+```
+```console
+	(save_climatology_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i1p1f1/SImon/siconc_si2mthick_month_mean/gn/v20170928/trim_CAA_siconc_si2mthick_month_mean_SImon_HadGEM3-GC31-MM_hist-1950_r1i1p1f1_gn_195001-196912.nc`
+	(save_climatology_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i2p1f1/SImon/siconc_si2mthick_month_mean/gn/v20190710/trim_CAA_siconc_si2mthick_month_mean_SImon_HadGEM3-GC31-MM_hist-1950_r1i2p1f1_gn_195001-196912.nc`
+	(save_climatology_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i3p1f1/SImon/siconc_si2mthick_month_mean/gn/v20190710/trim_CAA_siconc_si2mthick_month_mean_SImon_HadGEM3-GC31-MM_hist-1950_r1i3p1f1_gn_195001-196912.nc`
+```
+
 ## Plotting Climatologies
 [back to top](#making-sea-ice-climatologies)
 
@@ -410,11 +525,12 @@ this_experiment = 'hist-1950'
 set_verbose = False
 
 for this_si_var in [
-    'siconc',
-    'sispeed',
     'sithick',
-    'sipacked',
+    'sispeed',
+    'siconc',
+    'siconc_si2mthick',
     'sislow',
+    'sipacked',
     'silandfast',
 ]:
     for variant_label in [
@@ -456,15 +572,17 @@ for this_si_var in [
         )
         display(this_map)
 ```
-![EC-Earth3P-HR_r1i1p2f1_siconc_CAA_clim_mean_map.png](climatologies-img/EC-Earth3P-HR_r1i1p2f1_siconc_CAA_clim_mean_map.png)
+![EC-Earth3P-HR_r1i1p2f1_sithick_CAA_clim_mean_map.png](climatologies-img/EC-Earth3P-HR_r1i1p2f1_sithick_CAA_clim_mean_map.png)
 
 ![EC-Earth3P-HR_r1i1p2f1_sispeed_CAA_clim_mean_map.png](climatologies-img/EC-Earth3P-HR_r1i1p2f1_sispeed_CAA_clim_mean_map.png)
 
-![EC-Earth3P-HR_r1i1p2f1_sithick_CAA_clim_mean_map.png](climatologies-img/EC-Earth3P-HR_r1i1p2f1_sithick_CAA_clim_mean_map.png)
+![EC-Earth3P-HR_r1i1p2f1_siconc_CAA_clim_mean_map.png](climatologies-img/EC-Earth3P-HR_r1i1p2f1_siconc_CAA_clim_mean_map.png)
 
-![EC-Earth3P-HR_r1i1p2f1_sipacked_CAA_clim_mean_map.png](climatologies-img/EC-Earth3P-HR_r1i1p2f1_sipacked_CAA_clim_mean_map.png)
+![EC-Earth3P-HR_r1i1p2f1_siconc_si2mthick_CAA_clim_mean_map.png](climatologies-img/EC-Earth3P-HR_r1i1p2f1_siconc_si2mthick_CAA_clim_mean_map.png)
 
 ![EC-Earth3P-HR_r1i1p2f1_sislow_CAA_clim_mean_map.png](climatologies-img/EC-Earth3P-HR_r1i1p2f1_sislow_CAA_clim_mean_map.png)
+
+![EC-Earth3P-HR_r1i1p2f1_sipacked_CAA_clim_mean_map.png](climatologies-img/EC-Earth3P-HR_r1i1p2f1_sipacked_CAA_clim_mean_map.png)
 
 ![EC-Earth3P-HR_r1i1p2f1_silandfast_CAA_clim_mean_map.png](climatologies-img/EC-Earth3P-HR_r1i1p2f1_silandfast_CAA_clim_mean_map.png)
 

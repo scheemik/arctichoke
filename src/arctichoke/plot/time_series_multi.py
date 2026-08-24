@@ -4,7 +4,8 @@ from arctichoke.analysis import sum_by_year, trend_in_time, trend_in_time_scipy
 from arctichoke.dataset import get_field_mean, select_months
 import arctichoke.params as sps
 from arctichoke.path import list_variable_files, list_variant_labels
-from arctichoke.plot import make_title, plot_time_series
+from arctichoke.plot.labels_and_titles import make_title
+from arctichoke.plot.time_series import plot_time_series
 
 def plot_multi_time_series(
     this_source_id: str,
