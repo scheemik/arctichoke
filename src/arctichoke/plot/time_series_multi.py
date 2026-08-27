@@ -1,6 +1,6 @@
 import xarray as xr
 
-from arctichoke.analysis import sum_by_year, trend_in_time, trend_in_time_scipy
+from arctichoke.analysis import make_sithick_masked_climatology, sum_by_year, trend_in_time, trend_in_time_scipy
 from arctichoke.dataset import get_field_mean, select_months
 import arctichoke.params as sps
 from arctichoke.path import list_variable_files, list_variant_labels
@@ -16,6 +16,7 @@ def plot_multi_time_series(
     select_summer: bool = True,
     call_sum_by_year: bool = True,
     find_mean: bool = True,
+    mask_by_sithick: bool = False,
     verbose: bool = False,
     **kwargs,
 ):
@@ -50,6 +51,9 @@ def plot_multi_time_series(
             Whether to find the mean instead of sum when calling `sum_by_year()`.
             This is only relevant when `call_sum_by_year` is `True` or when it is `None` and `this_var` is a marker variable.
             Default is `True`.
+        mask_by_sithick : `bool`, optional
+            Whether to call `make_sithick_masked_climatology()` to mask the specified data to where sea ice thickness is greater than the default thickness (2 meters).
+            Default is `False`.
         verbose : `bool`, optional
             Whether to verbosely output information as the function executes.
             Default is `False`.
@@ -79,6 +83,8 @@ def plot_multi_time_series(
         raise TypeError(f"(plot_multi_time_series) `call_sum_by_year` must be a `bool` or `None`. Got type: {type(call_sum_by_year)}")
     if not isinstance(find_mean, (bool, type(None))):
         raise TypeError(f"(plot_multi_time_series) `find_mean` must be a `bool` or `None`. Got type: {type(find_mean)}")
+    if not isinstance(mask_by_sithick, bool):
+        raise TypeError(f"(plot_multi_time_series) `mask_by_sithick` must be a `bool`. Got type: {type(mask_by_sithick)}")
     if not isinstance(verbose, bool):
         raise TypeError(f"(plot_multi_time_series) `verbose` must be a `bool`. Got type: {type(verbose)}")
     
@@ -91,54 +97,69 @@ def plot_multi_time_series(
     # Loop across the different variant labels
     for i in range(len(variant_label_list)):
         this_variant_label = variant_label_list[i]
-        # Get the list of `relevant` files
-        filelist = list_variable_files(
-            source_id = this_source_id,
-            variable_id = this_var,
-            variant_label = this_variant_label,
-            with_modification = this_modification,
-            version_id = this_version_id,
-            verbose = verbose,
-            **kwargs,
-        )
-        # Open those files into a multi-file dataset
-        if select_summer:
-            dataset = select_months(
-                filelist,
+        if mask_by_sithick == False:
+            # Get the list of `relevant` files
+            filelist = list_variable_files(
+                source_id = this_source_id,
+                variable_id = this_var,
+                variant_label = this_variant_label,
+                with_modification = this_modification,
+                version_id = this_version_id,
                 verbose = verbose,
+                **kwargs,
             )
-        else:
-            dataset = xr.open_mfdataset(
-                filelist,
-                data_vars = 'all'
-            )
-        # 
-        if isinstance(call_sum_by_year, type(None)):
-            # Check whether this variable is in the sea ice vars dictionary
-            if this_var in sps.sea_ice_vars.keys():
-                # Check whether this is a marker variable or not
-                if sps.sea_ice_vars[this_var]['marker_var']: 
-                    call_sum_by_year = True 
-                else:
-                    call_sum_by_year = False
-            if verbose:
-                print(f"(plot_multi_time_series) `this_var` ({this_var}) is marker variable: {call_sum_by_year}")
-        # Sum the data across time
-        if call_sum_by_year:
-            ## Overwrite the `dataset` variable to reduce memory overhead
-            dataset = sum_by_year(
-                dataset,
-                find_mean = find_mean,
-                verbose = verbose,
-            )
-            if find_mean:
-                var_for_trend = f'{this_var}_year_mean'
+            # Open those files into a multi-file dataset
+            if select_summer:
+                dataset = select_months(
+                    filelist,
+                    verbose = verbose,
+                )
             else:
-                var_for_trend = f'{this_var}_year_sum'
-            this_time_dim = 'year'
+                dataset = xr.open_mfdataset(
+                    filelist,
+                    data_vars = 'all'
+                )
+            # 
+            if isinstance(call_sum_by_year, type(None)):
+                # Check whether this variable is in the sea ice vars dictionary
+                if this_var in sps.sea_ice_vars.keys():
+                    # Check whether this is a marker variable or not
+                    if sps.sea_ice_vars[this_var]['marker_var']: 
+                        call_sum_by_year = True 
+                    else:
+                        call_sum_by_year = False
+                if verbose:
+                    print(f"(plot_multi_time_series) `this_var` ({this_var}) is marker variable: {call_sum_by_year}")
+            # Sum the data across time
+            if call_sum_by_year:
+                ## Overwrite the `dataset` variable to reduce memory overhead
+                dataset = sum_by_year(
+                    dataset,
+                    find_mean = find_mean,
+                    verbose = verbose,
+                )
+                if find_mean:
+                    var_for_trend = f'{this_var}_year_mean'
+                else:
+                    var_for_trend = f'{this_var}_year_sum'
+            else:
+                var_for_trend = this_var
         else:
-            var_for_trend = this_var
-            this_time_dim = 'time'
+            # Mask the data by sea ice thickness
+            dataset = make_sithick_masked_climatology(
+                this_source_id = this_source_id,
+                this_var = this_var,
+                this_variant_label = this_variant_label,
+                this_modification = this_modification,
+                version_id = this_version_id,
+                start_year = 1950,
+                end_year = 2014,
+                sum_by = 'year',
+                select_summer = select_summer,
+                verbose = verbose,
+                **kwargs,
+            )
+            var_for_trend = list(dataset.data_vars)[0]
         # Take the spatial mean
         dataset = get_field_mean(
             dataset = dataset,
