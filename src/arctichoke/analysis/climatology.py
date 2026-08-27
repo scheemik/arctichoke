@@ -504,7 +504,7 @@ def make_sithick_masked_climatology(
             dataset,
             find_mean = find_mean,
             verbose = verbose,
-            **kwargs,
+            # **kwargs,     # Avoid the error: TypeError: nanmean() got an unexpected keyword argument 'version_id'
         )
     else:
         raise ValueError(f"(make_sithick_masked_climatology) `sum_by` must be either `month` or `year`. Got type: {sum_by}")
