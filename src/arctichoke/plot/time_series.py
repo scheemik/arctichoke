@@ -197,9 +197,9 @@ def plot_time_series(
         )
         reg_m = regressions[f'{variable_id}_trends'].values
         reg_b = regressions[f'{variable_id}_intercepts'].values
+        print(f"(plot_time_series) Slope of `{variable_id}` regression line: {reg_m: .5e}")
         if verbose:
-            print(f"(plot_time_series) Slope of regression line: {reg_m}")
-            print(f"(plot_time_series) Intercept of regression line: {reg_b}")
+            print(f"(plot_time_series) Intercept of `{variable_id}` regression line: {reg_b: .5e}")
         if isinstance(reg_label, type(None)):
             # Format the label
             reg_label = f"{str(reg_m)[:6]}x+{str(reg_b)[:6]}"

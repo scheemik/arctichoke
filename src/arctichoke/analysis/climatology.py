@@ -6,6 +6,7 @@ import xarray as xr
 # Need to specify the sub-module when pulling from the same parent module
 from arctichoke import get_current_datetime_str
 from arctichoke.analysis.sum_by_month import sum_by_month
+from arctichoke.analysis.sum_by_year import sum_by_year
 from arctichoke.dataset import make_mask, select_months
 from arctichoke.path import list_variable_files, make_file_path, select_files_by_time
 from arctichoke.verify import verify_path
@@ -285,6 +286,7 @@ def make_sithick_masked_climatology(
     start_year: int = 1950,
     end_year: int = 1969,
     sithick_threshold: (int, float) = 2,
+    sum_by: str = 'month',
     find_mean: bool = True,
     select_summer: bool = False,
     save_files: bool = False,
@@ -322,6 +324,9 @@ def make_sithick_masked_climatology(
         sithick_threshold : `int`, `float`, optional
             The threshold for the sea ice thickness mask, given in meters.
             Default is `2`.
+        sum_by : `str`, optional
+            Whether to sum by month (to get a climatology) or sum by year.
+            Default is `month`.
         find_mean : `bool`, optional
             Whether to take the mean for each month across all years or the sum.
             This value is passed directly to `sum_by_month()`.
@@ -362,6 +367,8 @@ def make_sithick_masked_climatology(
         raise TypeError(f"(make_sithick_masked_climatology) `end_year` must be an integer. Got type: {type(end_year)}")
     if not isinstance(sithick_threshold, (int, float)):
         raise TypeError(f"(make_sithick_masked_climatology) `sithick_threshold` must be an integer or `float`. Got type: {type(find_mean)}")
+    if sum_by not in ['month', 'year']:
+        raise ValueError(f"(make_sithick_masked_climatology) `sum_by` must be either `month` or `year`. Got type: {sum_by}")
     if not isinstance(find_mean, (bool, type(None))):
         raise TypeError(f"(make_sithick_masked_climatology) `find_mean` must be a `bool` or `None`. Got type: {type(find_mean)}")
     if not isinstance(select_summer, bool):
@@ -463,31 +470,43 @@ def make_sithick_masked_climatology(
     dataset[new_masked_var].attrs['history'] = f"{new_history_item} {original_history}"
     dataset = dataset.drop_vars(this_var)
 
-    # Get one value per month of the year, either the sum or mean
-    dataset_clim = sum_by_month(
-        dataset,
-        find_mean = find_mean,
-        verbose = verbose,
-    )
-
-    # Add marker attributes
-    dataset_clim.attrs['climatology_start'] = start_year
-    dataset_clim.attrs['climatology_end'] = end_year
-
-    # Save the climatology to file, if applicable
-    if save_files:
-        save_climatology_files(
-            dataset_clim,
-            this_source_id,
-            this_var,
-            this_variant_label,
-            this_modification,
-            find_mean,
-            start_year,
-            end_year,
-            sithick_threshold,
+    if sum_by == 'month':
+        # Get one value per month of the year, either the sum or mean
+        dataset_clim = sum_by_month(
+            dataset,
+            find_mean = find_mean,
             verbose = verbose,
             **kwargs,
         )
+
+        # Add marker attributes
+        dataset_clim.attrs['climatology_start'] = start_year
+        dataset_clim.attrs['climatology_end'] = end_year
+
+        # Save the climatology to file, if applicable
+        if save_files:
+            save_climatology_files(
+                dataset_clim,
+                this_source_id,
+                this_var,
+                this_variant_label,
+                this_modification,
+                find_mean,
+                start_year,
+                end_year,
+                sithick_threshold,
+                verbose = verbose,
+                **kwargs,
+            )
+    elif sum_by == 'year':
+        # Get one value per year in the dataset, either the sum or mean
+        dataset_clim = sum_by_year(
+            dataset,
+            find_mean = find_mean,
+            verbose = verbose,
+            # **kwargs,     # Avoid the error: TypeError: nanmean() got an unexpected keyword argument 'version_id'
+        )
+    else:
+        raise ValueError(f"(make_sithick_masked_climatology) `sum_by` must be either `month` or `year`. Got type: {sum_by}")
 
     return dataset_clim
