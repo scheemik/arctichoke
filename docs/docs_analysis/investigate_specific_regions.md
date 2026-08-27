@@ -1,7 +1,7 @@
 # Investigating specific regions
 
 Below, I describe how I investigate the specific regions of the Nares Strait and Parry Channel.
-This assumes you have already gone through {doc}`Trimming data to the CAA region <../docs_data/trim_to_CAA_region>`.
+This assumes you have already gone through {doc}`Trimming data to the CAA region <../docs_data/trim_to_CAA_region>` and {doc}`Making sea ice climatologies <../docs_analysis/climatologies>`.
 
 ## Contents
 
@@ -12,6 +12,8 @@ This assumes you have already gone through {doc}`Trimming data to the CAA region
     - [Trimming data to Nares Strait](#trimming-data-to-nares-strait)
     - [Trimming data to Parry Channel](#trimming-data-to-parry-channel)
 - [Finding spatial averages](#finding-spatial-averages)
+    - [Finding spatial averages of concentration](#finding-spatial-averages-of-concentration)
+    - [Finding spatial averages of concentration where thickness is > 2 m](#finding-spatial-averages-of-concentration-where-thickness-is--2-m)
 - [Time series plots for specific regions](#time-series-plots-for-specific-regions)
     - [Time series plots for Nares Strait](#time-series-plots-for-nares-strait)
     - [Time series plots for Parry Channel](#time-series-plots-for-parry-channel)
@@ -407,6 +409,9 @@ display(this_map)
 ## Finding spatial averages
 [back to top](#investigating-specific-regions)
 
+### Finding spatial averages of concentration
+[back to top](#investigating-specific-regions)
+
 My goal is to make a line plot of a time series to show how a particular variable changes within a specific region.
 To do this, I will take the spatial average across a specific region for each time step.
 First, I'll load the Nares Strait data for the first variant of `EC-Earth3P-HR` as an example.
@@ -530,6 +535,78 @@ array([17.717651], dtype=float32)
 
 The calculated spatial average of 17.72% seems reasonable given the map plotted above.
 
+### Finding spatial averages of concentration where thickness is > 2 m
+[back to top](#investigating-specific-regions)
+
+In addition to regular variables like `siconc`, I would like to be able to find spatial averages of sea ice concentration, but filtered to only where sea ice thickness (`sithick`) is greater than 2 meters.
+To do so, I added the argument `sum_by` to the `make_sithick_masked_climatology()` function introduced in {doc}`Making sea ice climatologies <../docs_analysis/climatologies>`.
+This means I can choose between using `sum_by_month()`, which is the default, and `sum_by_year()`, which is what I need for this particular scenario.
+I also make sure to specify `start_year` and `end_year` to cover the entire time period as well as setting `select_summer` to `True`.
+This gives me a dataset which has one value per year for each grid cell in the specific region.
+I'll take Nares Strait as an example.
+```python
+from arctichoke.analysis import make_sithick_masked_climatology
+
+dataset_m_clim = make_sithick_masked_climatology(
+    this_source_id = 'EC-Earth3P-HR',
+    this_var = 'siconc',
+    this_variant_label = 'r1i1p2f1',
+    this_modification = 'trim_NS_',
+    start_year = 1950,
+    end_year = 2014,
+    sum_by = 'year',
+    select_summer = True,
+    verbose = False,
+)
+print(dataset_m_clim)
+```
+```console
+<xarray.Dataset> Size: 485kB
+Dimensions:                     (year: 65, j: 41, i: 44)
+Coordinates:
+  * year                        (year) int64 520B 1950 1951 1952 ... 2013 2014
+  * j                           (j) float64 328B 968.0 969.0 ... 1.008e+03
+  * i                           (i) float64 352B 970.0 971.0 ... 1.013e+03
+    longitude                   (j, i) float32 7kB dask.array<chunksize=(41, 44), meta=np.ndarray>
+    latitude                    (j, i) float32 7kB dask.array<chunksize=(41, 44), meta=np.ndarray>
+Data variables:
+    siconc_si2mthick_year_mean  (year, j, i) float32 469kB dask.array<chunksize=(1, 41, 44), meta=np.ndarray>
+Attributes: (12/49)
+    CDI:                    Climate Data Interface version 2.5.1 (https://mpi...
+    Conventions:            CF-1.7 CMIP-6.2
+    source:                 EC-Earth3P-HR (2017): \naerosol: none\natmos: IFS...
+    institution:            AEMET, Spain; BSC, Spain; CNR-ISAC, Italy; DMI, D...
+    activity_id:            HighResMIP
+    ...                     ...
+    variant_label:          r1i1p2f1
+    history:                2026-08-27T17:15:19Z altered by `arctichoke`: Cal...
+    CDO:                    Climate Data Operators version 2.5.1 (https://mpi...
+    select_months:          [6, 7, 8, 9, 10]
+```
+
+From here, I can then get the spatial average and then plot the time series.
+```python
+from arctichoke.dataset import get_field_mean
+
+dataset_m_fldmean = get_field_mean(
+    dataset_m_clim,
+)
+
+from arctichoke.plot import plot_time_series 
+
+plot_time_series(
+    dataset_m_fldmean,
+    'siconc_si2mthick_year_mean',
+    add_regression = True,
+)
+```
+```console
+(plot_time_series) Slope of `siconc_si2mthick_year_mean` regression line: -2.32762e-01
+```
+![EC-Earth3P-HR_r1i1p2f1_siconc_NS_JJASO_fldmean_si2mthick_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_r1i1p2f1_siconc_NS_JJASO_fldmean_si2mthick_trend.png)
+
+I then wrote this functionality, along with plotting time series that aren't filtered by sea ice thickness, into the function `plot_multi_time_series()` which I will make use of in the next section.
+
 ---
 
 ## Time series plots for specific regions
@@ -567,6 +644,16 @@ for variable_id in [
     # Need to show, then clear the figure so they aren't plotted on top of one another
     plt.show()
     plt.clf()
+    if variable_id == 'siconc':
+        plot_multi_time_series(
+            this_source_id = this_model,
+            this_var = variable_id,
+            this_modification = this_modification,
+            mask_by_sithick = True,
+            verbose = set_verbose,
+        )
+        plt.show()
+        plt.clf()
 
 for variable_id in [
     'silandfast',
@@ -588,19 +675,53 @@ for variable_id in [
         plt.clf()
 ```
 <!-- ![EC-Earth3P-HR_all_variants_sithick_NS_JJASO_fldmean_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_sithick_NS_JJASO_fldmean_trend.png) -->
-
+```console
+(plot_time_series) Slope of `sispeed_year_mean` regression line:  3.57291e-04
+(plot_time_series) Slope of `sispeed_year_mean` regression line: -5.49426e-05
+(plot_time_series) Slope of `sispeed_year_mean` regression line:  9.62230e-04
+```
 ![EC-Earth3P-HR_all_variants_sispeed_NS_JJASO_fldmean_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_sispeed_NS_JJASO_fldmean_trend.png)
-
+```console
+(plot_time_series) Slope of `siconc_year_mean` regression line: -2.16005e-01
+(plot_time_series) Slope of `siconc_year_mean` regression line:  6.98471e-02
+(plot_time_series) Slope of `siconc_year_mean` regression line: -6.19737e-01
+```
 ![EC-Earth3P-HR_all_variants_siconc_NS_JJASO_fldmean_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_siconc_NS_JJASO_fldmean_trend.png)
-
+```console
+(plot_time_series) Slope of `siconc_si2mthick_year_mean` regression line: -2.32762e-01
+(plot_time_series) Slope of `siconc_si2mthick_year_mean` regression line:  1.14792e-01
+(plot_time_series) Slope of `siconc_si2mthick_year_mean` regression line: -6.62753e-01
+```
+![EC-Earth3P-HR_all_variants_siconc_NS_JJASO_fldmean_si2mthick_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_siconc_NS_JJASO_fldmean_si2mthick_trend.png)
+```console
+(plot_time_series) Slope of `sislow_year_mean` regression line: -2.30321e-03
+(plot_time_series) Slope of `sislow_year_mean` regression line:  6.77431e-04
+(plot_time_series) Slope of `sislow_year_mean` regression line: -8.62849e-03
+```
 ![EC-Earth3P-HR_all_variants_sislow_NS_JJASO_fldmean_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_sislow_NS_JJASO_fldmean_trend.png)
-
+```console
+(plot_time_series) Slope of `sipacked_year_mean` regression line: -2.82286e-03
+(plot_time_series) Slope of `sipacked_year_mean` regression line:  6.40970e-04
+(plot_time_series) Slope of `sipacked_year_mean` regression line: -8.57694e-03
+```
 ![EC-Earth3P-HR_all_variants_sipacked_NS_JJASO_fldmean_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_sipacked_NS_JJASO_fldmean_trend.png)
-
+```console
+(plot_time_series) Slope of `silandfast_year_mean` regression line: -2.48651e-03
+(plot_time_series) Slope of `silandfast_year_mean` regression line:  6.79492e-04
+(plot_time_series) Slope of `silandfast_year_mean` regression line: -8.78875e-03
+```
 ![EC-Earth3P-HR_all_variants_silandfast_NS_JJASO_fldmean_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_silandfast_NS_JJASO_fldmean_trend.png)
-
+```console
+(plot_time_series) Slope of `silandfast_year_mean` regression line: -2.78657e-04
+(plot_time_series) Slope of `silandfast_year_mean` regression line: -3.49085e-04
+(plot_time_series) Slope of `silandfast_year_mean` regression line: -1.49801e-03
+```
 ![EC-Earth3P-HR_all_variants_silandfast_NS_JJASO_fldmean_slow_clim_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_silandfast_NS_JJASO_fldmean_slow_clim_trend.png)
-
+```console
+(plot_time_series) Slope of `silandfast_year_mean` regression line: -9.72673e-04
+(plot_time_series) Slope of `silandfast_year_mean` regression line:  1.64588e-04
+(plot_time_series) Slope of `silandfast_year_mean` regression line: -4.09693e-03
+```
 ![EC-Earth3P-HR_all_variants_silandfast_NS_JJASO_fldmean_packed_clim_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_silandfast_NS_JJASO_fldmean_packed_clim_trend.png)
 
 ### Time series plots for Parry Channel
@@ -632,6 +753,16 @@ for variable_id in [
     # Need to show, then clear the figure so they aren't plotted on top of one another
     plt.show()
     plt.clf()
+    if variable_id == 'siconc':
+        plot_multi_time_series(
+            this_source_id = this_model,
+            this_var = variable_id,
+            this_modification = this_modification,
+            mask_by_sithick = True,
+            verbose = set_verbose,
+        )
+        plt.show()
+        plt.clf()
 
 for variable_id in [
     'silandfast',
@@ -653,17 +784,51 @@ for variable_id in [
         plt.clf()
 ```
 <!-- ![EC-Earth3P-HR_all_variants_sithick_PC_JJASO_fldmean_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_sithick_PC_JJASO_fldmean_trend.png) -->
-
+```console
+(plot_time_series) Slope of `sispeed_year_mean` regression line:  3.14328e-04
+(plot_time_series) Slope of `sispeed_year_mean` regression line:  5.99957e-04
+(plot_time_series) Slope of `sispeed_year_mean` regression line:  7.21741e-04
+```
 ![EC-Earth3P-HR_all_variants_sispeed_PC_JJASO_fldmean_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_sispeed_PC_JJASO_fldmean_trend.png)
-
+```console
+(plot_time_series) Slope of `siconc_year_mean` regression line: -1.62090e-01
+(plot_time_series) Slope of `siconc_year_mean` regression line: -2.96469e-01
+(plot_time_series) Slope of `siconc_year_mean` regression line: -4.59905e-01
+```
 ![EC-Earth3P-HR_all_variants_siconc_PC_JJASO_fldmean_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_siconc_PC_JJASO_fldmean_trend.png)
-
+```console
+(plot_time_series) Slope of `siconc_si2mthick_year_mean` regression line: -1.85276e-01
+(plot_time_series) Slope of `siconc_si2mthick_year_mean` regression line: -3.22107e-01
+(plot_time_series) Slope of `siconc_si2mthick_year_mean` regression line: -4.68885e-01
+```
+![EC-Earth3P-HR_all_variants_siconc_PC_JJASO_fldmean_si2mthick_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_siconc_PC_JJASO_fldmean_si2mthick_trend.png)
+```console
+(plot_time_series) Slope of `sislow_year_mean` regression line: -1.16408e-03
+(plot_time_series) Slope of `sislow_year_mean` regression line: -3.19322e-03
+(plot_time_series) Slope of `sislow_year_mean` regression line: -3.17292e-03
+```
 ![EC-Earth3P-HR_all_variants_sislow_PC_JJASO_fldmean_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_sislow_PC_JJASO_fldmean_trend.png)
-
+```console
+(plot_time_series) Slope of `sipacked_year_mean` regression line: -2.65774e-03
+(plot_time_series) Slope of `sipacked_year_mean` regression line: -4.97232e-03
+(plot_time_series) Slope of `sipacked_year_mean` regression line: -6.36033e-03
+```
 ![EC-Earth3P-HR_all_variants_sipacked_PC_JJASO_fldmean_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_sipacked_PC_JJASO_fldmean_trend.png)
-
+```console
+(plot_time_series) Slope of `silandfast_year_mean` regression line: -1.27364e-03
+(plot_time_series) Slope of `silandfast_year_mean` regression line: -3.27269e-03
+(plot_time_series) Slope of `silandfast_year_mean` regression line: -3.49074e-03
+```
 ![EC-Earth3P-HR_all_variants_silandfast_PC_JJASO_fldmean_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_silandfast_PC_JJASO_fldmean_trend.png)
-
+```console
+(plot_time_series) Slope of `silandfast_year_mean` regression line: -4.86185e-05
+(plot_time_series) Slope of `silandfast_year_mean` regression line: -2.64583e-04
+(plot_time_series) Slope of `silandfast_year_mean` regression line: -4.29724e-04
+```
 ![EC-Earth3P-HR_all_variants_silandfast_PC_JJASO_fldmean_slow_clim_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_silandfast_PC_JJASO_fldmean_slow_clim_trend.png)
-
+```console
+(plot_time_series) Slope of `silandfast_year_mean` regression line: -1.15374e-03
+(plot_time_series) Slope of `silandfast_year_mean` regression line: -3.03223e-03
+(plot_time_series) Slope of `silandfast_year_mean` regression line: -3.21840e-03
+```
 ![EC-Earth3P-HR_all_variants_silandfast_PC_JJASO_fldmean_packed_clim_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_silandfast_PC_JJASO_fldmean_packed_clim_trend.png)
