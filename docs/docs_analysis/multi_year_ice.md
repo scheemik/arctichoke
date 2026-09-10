@@ -173,7 +173,7 @@ siage_2000_trim_map
 (quadmesh_map) `diverging_cbar`: False
 (quadmesh_map) `cmin`: 0.0, `cmax`: 1324738304.0
 ```
-![HadGEM3-GC31-MM_r1i1p1f1_CAA_2000-07_siage.png](multi_year_ice-img/HadGEM3-GC31-MM_r1i1p1f1_CAA_2000-07_siage.png)
+![HadGEM3-GC31-MM_r1i1p1f1_CAA_2000-07_siage2.png](multi_year_ice-img/HadGEM3-GC31-MM_r1i1p1f1_CAA_2000-07_siage2.png)
 
 In the next plot, I use `calc_siage()` to convert from seconds to years.
 ```python
@@ -198,7 +198,7 @@ siage_2000_trim_map
 (quadmesh_map) `diverging_cbar`: False
 (quadmesh_map) `cmin`: 0.0, `cmax`: 42.00717544555664
 ```
-![HadGEM3-GC31-MM_r1i1p1f1_CAA_2000-07_siage2.png](multi_year_ice-img/HadGEM3-GC31-MM_r1i1p1f1_CAA_2000-07_siage2.png)
+![HadGEM3-GC31-MM_r1i1p1f1_CAA_2000-07_siage.png](multi_year_ice-img/HadGEM3-GC31-MM_r1i1p1f1_CAA_2000-07_siage.png)
 
 The maximum sea ice age value here is 42 years.
 That is unusually high, however it is a bit more believable that these values occur along the northern parts of the CAA and Greenland close to shore.
