@@ -300,7 +300,7 @@ def make_label(
             warnings.warn(f"(make_label) `dataset` has no `units` attribute. Skipping units in label.", UserWarning)
     # Shorten the label, if applicable
     if shorten:
-        for phrase in [' (Ocean Grid)', ' (1: Yes, 0: No)']:
+        for phrase in [' (Ocean Grid)', ' (1: Yes, 0: No)', ' Masked']:
             if phrase in dataset_label:
                 # Remove the phrase from the label by replacing it with a blank string
                 dataset_label = dataset_label.replace(phrase, '')
