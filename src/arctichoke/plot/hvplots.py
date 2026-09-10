@@ -20,6 +20,7 @@ def quadmesh_map(
     map_bbox: [float, float, float, float] = sps.CAA_BBOX,
     clims: [(int, float), (int, float)] = None,
     map_title: str = None,
+    map_label: str = None,
     mark_bbox: (bool, [float, float, float, float]) = False,
     diverging_cbar: bool = False, 
     verbose: bool = False,
@@ -53,6 +54,9 @@ def quadmesh_map(
             Default is `None`, which uses the minimum / maximum values present in the data.
         map_title : `str`, optional
             Specify the title of the map or, if `None` is given, use the `make_title()` function to create the title.
+            Default is `None`.
+        map_label : `str`, optional
+            Specify the label of the map's colorbar or, if `None` is given, use the `make_label()` function to create the label.
             Default is `None`.
         mark_bbox : `bool`, Array of `float`, optional
             If given an array of coordinates in the same format as `map_bbox`, a bounding box is marked on the map.
@@ -110,6 +114,8 @@ def quadmesh_map(
         raise TypeError(f"(quadmesh_map) `clims` must be a list or tuple of length 2. Got length: {len(clims)}")
     if not isinstance(map_title, (str, type(None))):
         raise TypeError(f"(quadmesh_map) `map_title` must be a string or `None`. Got type: {type(map_title)}")
+    if not isinstance(map_label, (str, type(None))):
+        raise TypeError(f"(quadmesh_map) `map_label` must be a string or `None`. Got type: {type(map_label)}")
     if isinstance(mark_bbox, type([])):
         if not len(mark_bbox) == 4:
             raise ValueError(f"(quadmesh_map) `mark_bbox` must have a length of 4. Got length: {len(mark_bbox)}")
@@ -187,6 +193,9 @@ def quadmesh_map(
     # Make title, if necessary
     if isinstance(map_title, type(None)):
         map_title = make_title(xr_data, **kwargs)
+    # Make label, if necessary
+    if isinstance(map_label, type(None)):
+        map_label = make_label(xr_data, var, verbose=verbose)
 
     # Make the plot
     qm_map_plot = xr_data[var].hvplot.quadmesh(
@@ -196,7 +205,7 @@ def quadmesh_map(
         project=True,
         global_extent=False, 
         title=map_title,
-        clabel=make_label(xr_data, var, verbos=verbose),
+        clabel=map_label,
         cmap=this_cmap, 
         clim=clims,
         bgcolor='lightgray',
