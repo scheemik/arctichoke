@@ -221,24 +221,6 @@ def quadmesh_map(
             ylim=(map_extent[2], map_extent[3]),
         )
 
-    # Set colorbar parameters
-    if isinstance(clims, type(None)):
-        cmin, cmax = get_min_max(xr_data, var)
-    else:
-        cmin = min(clims)
-        cmax = max(clims)
-    if verbose:
-        print(f"(quadmesh_map) `diverging_cbar`: {diverging_cbar}")
-        print(f"(quadmesh_map) `cmin`: {cmin}, `cmax`: {cmax}")
-    if diverging_cbar == True and cmin != -cmax:
-        qm_map_plot = set_cbar_lims(
-            qm_map_plot,
-            cmin,
-            cmax,
-            verbose = verbose,
-            # **kwargs,
-        )
-
     # Add bounding box to the map
     if mark_bbox:
         # Set the corners of the bounding box
@@ -277,6 +259,24 @@ def quadmesh_map(
         points = bbox_df.hvplot.points(color='red', size=10, geo=True)
         # Compose the map with the bounding box
         qm_map_plot = qm_map_plot * shortest_path * straight_path * points
+
+    # Set colorbar parameters
+    if isinstance(clims, type(None)):
+        cmin, cmax = get_min_max(xr_data, var)
+    else:
+        cmin = min(clims)
+        cmax = max(clims)
+    if verbose:
+        print(f"(quadmesh_map) `diverging_cbar`: {diverging_cbar}")
+        print(f"(quadmesh_map) `cmin`: {cmin}, `cmax`: {cmax}")
+    if diverging_cbar == True and cmin != -cmax:
+        qm_map_plot = set_cbar_lims(
+            qm_map_plot,
+            cmin,
+            cmax,
+            verbose = verbose,
+            # **kwargs,
+        )
 
     # Save the plot, if applicable
     if not isinstance(save_as, type(None)):
