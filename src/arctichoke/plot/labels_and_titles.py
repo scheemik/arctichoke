@@ -311,5 +311,10 @@ def make_label(
             dataset_label = dataset_label.replace('Area Fraction', 'Conc.')
             if verbose:
                 print(f"(make_label) Replaced phrase 'Area Fraction' in label with 'Conc.'")
+        if 'Recalculated' in dataset_label:
+            # Shorten this part of the label which indicates Recalculated Sea Ice Concentration
+            dataset_label = dataset_label.replace('Recalculated', 'RC')
+            if verbose:
+                print(f"(make_label) Replaced phrase 'Recalculated' in label with 'RC'")
     
     return dataset_label
