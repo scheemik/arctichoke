@@ -65,6 +65,41 @@ quadmesh_map(
 ```
 ![EC-Earth3P-HR_r1i1p2f1_siconc_NS_1950-01_map.png](investigate_specific_regions-img/EC-Earth3P-HR_r1i1p2f1_siconc_NS_1950-01_map.png)
 
+Next, I'll make a version of that map, but plot the climatology of sea ice concentration.
+```python
+import xarray as xr 
+
+from arctichoke.dataset import select_months, trim_latlon
+import arctichoke.params as sps
+
+this_si_var = 'siconc'
+dataset_clim = select_months(f'/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/{this_si_var}_month_mean/gn/v20181212/trim_CAA_{this_si_var}_month_mean_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_195001-196912.nc', time_dim='month')
+# Save the attributes for later
+keep_these_attrs = dataset_clim.attrs
+dataset_clim = trim_latlon(
+    dataset = dataset_clim,
+    map_bbox = sps.NS_BBOX,
+    precise_trim = True,
+)
+# Put the attributes back
+dataset_clim.attrs = keep_these_attrs
+# Sum across the 12 months
+dataset_clim = dataset_clim.mean(dim='month')
+# Adjust the `long_name` attribute to change the colorbar label
+dataset_clim[f'{this_si_var}_month_mean'].attrs['long_name'] = dataset_clim[f'{this_si_var}_month_mean'].attrs['long_name'].replace('onthly m', '')
+
+from arctichoke.plot import quadmesh_map
+
+quadmesh_map(
+    dataset_clim,
+    f'{this_si_var}_month_mean',
+    mark_bbox = sps.NS_BBOX,
+    clims = sps.sea_ice_vars[this_si_var]['plot_range'],
+    add_region = False,
+)
+```
+![EC-Earth3P-HR_r1i1p2f1_siconc_NS_clim_mean_map.png](investigate_specific_regions-img/EC-Earth3P-HR_r1i1p2f1_siconc_NS_clim_mean_map.png)
+
 ### Defining the Parry Channel region
 [back to top](#investigating-specific-regions)
 
@@ -104,6 +139,42 @@ quadmesh_map(
 )
 ```
 ![EC-Earth3P-HR_r1i1p2f1_siconc_PC_1950-01_map.png](investigate_specific_regions-img/EC-Earth3P-HR_r1i1p2f1_siconc_PC_1950-01_map.png)
+
+Next, I'll make a version of that map, but plot the climatology of sea ice concentration.
+```python
+import xarray as xr 
+
+from arctichoke.dataset import select_months, trim_latlon
+import arctichoke.params as sps
+
+this_si_var = 'siconc'
+dataset_clim = select_months(f'/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/{this_si_var}_month_mean/gn/v20181212/trim_CAA_{this_si_var}_month_mean_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_195001-196912.nc', time_dim='month')
+# Save the attributes for later
+keep_these_attrs = dataset_clim.attrs
+dataset_clim = trim_latlon(
+    dataset = dataset_clim,
+    map_bbox = sps.PC_BBOX,
+    precise_trim = True,
+)
+# Put the attributes back
+dataset_clim.attrs = keep_these_attrs
+# Sum across the 12 months
+dataset_clim = dataset_clim.mean(dim='month')
+# Adjust the `long_name` attribute to change the colorbar label
+dataset_clim[f'{this_si_var}_month_mean'].attrs['long_name'] = dataset_clim[f'{this_si_var}_month_mean'].attrs['long_name'].replace('onthly m', '')
+
+from arctichoke.plot import quadmesh_map
+
+quadmesh_map(
+    dataset_clim,
+    f'{this_si_var}_month_mean',
+    map_bbox = sps.PC_BBOX,
+    mark_bbox = True,
+    clims = sps.sea_ice_vars[this_si_var]['plot_range'],
+    add_region = False,
+)
+```
+![EC-Earth3P-HR_r1i1p2f1_siconc_PC_clim_mean_map.png](investigate_specific_regions-img/EC-Earth3P-HR_r1i1p2f1_siconc_PC_clim_mean_map.png)
 
 ---
 
@@ -237,7 +308,7 @@ list_available_variables(
 As a test, I can then use these trimmed data files to create a map of trends in a particular variable. 
 I'll choose `siconc`.
 ```python
-from arctichoke.params import NS_BBOX
+from arctichoke.params import NS_BBOX, sea_ice_vars
 from arctichoke.plot import make_trend_map 
 
 this_map = make_trend_map(
@@ -247,7 +318,12 @@ this_map = make_trend_map(
     this_modification = 'trim_NS_',
     select_summer = True,
     map_bbox = NS_BBOX,
+    mark_bbox = True,
+    find_mean = True,
+    clims = sea_ice_vars['siconc']['trend_clims'],
+    add_region = False,
     return_map = True,
+    verbose = False,
 )
 display(this_map)
 ```
@@ -301,6 +377,9 @@ for this_variant_label in [
 	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/sithick/gn/v20190214/trim_PC_sithick_SImon_EC-Earth3P-HR_hist-1950_r3i1p2f1_gn_201301-201312.nc`.
 	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/sithick/gn/v20190214/trim_PC_sithick_SImon_EC-Earth3P-HR_hist-1950_r3i1p2f1_gn_201401-201412.nc`.
 ```
+
+When trimming the marker variables, I specify `with_modification` to be `trim_CAA_` as I only calculated `sislow`, `sipacked`, and `silandfast` over the CAA.
+This takes about 20 minutes. 
 ```python
 import xarray as xr
 
@@ -388,7 +467,7 @@ list_available_variables(
 As a test, I can then use these trimmed data files to create a map of trends in a particular variable. 
 I'll choose `siconc`.
 ```python
-from arctichoke.params import PC_BBOX
+from arctichoke.params import PC_BBOX, sea_ice_vars
 from arctichoke.plot import make_trend_map 
 
 this_map = make_trend_map(
@@ -398,7 +477,12 @@ this_map = make_trend_map(
     this_modification = 'trim_PC_',
     select_summer = True,
     map_bbox = PC_BBOX,
+    mark_bbox = True,
+    find_mean = True,
+    clims = sea_ice_vars['siconc']['trend_clims'],
+    add_region = False,
     return_map = True,
+    verbose = False,
 )
 display(this_map)
 ```
