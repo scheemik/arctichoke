@@ -136,6 +136,7 @@ def quadmesh_map(
     # Information to output
     if verbose:
         print(f"(quadmesh_map) `save_as`: {save_as}")
+        print(f"(quadmesh_map) Given a value of `clims`:{clims}")
 
     # Unpack the bounding box values
     if not isinstance(map_bbox, type(None)):
