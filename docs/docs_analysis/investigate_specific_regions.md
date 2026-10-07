@@ -10,13 +10,21 @@ This assumes you have already gone through {doc}`Trimming data to the CAA region
     - [Defining the Parry Channel region](#defining-the-parry-channel-region)
 - [Trimming data to specific regions](#trimming-data-to-specific-regions)
     - [Trimming data to Nares Strait](#trimming-data-to-nares-strait)
+        - [Trimming EC-Earth3P-HR data to Nares Strait](#trimming-ec-earth3p-hr-data-to-nares-strait)
+        - [Trimming HadGEM3-GC31 data to Nares Strait](#trimming-hadgem3-gc31-mm-data-to-nares-strait)
     - [Trimming data to Parry Channel](#trimming-data-to-parry-channel)
+        - [Trimming EC-Earth3P-HR data to Parry Channel](#trimming-ec-earth3p-hr-data-to-parry-channel)
+        - [Trimming HadGEM3-GC31 data to Parry Channel](#trimming-hadgem3-gc31-mm-data-to-parry-channel)
 - [Finding spatial averages](#finding-spatial-averages)
     - [Finding spatial averages of concentration](#finding-spatial-averages-of-concentration)
     - [Finding spatial averages of concentration where thickness is > 2 m](#finding-spatial-averages-of-concentration-where-thickness-is--2-m)
 - [Time series plots for specific regions](#time-series-plots-for-specific-regions)
     - [Time series plots for Nares Strait](#time-series-plots-for-nares-strait)
+        - [Nares Strait time series for EC-Earth3P-HR](#nares-strait-time-series-for-ec-earth3p-hr)
+        - [Nares Strait time series for HadGEM3-GC31-MM](#nares-strait-time-series-for-hadgem3-gc31-mm)
     - [Time series plots for Parry Channel](#time-series-plots-for-parry-channel)
+        - [Parry Channel time series for EC-Earth3P-HR](#parry-channel-time-series-for-ec-earth3p-hr)
+        - [Parry Channel time series for HadGEM3-GC31-MM](#parry-channel-time-series-for-hadgem3-gc31-mm)
 
 ---
 
@@ -29,7 +37,7 @@ For each specific region I'll investigate, I'll need to define a bounding box.
 [back to top](#investigating-specific-regions)
 
 For this study, I'll define the Nares Strait region to go from Robeson Channel in the north to Smith Sound in the south.
-On Wikipedia, [Robeson Channel](https://en.wikipedia.org/wiki/Robeson_Channel) is defined to be 82°00′N, 061°30′W, and [Smith Sound](https://en.wikipedia.org/wiki/Smith_Sound) is defined to be 78°25′N, 74°00′W.
+On Wikipedia, [Robeson Channel](https://en.wikipedia.org/wiki/Robeson_Channel) is defined to be 82°00′N, 61°30′W, and [Smith Sound](https://en.wikipedia.org/wiki/Smith_Sound) is defined to be 78°25′N, 74°00′W.
 I'll use those latitude values and define the longitude bounds to be wide enough to cover the entire channel, but narrow enough to not include anything outside the channel.
 I define the bounding box for Nares Strait in the `params` module.
 ```python
@@ -186,6 +194,9 @@ In order to more easily call up data for these specific regions later, I'll use 
 ### Trimming data to Nares Strait
 [back to top](#investigating-specific-regions)
 
+#### Trimming EC-Earth3P-HR data to Nares Strait
+[back to top](#investigating-specific-regions)
+
 I can trim the data for `EC-Earth3P-HR` to the Nares Strait region.
 This takes about 40 minutes to complete.
 ```python
@@ -329,7 +340,177 @@ display(this_map)
 ```
 ![EC-Earth3P-HR_r1i1p2f1_siconc_NS_JJASO_trend_map.png](investigate_specific_regions-img/EC-Earth3P-HR_r1i1p2f1_siconc_NS_JJASO_trend_map.png)
 
+#### Trimming HadGEM3-GC31-MM data to Nares Strait
+[back to top](#investigating-specific-regions)
+
+I can trim the data for `HadGEM3-GC31-MM` to the Nares Strait region.
+This takes about 40 minutes to complete.
+```python
+import xarray as xr
+
+from arctichoke.dataset import trim_files
+from arctichoke.params import NS_BBOX
+from arctichoke.path import list_variable_files
+
+this_model = 'HadGEM3-GC31-MM'
+this_experiment = 'hist-1950'
+
+for this_variant_label in [
+    'r1i1p1f1', 
+    'r1i2p1f1', 
+    'r1i3p1f1',
+]:
+    for si_var in [
+        'siconc2',
+        'sispeed',
+        'sithick',
+    ]:
+        for this_experiment in ['hist-1950']:
+            sivar_list = list_variable_files(
+                source_id = this_model,
+                variable_id = si_var,
+                experiment_id = this_experiment,
+                variant_label = this_variant_label,
+            )
+            trim_files(
+                files_to_trim = sivar_list,
+                name_prefix = 'trim_NS_',
+                map_bbox = NS_BBOX,
+                precise_trim = True,
+            )
+```
+```
+(trim_files) `name_prefix`: trim_NS_
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i1p1f1/SImon/siconc2/gn/v20170928/trim_NS_siconc2_SImon_HadGEM3-GC31-MM_hist-1950_r1i1p1f1_gn_195001-195012.nc`.
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i1p1f1/SImon/siconc2/gn/v20170928/trim_NS_siconc2_SImon_HadGEM3-GC31-MM_hist-1950_r1i1p1f1_gn_195101-195112.nc`.
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i1p1f1/SImon/siconc2/gn/v20170928/trim_NS_siconc2_SImon_HadGEM3-GC31-MM_hist-1950_r1i1p1f1_gn_195201-195212.nc`.
+    ...
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i3p1f1/SImon/sithick/gn/v20190710/trim_NS_sithick_SImon_HadGEM3-GC31-MM_hist-1950_r1i3p1f1_gn_201201-201212.nc`.
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i3p1f1/SImon/sithick/gn/v20190710/trim_NS_sithick_SImon_HadGEM3-GC31-MM_hist-1950_r1i3p1f1_gn_201301-201312.nc`.
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i3p1f1/SImon/sithick/gn/v20190710/trim_NS_sithick_SImon_HadGEM3-GC31-MM_hist-1950_r1i3p1f1_gn_201401-201412.nc`.
+```
+
+When trimming `siconc2` and the marker variables, I specify `with_modification` to be `trim_CAA_` as I only calculated `siconc2`, `sislow`, `sipacked`, and `silandfast` over the CAA.
+This takes about 20 minutes. 
+```python
+import xarray as xr
+
+from arctichoke.dataset import trim_files
+from arctichoke.params import NS_BBOX
+from arctichoke.path import list_variable_files
+
+this_model = 'HadGEM3-GC31-MM'
+this_experiment = 'hist-1950'
+this_modification = 'trim_CAA_'
+
+for this_variant_label in [
+    'r1i1p1f1', 
+    'r1i2p1f1', 
+    'r1i3p1f1',
+]:
+    for si_var in [
+        'sislow',
+        'sipacked',
+        'silandfast',
+    ]:
+        sivar_list = list_variable_files(
+            source_id = this_model,
+            variable_id = si_var,
+            experiment_id = this_experiment,
+            variant_label = this_variant_label,
+            with_modification = this_modification,
+        )
+        trim_files(
+            files_to_trim = sivar_list,
+            name_prefix = 'trim_NS_',
+            replace_prefix = this_modification,
+            map_bbox = NS_BBOX,
+            precise_trim = True,
+        )
+```
+```
+(trim_files) `name_prefix`: trim_NS_
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i1p1f1/SImon/sislow/gn/v20260617/trim_NS_trim_CAA_sislow_SImon_HadGEM3-GC31-MM_hist-1950_r1i1p1f1_gn_195001-195012.nc`.
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i1p1f1/SImon/sislow/gn/v20260617/trim_NS_trim_CAA_sislow_SImon_HadGEM3-GC31-MM_hist-1950_r1i1p1f1_gn_195101-195112.nc`.
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i1p1f1/SImon/sislow/gn/v20260617/trim_NS_trim_CAA_sislow_SImon_HadGEM3-GC31-MM_hist-1950_r1i1p1f1_gn_195201-195212.nc`.
+    ...
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i3p1f1/SImon/silandfast/gn/with_sispeed_clim/trim_NS_trim_CAA_silandfast_SImon_HadGEM3-GC31-MM_hist-1950_r1i3p1f1_gn_201201-201212.nc`.
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i3p1f1/SImon/silandfast/gn/with_sispeed_clim/trim_NS_trim_CAA_silandfast_SImon_HadGEM3-GC31-MM_hist-1950_r1i3p1f1_gn_201301-201312.nc`.
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i3p1f1/SImon/silandfast/gn/with_sispeed_clim/trim_NS_trim_CAA_silandfast_SImon_HadGEM3-GC31-MM_hist-1950_r1i3p1f1_gn_201401-201412.nc`.
+```
+
+I can use my `list_available_variables()` function to confirm how many trimmed files were created for each variable.
+```python
+from arctichoke.path import list_available_variables
+
+list_available_variables(
+    source_id = 'HadGEM3-GC31-MM',
+    experiment_id = 'hist-1950',
+    list_var_mods = True,
+)
+```
+```
+{'MOHC/HadGEM3-GC31-MM': {'hist-1950': {'r1i1p1f1': {'Ofx': {'areacello': {'': 1}},
+    'SImon': {'siu': {'': 65},
+     'sithick': {'': 130, 'trim_CAA_': 65, 'trim_NS_': 65},
+     'siage': {'': 65},
+     'siconc': {'': 65, 'trim_NS_': 65},
+     'siv': {'': 65},
+     'sispeed': {'': 130, 'trim_CAA_': 65, 'trim_NS_': 65},
+     'sivol': {'': 65, 'trim_CAA_': 65},
+     'siconc2': {'trim_CAA_': 65, 'trim_NS_': 65},
+     'silandfast': {'trim_CAA_': 195, 'trim_NS_': 195},
+     'sipacked': {'trim_CAA_': 65, 'trim_NS_': 65},
+     'sislow': {'trim_CAA_': 65, 'trim_NS_': 65},
+     'siage2': {'trim_CAA_': 65},
+     'simultiyear': {'trim_CAA_': 65},
+     'siconc2_month_mean': {'trim_CAA_': 1},
+     'sispeed_month_mean': {'trim_CAA_': 1},
+     'sithick_month_mean': {'trim_CAA_': 1},
+     'sivol_month_mean': {'trim_CAA_': 1},
+     'silandfast_month_mean': {'trim_CAA_': 1},
+     'sipacked_month_mean': {'trim_CAA_': 1},
+     'sislow_month_mean': {'trim_CAA_': 1},
+     'simultiyear_month_mean': {'trim_CAA_': 1}}},
+   'r1i2p1f1': {'SImon': {'sithick': {'': 130,
+      'trim_CAA_': 65,
+      'trim_NS_': 65},
+...
+     'sivol_month_mean': {'trim_CAA_': 1},
+     'silandfast_month_mean': {'trim_CAA_': 1},
+     'sipacked_month_mean': {'trim_CAA_': 1},
+     'sislow_month_mean': {'trim_CAA_': 1},
+     'simultiyear_month_mean': {'trim_CAA_': 1}}}}}}
+```
+
+As a test, I can then use these trimmed data files to create a map of trends in a particular variable. 
+I'll choose `siconc2`.
+```python
+from arctichoke.params import NS_BBOX, sea_ice_vars
+from arctichoke.plot import make_trend_map 
+
+this_map = make_trend_map(
+    this_source_id = 'HadGEM3-GC31-MM',
+    this_var = 'siconc2',
+    this_variant_label = 'r1i1p1f1',
+    this_modification = 'trim_NS_',
+    select_summer = True,
+    map_bbox = NS_BBOX,
+    mark_bbox = True,
+    find_mean = True,
+    clims = sea_ice_vars['siconc2']['trend_clims'],
+    add_region = False,
+    return_map = True,
+    verbose = False,
+)
+display(this_map)
+```
+![HadGEM3-GC31-MM_r1i1p1f1_siconc_NS_JJASO_trend_map.png](investigate_specific_regions-img/HadGEM3-GC31-MM_r1i1p1f1_siconc_NS_JJASO_trend_map.png)
+
 ### Trimming data to Parry Channel
+[back to top](#investigating-specific-regions)
+
+#### Trimming EC-Earth3P-HR data to Parry Channel
 [back to top](#investigating-specific-regions)
 
 I can trim the data for `EC-Earth3P-HR` to the Parry Channel region.
@@ -487,6 +668,172 @@ this_map = make_trend_map(
 display(this_map)
 ```
 ![EC-Earth3P-HR_r1i1p2f1_siconc_PC_JJASO_trend_map.png](investigate_specific_regions-img/EC-Earth3P-HR_r1i1p2f1_siconc_PC_JJASO_trend_map.png)
+
+#### Trimming HadGEM3-GC31-MM data to Parry Channel
+[back to top](#investigating-specific-regions)
+
+I can trim the data for `HadGEM3-GC31-MM` to the Parry Channel region.
+This takes about 40 minutes to complete.
+```python
+import xarray as xr
+
+from arctichoke.dataset import trim_files
+from arctichoke.params import PC_BBOX
+from arctichoke.path import list_variable_files
+
+this_model = 'HadGEM3-GC31-MM'
+this_experiment = 'hist-1950'
+
+for this_variant_label in [
+    'r1i1p1f1', 
+    'r1i2p1f1', 
+    'r1i3p1f1',
+]:
+    for si_var in [
+        'sispeed',
+        'sithick',
+    ]:
+        for this_experiment in ['hist-1950']:
+            sivar_list = list_variable_files(
+                source_id = this_model,
+                variable_id = si_var,
+                experiment_id = this_experiment,
+                variant_label = this_variant_label,
+            )
+            trim_files(
+                files_to_trim = sivar_list,
+                name_prefix = 'trim_PC_',
+                map_bbox = PC_BBOX,
+                precise_trim = True,
+            )
+```
+```
+(trim_files) `name_prefix`: trim_PC_
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i1p1f1/SImon/sispeed/gn/v20170928/trim_PC_sispeed_SImon_HadGEM3-GC31-MM_hist-1950_r1i1p1f1_gn_195001-195012.nc`.
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i1p1f1/SImon/sispeed/gn/v20170928/trim_PC_sispeed_SImon_HadGEM3-GC31-MM_hist-1950_r1i1p1f1_gn_195101-195112.nc`.
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i1p1f1/SImon/sispeed/gn/v20170928/trim_PC_sispeed_SImon_HadGEM3-GC31-MM_hist-1950_r1i1p1f1_gn_195201-195212.nc`.
+    ...
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i3p1f1/SImon/sithick/gn/v20190710/trim_PC_sithick_SImon_HadGEM3-GC31-MM_hist-1950_r1i3p1f1_gn_201201-201212.nc`.
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i3p1f1/SImon/sithick/gn/v20190710/trim_PC_sithick_SImon_HadGEM3-GC31-MM_hist-1950_r1i3p1f1_gn_201301-201312.nc`.
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i3p1f1/SImon/sithick/gn/v20190710/trim_PC_sithick_SImon_HadGEM3-GC31-MM_hist-1950_r1i3p1f1_gn_201401-201412.nc`.
+```
+
+When trimming `siconc2` and the marker variables, I specify `with_modification` to be `trim_CAA_` as I only calculated `siconc2`, `sislow`, `sipacked`, and `silandfast` over the CAA.
+```python
+import xarray as xr
+
+from arctichoke.dataset import trim_files
+from arctichoke.params import PC_BBOX
+from arctichoke.path import list_variable_files
+
+this_model = 'HadGEM3-GC31-MM'
+this_experiment = 'hist-1950'
+this_modification = 'trim_CAA_'
+
+for this_variant_label in [
+    'r1i1p1f1', 
+    'r1i2p1f1', 
+    'r1i3p1f1',
+]:
+    for si_var in [
+        'siconc2',
+        'sislow',
+        'sipacked',
+        'silandfast',
+    ]:
+        sivar_list = list_variable_files(
+            source_id = this_model,
+            variable_id = si_var,
+            experiment_id = this_experiment,
+            variant_label = this_variant_label,
+            with_modification = this_modification,
+        )
+        trim_files(
+            files_to_trim = sivar_list,
+            name_prefix = 'trim_PC_',
+            replace_prefix = this_modification,
+            map_bbox = PC_BBOX,
+            precise_trim = True,
+        )
+```
+```
+(trim_files) `name_prefix`: trim_PC_
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i1p1f1/SImon/siconc2/gn/v20170928/trim_PC_siconc2_SImon_HadGEM3-GC31-MM_hist-1950_r1i1p1f1_gn_195001-195012.nc`.
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i1p1f1/SImon/siconc2/gn/v20170928/trim_PC_siconc2_SImon_HadGEM3-GC31-MM_hist-1950_r1i1p1f1_gn_195101-195112.nc`.
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i1p1f1/SImon/siconc2/gn/v20170928/trim_PC_siconc2_SImon_HadGEM3-GC31-MM_hist-1950_r1i1p1f1_gn_195201-195212.nc`.
+...
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i3p1f1/SImon/silandfast/gn/with_sispeed_clim/trim_PC_silandfast_SImon_HadGEM3-GC31-MM_hist-1950_r1i3p1f1_gn_201201-201212.nc`.
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i3p1f1/SImon/silandfast/gn/with_sispeed_clim/trim_PC_silandfast_SImon_HadGEM3-GC31-MM_hist-1950_r1i3p1f1_gn_201301-201312.nc`.
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i3p1f1/SImon/silandfast/gn/with_sispeed_clim/trim_PC_silandfast_SImon_HadGEM3-GC31-MM_hist-1950_r1i3p1f1_gn_201401-201412.nc`.
+```
+
+I can use my `list_available_variables()` function to confirm how many trimmed files were created for each variable.
+```python
+from arctichoke.path import list_available_variables
+
+list_available_variables(
+    source_id = 'HadGEM3-GC31-MM',
+    experiment_id = 'hist-1950',
+    list_var_mods = True,
+)
+```
+```
+{'MOHC/HadGEM3-GC31-MM': {'hist-1950': {'r1i1p1f1': {'Ofx': {'areacello': {'': 1}},
+    'SImon': {'siu': {'': 65},
+     'sithick': {'': 195, 'trim_CAA_': 65, 'trim_NS_': 65, 'trim_PC_': 65},
+     'siage': {'': 65},
+     'siconc': {'': 65, 'trim_NS_': 65},
+     'siv': {'': 65},
+     'sispeed': {'': 195, 'trim_CAA_': 65, 'trim_NS_': 65, 'trim_PC_': 65},
+     'sivol': {'': 65, 'trim_CAA_': 65},
+     'siconc2': {'trim_CAA_': 65, 'trim_NS_': 65, 'trim_PC_': 65},
+     'silandfast': {'trim_CAA_': 195, 'trim_NS_': 195, 'trim_PC_': 195},
+     'sipacked': {'trim_CAA_': 65, 'trim_NS_': 65, 'trim_PC_': 65},
+     'sislow': {'trim_CAA_': 65, 'trim_NS_': 65, 'trim_PC_': 65},
+     'siage2': {'trim_CAA_': 65},
+     'simultiyear': {'trim_CAA_': 65},
+     'siconc2_month_mean': {'trim_CAA_': 1},
+     'sispeed_month_mean': {'trim_CAA_': 1},
+     'sithick_month_mean': {'trim_CAA_': 1},
+     'sivol_month_mean': {'trim_CAA_': 1},
+     'silandfast_month_mean': {'trim_CAA_': 1},
+     'sipacked_month_mean': {'trim_CAA_': 1},
+     'sislow_month_mean': {'trim_CAA_': 1},
+     'simultiyear_month_mean': {'trim_CAA_': 1}}},
+   'r1i2p1f1': {'SImon': {'sithick': {'': 195,
+      'trim_CAA_': 65,
+      'trim_NS_': 65,
+...
+     'sivol_month_mean': {'trim_CAA_': 1},
+     'silandfast_month_mean': {'trim_CAA_': 1},
+     'sipacked_month_mean': {'trim_CAA_': 1},
+     'sislow_month_mean': {'trim_CAA_': 1},
+     'simultiyear_month_mean': {'trim_CAA_': 1}}}}}}
+```
+
+As a test, I can then use these trimmed data files to create a map of trends in a particular variable. 
+I'll choose `siconc2`.
+```python
+from arctichoke.params import PC_BBOX, sea_ice_vars
+from arctichoke.plot import make_trend_map 
+
+this_map = make_trend_map(
+    this_source_id = 'HadGEM3-GC31-MM',
+    this_var = 'siconc2',
+    this_variant_label = 'r1i1p1f1',
+    this_modification = 'trim_PC_',
+    select_summer = True,
+    map_bbox = PC_BBOX,
+    mark_bbox = True,
+    find_mean = True,
+    clims = sea_ice_vars['siconc']['trend_clims'],
+    add_region = False,
+    return_map = True,
+    verbose = False,
+)
+display(this_map)
+```
+![HadGEM3-GC31-MM_r1i1p1f1_siconc_PC_JJASO_trend_map.png](investigate_specific_regions-img/HadGEM3-GC31-MM_r1i1p1f1_siconc_PC_JJASO_trend_map.png)
 
 ---
 
@@ -702,6 +1049,9 @@ I will make a time series for each variable separately, but plot both the yearly
 ### Time series plots for Nares Strait
 [back to top](#investigating-specific-regions)
 
+#### Nares Strait time series for EC-Earth3P-HR
+[back to top](#investigating-specific-regions)
+
 First, I'll make time series plots for Nares Strait.
 In between each variable, I need to call `plt.show()` to have the plot show up, then `plt.clf()` to clear the figure so that the lines for the next variable aren't plotted onto the same axis as those of the previous variable.
 ```python
@@ -808,7 +1158,111 @@ for variable_id in [
 ```
 ![EC-Earth3P-HR_all_variants_silandfast_NS_JJASO_fldmean_packed_clim_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_silandfast_NS_JJASO_fldmean_packed_clim_trend.png)
 
+#### Nares Strait time series for HadGEM3-GC31-MM
+[back to top](#investigating-specific-regions)
+
+Here is the same series of plots as above, but for `HadGEM3-GC31-MM`.
+```python
+import matplotlib.pyplot as plt 
+
+from arctichoke.plot import plot_multi_time_series
+
+this_model = 'HadGEM3-GC31-MM'
+this_modification = 'trim_NS_'
+set_verbose = False
+
+for variable_id in [
+    'sispeed',
+    'siconc2',
+    # 'sislow',
+    # 'sipacked',
+]:
+    plot_multi_time_series(
+        this_source_id = this_model,
+        this_var = variable_id,
+        this_modification = this_modification,
+        verbose = set_verbose,
+    )
+    # Need to show, then clear the figure so they aren't plotted on top of one another
+    plt.show()
+    plt.clf()
+    if variable_id == 'siconc2':
+        plot_multi_time_series(
+            this_source_id = this_model,
+            this_var = variable_id,
+            this_modification = this_modification,
+            mask_by_sithick = True,
+            verbose = set_verbose,
+        )
+        plt.show()
+        plt.clf()
+
+for variable_id in [
+    'silandfast',
+]:
+    for this_version_id in [
+        'v20260617',
+        'with_sispeed_clim',
+        'with_siconc_clim',
+    ]:
+        plot_multi_time_series(
+            this_source_id = this_model,
+            this_var = variable_id,
+            this_modification = this_modification,
+            this_version_id = this_version_id,
+            verbose = set_verbose,
+        )
+        # Need to show, then clear the figure so they aren't plotted on top of one another
+        plt.show()
+        plt.clf()
+```
+```
+(plot_time_series) Slope of `sispeed_year_mean` regression line:  2.68859e-04
+(plot_time_series) Slope of `sispeed_year_mean` regression line:  2.82197e-04
+(plot_time_series) Slope of `sispeed_year_mean` regression line:  4.44678e-04
+```
+![HadGEM3-GC31-MM_all_variants_sispeed_NS_JJASO_fldmean_trend.png](investigate_specific_regions-img/HadGEM3-GC31-MM_all_variants_sispeed_NS_JJASO_fldmean_trend.png)
+
+```
+(plot_time_series) Slope of `siconc2_year_mean` regression line: -1.30954e-01
+(plot_time_series) Slope of `siconc2_year_mean` regression line: -1.63957e-02
+(plot_time_series) Slope of `siconc2_year_mean` regression line:  6.37614e-03
+```
+![HadGEM3-GC31-MM_all_variants_siconc2_NS_JJASO_fldmean_trend.png](investigate_specific_regions-img/HadGEM3-GC31-MM_all_variants_siconc2_NS_JJASO_fldmean_trend.png)
+
+```
+(plot_time_series) Slope of `siconc2_si2mthick_year_mean` regression line: -2.20039e-01
+(plot_time_series) Slope of `siconc2_si2mthick_year_mean` regression line: -4.41596e-02
+(plot_time_series) Slope of `siconc2_si2mthick_year_mean` regression line: -5.48348e-04
+```
+![HadGEM3-GC31-MM_all_variants_siconc2_si2mthick_NS_JJASO_fldmean_trend.png](investigate_specific_regions-img/HadGEM3-GC31-MM_all_variants_siconc2_si2mthick_NS_JJASO_fldmean_trend.png)
+
+```
+(plot_time_series) Slope of `silandfast_year_mean` regression line: -7.33972e-04
+(plot_time_series) Slope of `silandfast_year_mean` regression line: -3.29780e-04
+(plot_time_series) Slope of `silandfast_year_mean` regression line: -6.52373e-04
+```
+![HadGEM3-GC31-MM_all_variants_silandfast_NS_JJASO_fldmean_trend.png](investigate_specific_regions-img/HadGEM3-GC31-MM_all_variants_silandfast_NS_JJASO_fldmean_trend.png)
+
+```
+(plot_time_series) Slope of `silandfast_year_mean` regression line: -3.69631e-04
+(plot_time_series) Slope of `silandfast_year_mean` regression line: -1.21760e-04
+(plot_time_series) Slope of `silandfast_year_mean` regression line: -3.01859e-04
+```
+![HadGEM3-GC31-MM_all_variants_silandfast_NS_JJASO_sislow_clim_fldmean_trend.png](investigate_specific_regions-img/HadGEM3-GC31-MM_all_variants_silandfast_NS_JJASO_sislow_clim_fldmean_trend.png)
+
+```
+(plot_time_series) Slope of `silandfast_year_mean` regression line: -2.90965e-04
+(plot_time_series) Slope of `silandfast_year_mean` regression line: -1.73184e-04
+(plot_time_series) Slope of `silandfast_year_mean` regression line: -2.45152e-04
+```
+![HadGEM3-GC31-MM_all_variants_silandfast_NS_JJASO_sipacked_clim_fldmean_trend.png](investigate_specific_regions-img/HadGEM3-GC31-MM_all_variants_silandfast_NS_JJASO_sipacked_clim_fldmean_trend.png)
+
+
 ### Time series plots for Parry Channel
+[back to top](#investigating-specific-regions)
+
+#### Parry Channel time series for EC-Earth3P-HR
 [back to top](#investigating-specific-regions)
 
 Next, I'll make time series plots for Parry Channel.
@@ -916,3 +1370,103 @@ for variable_id in [
 (plot_time_series) Slope of `silandfast_year_mean` regression line: -3.21840e-03
 ```
 ![EC-Earth3P-HR_all_variants_silandfast_PC_JJASO_fldmean_packed_clim_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_silandfast_PC_JJASO_fldmean_packed_clim_trend.png)
+
+#### Parry Channel time series for HadGEM3-GC31-MM
+[back to top](#investigating-specific-regions)
+
+This shows the same plots as above for Parry Channel, but using data from `HadGEM3-GC31-MM`.
+```python
+import matplotlib.pyplot as plt 
+
+from arctichoke.plot import plot_multi_time_series
+
+this_model = 'HadGEM3-GC31-MM'
+this_modification = 'trim_PC_'
+set_verbose = False
+
+for variable_id in [
+    'sispeed',
+    'siconc2',
+    # 'sislow',
+    # 'sipacked',
+]:
+    plot_multi_time_series(
+        this_source_id = this_model,
+        this_var = variable_id,
+        this_modification = this_modification,
+        verbose = set_verbose,
+    )
+    # Need to show, then clear the figure so they aren't plotted on top of one another
+    plt.show()
+    plt.clf()
+    if variable_id == 'siconc2':
+        plot_multi_time_series(
+            this_source_id = this_model,
+            this_var = variable_id,
+            this_modification = this_modification,
+            mask_by_sithick = True,
+            verbose = set_verbose,
+        )
+        plt.show()
+        plt.clf()
+
+for variable_id in [
+    'silandfast',
+]:
+    for this_version_id in [
+        'v20260617',
+        'with_sispeed_clim',
+        'with_siconc_clim',
+    ]:
+        plot_multi_time_series(
+            this_source_id = this_model,
+            this_var = variable_id,
+            this_modification = this_modification,
+            this_version_id = this_version_id,
+            verbose = set_verbose,
+        )
+        # Need to show, then clear the figure so they aren't plotted on top of one another
+        plt.show()
+        plt.clf()
+```
+```
+(plot_time_series) Slope of `sispeed_year_mean` regression line:  4.94116e-04
+(plot_time_series) Slope of `sispeed_year_mean` regression line:  1.97457e-04
+(plot_time_series) Slope of `sispeed_year_mean` regression line:  1.16132e-04
+```
+![HadGEM3-GC31-MM_all_variants_sispeed_PC_JJASO_fldmean_trend.png](investigate_specific_regions-img/HadGEM3-GC31-MM_all_variants_sispeed_PC_JJASO_fldmean_trend.png)
+
+```
+(plot_time_series) Slope of `siconc2_year_mean` regression line: -2.62304e-01
+(plot_time_series) Slope of `siconc2_year_mean` regression line: -8.66367e-02
+(plot_time_series) Slope of `siconc2_year_mean` regression line: -9.80721e-02
+```
+![HadGEM3-GC31-MM_all_variants_siconc2_PC_JJASO_fldmean_trend.png](investigate_specific_regions-img/HadGEM3-GC31-MM_all_variants_siconc2_PC_JJASO_fldmean_trend.png)
+
+```
+(plot_time_series) Slope of `siconc2_si2mthick_year_mean` regression line: -2.79901e-01
+(plot_time_series) Slope of `siconc2_si2mthick_year_mean` regression line: -8.29012e-02
+(plot_time_series) Slope of `siconc2_si2mthick_year_mean` regression line: -7.40043e-02
+```
+![HadGEM3-GC31-MM_all_variants_siconc2_si2mthick_PC_JJASO_fldmean_trend.png](investigate_specific_regions-img/HadGEM3-GC31-MM_all_variants_siconc2_si2mthick_PC_JJASO_fldmean_trend.png)
+
+```
+(plot_time_series) Slope of `silandfast_year_mean` regression line: -2.25675e-03
+(plot_time_series) Slope of `silandfast_year_mean` regression line: -5.83566e-04
+(plot_time_series) Slope of `silandfast_year_mean` regression line: -5.21763e-04
+```
+![HadGEM3-GC31-MM_all_variants_silandfast_PC_JJASO_fldmean_trend.png](investigate_specific_regions-img/HadGEM3-GC31-MM_all_variants_silandfast_PC_JJASO_fldmean_trend.png)
+
+```
+(plot_time_series) Slope of `silandfast_year_mean` regression line: -4.70764e-04
+(plot_time_series) Slope of `silandfast_year_mean` regression line: -8.62516e-05
+(plot_time_series) Slope of `silandfast_year_mean` regression line: -1.32509e-04
+```
+![HadGEM3-GC31-MM_all_variants_silandfast_PC_JJASO_sislow_clim_fldmean_trend.png](investigate_specific_regions-img/HadGEM3-GC31-MM_all_variants_silandfast_PC_JJASO_sislow_clim_fldmean_trend.png)
+
+```
+(plot_time_series) Slope of `silandfast_year_mean` regression line: -1.95026e-03
+(plot_time_series) Slope of `silandfast_year_mean` regression line: -5.43968e-04
+(plot_time_series) Slope of `silandfast_year_mean` regression line: -4.18138e-04
+```
+![HadGEM3-GC31-MM_all_variants_silandfast_PC_JJASO_sipacked_clim_fldmean_trend.png](investigate_specific_regions-img/HadGEM3-GC31-MM_all_variants_silandfast_PC_JJASO_sipacked_clim_fldmean_trend.png)
