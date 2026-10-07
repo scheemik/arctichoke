@@ -18,22 +18,22 @@ sea_ice_vars = {
     },
     'siconc': {
         'plot_range': [0, 100],
-        'trend_clims': [-0.8, 0.1],
+        'trend_clims': [-0.8, 0.8],
         'marker_var': False,
     },
     'siconc2': {
         'plot_range': [0, 100],
-        'trend_clims': [-0.8, 0.1],
+        'trend_clims': [-0.8, 0.8],
         'marker_var': False,
     },
     'siconc_si2mthick': {
         'plot_range': [0, 100],
-        'trend_clims': [-0.8, 0.1],
+        'trend_clims': [-0.8, 0.8],
         'marker_var': False,
     },
     'siconc2_si2mthick': {
         'plot_range': [0, 100],
-        'trend_clims': [-0.8, 0.1],
+        'trend_clims': [-0.8, 0.8],
         'marker_var': False,
     },
     'sispeed': {
@@ -43,7 +43,7 @@ sea_ice_vars = {
     },
     'sithick': {
         'plot_range': [0, 10],
-        'trend_clims': [-0.3, 0.1],
+        'trend_clims': [-0.25, 0.25],
         'marker_var': False,
     },
     'siu': {
@@ -64,7 +64,8 @@ sea_ice_vars = {
     # Marker variables
     'silandfast': {
         'plot_range': None,
-        'trend_clims': [-0.07, 0.04],
+        # 'trend_clims': [-0.07, 0.04],
+        'trend_clims': [-0.04, 0.04],
         'marker_var': True,
         'label_name': 'Landfast Ice',
     },
@@ -76,13 +77,15 @@ sea_ice_vars = {
     },
     'sipacked': {
         'plot_range': None,
-        'trend_clims': [-0.06, 0.02],
+        # 'trend_clims': [-0.06, 0.02],
+        'trend_clims': [-0.04, 0.04],
         'marker_var': True,
         'label_name': 'Packed Ice',
     },
     'sislow': {
         'plot_range': None,
-        'trend_clims': [-0.05, 0.05],
+        # 'trend_clims': [-0.05, 0.05],
+        'trend_clims': [-0.04, 0.04],
         'marker_var': True,
         'label_name': 'Slow Ice',
     },
