@@ -300,7 +300,7 @@ def make_label(
             warnings.warn(f"(make_label) `dataset` has no `units` attribute. Skipping units in label.", UserWarning)
     # Shorten the label, if applicable
     if shorten:
-        for phrase in [' (Ocean Grid)', ' (1: Yes, 0: No)']:
+        for phrase in [' (Ocean Grid)', ' (1: Yes, 0: No)', ' Masked']:
             if phrase in dataset_label:
                 # Remove the phrase from the label by replacing it with a blank string
                 dataset_label = dataset_label.replace(phrase, '')
@@ -311,5 +311,10 @@ def make_label(
             dataset_label = dataset_label.replace('Area Fraction', 'Conc.')
             if verbose:
                 print(f"(make_label) Replaced phrase 'Area Fraction' in label with 'Conc.'")
+        if 'Recalculated' in dataset_label:
+            # Shorten this part of the label which indicates Recalculated Sea Ice Concentration
+            dataset_label = dataset_label.replace('Recalculated', 'RC')
+            if verbose:
+                print(f"(make_label) Replaced phrase 'Recalculated' in label with 'RC'")
     
     return dataset_label
