@@ -270,7 +270,7 @@ def quadmesh_map(
     if verbose:
         print(f"(quadmesh_map) `diverging_cbar`: {diverging_cbar}")
         print(f"(quadmesh_map) `cmin`: {cmin}, `cmax`: {cmax}")
-    if diverging_cbar == True and cmin != -cmax:
+    if cmin != -cmax:
         qm_map_plot = set_cbar_lims(
             qm_map_plot,
             cmin,
