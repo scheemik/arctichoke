@@ -155,7 +155,7 @@ def make_mask(
             if not var_name == var:
                 raise ValueError(f"(make_mask) `this_dataset` must contain the variable `{var}`. Available variables: {var_name}")
         elif isinstance(var_name, type([])):
-            if not siconc_var in var_name:
+            if not var in var_name:
                 raise ValueError(f"(make_mask) `this_dataset` must contain the variable `{var}`. Available variables: {var_name}")
         else:
             raise TypeError(f"(make_mask) `get_variable_name` returned something other than a string or list: {var_name}")
