@@ -96,16 +96,27 @@ def find_significance(
 
     # Get the minimum possible integer to cover all reasonable values
     numpy_int32_min = np.iinfo(np.int32).min
+    val_inside_range = 0
+    val_outside_range = 1
     # Mask out trends that aren't significant below the threshold
     trend_sig_dataset = make_mask(
         trend_dataset,
         var = f'{var}_significance_test',
         mask_var_name = f'{var}_trends_sig',
         mask_this_range = [numpy_int32_min, 0],
-        val_inside_range = 0,
-        val_outside_range = 1,
+        val_inside_range = val_inside_range,
+        val_outside_range = val_outside_range,
         verbose = verbose,
     )
     # Add the trend significance to the trend dataset
     trend_dataset[f'{var}_trends_sig'] = trend_sig_dataset[f'{var}_trends_sig']
+
+    # Get the long name of the original dataset, if available
+    try:
+        old_long_name = dataset[var].attrs['long_name']
+    except:
+        old_long_name = var
+    # Modify the attributes of the dataset to reflect the changes
+    trend_dataset[f'{var}_trends_sig'].attrs['long_name'] = f'Stat. sig. trend in {old_long_name}'
+    trend_dataset[f'{var}_trends_sig'].attrs['units'] = f'{val_inside_range}: False, {val_outside_range}: True'
     return trend_dataset
