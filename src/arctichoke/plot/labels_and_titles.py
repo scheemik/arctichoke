@@ -3,7 +3,7 @@ import warnings
 import xarray as xr
 
 from arctichoke.dataset.get_variable import get_variable_name
-from arctichoke.params import NS_BBOX, PC_BBOX
+from arctichoke.params import NS_BBOX, PC_BBOX, QW_BBOX
 from arctichoke.verify.verify_path import verify_path
 
 def make_title(
@@ -121,6 +121,8 @@ def make_title(
                 region_label = 'Nares Strait '
             elif f"-sellonlatbox,{PC_BBOX[3]+360},{PC_BBOX[2]+360},{PC_BBOX[1]},{PC_BBOX[0]}" in dataset.attrs['history']:
                 region_label = 'Parry Channel '
+            elif f"-sellonlatbox,{QW_BBOX[3]+360},{QW_BBOX[2]+360},{QW_BBOX[1]},{QW_BBOX[0]}" in dataset.attrs['history']:
+                region_label = 'QEI West '
             else:
                 region_label = ''
             dataset_title = f"{dataset_title}{region_label}"
