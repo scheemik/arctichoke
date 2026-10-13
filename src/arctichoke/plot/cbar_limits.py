@@ -4,7 +4,7 @@ import holoviews as hv
 import numpy as np
 
 def set_cbar_lims(
-    hv_overlay: (hv.core.overlay.Overlay, hv.element.raster.QuadMesh),
+    hv_overlay: (hv.core.overlay.Overlay, hv.core.spaces.DynamicMap, hv.element.raster.QuadMesh),
     cmin: (int, float),
     cmax: (int, float),
     verbose: bool = False,
@@ -17,7 +17,7 @@ def set_cbar_lims(
 
         Parameters
         ----------
-        hv_overlay : `holoviews.core.overlay.Overlay`, `holoviews.element.raster.QuadMesh`
+        hv_overlay : `holoviews.core.overlay.Overlay`, `holoviews.core.spaces.DynamicMap`, `holoviews.element.raster.QuadMesh`
             The overlay object for which to construct the limited colorbar.
         cmin : `int`, `float`
             The minimum display value for the colormap. 
@@ -39,8 +39,8 @@ def set_cbar_lims(
         >>> from arctichoke.plot.cbar_limits import set_cbar_lims
     """
     # Verify input arguments
-    if not isinstance(hv_overlay, (hv.core.overlay.Overlay, hv.element.raster.QuadMesh)):
-        raise TypeError(f"(set_cbar_lims) `hv_overlay` must be `hv.core.overlay.Overlay` or `hv.element.raster.QuadMesh`. Got type: {type(hv_overlay)}")
+    if not isinstance(hv_overlay, (hv.core.overlay.Overlay, hv.core.spaces.DynamicMap, hv.element.raster.QuadMesh)):
+        raise TypeError(f"(set_cbar_lims) `hv_overlay` must be `hv.core.overlay.Overlay`, `holoviews.core.spaces.DynamicMap`, or `hv.element.raster.QuadMesh`. Got type: {type(hv_overlay)}")
     if not isinstance(cmin, (int, float)):
         raise TypeError(f"(set_cbar_lims) `cmin` must be `int` or `float`. Got type: {type(cmin)}")
     if not isinstance(cmax, (int, float)):
