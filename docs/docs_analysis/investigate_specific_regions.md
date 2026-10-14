@@ -1128,33 +1128,33 @@ for variable_id in [
 ```
 ![EC-Earth3P-HR_all_variants_siconc_NS_JJASO_fldmean_si2mthick_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_siconc_NS_JJASO_fldmean_si2mthick_trend.png)
 ```console
-(plot_time_series) Slope of `sislow_year_mean` regression line: -2.30321e-03
-(plot_time_series) Slope of `sislow_year_mean` regression line:  6.77431e-04
-(plot_time_series) Slope of `sislow_year_mean` regression line: -8.62849e-03
+(plot_time_series) Slope of `sislow_year_sum` regression line: -1.15160e-02
+(plot_time_series) Slope of `sislow_year_sum` regression line:  3.38715e-03
+(plot_time_series) Slope of `sislow_year_sum` regression line: -4.31424e-02
 ```
 ![EC-Earth3P-HR_all_variants_sislow_NS_JJASO_fldmean_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_sislow_NS_JJASO_fldmean_trend.png)
 ```console
-(plot_time_series) Slope of `sipacked_year_mean` regression line: -2.82286e-03
-(plot_time_series) Slope of `sipacked_year_mean` regression line:  6.40970e-04
-(plot_time_series) Slope of `sipacked_year_mean` regression line: -8.57694e-03
+(plot_time_series) Slope of `sipacked_year_sum` regression line: -1.41143e-02
+(plot_time_series) Slope of `sipacked_year_sum` regression line:  3.20485e-03
+(plot_time_series) Slope of `sipacked_year_sum` regression line: -4.28847e-02
 ```
 ![EC-Earth3P-HR_all_variants_sipacked_NS_JJASO_fldmean_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_sipacked_NS_JJASO_fldmean_trend.png)
 ```console
-(plot_time_series) Slope of `silandfast_year_mean` regression line: -2.48651e-03
-(plot_time_series) Slope of `silandfast_year_mean` regression line:  6.79492e-04
-(plot_time_series) Slope of `silandfast_year_mean` regression line: -8.78875e-03
+(plot_time_series) Slope of `silandfast_year_sum` regression line: -1.24325e-02
+(plot_time_series) Slope of `silandfast_year_sum` regression line:  3.39746e-03
+(plot_time_series) Slope of `silandfast_year_sum` regression line: -4.39438e-02
 ```
 ![EC-Earth3P-HR_all_variants_silandfast_NS_JJASO_fldmean_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_silandfast_NS_JJASO_fldmean_trend.png)
 ```console
-(plot_time_series) Slope of `silandfast_year_mean` regression line: -2.78657e-04
-(plot_time_series) Slope of `silandfast_year_mean` regression line: -3.49085e-04
-(plot_time_series) Slope of `silandfast_year_mean` regression line: -1.49801e-03
+(plot_time_series) Slope of `silandfast_year_sum` regression line: -1.39328e-03
+(plot_time_series) Slope of `silandfast_year_sum` regression line: -1.74543e-03
+(plot_time_series) Slope of `silandfast_year_sum` regression line: -7.49006e-03
 ```
 ![EC-Earth3P-HR_all_variants_silandfast_NS_JJASO_fldmean_slow_clim_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_silandfast_NS_JJASO_fldmean_slow_clim_trend.png)
 ```console
-(plot_time_series) Slope of `silandfast_year_mean` regression line: -9.72673e-04
-(plot_time_series) Slope of `silandfast_year_mean` regression line:  1.64588e-04
-(plot_time_series) Slope of `silandfast_year_mean` regression line: -4.09693e-03
+(plot_time_series) Slope of `silandfast_year_sum` regression line: -4.86336e-03
+(plot_time_series) Slope of `silandfast_year_sum` regression line:  8.22941e-04
+(plot_time_series) Slope of `silandfast_year_sum` regression line: -2.04846e-02
 ```
 ![EC-Earth3P-HR_all_variants_silandfast_NS_JJASO_fldmean_packed_clim_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_silandfast_NS_JJASO_fldmean_packed_clim_trend.png)
 
@@ -1238,23 +1238,23 @@ for variable_id in [
 ![HadGEM3-GC31-MM_all_variants_siconc2_si2mthick_NS_JJASO_fldmean_trend.png](investigate_specific_regions-img/HadGEM3-GC31-MM_all_variants_siconc2_si2mthick_NS_JJASO_fldmean_trend.png)
 
 ```
-(plot_time_series) Slope of `silandfast_year_mean` regression line: -7.33972e-04
-(plot_time_series) Slope of `silandfast_year_mean` regression line: -3.29780e-04
-(plot_time_series) Slope of `silandfast_year_mean` regression line: -6.52373e-04
+(plot_time_series) Slope of `silandfast_year_sum` regression line: -3.68894e-03
+(plot_time_series) Slope of `silandfast_year_sum` regression line: -1.64123e-03
+(plot_time_series) Slope of `silandfast_year_sum` regression line: -3.29077e-03
 ```
 ![HadGEM3-GC31-MM_all_variants_silandfast_NS_JJASO_fldmean_trend.png](investigate_specific_regions-img/HadGEM3-GC31-MM_all_variants_silandfast_NS_JJASO_fldmean_trend.png)
 
 ```
-(plot_time_series) Slope of `silandfast_year_mean` regression line: -3.69631e-04
-(plot_time_series) Slope of `silandfast_year_mean` regression line: -1.21760e-04
-(plot_time_series) Slope of `silandfast_year_mean` regression line: -3.01859e-04
+(plot_time_series) Slope of `silandfast_year_sum` regression line: -1.86724e-03
+(plot_time_series) Slope of `silandfast_year_sum` regression line: -6.01252e-04
+(plot_time_series) Slope of `silandfast_year_sum` regression line: -1.53820e-03
 ```
 ![HadGEM3-GC31-MM_all_variants_silandfast_NS_JJASO_sislow_clim_fldmean_trend.png](investigate_specific_regions-img/HadGEM3-GC31-MM_all_variants_silandfast_NS_JJASO_sislow_clim_fldmean_trend.png)
 
 ```
-(plot_time_series) Slope of `silandfast_year_mean` regression line: -2.90965e-04
-(plot_time_series) Slope of `silandfast_year_mean` regression line: -1.73184e-04
-(plot_time_series) Slope of `silandfast_year_mean` regression line: -2.45152e-04
+(plot_time_series) Slope of `silandfast_year_sum` regression line: -1.50460e-03
+(plot_time_series) Slope of `silandfast_year_sum` regression line: -8.62236e-04
+(plot_time_series) Slope of `silandfast_year_sum` regression line: -1.25308e-03
 ```
 ![HadGEM3-GC31-MM_all_variants_silandfast_NS_JJASO_sipacked_clim_fldmean_trend.png](investigate_specific_regions-img/HadGEM3-GC31-MM_all_variants_silandfast_NS_JJASO_sipacked_clim_fldmean_trend.png)
 
@@ -1341,33 +1341,33 @@ for variable_id in [
 ```
 ![EC-Earth3P-HR_all_variants_siconc_PC_JJASO_fldmean_si2mthick_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_siconc_PC_JJASO_fldmean_si2mthick_trend.png)
 ```console
-(plot_time_series) Slope of `sislow_year_mean` regression line: -1.16408e-03
-(plot_time_series) Slope of `sislow_year_mean` regression line: -3.19322e-03
-(plot_time_series) Slope of `sislow_year_mean` regression line: -3.17292e-03
+(plot_time_series) Slope of `sislow_year_sum` regression line: -5.82038e-03
+(plot_time_series) Slope of `sislow_year_sum` regression line: -1.59661e-02
+(plot_time_series) Slope of `sislow_year_sum` regression line: -1.58646e-02
 ```
 ![EC-Earth3P-HR_all_variants_sislow_PC_JJASO_fldmean_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_sislow_PC_JJASO_fldmean_trend.png)
 ```console
-(plot_time_series) Slope of `sipacked_year_mean` regression line: -2.65774e-03
-(plot_time_series) Slope of `sipacked_year_mean` regression line: -4.97232e-03
-(plot_time_series) Slope of `sipacked_year_mean` regression line: -6.36033e-03
+(plot_time_series) Slope of `sipacked_year_sum` regression line: -1.32887e-02
+(plot_time_series) Slope of `sipacked_year_sum` regression line: -2.48616e-02
+(plot_time_series) Slope of `sipacked_year_sum` regression line: -3.18017e-02
 ```
 ![EC-Earth3P-HR_all_variants_sipacked_PC_JJASO_fldmean_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_sipacked_PC_JJASO_fldmean_trend.png)
 ```console
-(plot_time_series) Slope of `silandfast_year_mean` regression line: -1.27364e-03
-(plot_time_series) Slope of `silandfast_year_mean` regression line: -3.27269e-03
-(plot_time_series) Slope of `silandfast_year_mean` regression line: -3.49074e-03
+(plot_time_series) Slope of `silandfast_year_sum` regression line: -6.36820e-03
+(plot_time_series) Slope of `silandfast_year_sum` regression line: -1.63635e-02
+(plot_time_series) Slope of `silandfast_year_sum` regression line: -1.74537e-02
 ```
 ![EC-Earth3P-HR_all_variants_silandfast_PC_JJASO_fldmean_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_silandfast_PC_JJASO_fldmean_trend.png)
 ```console
-(plot_time_series) Slope of `silandfast_year_mean` regression line: -4.86185e-05
-(plot_time_series) Slope of `silandfast_year_mean` regression line: -2.64583e-04
-(plot_time_series) Slope of `silandfast_year_mean` regression line: -4.29724e-04
+(plot_time_series) Slope of `silandfast_year_sum` regression line: -2.43093e-04
+(plot_time_series) Slope of `silandfast_year_sum` regression line: -1.32291e-03
+(plot_time_series) Slope of `silandfast_year_sum` regression line: -2.14862e-03
 ```
 ![EC-Earth3P-HR_all_variants_silandfast_PC_JJASO_fldmean_slow_clim_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_silandfast_PC_JJASO_fldmean_slow_clim_trend.png)
 ```console
-(plot_time_series) Slope of `silandfast_year_mean` regression line: -1.15374e-03
-(plot_time_series) Slope of `silandfast_year_mean` regression line: -3.03223e-03
-(plot_time_series) Slope of `silandfast_year_mean` regression line: -3.21840e-03
+(plot_time_series) Slope of `silandfast_year_sum` regression line: -5.76872e-03
+(plot_time_series) Slope of `silandfast_year_sum` regression line: -1.51612e-02
+(plot_time_series) Slope of `silandfast_year_sum` regression line: -1.60920e-02
 ```
 ![EC-Earth3P-HR_all_variants_silandfast_PC_JJASO_fldmean_packed_clim_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_silandfast_PC_JJASO_fldmean_packed_clim_trend.png)
 
@@ -1451,22 +1451,22 @@ for variable_id in [
 ![HadGEM3-GC31-MM_all_variants_siconc2_si2mthick_PC_JJASO_fldmean_trend.png](investigate_specific_regions-img/HadGEM3-GC31-MM_all_variants_siconc2_si2mthick_PC_JJASO_fldmean_trend.png)
 
 ```
-(plot_time_series) Slope of `silandfast_year_mean` regression line: -2.25675e-03
-(plot_time_series) Slope of `silandfast_year_mean` regression line: -5.83566e-04
-(plot_time_series) Slope of `silandfast_year_mean` regression line: -5.21763e-04
+(plot_time_series) Slope of `silandfast_year_sum` regression line: -1.12843e-02
+(plot_time_series) Slope of `silandfast_year_sum` regression line: -2.91749e-03
+(plot_time_series) Slope of `silandfast_year_sum` regression line: -2.60937e-03
 ```
 ![HadGEM3-GC31-MM_all_variants_silandfast_PC_JJASO_fldmean_trend.png](investigate_specific_regions-img/HadGEM3-GC31-MM_all_variants_silandfast_PC_JJASO_fldmean_trend.png)
 
 ```
-(plot_time_series) Slope of `silandfast_year_mean` regression line: -4.70764e-04
-(plot_time_series) Slope of `silandfast_year_mean` regression line: -8.62516e-05
-(plot_time_series) Slope of `silandfast_year_mean` regression line: -1.32509e-04
+(plot_time_series) Slope of `silandfast_year_sum` regression line: -2.35436e-03
+(plot_time_series) Slope of `silandfast_year_sum` regression line: -4.30923e-04
+(plot_time_series) Slope of `silandfast_year_sum` regression line: -6.63102e-04
 ```
 ![HadGEM3-GC31-MM_all_variants_silandfast_PC_JJASO_sislow_clim_fldmean_trend.png](investigate_specific_regions-img/HadGEM3-GC31-MM_all_variants_silandfast_PC_JJASO_sislow_clim_fldmean_trend.png)
 
 ```
-(plot_time_series) Slope of `silandfast_year_mean` regression line: -1.95026e-03
-(plot_time_series) Slope of `silandfast_year_mean` regression line: -5.43968e-04
-(plot_time_series) Slope of `silandfast_year_mean` regression line: -4.18138e-04
+(plot_time_series) Slope of `silandfast_year_sum` regression line: -9.75152e-03
+(plot_time_series) Slope of `silandfast_year_sum` regression line: -2.71984e-03
+(plot_time_series) Slope of `silandfast_year_sum` regression line: -2.09174e-03
 ```
 ![HadGEM3-GC31-MM_all_variants_silandfast_PC_JJASO_sipacked_clim_fldmean_trend.png](investigate_specific_regions-img/HadGEM3-GC31-MM_all_variants_silandfast_PC_JJASO_sipacked_clim_fldmean_trend.png)
