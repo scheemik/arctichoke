@@ -3,7 +3,7 @@ import warnings
 import xarray as xr
 
 from arctichoke.dataset.get_variable import get_variable_name
-from arctichoke.params import NS_BBOX, PC_BBOX
+from arctichoke.params import NS_BBOX, PC_BBOX, QW_BBOX, QE_BBOX
 from arctichoke.verify.verify_path import verify_path
 
 def make_title(
@@ -73,7 +73,7 @@ def make_title(
             # Verify this is a valid path
             datafile = verify_path(datafile)
             if not datafile.endswith('.nc'):
-                raise TypeError(f"(plot_time_series) `datafile` must be a `.nc` filepath. Got: {datafile}")
+                raise TypeError(f"(make_title) `datafile` must be a `.nc` filepath. Got: {datafile}")
         # Load all the files at once
         dataset = xr.open_mfdataset(dataset, data_vars='all')
     elif not isinstance(dataset, (xr.Dataset)):
@@ -112,15 +112,19 @@ def make_title(
         elif 'parent_variant_label' in attr_keys:
             variant_label_attr = 'parent_variant_label'
         else:
-            raise KeyError(f"(make_label) `dataset` has no `variant_label` or `parent_variant_label` attribute. Available attributes: {attr_keys}")
+            raise KeyError(f"(make_title) `dataset` has no `variant_label` or `parent_variant_label` attribute. Available attributes: {attr_keys}")
         dataset_title = f"{dataset_title}{dataset.attrs[variant_label_attr]} "
     # Add region
     if add_region:
         if 'history' in attr_keys:
-            if f"-sellonlatbox,{NS_BBOX[3]+360},{NS_BBOX[2]+360},{NS_BBOX[1]},{NS_BBOX[0]}" in dataset.attrs['history']:
+            if f"-sellonlatbox,{NS_BBOX[3]},{NS_BBOX[2]},{NS_BBOX[1]},{NS_BBOX[0]}" in dataset.attrs['history'] or f"-sellonlatbox,{NS_BBOX[3]+360},{NS_BBOX[2]+360},{NS_BBOX[1]},{NS_BBOX[0]}" in dataset.attrs['history']:
                 region_label = 'Nares Strait '
-            elif f"-sellonlatbox,{PC_BBOX[3]+360},{PC_BBOX[2]+360},{PC_BBOX[1]},{PC_BBOX[0]}" in dataset.attrs['history']:
+            elif f"-sellonlatbox,{PC_BBOX[3]},{PC_BBOX[2]},{PC_BBOX[1]},{PC_BBOX[0]}" in dataset.attrs['history'] or f"-sellonlatbox,{PC_BBOX[3]+360},{PC_BBOX[2]+360},{PC_BBOX[1]},{PC_BBOX[0]}" in dataset.attrs['history']:
                 region_label = 'Parry Channel '
+            elif f"-sellonlatbox,{QW_BBOX[3]},{QW_BBOX[2]},{QW_BBOX[1]},{QW_BBOX[0]}" in dataset.attrs['history'] or f"-sellonlatbox,{QW_BBOX[3]+360},{QW_BBOX[2]+360},{QW_BBOX[1]},{QW_BBOX[0]}" in dataset.attrs['history']:
+                region_label = 'QEI West '
+            elif f"-sellonlatbox,{QE_BBOX[3]},{QE_BBOX[2]},{QE_BBOX[1]},{QE_BBOX[0]}" in dataset.attrs['history'] or f"-sellonlatbox,{QE_BBOX[3]+360},{QE_BBOX[2]+360},{QE_BBOX[1]},{QE_BBOX[0]}" in dataset.attrs['history']:
+                region_label = 'QEI East '
             else:
                 region_label = ''
             dataset_title = f"{dataset_title}{region_label}"
@@ -239,7 +243,7 @@ def make_label(
             # Verify this is a valid path
             datafile = verify_path(datafile)
             if not datafile.endswith('.nc'):
-                raise TypeError(f"(plot_time_series) `datafile` must be a `.nc` filepath. Got: {datafile}")
+                raise TypeError(f"(make_label) `datafile` must be a `.nc` filepath. Got: {datafile}")
         # Load all the files at once
         dataset = xr.open_mfdataset(dataset, data_vars='all')
     elif not isinstance(dataset, (xr.Dataset, xr.DataArray)):

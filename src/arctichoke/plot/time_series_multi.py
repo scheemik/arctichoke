@@ -15,7 +15,7 @@ def plot_multi_time_series(
     add_regression: bool = True,
     select_summer: bool = True,
     call_sum_by_year: bool = True,
-    find_mean: bool = True,
+    find_mean: bool = None,
     mask_by_sithick: bool = False,
     verbose: bool = False,
     **kwargs,
@@ -47,10 +47,10 @@ def plot_multi_time_series(
         call_sum_by_year : `bool`, `None`, optional
             Whether to use `sum_by_year()` to sum the variable across each year before taking the trends across time.
             Default is `True`.
-        find_mean : `bool`, optional
+        find_mean : `None`, `bool`, optional
             Whether to find the mean instead of sum when calling `sum_by_year()`.
             This is only relevant when `call_sum_by_year` is `True` or when it is `None` and `this_var` is a marker variable.
-            Default is `True`.
+            Default is `None`.
         mask_by_sithick : `bool`, optional
             Whether to call `make_sithick_masked_climatology()` to mask the specified data to where sea ice thickness is greater than the default thickness (2 meters).
             Default is `False`.
@@ -87,6 +87,34 @@ def plot_multi_time_series(
         raise TypeError(f"(plot_multi_time_series) `mask_by_sithick` must be a `bool`. Got type: {type(mask_by_sithick)}")
     if not isinstance(verbose, bool):
         raise TypeError(f"(plot_multi_time_series) `verbose` must be a `bool`. Got type: {type(verbose)}")
+
+    # Check whether this variable is in the sea ice vars dictionary
+    if this_var in sps.sea_ice_vars.keys():
+        # Check whether this is a marker variable or not
+        is_this_var_marker = sps.sea_ice_vars[this_var]['marker_var']
+        # Assign values based on whether `this_var` is a regular or marker variable
+        if isinstance(call_sum_by_year, type(None)):
+            if is_this_var_marker:
+                call_sum_by_year = True
+            else:
+                call_sum_by_year = False 
+            if verbose:
+                print(f"(plot_multi_time_series) `this_var` ({this_var}) is a marker variable: {call_sum_by_year}")
+        if isinstance(find_mean, type(None)):
+            if is_this_var_marker:
+                find_mean = False
+                if verbose:
+                    print(f"(plot_multi_time_series) `find_mean` was `None`, but `this_var` ({this_var}) is a marker variable, thus set `find_mean` to be `False`")
+            else:
+                find_mean = True 
+                if verbose:
+                    print(f"(plot_multi_time_series) `find_mean` was `None`, but `this_var` ({this_var}) is not a marker variable, thus set `find_mean` to be `True`")
+    else:
+        # Assign default values assuming regular variable
+        if isinstance(call_sum_by_year, type(None)):
+            call_sum_by_year = False 
+        if isinstance(find_mean, type(None)):
+            find_mean = True 
     
     # Get the list of variant labels for this model
     variant_label_list = list_variant_labels(
@@ -120,17 +148,7 @@ def plot_multi_time_series(
                     data_vars = 'all'
                 )
             # 
-            if isinstance(call_sum_by_year, type(None)):
-                # Check whether this variable is in the sea ice vars dictionary
-                if this_var in sps.sea_ice_vars.keys():
-                    # Check whether this is a marker variable or not
-                    if sps.sea_ice_vars[this_var]['marker_var']: 
-                        call_sum_by_year = True 
-                    else:
-                        call_sum_by_year = False
-                if verbose:
-                    print(f"(plot_multi_time_series) `this_var` ({this_var}) is marker variable: {call_sum_by_year}")
-            # Sum the data across time
+            # Sum / average the data across time
             if call_sum_by_year:
                 ## Overwrite the `dataset` variable to reduce memory overhead
                 dataset = sum_by_year(
