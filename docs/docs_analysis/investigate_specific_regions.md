@@ -8,6 +8,7 @@ This assumes you have already gone through {doc}`Trimming data to the CAA region
 - [Defining specific regions](#defining-specific-regions)
     - [Defining the Nares Strait region](#defining-the-nares-strait-region)
     - [Defining the Parry Channel region](#defining-the-parry-channel-region)
+    - [Defining the Queen Elizabeth Islands regions](#defining-the-queen-elizabeth-islands-regions)
 - [Trimming data to specific regions](#trimming-data-to-specific-regions)
     - [Trimming data to Nares Strait](#trimming-data-to-nares-strait)
         - [Trimming EC-Earth3P-HR data to Nares Strait](#trimming-ec-earth3p-hr-data-to-nares-strait)
@@ -15,6 +16,10 @@ This assumes you have already gone through {doc}`Trimming data to the CAA region
     - [Trimming data to Parry Channel](#trimming-data-to-parry-channel)
         - [Trimming EC-Earth3P-HR data to Parry Channel](#trimming-ec-earth3p-hr-data-to-parry-channel)
         - [Trimming HadGEM3-GC31 data to Parry Channel](#trimming-hadgem3-gc31-mm-data-to-parry-channel)
+    - [Trimming data to QEI West](#trimming-data-to-qei-west)
+        - [Trimming EC-Earth3P-HR data to QEI West](#trimming-ec-earth3p-hr-data-to-qei-west)
+    - [Trimming data to QEI East](#trimming-data-to-qei-east)
+        - [Trimming EC-Earth3P-HR data to QEI East](#trimming-ec-earth3p-hr-data-to-qei-east)
 - [Finding spatial averages](#finding-spatial-averages)
     - [Finding spatial averages of concentration](#finding-spatial-averages-of-concentration)
     - [Finding spatial averages of concentration where thickness is > 2 m](#finding-spatial-averages-of-concentration-where-thickness-is--2-m)
@@ -25,6 +30,10 @@ This assumes you have already gone through {doc}`Trimming data to the CAA region
     - [Time series plots for Parry Channel](#time-series-plots-for-parry-channel)
         - [Parry Channel time series for EC-Earth3P-HR](#parry-channel-time-series-for-ec-earth3p-hr)
         - [Parry Channel time series for HadGEM3-GC31-MM](#parry-channel-time-series-for-hadgem3-gc31-mm)
+    - [Time series plots for QEI West](#time-series-plots-for-qei-west)
+        - [QEI West time series for EC-Earth3P-HR](#qei-west-time-series-for-ec-earth3p-hr)
+    - [Time series plots for QEI East](#time-series-plots-for-qei-east)
+        - [QEI East time series for EC-Earth3P-HR](#qei-east-time-series-for-ec-earth3p-hr)
 
 ---
 
@@ -183,6 +192,155 @@ quadmesh_map(
 )
 ```
 ![EC-Earth3P-HR_r1i1p2f1_siconc_PC_clim_mean_map.png](investigate_specific_regions-img/EC-Earth3P-HR_r1i1p2f1_siconc_PC_clim_mean_map.png)
+
+### Defining the Queen Elizabeth Islands regions
+[back to top](#investigating-specific-regions)
+
+For this study, I am still looking to see whether I can find a citation where a bounding box for the Queen Elizabeth Islands (QEI) is defined.
+I'm using Howell and Brady 2019 Figure 1 as a guide for defining the QEI West region.
+I define the bounding box for the QEI West region in the `params` module.
+```python
+from arctichoke.params import QW_BBOX
+
+QW_BBOX
+```
+```
+[79, 75, -95, -118]
+```
+
+As an example, I'll load a `siconc` file from `EC-Earth3P-HR` and trim it to the QEI West region.
+Then, I'll plot just that data for January 1950 on the map, including the `mark_bbox` argument to highlight the bounding box I selected.
+```python
+from arctichoke.dataset import trim_latlon
+import arctichoke.params as sps
+
+dataset = trim_latlon(
+    dataset = '/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/siconc/gn/v20181212/trim_CAA_siconc_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_195001-195012.nc',
+    map_bbox = sps.QW_BBOX,
+    precise_trim = True,
+)
+
+from arctichoke.plot import quadmesh_map
+
+this_map = quadmesh_map(
+    dataset.isel(time=0),
+    'siconc',
+    map_bbox = sps.QW_BBOX,
+    mark_bbox = True,
+    clims = sps.sea_ice_vars['siconc']['plot_range'],
+    add_region = False,
+)
+display(this_map)
+```
+![EC-Earth3P-HR_r1i1p2f1_siconc_QW_1950-01_map.png](investigate_specific_regions-img/EC-Earth3P-HR_r1i1p2f1_siconc_QW_1950-01_map.png)
+
+Next, I'll make a version of that map, but plot the climatology of sea ice concentration.
+```python
+import xarray as xr 
+
+from arctichoke.dataset import select_months, trim_latlon
+import arctichoke.params as sps
+
+this_si_var = 'siconc'
+dataset_clim = select_months(f'/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/{this_si_var}_month_mean/gn/v20181212/trim_CAA_{this_si_var}_month_mean_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_195001-196912.nc', time_dim='month')
+# Save the attributes for later
+keep_these_attrs = dataset_clim.attrs
+dataset_clim = trim_latlon(
+    dataset = dataset_clim,
+    map_bbox = sps.QW_BBOX,
+    precise_trim = True,
+)
+# Put the attributes back
+dataset_clim.attrs = keep_these_attrs
+# Sum across the 12 months
+dataset_clim = dataset_clim.mean(dim='month')
+# Adjust the `long_name` attribute to change the colorbar label
+dataset_clim[f'{this_si_var}_month_mean'].attrs['long_name'] = dataset_clim[f'{this_si_var}_month_mean'].attrs['long_name'].replace('onthly m', '')
+
+from arctichoke.plot import quadmesh_map
+
+quadmesh_map(
+    dataset_clim,
+    f'{this_si_var}_month_mean',
+    map_bbox = sps.QW_BBOX,
+    mark_bbox = True,
+    clims = sps.sea_ice_vars[this_si_var]['plot_range'],
+    add_region = False,
+)
+```
+![EC-Earth3P-HR_r1i1p2f1_siconc_QW_clim_mean_map.png](investigate_specific_regions-img/EC-Earth3P-HR_r1i1p2f1_siconc_QW_clim_mean_map.png)
+
+I define the bounding box for the QEI East region in the `params` module.
+```python
+from arctichoke.params import QE_BBOX
+
+QE_BBOX
+```
+```
+[82, 75, -79, -95]
+```
+
+As an example, I'll load a `siconc` file from `EC-Earth3P-HR` and trim it to the QEI East region.
+Then, I'll plot just that data for January 1950 on the map, including the `mark_bbox` argument to highlight the bounding box I selected.
+```python
+from arctichoke.dataset import trim_latlon
+import arctichoke.params as sps
+
+dataset = trim_latlon(
+    dataset = '/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/siconc/gn/v20181212/trim_CAA_siconc_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_195001-195012.nc',
+    map_bbox = sps.QE_BBOX,
+    precise_trim = True,
+)
+
+from arctichoke.plot import quadmesh_map
+
+this_map = quadmesh_map(
+    dataset.isel(time=0),
+    'siconc',
+    map_bbox = sps.QE_BBOX,
+    mark_bbox = True,
+    clims = sps.sea_ice_vars['siconc']['plot_range'],
+    add_region = False,
+)
+display(this_map)
+```
+![EC-Earth3P-HR_r1i1p2f1_siconc_QE_1950-01_map.png](investigate_specific_regions-img/EC-Earth3P-HR_r1i1p2f1_siconc_QE_1950-01_map.png)
+
+Next, I'll make a version of that map, but plot the climatology of sea ice concentration.
+```python
+import xarray as xr 
+
+from arctichoke.dataset import select_months, trim_latlon
+import arctichoke.params as sps
+
+this_si_var = 'siconc'
+dataset_clim = select_months(f'/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/{this_si_var}_month_mean/gn/v20181212/trim_CAA_{this_si_var}_month_mean_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_195001-196912.nc', time_dim='month')
+# Save the attributes for later
+keep_these_attrs = dataset_clim.attrs
+dataset_clim = trim_latlon(
+    dataset = dataset_clim,
+    map_bbox = sps.QE_BBOX,
+    precise_trim = True,
+)
+# Put the attributes back
+dataset_clim.attrs = keep_these_attrs
+# Sum across the 12 months
+dataset_clim = dataset_clim.mean(dim='month')
+# Adjust the `long_name` attribute to change the colorbar label
+dataset_clim[f'{this_si_var}_month_mean'].attrs['long_name'] = dataset_clim[f'{this_si_var}_month_mean'].attrs['long_name'].replace('onthly m', '')
+
+from arctichoke.plot import quadmesh_map
+
+quadmesh_map(
+    dataset_clim,
+    f'{this_si_var}_month_mean',
+    map_bbox = sps.QE_BBOX,
+    mark_bbox = True,
+    clims = sps.sea_ice_vars[this_si_var]['plot_range'],
+    add_region = False,
+)
+```
+![EC-Earth3P-HR_r1i1p2f1_siconc_QE_clim_mean_map.png](investigate_specific_regions-img/EC-Earth3P-HR_r1i1p2f1_siconc_QE_clim_mean_map.png)
 
 ---
 
@@ -835,6 +993,319 @@ display(this_map)
 ```
 ![HadGEM3-GC31-MM_r1i1p1f1_siconc_PC_JJASO_trend_map.png](investigate_specific_regions-img/HadGEM3-GC31-MM_r1i1p1f1_siconc_PC_JJASO_trend_map.png)
 
+### Trimming data to QEI West
+[back to top](#investigating-specific-regions)
+
+#### Trimming EC-Earth3P-HR data to QEI West
+[back to top](#investigating-specific-regions)
+
+I can trim the data for `EC-Earth3P-HR` to the QEI West region.
+This takes about 45 minutes to complete.
+```python
+import xarray as xr
+
+from arctichoke.dataset import trim_files
+from arctichoke.params import QW_BBOX
+from arctichoke.path import list_variable_files
+
+this_model = 'EC-Earth3P-HR'
+
+for this_variant_label in [
+    'r1i1p2f1', 
+    'r2i1p2f1', 
+    'r3i1p2f1',
+]:
+    for si_var in [
+        'siconc',
+        'sispeed',
+        'sithick',
+    ]:
+        for this_experiment in ['hist-1950']:
+            sivar_list = list_variable_files(
+                source_id = this_model,
+                variable_id = si_var,
+                experiment_id = this_experiment,
+                variant_label = this_variant_label,
+            )
+            trim_files(
+                files_to_trim = sivar_list,
+                name_prefix = 'trim_QW_',
+                map_bbox = QW_BBOX,
+                precise_trim = True,
+            )
+```
+```
+(trim_files) `name_prefix`: trim_QW_
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/siconc/gn/v20181212/trim_QW_siconc_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_195001-195012.nc`.
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/siconc/gn/v20181212/trim_QW_siconc_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_195101-195112.nc`.
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/siconc/gn/v20181212/trim_QW_siconc_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_195201-195212.nc`.
+...
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/sithick/gn/v20190214/trim_QW_sithick_SImon_EC-Earth3P-HR_hist-1950_r3i1p2f1_gn_201201-201212.nc`.
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/sithick/gn/v20190214/trim_QW_sithick_SImon_EC-Earth3P-HR_hist-1950_r3i1p2f1_gn_201301-201312.nc`.
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/sithick/gn/v20190214/trim_QW_sithick_SImon_EC-Earth3P-HR_hist-1950_r3i1p2f1_gn_201401-201412.nc`.
+```
+
+When trimming the marker variables, I specify `with_modification` to be `trim_CAA_` as I only calculated `sislow`, `sipacked`, and `silandfast` over the CAA.
+This takes about 25 minutes. 
+```python
+import xarray as xr
+
+from arctichoke.dataset import trim_files
+from arctichoke.params import QW_BBOX
+from arctichoke.path import list_variable_files
+
+this_model = 'EC-Earth3P-HR'
+this_experiment = 'hist-1950'
+this_modification = 'trim_CAA_'
+
+for this_variant_label in [
+    'r1i1p2f1', 
+    'r2i1p2f1', 
+    'r3i1p2f1',
+]:
+    for si_var in [
+        'sislow',
+        'sipacked',
+        'silandfast',
+    ]:
+        sivar_list = list_variable_files(
+            source_id = this_model,
+            variable_id = si_var,
+            experiment_id = this_experiment,
+            variant_label = this_variant_label,
+            with_modification = this_modification,
+        )
+        trim_files(
+            files_to_trim = sivar_list,
+            name_prefix = 'trim_QW_',
+            replace_prefix = this_modification,
+            map_bbox = QW_BBOX,
+            precise_trim = True,
+        )
+```
+```
+(trim_files) `name_prefix`: trim_QW_
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/sislow/gn/v20260617/trim_QW_sislow_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_195001-195012.nc`.
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/sislow/gn/v20260617/trim_QW_sislow_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_195101-195112.nc`.
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/sislow/gn/v20260617/trim_QW_sislow_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_195201-195212.nc`.
+...
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/silandfast/gn/with_sispeed_clim/trim_QW_silandfast_SImon_EC-Earth3P-HR_hist-1950_r3i1p2f1_gn_201201-201212.nc`.
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/silandfast/gn/with_sispeed_clim/trim_QW_silandfast_SImon_EC-Earth3P-HR_hist-1950_r3i1p2f1_gn_201301-201312.nc`.
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/silandfast/gn/with_sispeed_clim/trim_QW_silandfast_SImon_EC-Earth3P-HR_hist-1950_r3i1p2f1_gn_201401-201412.nc`.
+```
+
+I can use my `list_available_variables()` function to confirm how many trimmed files were created for each variable.
+```python
+from arctichoke.path import list_available_variables
+
+list_available_variables(
+    source_id = 'EC-Earth3P-HR',
+    experiment_id = 'hist-1950',
+    list_var_mods = True,
+)
+```
+```
+{'EC-Earth-Consortium/EC-Earth3P-HR': {'hist-1950': {'r1i1p2f1': {'SImon': {'siu': {'': 65},
+     'siv': {'': 65},
+     'sithick': {'': 390,
+      'trim_CAA_': 65,
+      'trim_NS_': 65,
+      'trim_NWP_': 65,
+      'trim_PC_': 65,
+      'trim_QW_': 65},
+     'siage': {'': 65},
+     'siconc': {'': 390,
+      'trim_CAA_': 65,
+      'trim_NS_': 65,
+      'trim_NWP_': 65,
+      'trim_PC_': 65,
+      'trim_QW_': 65},
+     'sispeed': {'': 390,
+      'trim_CAA_': 65,
+      'trim_NS_': 65,
+      'trim_NWP_': 65,
+      'trim_PC_': 65,
+      'trim_QW_': 65},
+     'silandfast': {'trim_CAA_': 195,
+...
+```
+
+As a test, I can then use these trimmed data files to create a map of trends in a particular variable. 
+I'll choose `siconc`.
+```python
+from arctichoke.params import QW_BBOX
+from arctichoke.plot import make_trend_map 
+
+this_map = make_trend_map(
+    this_source_id = 'EC-Earth3P-HR',
+    this_var = 'siconc',
+    this_variant_label = 'r1i1p2f1',
+    this_modification = 'trim_QW_',
+    select_summer = True,
+    map_bbox = QW_BBOX,
+    return_map = True,
+)
+display(this_map)
+```
+![EC-Earth3P-HR_r1i1p2f1_siconc_QW_JJASO_trend_map.png](investigate_specific_regions-img/EC-Earth3P-HR_r1i1p2f1_siconc_QW_JJASO_trend_map.png)
+
+### Trimming data to QEI East
+[back to top](#investigating-specific-regions)
+
+#### Trimming EC-Earth3P-HR data to QEI East
+[back to top](#investigating-specific-regions)
+
+I can trim the data for `EC-Earth3P-HR` to the QEI East region.
+This takes about 45 minutes to complete.
+```python
+import xarray as xr
+
+from arctichoke.dataset import trim_files
+from arctichoke.params import QE_BBOX
+from arctichoke.path import list_variable_files
+
+this_model = 'EC-Earth3P-HR'
+
+for this_variant_label in [
+    'r1i1p2f1', 
+    'r2i1p2f1', 
+    'r3i1p2f1',
+]:
+    for si_var in [
+        'siconc',
+        'sispeed',
+        'sithick',
+    ]:
+        for this_experiment in ['hist-1950']:
+            sivar_list = list_variable_files(
+                source_id = this_model,
+                variable_id = si_var,
+                experiment_id = this_experiment,
+                variant_label = this_variant_label,
+            )
+            trim_files(
+                files_to_trim = sivar_list,
+                name_prefix = 'trim_QE_',
+                map_bbox = QE_BBOX,
+                precise_trim = True,
+            )
+```
+```
+(trim_files) `name_prefix`: trim_QE_
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/siconc/gn/v20181212/trim_QE_siconc_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_195001-195012.nc`.
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/siconc/gn/v20181212/trim_QE_siconc_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_195101-195112.nc`.
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/siconc/gn/v20181212/trim_QE_siconc_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_195201-195212.nc`.
+...
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/sithick/gn/v20190214/trim_QE_sithick_SImon_EC-Earth3P-HR_hist-1950_r3i1p2f1_gn_201201-201212.nc`.
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/sithick/gn/v20190214/trim_QE_sithick_SImon_EC-Earth3P-HR_hist-1950_r3i1p2f1_gn_201301-201312.nc`.
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/sithick/gn/v20190214/trim_QE_sithick_SImon_EC-Earth3P-HR_hist-1950_r3i1p2f1_gn_201401-201412.nc`.
+```
+
+When trimming the marker variables, I specify `with_modification` to be `trim_CAA_` as I only calculated `sislow`, `sipacked`, and `silandfast` over the CAA.
+This takes about 25 minutes. 
+```python
+import xarray as xr
+
+from arctichoke.dataset import trim_files
+from arctichoke.params import QE_BBOX
+from arctichoke.path import list_variable_files
+
+this_model = 'EC-Earth3P-HR'
+this_experiment = 'hist-1950'
+this_modification = 'trim_CAA_'
+
+for this_variant_label in [
+    'r1i1p2f1', 
+    'r2i1p2f1', 
+    'r3i1p2f1',
+]:
+    for si_var in [
+        'sislow',
+        'sipacked',
+        'silandfast',
+    ]:
+        sivar_list = list_variable_files(
+            source_id = this_model,
+            variable_id = si_var,
+            experiment_id = this_experiment,
+            variant_label = this_variant_label,
+            with_modification = this_modification,
+        )
+        trim_files(
+            files_to_trim = sivar_list,
+            name_prefix = 'trim_QE_',
+            replace_prefix = this_modification,
+            map_bbox = QE_BBOX,
+            precise_trim = True,
+        )
+```
+```
+(trim_files) `name_prefix`: trim_QE_
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/sislow/gn/v20260617/trim_QE_sislow_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_195001-195012.nc`.
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/sislow/gn/v20260617/trim_QE_sislow_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_195101-195112.nc`.
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/sislow/gn/v20260617/trim_QE_sislow_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_195201-195212.nc`.
+...
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/silandfast/gn/with_sispeed_clim/trim_QE_silandfast_SImon_EC-Earth3P-HR_hist-1950_r3i1p2f1_gn_201201-201212.nc`.
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/silandfast/gn/with_sispeed_clim/trim_QE_silandfast_SImon_EC-Earth3P-HR_hist-1950_r3i1p2f1_gn_201301-201312.nc`.
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r3i1p2f1/SImon/silandfast/gn/with_sispeed_clim/trim_QE_silandfast_SImon_EC-Earth3P-HR_hist-1950_r3i1p2f1_gn_201401-201412.nc`.
+```
+
+I can use my `list_available_variables()` function to confirm how many trimmed files were created for each variable.
+```python
+from arctichoke.path import list_available_variables
+
+list_available_variables(
+    source_id = 'EC-Earth3P-HR',
+    experiment_id = 'hist-1950',
+    list_var_mods = True,
+)
+```
+```
+{'EC-Earth-Consortium/EC-Earth3P-HR': {'hist-1950': {'r1i1p2f1': {'SImon': {'siu': {'': 65},
+     'siv': {'': 65},
+     'sithick': {'': 455,
+      'trim_CAA_': 65,
+      'trim_NS_': 65,
+      'trim_NWP_': 65,
+      'trim_PC_': 65,
+      'trim_QE_': 65,
+      'trim_QW_': 65},
+     'siage': {'': 65},
+     'siconc': {'': 455,
+      'trim_CAA_': 65,
+      'trim_NS_': 65,
+      'trim_NWP_': 65,
+      'trim_PC_': 65,
+      'trim_QE_': 65,
+      'trim_QW_': 65},
+     'sispeed': {'': 455,
+      'trim_CAA_': 65,
+      'trim_NS_': 65,
+      'trim_NWP_': 65,
+      'trim_PC_': 65,
+      'trim_QE_': 65,
+...
+```
+
+As a test, I can then use these trimmed data files to create a map of trends in a particular variable. 
+I'll choose `siconc`.
+```python
+from arctichoke.params import QE_BBOX
+from arctichoke.plot import make_trend_map 
+
+this_map = make_trend_map(
+    this_source_id = 'EC-Earth3P-HR',
+    this_var = 'siconc',
+    this_variant_label = 'r1i1p2f1',
+    this_modification = 'trim_QE_',
+    select_summer = True,
+    map_bbox = QE_BBOX,
+    return_map = True,
+)
+display(this_map)
+```
+![EC-Earth3P-HR_r1i1p2f1_siconc_QE_JJASO_trend_map.png](investigate_specific_regions-img/EC-Earth3P-HR_r1i1p2f1_siconc_QE_JJASO_trend_map.png)
+
 ---
 
 ## Finding spatial averages
@@ -965,6 +1436,144 @@ array([17.717651], dtype=float32)
 ```
 
 The calculated spatial average of 17.72% seems reasonable given the map plotted above.
+
+Next, I will perform a similar test over the QEI East region using `silandfast`.
+```python
+from arctichoke.path import list_variable_files
+
+filelist = list_variable_files(
+    source_id = 'EC-Earth3P-HR',
+    variable_id = 'silandfast',
+    variant_label = 'r1i1p2f1',
+    with_modification = 'trim_QE_',
+    version_id = 'v20260617',
+    verbose = True,
+)
+
+import xarray as xr 
+
+dataset = xr.open_mfdataset(filelist)
+print(dataset)
+```
+```
+(list_variable_files) Found 65 files.
+/tmp/ipykernel_37/3422349004.py:14: FutureWarning: In a future version of xarray the default value for data_vars will change from data_vars='all' to data_vars=None. This is likely to lead to different results when multiple datasets have matching variables with overlapping values. To opt in to new defaults and get rid of these warnings now use `set_options(use_new_combine_kwarg_defaults=True) or set data_vars explicitly.
+  dataset = xr.open_mfdataset(filelist)
+<xarray.Dataset> Size: 123MB
+Dimensions:         (time: 780, bnds: 2, j: 57, i: 77, vertices: 4)
+Coordinates:
+  * time            (time) datetime64[ns] 6kB 1950-01-16T12:00:00 ... 2014-12...
+  * j               (j) float64 456B 974.0 975.0 976.0 ... 1.029e+03 1.03e+03
+  * i               (i) float64 616B 920.0 921.0 922.0 ... 994.0 995.0 996.0
+    longitude       (j, i) float32 18kB dask.array<chunksize=(57, 77), meta=np.ndarray>
+    latitude        (j, i) float32 18kB dask.array<chunksize=(57, 77), meta=np.ndarray>
+Dimensions without coordinates: bnds, vertices
+Data variables:
+    time_bnds       (time, bnds) datetime64[ns] 12kB dask.array<chunksize=(1, 2), meta=np.ndarray>
+    longitude_bnds  (time, j, i, vertices) float32 55MB dask.array<chunksize=(12, 57, 77, 4), meta=np.ndarray>
+    latitude_bnds   (time, j, i, vertices) float32 55MB dask.array<chunksize=(12, 57, 77, 4), meta=np.ndarray>
+    silandfast      (time, j, i) float32 14MB dask.array<chunksize=(1, 57, 77), meta=np.ndarray>
+Attributes: (12/48)
+    CDI:                    Climate Data Interface version 2.5.1 (https://mpi...
+    Conventions:            CF-1.7 CMIP-6.2
+    source:                 EC-Earth3P-HR (2017): \naerosol: none\natmos: IFS...
+    institution:            AEMET, Spain; BSC, Spain; CNR-ISAC, Italy; DMI, D...
+    activity_id:            HighResMIP
+    branch_method:          none provided
+    ...                     ...
+    physics_index:          2
+    variant_label:          r1i1p2f1
+    further_info_url:       https://furtherinfo.es-doc.org/CMIP6.EC-Earth-Con...
+    contact:                cmip6-data@ec-earth.org
+    history:                Tue Oct 13 18:25:49 2026: cdo -O -s -f nc -sellon...
+    CDO:                    Climate Data Operators version 2.5.1 (https://mpi...
+```
+
+Next, I'll use my `get_field_mean()` function which uses the `cdo.fldmean` command to calculate the spatially-weighted average of a variable.
+```python
+from arctichoke.dataset import get_field_mean
+
+dataset_fldmean = get_field_mean(
+    dataset,
+    verbose = True,
+)
+print(dataset_fldmean)
+```
+```
+(get_field_mean) `save_as`: None
+(get_field_mean) Dropping now-unnecessary dimensions: ('lat', 'lon')
+<xarray.Dataset> Size: 22kB
+Dimensions:     (time: 780, bnds: 2)
+Coordinates:
+  * time        (time) datetime64[ns] 6kB 1950-01-16T12:00:00 ... 2014-12-16T...
+Dimensions without coordinates: bnds
+Data variables:
+    time_bnds   (time, bnds) datetime64[ns] 12kB ...
+    silandfast  (time) float32 3kB ...
+Attributes: (12/48)
+    CDI:                    Climate Data Interface version 2.5.1 (https://mpi...
+    Conventions:            CF-1.7 CMIP-6.2
+    source:                 EC-Earth3P-HR (2017): \naerosol: none\natmos: IFS...
+    institution:            AEMET, Spain; BSC, Spain; CNR-ISAC, Italy; DMI, D...
+    activity_id:            HighResMIP
+    branch_method:          none provided
+    ...                     ...
+    physics_index:          2
+    variant_label:          r1i1p2f1
+    further_info_url:       https://furtherinfo.es-doc.org/CMIP6.EC-Earth-Con...
+    contact:                cmip6-data@ec-earth.org
+    history:                Tue Oct 13 19:20:16 2026: cdo -O -s -f nc -fldmea...
+    CDO:                    Climate Data Operators version 2.5.1 (https://mpi...
+```
+
+As a sanity check, I will plot the QEI East data for a few selected time slices and compare them to the spatial averages for the same time slices.
+First, I'll plot June of 1950.
+```python
+from arctichoke.plot import quadmesh_map
+
+quadmesh_map(
+    dataset.sel(time='1950-06-16'),
+    'silandfast',
+    map_bbox = sps.QE_BBOX,
+    clims = sps.sea_ice_vars['silandfast']['plot_range'],
+    add_region = False,
+)
+```
+![EC-Earth3P-HR_r1i1p2f1_silandfast_QE_1950-06_map.png](investigate_specific_regions-img/EC-Earth3P-HR_r1i1p2f1_silandfast_QE_1950-06_map.png)
+
+At this point in the model run, QEI East is almost completely ice covered. I'll now see what the calculated spatial average is for this particular month.
+```python
+dataset_fldmean.sel(time='1950-06-16').compute()['silandfast'].values
+```
+```
+array([0.788712], dtype=float32)
+```
+
+That seems to match pretty well. 
+
+Next, I'll take a look at `silandfast` in the QEI East in September of 2007.
+```python
+from arctichoke.plot import quadmesh_map
+
+quadmesh_map(
+    dataset.sel(time='2007-09-16'),
+    'silandfast',
+    map_bbox = sps.QE_BBOX,
+    clims = sps.sea_ice_vars['silandfast']['plot_range'],
+    add_region = False,
+)
+```
+![EC-Earth3P-HR_r1i1p2f1_silandfast_QE_2007-09_map.png](investigate_specific_regions-img/EC-Earth3P-HR_r1i1p2f1_silandfast_QE_2007-09_map.png)
+
+```python
+dataset_fldmean.sel(time='2007-09-16').compute()['silandfast'].values
+```
+```
+array([0.3039074], dtype=float32)
+```
+
+Again, the calculated value matches what I would expect from the plot.
+
 
 ### Finding spatial averages of concentration where thickness is > 2 m
 [back to top](#investigating-specific-regions)
@@ -1470,3 +2079,225 @@ for variable_id in [
 (plot_time_series) Slope of `silandfast_year_sum` regression line: -2.09174e-03
 ```
 ![HadGEM3-GC31-MM_all_variants_silandfast_PC_JJASO_sipacked_clim_fldmean_trend.png](investigate_specific_regions-img/HadGEM3-GC31-MM_all_variants_silandfast_PC_JJASO_sipacked_clim_fldmean_trend.png)
+
+### Time series plots for QEI West
+[back to top](#investigating-specific-regions)
+
+#### QEI West time series for EC-Earth3P-HR
+[back to top](#investigating-specific-regions)
+
+Next, I'll make time series plots for QEI West.
+Again, between each variable, I need to call `plt.show()` then `plt.clf()` to avoid all variables being plotted on the same axis.
+```python
+import matplotlib.pyplot as plt 
+
+from arctichoke.plot import plot_multi_time_series
+
+this_model = 'EC-Earth3P-HR'
+this_modification = 'trim_QW_'
+set_verbose = False
+
+for variable_id in [
+    'sispeed',
+    'siconc',
+    'sislow',
+    'sipacked',
+]:
+    plot_multi_time_series(
+        this_source_id = this_model,
+        this_var = variable_id,
+        this_modification = this_modification,
+        verbose = set_verbose,
+    )
+    # Need to show, then clear the figure so they aren't plotted on top of one another
+    plt.show()
+    plt.clf()
+    if variable_id == 'siconc':
+        plot_multi_time_series(
+            this_source_id = this_model,
+            this_var = variable_id,
+            this_modification = this_modification,
+            mask_by_sithick = True,
+            verbose = set_verbose,
+        )
+        plt.show()
+        plt.clf()
+
+for variable_id in [
+    'silandfast',
+]:
+    for this_version_id in [
+        'v20260617',
+        'with_sispeed_clim',
+        'with_siconc_clim',
+    ]:
+        plot_multi_time_series(
+            this_source_id = this_model,
+            this_var = variable_id,
+            this_modification = this_modification,
+            this_version_id = this_version_id,
+            verbose = set_verbose,
+        )
+        # Need to show, then clear the figure so they aren't plotted on top of one another
+        plt.show()
+        plt.clf()
+```
+```console
+(plot_time_series) Slope of `sispeed_year_mean` regression line:  2.40936e-04
+(plot_time_series) Slope of `sispeed_year_mean` regression line:  4.04943e-04
+(plot_time_series) Slope of `sispeed_year_mean` regression line:  4.24609e-04
+```
+![EC-Earth3P-HR_all_variants_sispeed_QW_JJASO_fldmean_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_sispeed_QW_JJASO_fldmean_trend.png)
+```console
+(plot_time_series) Slope of `siconc_year_mean` regression line: -6.53495e-02
+(plot_time_series) Slope of `siconc_year_mean` regression line: -1.10695e-01
+(plot_time_series) Slope of `siconc_year_mean` regression line: -1.35667e-01
+```
+![EC-Earth3P-HR_all_variants_siconc_QW_JJASO_fldmean_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_siconc_QW_JJASO_fldmean_trend.png)
+```console
+(plot_time_series) Slope of `siconc_si2mthick_year_mean` regression line: -7.49443e-02
+(plot_time_series) Slope of `siconc_si2mthick_year_mean` regression line: -1.21773e-01
+(plot_time_series) Slope of `siconc_si2mthick_year_mean` regression line: -1.48875e-01
+```
+![EC-Earth3P-HR_all_variants_siconc_QW_JJASO_fldmean_si2mthick_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_siconc_QW_JJASO_fldmean_si2mthick_trend.png)
+```console
+(plot_time_series) Slope of `sislow_year_sum` regression line: -1.48770e-02
+(plot_time_series) Slope of `sislow_year_sum` regression line: -2.48677e-02
+(plot_time_series) Slope of `sislow_year_sum` regression line: -2.06977e-02
+```
+![EC-Earth3P-HR_all_variants_sislow_QW_JJASO_fldmean_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_sislow_QW_JJASO_fldmean_trend.png)
+```console
+(plot_time_series) Slope of `sipacked_year_sum` regression line: -8.11810e-03
+(plot_time_series) Slope of `sipacked_year_sum` regression line: -1.57263e-02
+(plot_time_series) Slope of `sipacked_year_sum` regression line: -1.69076e-02
+```
+![EC-Earth3P-HR_all_variants_sipacked_QW_JJASO_fldmean_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_sipacked_QW_JJASO_fldmean_trend.png)
+```console
+(plot_time_series) Slope of `silandfast_year_sum` regression line: -1.46268e-02
+(plot_time_series) Slope of `silandfast_year_sum` regression line: -2.46585e-02
+(plot_time_series) Slope of `silandfast_year_sum` regression line: -2.06017e-02
+```
+![EC-Earth3P-HR_all_variants_silandfast_QW_JJASO_fldmean_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_silandfast_QW_JJASO_fldmean_trend.png)
+```console
+(plot_time_series) Slope of `silandfast_year_sum` regression line: -1.88192e-03
+(plot_time_series) Slope of `silandfast_year_sum` regression line: -5.47205e-03
+(plot_time_series) Slope of `silandfast_year_sum` regression line: -5.30801e-03
+```
+![EC-Earth3P-HR_all_variants_silandfast_QW_JJASO_fldmean_slow_clim_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_silandfast_QW_JJASO_fldmean_slow_clim_trend.png)
+```console
+(plot_time_series) Slope of `silandfast_year_sum` regression line: -1.28967e-02
+(plot_time_series) Slope of `silandfast_year_sum` regression line: -2.25835e-02
+(plot_time_series) Slope of `silandfast_year_sum` regression line: -1.79259e-02
+```
+![EC-Earth3P-HR_all_variants_silandfast_QW_JJASO_fldmean_packed_clim_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_silandfast_QW_JJASO_fldmean_packed_clim_trend.png)
+
+### Time series plots for QEI East
+[back to top](#investigating-specific-regions)
+
+#### QEI East time series for EC-Earth3P-HR
+[back to top](#investigating-specific-regions)
+
+Next, I'll make time series plots for QEI East.
+Again, between each variable, I need to call `plt.show()` then `plt.clf()` to avoid all variables being plotted on the same axis.
+```python
+import matplotlib.pyplot as plt 
+
+from arctichoke.plot import plot_multi_time_series
+
+this_model = 'EC-Earth3P-HR'
+this_modification = 'trim_QE_'
+set_verbose = False
+
+for variable_id in [
+    'sispeed',
+    'siconc',
+    'sislow',
+    'sipacked',
+]:
+    plot_multi_time_series(
+        this_source_id = this_model,
+        this_var = variable_id,
+        this_modification = this_modification,
+        verbose = set_verbose,
+    )
+    # Need to show, then clear the figure so they aren't plotted on top of one another
+    plt.show()
+    plt.clf()
+    if variable_id == 'siconc':
+        plot_multi_time_series(
+            this_source_id = this_model,
+            this_var = variable_id,
+            this_modification = this_modification,
+            mask_by_sithick = True,
+            verbose = set_verbose,
+        )
+        plt.show()
+        plt.clf()
+
+for variable_id in [
+    'silandfast',
+]:
+    for this_version_id in [
+        'v20260617',
+        'with_sispeed_clim',
+        'with_siconc_clim',
+    ]:
+        plot_multi_time_series(
+            this_source_id = this_model,
+            this_var = variable_id,
+            this_modification = this_modification,
+            this_version_id = this_version_id,
+            verbose = set_verbose,
+        )
+        # Need to show, then clear the figure so they aren't plotted on top of one another
+        plt.show()
+        plt.clf()
+```
+```console
+(plot_time_series) Slope of `sispeed_year_mean` regression line:  1.97656e-04
+(plot_time_series) Slope of `sispeed_year_mean` regression line:  1.77828e-04
+(plot_time_series) Slope of `sispeed_year_mean` regression line:  2.09376e-04
+```
+![EC-Earth3P-HR_all_variants_sispeed_QW_JJASO_fldmean_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_sispeed_QW_JJASO_fldmean_trend.png)
+```console
+(plot_time_series) Slope of `siconc_year_mean` regression line: -1.30965e-01
+(plot_time_series) Slope of `siconc_year_mean` regression line: -1.33934e-01
+(plot_time_series) Slope of `siconc_year_mean` regression line: -1.99849e-01
+```
+![EC-Earth3P-HR_all_variants_siconc_QW_JJASO_fldmean_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_siconc_QW_JJASO_fldmean_trend.png)
+```console
+(plot_time_series) Slope of `siconc_si2mthick_year_mean` regression line: -1.50413e-01
+(plot_time_series) Slope of `siconc_si2mthick_year_mean` regression line: -1.51599e-01
+(plot_time_series) Slope of `siconc_si2mthick_year_mean` regression line: -1.93461e-01
+```
+![EC-Earth3P-HR_all_variants_siconc_QW_JJASO_fldmean_si2mthick_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_siconc_QW_JJASO_fldmean_si2mthick_trend.png)
+```console
+(plot_time_series) Slope of `sislow_year_sum` regression line: -1.00557e-02
+(plot_time_series) Slope of `sislow_year_sum` regression line: -9.02848e-03
+(plot_time_series) Slope of `sislow_year_sum` regression line: -1.08237e-02
+```
+![EC-Earth3P-HR_all_variants_sislow_QW_JJASO_fldmean_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_sislow_QW_JJASO_fldmean_trend.png)
+```console
+(plot_time_series) Slope of `sipacked_year_sum` regression line: -1.00129e-02
+(plot_time_series) Slope of `sipacked_year_sum` regression line: -9.95049e-03
+(plot_time_series) Slope of `sipacked_year_sum` regression line: -1.35190e-02
+```
+![EC-Earth3P-HR_all_variants_sipacked_QW_JJASO_fldmean_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_sipacked_QW_JJASO_fldmean_trend.png)
+```console
+(plot_time_series) Slope of `silandfast_year_sum` regression line: -1.06822e-02
+(plot_time_series) Slope of `silandfast_year_sum` regression line: -9.56890e-03
+(plot_time_series) Slope of `silandfast_year_sum` regression line: -1.17402e-02
+```
+![EC-Earth3P-HR_all_variants_silandfast_QW_JJASO_fldmean_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_silandfast_QW_JJASO_fldmean_trend.png)
+```console
+(plot_time_series) Slope of `silandfast_year_sum` regression line: -3.93401e-03
+(plot_time_series) Slope of `silandfast_year_sum` regression line: -4.56013e-03
+(plot_time_series) Slope of `silandfast_year_sum` regression line: -3.94723e-03
+```
+![EC-Earth3P-HR_all_variants_silandfast_QW_JJASO_fldmean_slow_clim_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_silandfast_QW_JJASO_fldmean_slow_clim_trend.png)
+```console
+(plot_time_series) Slope of `silandfast_year_sum` regression line: -7.95024e-03
+(plot_time_series) Slope of `silandfast_year_sum` regression line: -7.56321e-03
+(plot_time_series) Slope of `silandfast_year_sum` regression line: -7.55018e-03
+```
+![EC-Earth3P-HR_all_variants_silandfast_QW_JJASO_fldmean_packed_clim_trend.png](investigate_specific_regions-img/EC-Earth3P-HR_all_variants_silandfast_QW_JJASO_fldmean_packed_clim_trend.png)
