@@ -50,7 +50,7 @@ def make_example_dataset(
         Returns
         -------
         example_dataset : `xr.Dataset`
-            A list, sorted alphabetically, of the names of the available models.
+            The example dataset.
         
         Examples
         --------
@@ -155,3 +155,130 @@ def make_example_dataset(
         save_as = verify_path(save_as)
 
     return xr_dataset
+
+def make_example_latlon_grid(
+    save_as: str = None,
+    lat_range: [(int, float), (int, float)] = [-90, 90],
+    lon_range: [(int, float), (int, float)] = [-180, 180],
+    lat_step: (int, float) = 0.25,
+    lon_step: (int, float) = 0.25,
+    test_var_name: str = 'test_var',
+    overwrite: bool = True,
+):
+    """ Create an example dataset with the specified lat-lon grid.
+
+        Construct a minimal dataset that has a regular grid covering the specified coordinate ranges with the specified coordinate resolutions and include the necessary attributes to be compatible with `cdo` operations such as `remapbil`.
+
+        Parameters
+        ----------
+        save_as : `str`, `None`, optional
+            The absolute file path to which to save the example dataset.
+            Default is `None`, which doesn't save the dataset to a file.
+        lat_range : List of `int` or `float`, optional
+            The range of latitude values the dataset should cover.
+            Default is `[-90, 90]`.
+        lon_range : List of `int` or `float`, optional
+            The range of longitude values the dataset should cover.
+            Default is `[-180, 180]`.
+        lat_step : `int`, `float`, optional
+            The latitude resolution, the step between each latitude value, in degrees.
+            Default is `0.25`.
+        lon_step : `int`, `float`, optional
+            The longitude resolution, the step between each latitude value, in degrees.
+            Default is `0.25`.
+        test_var_name : `str`, optional
+            The name to give the test variable.
+            Default is `test_var`.
+        overwrite : `bool`, optional
+            Whether to overwrite an existing file at the given filepath in `save_as`.
+            Default is `True`.
+
+        Returns
+        -------
+        latlon_grid_xr : `xr.Dataset`
+            The dataset with the specified regular coordinate grid.
+        
+        Examples
+        --------
+        >>> from arctichoke.dataset.example_dataset import make_example_latlon_grid
+        >>> dataset = make_example_latlon_grid()
+        >>> print(dataset)
+        <xarray.Dataset> Size: 8MB
+        Dimensions:   (lat: 720, lon: 1440)
+        Coordinates:
+        * lat       (lat) float64 6kB -90.0 -89.75 -89.5 -89.25 ... 89.25 89.5 89.75
+        * lon       (lon) float64 12kB -180.0 -179.8 -179.5 ... 179.2 179.5 179.8
+        Data variables:
+            test_var  (lat, lon) float64 8MB 0.0 1.0 2.0 ... 1.037e+06 1.037e+06
+        Attributes:
+            grid:     N216
+    """
+    # Verify input arguments
+    if isinstance(save_as, str):
+        if not save_as.endswith('.nc'):
+            raise ValueError(f"(plot_time_series) `save_as` must be a `.nc` save_as. Got: {save_as}")
+    elif not isinstance(save_as, (str, type(None))):
+        raise TypeError(f"(make_example_latlon_grid) `save_as` must be a string or `None`. Got type: {type(save_as)}")
+    if not isinstance(lat_range, list):
+        raise TypeError(f"(make_example_latlon_grid) `lat_range` must be a list. Got type: {type(lat_range)}")
+    elif len(lat_range) != 2:
+        raise TypeError(f"(make_example_latlon_grid) `lat_range` must be a list of length 2. Got a list of length: {len(lat_range)}")
+    for lat_val in lat_range:
+        if not isinstance(lat_val, (int, float)):
+            raise TypeError(f"(make_example_latlon_grid) Each value in `lat_range` must be an `int` or `float`. Got type: {type(lat_val)}")
+    if not isinstance(lon_range, list):
+        raise TypeError(f"(make_example_latlon_grid) `lon_range` must be a list. Got type: {type(lon_range)}")
+    elif len(lon_range) != 2:
+        raise TypeError(f"(make_example_latlon_grid) `lon_range` must be a list of length 2. Got a list of length: {len(lon_range)}")
+    for lon_val in lon_range:
+        if not isinstance(lon_val, (int, float)):
+            raise TypeError(f"(make_example_latlon_grid) Each value in `lon_range` must be an `int` or `float`. Got type: {type(lon_val)}")
+    if not isinstance(test_var_name, str):
+        raise TypeError(f"(make_example_latlon_grid) `test_var_name` must be a string. Got type: {type(test_var_name)}")
+    if not isinstance(overwrite, bool):
+        raise TypeError(f"(make_example_latlon_grid) `overwrite` must be `bool`. Got type: {type(overwrite)}")
+
+    # Initialize the dataset
+    latlon_grid_xr = xr.Dataset()
+    
+    # Add dimensions
+    lat_arr = np.arange(start=min(lat_range), stop=max(lat_range), step=lat_step)
+    latlon_grid_xr['lat'] = ('lat',lat_arr)
+    lon_arr = np.arange(start=min(lon_range), stop=max(lon_range), step=lon_step)
+    latlon_grid_xr['lon'] = ('lon',lon_arr)
+
+    # Add coordinate attributes
+    latlon_grid_xr['lat'].attrs['standard_name'] = 'latitude'
+    latlon_grid_xr['lat'].attrs['long_name'] = 'latitude'
+    latlon_grid_xr['lat'].attrs['units'] = 'degrees_north'
+    latlon_grid_xr['lat'].attrs['axis'] = 'Y'
+    latlon_grid_xr['lon'].attrs['standard_name'] = 'longitude'
+    latlon_grid_xr['lon'].attrs['long_name'] = 'longitude'
+    latlon_grid_xr['lon'].attrs['units'] = 'degrees_east'
+    latlon_grid_xr['lon'].attrs['axis'] = 'X'
+
+    # Add a test variable
+    test_var = np.reshape(np.arange(0, len(lat_arr)*len(lon_arr), dtype=np.float64), (len(lat_arr), len(lon_arr)))
+    latlon_grid_xr[test_var_name] = (['lat','lon'],test_var)
+
+    # Add grid attribute
+    latlon_grid_xr.attrs['grid'] = 'N216'
+
+    if not isinstance(save_as, type(None)):
+        # Check whether the file exists
+        try:
+            verify_path(save_as)
+            if overwrite == False:
+                raise FileExistsError(f"(trim_files) file `{save_as}` exists already. To overwrite this file, set `overwrite` to `True`.")
+            else:
+                print(f"\tOverwriting file `{save_as}`.")
+        except (FileNotFoundError):
+            foo = 2
+
+        # Save this dataset to a file
+        latlon_grid_xr.to_netcdf(save_as)
+
+        # Verify that file was save correctly
+        save_as = verify_path(save_as)
+
+    return latlon_grid_xr
