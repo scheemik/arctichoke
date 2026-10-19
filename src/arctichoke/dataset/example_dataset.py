@@ -251,9 +251,9 @@ def make_example_latlon_grid(
     latlon_grid_xr = xr.Dataset()
     
     # Add dimensions
-    lat_arr = np.arange(start=min(lat_range), stop=max(lat_range), step=lat_step)
+    lat_arr = np.arange(start=min(lat_range), stop=max(lat_range)+lat_step, step=lat_step)
     latlon_grid_xr['lat'] = ('lat',lat_arr)
-    lon_arr = np.arange(start=min(lon_range), stop=max(lon_range), step=lon_step)
+    lon_arr = np.arange(start=min(lon_range), stop=max(lon_range)+lon_step, step=lon_step)
     latlon_grid_xr['lon'] = ('lon',lon_arr)
 
     # Add coordinate attributes

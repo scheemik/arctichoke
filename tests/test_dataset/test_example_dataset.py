@@ -365,8 +365,8 @@ def test_make_example_latlon_grid():
             'keys': ['test_var'],
             'coords': ['lat', 'lon'],
             'sizes': {
-                'lat': 720,
-                'lon': 1440,
+                'lat': 721,
+                'lon': 1441,
             },
         },
         {
@@ -376,8 +376,8 @@ def test_make_example_latlon_grid():
             'keys': ['test_var'],
             'coords': ['lat', 'lon'],
             'sizes': {
-                'lat': 720,
-                'lon': 1440,
+                'lat': 721,
+                'lon': 1441,
             },
         },
         {
@@ -391,8 +391,8 @@ def test_make_example_latlon_grid():
             'keys': ['different_var'],
             'coords': ['lat', 'lon'],
             'sizes': {
-                'lat': 360,
-                'lon': 720,
+                'lat': 361,
+                'lon': 721,
             },
         },
     ]
