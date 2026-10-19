@@ -106,15 +106,17 @@ def make_example_dataset(
             'latitude': (['j','i'], lat_arr),
         }
     )
-    # Add coordinate attributes
-    xr_dataset['latitude'].attrs['standard_name'] = 'latitude'
-    xr_dataset['latitude'].attrs['long_name'] = 'latitude'
-    xr_dataset['latitude'].attrs['units'] = 'degrees_north'
-    xr_dataset['latitude'].attrs['axis'] = 'Y'
-    xr_dataset['longitude'].attrs['standard_name'] = 'longitude'
-    xr_dataset['longitude'].attrs['long_name'] = 'longitude'
-    xr_dataset['longitude'].attrs['units'] = 'degrees_east'
-    xr_dataset['longitude'].attrs['axis'] = 'X'
+    # Do not add coordinate attributes as this makes it incompatible with CDO interpolation
+    # I am not sure why that is the case as the model data files have these attributes and
+    # interpolation with CDO works fine with them
+    # xr_dataset['latitude'].attrs['standard_name'] = 'latitude'
+    # xr_dataset['latitude'].attrs['long_name'] = 'latitude'
+    # xr_dataset['latitude'].attrs['units'] = 'degrees_north'
+    # xr_dataset['latitude'].attrs['axis'] = 'Y'
+    # xr_dataset['longitude'].attrs['standard_name'] = 'longitude'
+    # xr_dataset['longitude'].attrs['long_name'] = 'longitude'
+    # xr_dataset['longitude'].attrs['units'] = 'degrees_east'
+    # xr_dataset['longitude'].attrs['axis'] = 'X'
 
     # Add a test variable
     test_var = np.reshape(np.arange(offset, n*n+offset, dtype=np.float64), (n,n)) * multiplier
