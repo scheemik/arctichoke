@@ -8,23 +8,46 @@ def test_interp_to_reg_grid():
     # Define test filepaths
     test_dataset_filepath = 'tests/test_dataset/delete_this_dataset.nc'
     test_targetgrid_filepath = 'tests/test_dataset/delete_this_targetgrid.nc'
-    # Create a test targetgrid file
-    dataset.make_example_latlon_grid(
-        lat_range = [7, 9],
-        lon_range = [10, 12],
-        lat_step = 1,
-        lon_step = 1,
-        save_as = test_targetgrid_filepath,
-    )
     # Define test cases
     test_cases = [
         {
             'dataset': dataset.make_example_dataset(
                 n = 3,
                 test_var_name = 'to_interp',
+            ),
+            'target_grid': {
+                'lat_range': [7, 9],
+                'lon_range': [10, 12],
+                'lat_step': 1,
+                'lon_step': 1,
+                'save_as': test_targetgrid_filepath,
+            },
+            'keys': ['to_interp'],
+            'coords': ['lon','lat'],
+            'sizes': {
+                'lat': 3,
+                'lon': 3,
+            },
+            'test_var_size': 9,
+            'expected_data': np.array(
+                [[0., 1., 2.],
+                 [3., 4., 5.],
+                 [6., 7., 8.]],
+            ),
+        },
+        {
+            'dataset': dataset.make_example_dataset(
+                n = 3,
+                test_var_name = 'to_interp',
                 save_as = test_dataset_filepath,
             ),
-            'target_grid': test_targetgrid_filepath,
+            'target_grid': {
+                'lat_range': [7, 9],
+                'lon_range': [10, 12],
+                'lat_step': 1,
+                'lon_step': 1,
+                'save_as': test_targetgrid_filepath,
+            },
             'keys': ['to_interp'],
             'coords': ['lon','lat'],
             'sizes': {
@@ -40,10 +63,18 @@ def test_interp_to_reg_grid():
         },
     ]
     for test_case in test_cases:
+        # Create a test targetgrid file
+        dataset.make_example_latlon_grid(
+            lat_range = test_case['target_grid']['lat_range'],
+            lon_range = test_case['target_grid']['lon_range'],
+            lat_step = test_case['target_grid']['lat_step'],
+            lon_step = test_case['target_grid']['lon_step'],
+            save_as = test_case['target_grid']['save_as'],
+        )
         # Interpolate the dataset
         actual = dataset.interp_to_reg_grid(
             dataset = test_case['dataset'],
-            targetgrid = test_case['target_grid'],
+            targetgrid = test_case['target_grid']['save_as'],
         )
         # Check the data variables
         assert list(actual.keys()) == test_case['keys'], f"`interp_to_reg_grid` created a dataset with the variables: {list(actual.keys())}.\nExpected variables: {test_case['keys']}"
