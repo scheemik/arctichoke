@@ -4,7 +4,7 @@ from arctichoke.analysis import sum_by_year, trend_in_time, trend_in_time_scipy
 from arctichoke.dataset import select_months
 import arctichoke.params as sps
 from arctichoke.path import list_variable_files
-from arctichoke.plot.hvplots import quadmesh_map
+from arctichoke.plot.plot_map import plot_map
 
 def make_trend_map(
     this_source_id: str,
@@ -66,7 +66,7 @@ def make_trend_map(
             Whether to verbosely output information as the function executes.
             Default is `False`.
         **kwargs
-            Keyword arguments to pass to `list_variable_files()` and `quadmesh_map()`.
+            Keyword arguments to pass to `list_variable_files()` and `plot_map()`.
 
         Returns
         -------
@@ -162,7 +162,7 @@ def make_trend_map(
             time_dim = this_time_dim,
         )
     # Plot the trends on a map
-    sum_year_trend_map = quadmesh_map(
+    sum_year_trend_map = plot_map(
         dataset,
         f'{var_for_trend}_trends',
         map_projection = map_projection,

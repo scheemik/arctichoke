@@ -25,9 +25,9 @@ EC_Earth3P_HR_areacello = '/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-E
 
 EC_Earth3P_HR_areacello_xr = xr.open_dataset(EC_Earth3P_HR_areacello)
 
-from arctichoke.plot.hvplots import quadmesh_map
+from arctichoke.plot import plot_map
 
-EC_Earth3P_HR_areacello_globe = quadmesh_map(
+EC_Earth3P_HR_areacello_globe = plot_map(
     EC_Earth3P_HR_areacello_xr,
     'areacello',
     map_projection = 'Orthographic',
@@ -57,9 +57,9 @@ EC_Earth3P_HR_areacello_xr_trim = trim_latlon(
     verbose = True,
 )
 
-from arctichoke.plot.hvplots import quadmesh_map
+from arctichoke.plot import plot_map
 
-EC_Earth3P_HR_areacello_globe_trim = quadmesh_map(
+EC_Earth3P_HR_areacello_globe_trim = plot_map(
     EC_Earth3P_HR_areacello_xr_trim,
     'areacello',
     map_projection = 'Orthographic',
@@ -104,9 +104,9 @@ EC_Earth3P_HR_areacello_xr_precise_trim = trim_latlon(
     verbose = True,
 )
 
-from arctichoke.plot.hvplots import quadmesh_map
+from arctichoke.plot import plot_map
 
-EC_Earth3P_HR_areacello_globe_precise_trim = quadmesh_map(
+EC_Earth3P_HR_areacello_globe_precise_trim = plot_map(
     EC_Earth3P_HR_areacello_xr_precise_trim,
     'areacello',
     map_projection = 'Orthographic',
@@ -167,9 +167,9 @@ HadGEM3_GC31_HH_hist_1950_sispeed_xr_test_trim = trim_latlon(
 print(f"For trimming to the test bounding box:")
 print(f"    Dimension sizes: (time:{HadGEM3_GC31_HH_hist_1950_sispeed_xr_test_trim['time'].size}, j:{HadGEM3_GC31_HH_hist_1950_sispeed_xr_test_trim['j'].size}, i:{HadGEM3_GC31_HH_hist_1950_sispeed_xr_test_trim['i'].size})")
 
-from arctichoke.plot.hvplots import quadmesh_map
+from arctichoke.plot import plot_map
 
-HadGEM3_GC31_HH_hist_1950_sispeed_test_trim_map = quadmesh_map(
+HadGEM3_GC31_HH_hist_1950_sispeed_test_trim_map = plot_map(
     HadGEM3_GC31_HH_hist_1950_sispeed_xr_test_trim.isel(time=3),
     'sispeed',
     map_projection = 'Orthographic',
