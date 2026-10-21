@@ -2,6 +2,7 @@ import xarray as xr
 
 from arctichoke.analysis import sum_by_year, trend_in_time, trend_in_time_scipy
 from arctichoke.dataset import select_months
+from arctichoke.dataset.interp_dataset import interp_to_reg_grid
 import arctichoke.params as sps
 from arctichoke.path import list_variable_files
 from arctichoke.plot.plot_map import plot_map
@@ -17,6 +18,7 @@ def make_trend_map(
     call_sum_by_year: bool = True,
     find_mean: bool = False,
     map_projection: str = 'Orthographic',
+    use_hvplot: bool = False,
     return_map: bool = False,
     verbose: bool = False,
     **kwargs,
@@ -59,6 +61,9 @@ def make_trend_map(
         map_projection : `str`, optional
             The map projection to use.
             Default is `'Orthographic'`.
+        use_hvplot : `bool`, optional
+            Whether to use `hvplot` or `cartopy` to make the map.
+            Default is `True` which uses `hvplot` and, if `False`, uses `cartopy` instead.
         return_map : `bool`, optional
             Whether to return the map object or not.
             Default is `False`.
@@ -146,7 +151,7 @@ def make_trend_map(
         this_time_dim = 'time'
     # Take the trend across time
     if calc_pvals:
-        dataset = trend_in_time_scipy(
+        trend_dataset = trend_in_time_scipy(
             dataset = dataset,
             var = var_for_trend,
             mask_where_zero_across_time = False,
@@ -154,19 +159,28 @@ def make_trend_map(
             time_dim = this_time_dim,
         )
     else:
-        dataset = trend_in_time(
+        trend_dataset = trend_in_time(
             dataset = dataset,
             var = var_for_trend,
             mask_where_zero_across_time = mask_where_zero_across_time,
             verbose = verbose,
             time_dim = this_time_dim,
         )
+    # Interpolate the data, if necessary
+    if use_hvplot == False:
+        trend_dataset = interp_to_reg_grid(
+            dataset = trend_dataset,
+            targetgrid = 'data/target_grid_0-25_deg.nc',
+            verbose = verbose,
+            **kwargs,
+        )
     # Plot the trends on a map
     sum_year_trend_map = plot_map(
-        dataset,
+        trend_dataset,
         f'{var_for_trend}_trends',
         map_projection = map_projection,
         diverging_cbar = True,
+        use_hvplot = use_hvplot,
         verbose = verbose,
         **kwargs,
     )
