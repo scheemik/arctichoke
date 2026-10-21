@@ -41,7 +41,9 @@ def get_limited_extent(
 
         Returns
         -------
-        map_extent
+        map_extent : tuple of (int, float)
+            The extent to which the plot should be limited in the following format: 
+            `(x_min, x_max, y_min, y_max)`
         
         Examples
         --------
@@ -76,6 +78,10 @@ def get_limited_extent(
         map_bbox = sps.CAAM_BBOX
         if verbose:
             print(f"(get_limited_extent) Given `map_bbox` of `CAA_BBOX`, so replacing with `CAAM_BBOX`.")
+    elif map_bbox == sps.QW_BBOX:
+        map_bbox = sps.QWM_BBOX
+        if verbose:
+            print(f"(get_limited_extent) Given `map_bbox` of `QW_BBOX`, so replacing with `QWM_BBOX`.")
 
     # Unpack the bounding box values
     box_lat_max = map_bbox[0]
