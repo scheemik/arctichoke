@@ -13,3 +13,6 @@ sb_clrs = [
     '#EAE159',      # Yellow
     '#6EB2E4',      # Light blue
 ]
+
+# Default hatch / stippling color, including transparency
+hatch_red = (1, .4, .4, 1.0)

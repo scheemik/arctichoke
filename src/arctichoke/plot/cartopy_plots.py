@@ -251,4 +251,4 @@ def make_cartopy_map(
         # Save the plot to file
         plt.savefig(save_as, dpi=200, bbox_inches='tight')
 
-    return cp_map_plot
+    return axis
