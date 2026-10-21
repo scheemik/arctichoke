@@ -1,4 +1,7 @@
 import cartopy.crs as crs
+from cartopy.mpl.geoaxes import GeoAxes
+from matplotlib.axes._axes import Axes
+from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -22,6 +25,8 @@ def make_cartopy_map(
     map_label: str = None,
     this_cmap: str = 'viridis',
     symmetric_cbar: bool = False, 
+    fig: Figure = None,
+    axis: (Axes, GeoAxes) = None,
     save_as: str = None,
     verbose: bool = False,
     **kwargs,
@@ -67,6 +72,12 @@ def make_cartopy_map(
         symmetric_cbar : `bool`, optional
             Whether to use a symmetric, diverging colormap on the colorbar.
             Default is `False`.
+        fig : `None`, `matplotlib.figure.Figure`, optional
+            If not `None`, this is the pre-existing figure on which to plot the map.
+            Default is `None` which creates a new figure with a new axis.
+        axis : `None`, `matplotlib.axes._axes.Axes`, `cartopy.mpl.geoaxes.GeoAxes`, optional
+            If not `None`, this is the pre-existing axis in `fig` on which to plot the map.
+            Default is `None` which creates a new figure with a new axis.
         save_as : `str`, `None`, optional
             The file name to pass to `arctichoke.plot.save_hvplots.save_hvplot()`.
             Default is `None`, which doesn't save the plot to a file.
@@ -140,6 +151,10 @@ def make_cartopy_map(
         raise TypeError(f"(make_cartopy_map) `this_cmap` must be a string. Got type: {type(this_cmap)}")
     if not isinstance(symmetric_cbar, bool):
         raise TypeError(f"(make_cartopy_map) `symmetric_cbar` must be a `bool`. Got type: {type(symmetric_cbar)}")
+    if not isinstance(fig, (str, (type(None), Figure))):
+        raise TypeError(f"(make_cartopy_map) `fig` must be `None` or `matplotlib.figure.Figure`. Got type: {type(fig)}")
+    if not isinstance(axis, (str, (type(None), Axes, GeoAxes))):
+        raise TypeError(f"(make_cartopy_map) `axis` must be `None`, `matplotlib.axes._axes.Axes`, or `cartopy.mpl.geoaxes.GeoAxes`. Got type: {type(axis)}")
     if not isinstance(save_as, (str, type(None))):
         raise TypeError(f"(make_cartopy_map) `save_as` must be a string or `None`. Got type: {type(save_as)}")
     if not isinstance(verbose, bool):
@@ -156,8 +171,19 @@ def make_cartopy_map(
     if isinstance(map_label, type(None)):
         map_label = make_label(xr_data, var, verbose=verbose)
 
-    # Set up the figure and axis with the chosen projection
-    fig, axis = plt.subplots(1, 1, subplot_kw=dict(projection=map_projection))
+    # Check whether an existing figure and axis have been given
+    if not isinstance(fig, type(None)) and not isinstance(axis, type(None)):
+        if verbose:
+            print(f"(make_cartopy_map) Replacing existing axis with specified projection.")
+        # Get the existing axis position
+        ax_pos = axis.get_position()
+        # Remove the existing axis
+        axis.remove()
+        # Replace this axis with the given projection
+        axis = fig.add_axes(ax_pos, projection=map_projection)
+    else:
+        # Set up the figure and axis with the chosen projection
+        fig, axis = plt.subplots(1, 1, subplot_kw=dict(projection=map_projection))
 
     # Plot the map
     cp_map_plot = xr_data[var].plot(
