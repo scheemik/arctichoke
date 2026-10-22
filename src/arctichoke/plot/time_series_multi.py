@@ -62,7 +62,8 @@ def plot_multi_time_series(
 
         Returns
         -------
-        None
+        time_series_axis : `matplotlib.axes._axes.Axes`
+            The axis on which the time series has been plotted. 
         
         Examples
         --------
@@ -189,7 +190,7 @@ def plot_multi_time_series(
             add_variant_label = False,
         )
         # Plot the time series
-        plot_time_series(
+        time_series_axis = plot_time_series(
             dataset,
             var_for_trend,
             add_regression = add_regression,
@@ -199,3 +200,4 @@ def plot_multi_time_series(
             verbose = verbose,
             **kwargs,
         )
+    return time_series_axis

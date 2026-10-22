@@ -86,9 +86,11 @@ def plot_time_series(
         Returns
         -------
         If `test` == `False`: 
-            `None`
+            time_series_axis : `matplotlib.axes._axes.Axes`
+                The axis on which the time series has been plotted. 
         If `test` == `True` : 
             dataset : `xarray.DataArray`
+                The dataset of the time series.
         
         Examples
         --------
@@ -190,7 +192,7 @@ def plot_time_series(
         return dataset
 
     # Plot the time series
-    dataset.plot(
+    time_series_axis = dataset.plot(
         ax = axis,
         xlim = xlims,
         ylim = ylims,
@@ -233,16 +235,16 @@ def plot_time_series(
             # Format the label
             reg_label = f"{str(reg_m)[:6]}x+{str(reg_b)[:6]}"
         # Plot the regression line
-        axis.plot(
+        time_series_axis = axis.plot(
             dataset[x_var].values, 
             x_vals * reg_m + reg_b, 
             color = line_clr,
             linewidth = 3,
-            label=reg_label,
+            label = reg_label,
         )
         axis.legend()
 
     # Modify the plot
     axis.set_title(plt_title)
 
-    return axis
+    return time_series_axis
