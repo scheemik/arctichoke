@@ -186,13 +186,14 @@ def make_trend_map(
             **kwargs,
         )
     # Plot the trends on a map
-    sum_year_trend_map = plot_map(
+    trend_map_axis, plot_map_kwargs = plot_map(
         trend_dataset,
         f'{var_for_trend}_trends',
         map_projection = map_projection,
         diverging_cbar = True,
         use_hvplot = use_hvplot,
         verbose = verbose,
+        return_plot_map_kwargs = True,
         **kwargs,
     )
     # Add trend significance to the map
@@ -208,6 +209,16 @@ def make_trend_map(
         )
         # Add label for the hatches in the legend
         trend_map_axis.legend(handles=handles, loc='upper right')
+        # Reset the map extent
+        map_extent = plot_map_kwargs['map_extent']
+        map_projection = plot_map_kwargs['map_projection']
+        if not isinstance(map_extent, type(None)):
+            trend_map_axis = trend_map_axis.set_extent(
+                (map_extent[0], map_extent[1],
+                map_extent[2], map_extent[3]),
+                crs = map_projection,
+            )
+
     if return_map:
         return trend_map_axis
     trend_map_axis
