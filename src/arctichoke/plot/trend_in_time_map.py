@@ -1,11 +1,13 @@
 import xarray as xr
 
 from arctichoke.analysis import sum_by_year, trend_in_time, trend_in_time_scipy
+from arctichoke.analysis.significance import find_significance 
 from arctichoke.dataset import select_months
 from arctichoke.dataset.interp_dataset import interp_to_reg_grid
 import arctichoke.params as sps
 from arctichoke.path import list_variable_files
 from arctichoke.plot.plot_map import plot_map
+from arctichoke.plot.stippling import add_hatches
 
 def make_trend_map(
     this_source_id: str,
@@ -75,7 +77,7 @@ def make_trend_map(
 
         Returns
         -------
-        sum_year_trend_map : `holoviews.core.overlay.Overlay`
+        trend_map_axis : `holoviews.core.overlay.Overlay`
             The map of the trends in time for the given variable.
         
         Examples
@@ -166,8 +168,17 @@ def make_trend_map(
             verbose = verbose,
             time_dim = this_time_dim,
         )
-    # Interpolate the data, if necessary
+    # Find the trend significance and interpolate the data, if necessary
     if use_hvplot == False:
+        # Find the significance of trends dataset
+        trend_dataset = find_significance(
+            dataset,
+            trend_dataset,
+            var_for_trend,
+            this_time_dim,
+            verbose = verbose,
+        )
+        # Interpolate these datasets
         trend_dataset = interp_to_reg_grid(
             dataset = trend_dataset,
             targetgrid = 'data/target_grid_0-25_deg.nc',
@@ -184,6 +195,19 @@ def make_trend_map(
         verbose = verbose,
         **kwargs,
     )
+    # Add trend significance to the map
+    if use_hvplot == False:
+        # Add hatch lines
+        handles = add_hatches(
+            hatch_axis = trend_map_axis, 
+            dataset = trend_dataset,
+            var = f'{var_for_trend}_trends_sig',
+            hatch_label = 'significant',
+            verbose = verbose,
+            **kwargs,
+        )
+        # Add label for the hatches in the legend
+        trend_map_axis.legend(handles=handles, loc='upper right')
     if return_map:
-        return sum_year_trend_map
-    sum_year_trend_map
+        return trend_map_axis
+    trend_map_axis
