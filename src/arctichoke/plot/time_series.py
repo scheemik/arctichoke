@@ -1,4 +1,6 @@
 from datetime import datetime
+from matplotlib.axes._axes import Axes
+from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 import numpy as np
 import xarray as xr
@@ -18,6 +20,8 @@ def plot_time_series(
     xlims: [str, str] = None,
     ylims: [float, float] = None,
     line_clr: str = None,
+    fig: Figure = None,
+    axis: Axes = None,
     save_as: str = None,
     verbose: bool = False,
     test: bool = False,
@@ -57,6 +61,12 @@ def plot_time_series(
         line_clr: `str`, `None`, optional
             The color of line to use in the plot. 
             Default is `None` which uses the default `matplotlib` colors. 
+        fig : `None`, `matplotlib.figure.Figure`, optional
+            If not `None`, this is the pre-existing figure on which to plot the map.
+            Default is `None` which creates a new figure with a new axis.
+        axis : `None`, `matplotlib.axes._axes.Axes`, optional
+            If not `None`, this is the pre-existing axis in `fig` on which to plot the map.
+            Default is `None` which creates a new figure with a new axis.
         save_as : `str`, `None`, optional
             The name of the file to which to save the plot.
             Default is `None`, which doesn't save the plot to a file.
@@ -131,6 +141,10 @@ def plot_time_series(
                     raise TypeError(f"(plot_time_series) `ylims[{i}]` must be a number. Got type: {type(ylims[i])}")
     elif not isinstance(ylims, type(None)):
         raise TypeError(f"(plot_time_series) `ylims` must be a list or `None`. Got type: {type(ylims)}")
+    if not isinstance(fig, (str, (type(None), Figure))):
+        raise TypeError(f"(make_cartopy_map) `fig` must be `None` or `matplotlib.figure.Figure`. Got type: {type(fig)}")
+    if not isinstance(axis, (str, (type(None), Axes))):
+        raise TypeError(f"(make_cartopy_map) `axis` must be `None` or `matplotlib.axes._axes.Axes`. Got type: {type(axis)}")
     if not isinstance(save_as, (str, type(None))):
         raise TypeError(f"(plot_time_series) `save_as` must be a string or `None`. Got type: {type(save_as)}")
     if not isinstance(line_clr, (str, type(None))):
@@ -143,8 +157,18 @@ def plot_time_series(
         raise TypeError(f"(plot_time_series) `test` must be a `bool`. Got type: {type(test)}")
     
     # Information to output
+    print('testing testing 123')
     if verbose:
         print(f"(plot_time_series) `save_as`: {save_as}")
+
+    # Check whether an existing figure and axis have been given
+    if isinstance(fig, type(None)) or isinstance(axis, type(None)):
+        if verbose:
+            print(f"(plot_time_series) No pre-existing figure or axis given, creating new ones.")
+        # Set up figure
+        fig, axs = plt.subplots(1, 1, squeeze=False, figsize=[9, 6])
+        # Select the only axis
+        axis = axs[0,0]
 
     # Get limits for the y-axis
     if isinstance(ylims, type(None)):
@@ -164,6 +188,7 @@ def plot_time_series(
 
     # Plot the time series
     dataset.plot(
+        ax = axis,
         xlim = xlims,
         ylim = ylims,
         color = line_clr,
@@ -204,16 +229,16 @@ def plot_time_series(
             # Format the label
             reg_label = f"{str(reg_m)[:6]}x+{str(reg_b)[:6]}"
         # Plot the regression line
-        plt.plot(
+        axis.plot(
             dataset[x_var].values, 
             x_vals * reg_m + reg_b, 
             color = line_clr,
             linewidth = 3,
             label=reg_label,
         )
-        plt.legend()
+        axis.legend()
 
     # Modify the plot
-    plt.title(plt_title)
+    axis.set_title(plt_title)
 
-    return None
+    return axis
