@@ -6,7 +6,7 @@ import xarray as xr
 from arctichoke.params import hatch_red
 
 def add_hatches(
-    axis,
+    hatch_axis,
     dataset,
     var,
     hatch_label,
@@ -17,6 +17,7 @@ def add_hatches(
     hatch_color = hatch_red,
     contour_level = None,
     verbose = False,
+    **kwargs,
 ):
     """ Add hatching or stippling to an axis.
 
@@ -24,7 +25,7 @@ def add_hatches(
 
         Parameters
         ----------
-        axis : `cartopy.mpl.geoaxes.GeoAxes`
+        hatch_axis : `cartopy.mpl.geoaxes.GeoAxes`
             The pre-existing axis on which to add the hatching marks.
             Default is `None` which creates a new figure with a new axis.
         dataset : `xarray.Dataset`
@@ -82,7 +83,7 @@ def add_hatches(
             hatches.append('') 
     # Add hatches to the axis
     hatch_overlay = dataset[var].plot.contourf(
-        ax=axis,
+        ax=hatch_axis,
         transform=ccrs.PlateCarree(), # if not transformed, the data will become very distorted
         robust=True,
         colors='none',
@@ -98,7 +99,7 @@ def add_hatches(
             print(f"(add_hatches) Adding a contour at the `contour_level`:{contour_level}")
         # Add contour line to frame the hatches
         contour_line = dataset[var].plot.contour(
-            ax=axis,
+            ax=hatch_axis,
             transform=ccrs.PlateCarree(),  # if not transformed, the data will become very distorted
             robust=True,
             levels=[contour_level],
