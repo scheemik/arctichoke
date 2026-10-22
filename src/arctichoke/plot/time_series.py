@@ -20,6 +20,7 @@ def plot_time_series(
     xlims: [str, str] = None,
     ylims: [float, float] = None,
     line_clr: str = None,
+    line_style: str = ':',
     fig: Figure = None,
     axis: Axes = None,
     save_as: str = None,
@@ -61,6 +62,9 @@ def plot_time_series(
         line_clr: `str`, `None`, optional
             The color of line to use in the plot. 
             Default is `None` which uses the default `matplotlib` colors. 
+        line_style : `str`, optional
+            The style of line to use in the time series plot (not the regression line).
+            Default is `:`. 
         fig : `None`, `matplotlib.figure.Figure`, optional
             If not `None`, this is the pre-existing figure on which to plot the map.
             Default is `None` which creates a new figure with a new axis.
@@ -157,7 +161,6 @@ def plot_time_series(
         raise TypeError(f"(plot_time_series) `test` must be a `bool`. Got type: {type(test)}")
     
     # Information to output
-    print('testing testing 123')
     if verbose:
         print(f"(plot_time_series) `save_as`: {save_as}")
 
@@ -192,6 +195,7 @@ def plot_time_series(
         xlim = xlims,
         ylim = ylims,
         color = line_clr,
+        linestyle = line_style,
         **kwargs,
     )
 
