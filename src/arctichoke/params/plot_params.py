@@ -16,3 +16,4 @@ sb_clrs = [
 
 # Default hatch / stippling color, including transparency
 hatch_red = (1, .4, .4, 1.0)
+hatch_grn = (0, .6, 0, 0.9)
