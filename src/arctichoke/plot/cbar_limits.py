@@ -1,10 +1,11 @@
 from bokeh.models import LinearColorMapper, ColorBar
 from bokeh.plotting import show
+import cartopy
 import holoviews as hv
 import numpy as np
 
 def set_cbar_lims(
-    hv_overlay: (hv.core.overlay.Overlay, hv.core.spaces.DynamicMap, hv.element.raster.QuadMesh),
+    plot_object: (hv.core.overlay.Overlay, hv.core.spaces.DynamicMap, hv.element.raster.QuadMesh),
     cmin: (int, float),
     cmax: (int, float),
     verbose: bool = False,
@@ -17,7 +18,7 @@ def set_cbar_lims(
 
         Parameters
         ----------
-        hv_overlay : `holoviews.core.overlay.Overlay`, `holoviews.core.spaces.DynamicMap`, `holoviews.element.raster.QuadMesh`
+        plot_object : `cartopy.mpl.geocollection.GeoQuadMesh`, `holoviews.core.overlay.Overlay`, `holoviews.core.spaces.DynamicMap`, `holoviews.element.raster.QuadMesh`
             The overlay object for which to construct the limited colorbar.
         cmin : `int`, `float`
             The minimum display value for the colormap. 
@@ -39,8 +40,8 @@ def set_cbar_lims(
         >>> from arctichoke.plot.cbar_limits import set_cbar_lims
     """
     # Verify input arguments
-    if not isinstance(hv_overlay, (hv.core.overlay.Overlay, hv.core.spaces.DynamicMap, hv.element.raster.QuadMesh)):
-        raise TypeError(f"(set_cbar_lims) `hv_overlay` must be `hv.core.overlay.Overlay`, `holoviews.core.spaces.DynamicMap`, or `hv.element.raster.QuadMesh`. Got type: {type(hv_overlay)}")
+    if not isinstance(plot_object, (hv.core.overlay.Overlay, hv.core.spaces.DynamicMap, hv.element.raster.QuadMesh)):
+        raise TypeError(f"(set_cbar_lims) `plot_object` must be `hv.core.overlay.Overlay`, `holoviews.core.spaces.DynamicMap`, or `hv.element.raster.QuadMesh`. Got type: {type(plot_object)}")
     if not isinstance(cmin, (int, float)):
         raise TypeError(f"(set_cbar_lims) `cmin` must be `int` or `float`. Got type: {type(cmin)}")
     if not isinstance(cmax, (int, float)):
@@ -50,32 +51,40 @@ def set_cbar_lims(
     if not isinstance(verbose, bool):
         raise TypeError(f"(set_cbar_lims) `verbose` must be a `bool`. Got type: {type(verbose)}")
     
-    # Convert the overlay to a Bokeh figure
-    renderer = hv.renderer("bokeh")
-    plot = renderer.get_plot(hv_overlay)
-    fig = plot.state
+    # if isinstance(plot_object, cartopy.mpl.geocollection.GeoQuadMesh):
+    #     # Get the max and min of original colorbar
+    #     full_low = plot_object.colorbar.vmin
+    #     full_high = plot_object.colorbar.vmax
+    #     print("(set_cbar_lims) Not implemented for `cartopy` plots yet.")
+    #     return plot_object
+    # else:
+    if True:
+        # Convert the overlay to a Bokeh figure
+        renderer = hv.renderer("bokeh")
+        plot = renderer.get_plot(plot_object)
+        fig = plot.state
 
-    # Check for existing colorbar
-    old_cb = None
-    for item in fig.right:
-        if isinstance(item, ColorBar):
-            old_cb = item
-            break
+        # Check for existing colorbar
+        old_cb = None
+        for item in fig.right:
+            if isinstance(item, ColorBar):
+                old_cb = item
+                break
 
-    # Remove the existing colorbar
-    if not isinstance(old_cb, type(None)):
-        fig.right.remove(old_cb)
-    else:
-        print("Warning: Given `hv_overlay` does not contain a colorbar.")
-        return fig
+        # Remove the existing colorbar
+        if not isinstance(old_cb, type(None)):
+            fig.right.remove(old_cb)
+        else:
+            print("(set_cbar_lims) Warning: Given `plot_object` does not contain a colorbar.")
+            return fig
 
-    # Extract title, mapper, and color palette from original colorbar
-    cbar_title = old_cb.title
-    orig_mapper = old_cb.color_mapper
-    palette = orig_mapper.palette
-    # Get max and min of original mapper
-    full_low = orig_mapper.low
-    full_high = orig_mapper.high
+        # Extract title, mapper, and color palette from original colorbar
+        cbar_title = old_cb.title
+        orig_mapper = old_cb.color_mapper
+        palette = orig_mapper.palette
+        # Get max and min of original mapper
+        full_low = orig_mapper.low
+        full_high = orig_mapper.high
 
     if verbose:
         print(f"(set_cbar_lims) Original colorbar range: {full_low} to {full_high}")
