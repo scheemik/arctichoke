@@ -167,7 +167,7 @@ def make_title(
         if 'select_months' in dataset.attrs.keys():
             selected_months = str(dataset.attrs['select_months'])
             if selected_months == '[6, 7, 8, 9, 10]':
-                selected_months = 'summer'
+                selected_months = 'Summer'
             dataset_title = f"{dataset_title}{selected_months} "
         # Check whether this was a trend or climatology
         if 'trend_start' in attr_keys and 'trend_end' in attr_keys:
