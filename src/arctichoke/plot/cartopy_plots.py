@@ -245,6 +245,12 @@ def make_cartopy_map(
     #         verbose = verbose,
     #         # **kwargs,
     #     )
+    if not isinstance(map_extent, type(None)):
+        axis.set_extent(
+            (map_extent[0], map_extent[1],
+            map_extent[2], map_extent[3]),
+            crs = map_projection,
+        )
 
     # Save the plot, if applicable
     if not isinstance(save_as, type(None)):
