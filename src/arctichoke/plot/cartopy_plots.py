@@ -192,7 +192,7 @@ def make_cartopy_map(
         cbar_kwargs={
             'label': map_label,
             'orientation': 'horizontal', 
-            'shrink': 0.7,
+            # 'shrink': 0.7,
             'extend': 'neither',
         },
         cmap = this_cmap,
