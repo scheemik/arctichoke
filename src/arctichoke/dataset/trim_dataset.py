@@ -22,6 +22,7 @@ def trim_latlon(
     precise_trim: bool = False,
     save_as: str = None,
     verbose: bool = False,
+    **kwargs,
 ):
     """ Trim the given dataset.
 
@@ -45,6 +46,8 @@ def trim_latlon(
         verbose : `bool`, optional
             Whether to verbosely output information as the function executes.
             Default is `False`.
+        **kwargs
+            Keyword arguments to handle those passed by wrapper functions.
 
         Returns
         -------

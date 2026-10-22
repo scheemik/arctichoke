@@ -4,6 +4,7 @@ from .example_dataset import *
 from .field_mean import *
 from .get_min_max import *
 from .get_variable import *
+from .interp_dataset import *
 from .latlon_type import *
 from .mask_dataset import *
 from .select_months import *

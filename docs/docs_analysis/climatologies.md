@@ -201,9 +201,9 @@ dataset_clim = make_climatology(
     this_modification = 'trim_CAA_',
 )
 
-from arctichoke.plot import quadmesh_map
+from arctichoke.plot import plot_map
 
-quadmesh_map(
+plot_map(
     dataset_clim.sel(month=9),
     'sithick_month_mean',
     clims = [0,5],
@@ -228,7 +228,7 @@ I'll then plot both climatologies for September to show the difference between t
 ```python
 from arctichoke.analysis import make_climatology, make_sithick_masked_climatology
 from arctichoke.params import sea_ice_vars
-from arctichoke.plot import quadmesh_map
+from arctichoke.plot import plot_map
 
 source_id = 'EC-Earth3P-HR'
 variable_id = 'siconc'
@@ -244,7 +244,7 @@ siconc_dataset_clim = make_climatology(
     verbose = set_verbose,
 )
 
-this_map = quadmesh_map(
+this_map = plot_map(
     siconc_dataset_clim.sel(month=9),
     'siconc_month_mean',
     clims = sea_ice_vars['siconc']['plot_range'],
@@ -260,9 +260,9 @@ siconc_dataset_clim = make_sithick_masked_climatology(
     verbose = set_verbose,
 )
 
-this_map = quadmesh_map(
+this_map = plot_map(
     siconc_dataset_clim.sel(month=9),
-    'siconc_month_mean',
+    'siconc_si2mthick_month_mean',
     clims = sea_ice_vars['siconc']['plot_range'],
     verbose = set_verbose,
 )
@@ -518,7 +518,7 @@ import xarray as xr
 from arctichoke.dataset import select_months
 from arctichoke.path import list_variable_files
 from arctichoke.params import sea_ice_vars
-from arctichoke.plot import quadmesh_map
+from arctichoke.plot import plot_map
 
 this_model = 'EC-Earth3P-HR'
 this_experiment = 'hist-1950'
@@ -564,13 +564,14 @@ for this_si_var in [
         # Adjust the `long_name` attribute to change the colorbar label
         dataset_clim[f'{this_si_var}_month_mean'].attrs['long_name'] = dataset_clim[f'{this_si_var}_month_mean'].attrs['long_name'].replace('onthly m', '')
         # Plot the data on a map
-        this_map = quadmesh_map(
+        this_map = plot_map(
             dataset_clim,
             f'{this_si_var}_month_mean',
             clims = sea_ice_vars[this_si_var]['plot_range'],
             verbose = set_verbose,
         )
         display(this_map)
+
 ```
 ![EC-Earth3P-HR_r1i1p2f1_sithick_CAA_clim_mean_map.png](climatologies-img/EC-Earth3P-HR_r1i1p2f1_sithick_CAA_clim_mean_map.png)
 
@@ -598,7 +599,7 @@ import xarray as xr
 from arctichoke.dataset import select_months
 from arctichoke.path import list_variable_files
 from arctichoke.params import sea_ice_vars
-from arctichoke.plot import quadmesh_map
+from arctichoke.plot import plot_map
 
 this_model = 'HadGEM3-GC31-MM'
 this_experiment = 'hist-1950'
@@ -643,7 +644,7 @@ for this_si_var in [
         # Adjust the `long_name` attribute to change the colorbar label
         dataset_clim[f'{this_si_var}_month_mean'].attrs['long_name'] = dataset_clim[f'{this_si_var}_month_mean'].attrs['long_name'].replace('onthly m', '')
         # Plot the data on a map
-        this_map = quadmesh_map(
+        this_map = plot_map(
             dataset_clim,
             f'{this_si_var}_month_mean',
             clims = sea_ice_vars[this_si_var]['plot_range'],

@@ -69,10 +69,10 @@ Attributes: (12/48)
 
 Then, I will plot the data for January of 1950.
 ```python
-from arctichoke.plot import quadmesh_map
+from arctichoke.plot import plot_map
 from arctichoke.params import sea_ice_vars
 
-quadmesh_map(
+plot_map(
     dataset.isel(time=0),
     'siconc',
     clims = sea_ice_vars['siconc']['plot_range'],
@@ -103,9 +103,9 @@ siconc_gt_15_dataset = make_mask(
     verbose = True,
 )
 
-from arctichoke.plot import quadmesh_map
+from arctichoke.plot import plot_map
 
-quadmesh_map(
+plot_map(
     siconc_gt_15_dataset.isel(time=0),
     siconc_gt_15_var,
 )
@@ -150,9 +150,9 @@ Attributes: (12/48)
     ...                     ...
 ```
 ```python
-from arctichoke.plot import quadmesh_map
+from arctichoke.plot import plot_map
 
-quadmesh_map(
+plot_map(
     dataset.isel(time=0),
     'siconc_masked',
     clims = sea_ice_vars['siconc']['plot_range'],
@@ -179,7 +179,7 @@ I wrote the function `make_clim_mask()` to do the following procedure:
 - Use this mean dataset to create a mask.
 ```python
 from arctichoke.dataset.clim_mask import make_clim_mask
-from arctichoke.plot import quadmesh_map
+from arctichoke.plot import plot_map
 
 this_var = 'siconc'
 set_verbose = False
@@ -199,7 +199,7 @@ for variant_label in [
     )
 
     # Plot the data on a map
-    this_map = quadmesh_map(
+    this_map = plot_map(
         clim_mask_dataset,
         f'{this_var}_clim_mask',
         verbose = set_verbose,
@@ -220,7 +220,7 @@ from arctichoke.dataset import select_months
 from arctichoke.dataset.clim_mask import make_clim_mask
 from arctichoke.path import list_variable_files
 from arctichoke.params import sea_ice_vars
-from arctichoke.plot import quadmesh_map
+from arctichoke.plot import plot_map
 
 this_model = 'EC-Earth3P-HR'
 this_experiment = 'hist-1950'
@@ -277,7 +277,7 @@ for variant_label in [
         # Adjust the `long_name` attribute to change the colorbar label
         dataset_clim[f'{this_si_var}_month_mean'].attrs['long_name'] = dataset_clim[f'{this_si_var}_month_mean'].attrs['long_name'].replace('onthly m', '')
         # Plot the data on a map
-        this_map = quadmesh_map(
+        this_map = plot_map(
             dataset_clim,
             f'{this_si_var}_month_mean',
             clims = sea_ice_vars[this_si_var]['plot_range'],

@@ -52,9 +52,9 @@ siage_2000_xr_trim = trim_latlon(
     precise_trim = False,
 )
 
-from arctichoke.plot.hvplots import quadmesh_map
+from arctichoke.plot import plot_map
 
-siage_2000_trim_map = quadmesh_map(
+siage_2000_trim_map = plot_map(
     siage_2000_xr_trim.isel(time=6),
     'siage',
     map_projection = 'Orthographic',
@@ -63,11 +63,11 @@ siage_2000_trim_map = quadmesh_map(
 siage_2000_trim_map
 ```
 ```console
-(quadmesh_map) `save_as`: None
-(quadmesh_map) `lat_var`: latitude
-(quadmesh_map) `lon_var`: longitude
-(quadmesh_map) `diverging_cbar`: False
-(quadmesh_map) `cmin`: 0.0, `cmax`: 3.155692772830838e+27
+(plot_map) `save_as`: None
+(plot_map) `lat_var`: latitude
+(plot_map) `lon_var`: longitude
+(plot_map) `diverging_cbar`: False
+(plot_map) `cmin`: 0.0, `cmax`: 3.155692772830838e+27
 ```
 ![EC-Earth3P-HR_r1i1p2f1_siage_CAA_spiky_artifact.png](multi_year_ice-img/EC-Earth3P-HR_r1i1p2f1_siage_CAA_spiky_artifact.png)
 
@@ -94,9 +94,9 @@ siage_2000_xr_trim = calc_siage(
     verbose = True,
 )
 
-from arctichoke.plot.hvplots import quadmesh_map
+from arctichoke.plot import plot_map
 
-siage_2000_trim_map = quadmesh_map(
+siage_2000_trim_map = plot_map(
     siage_2000_xr_trim.isel(time=6),
     'siage2',
     map_projection = 'Orthographic',
@@ -109,11 +109,11 @@ siage_2000_trim_map
 (calc_siage) Maximum value of `siage` found to be 3.155692772830838e+27. Mapping large values to `nan`.
 (calc_siage) `input_command`: cdo setrtoc,1e+27,1.7976931348623157e+308,nan dataset
 (calc_siage) Found units of `s`. Dividing by 31536000 to get units of years.
-(quadmesh_map) `save_as`: None
-(quadmesh_map) `lat_var`: latitude
-(quadmesh_map) `lon_var`: longitude
-(quadmesh_map) `diverging_cbar`: False
-(quadmesh_map) `cmin`: 0.0, `cmax`: 122.23867797851562
+(plot_map) `save_as`: None
+(plot_map) `lat_var`: latitude
+(plot_map) `lon_var`: longitude
+(plot_map) `diverging_cbar`: False
+(plot_map) `cmin`: 0.0, `cmax`: 122.23867797851562
 ```
 ![EC-Earth3P-HR_r1i1p2f1_siage2_CAA_ice_too_old.png](multi_year_ice-img/EC-Earth3P-HR_r1i1p2f1_siage2_CAA_ice_too_old.png)
 
@@ -127,9 +127,9 @@ As can be seen in the output of making the plot above, the maximum sea ice age v
 That seems odd.
 I can restrict the colorbar of the above plot to see more detail.
 ```python
-from arctichoke.plot.hvplots import quadmesh_map
+from arctichoke.plot import plot_map
 
-siage_2000_trim_map = quadmesh_map(
+siage_2000_trim_map = plot_map(
     siage_2000_xr_trim.isel(time=6),
     'siage2',
     map_projection = 'Orthographic',
@@ -156,9 +156,9 @@ siage_2000_xr_trim = trim_latlon(
     precise_trim = False,
 )
 
-from arctichoke.plot.hvplots import quadmesh_map
+from arctichoke.plot import plot_map
 
-siage_2000_trim_map = quadmesh_map(
+siage_2000_trim_map = plot_map(
     siage_2000_xr_trim.isel(time=6),
     'siage',
     map_projection = 'Orthographic',
@@ -167,11 +167,11 @@ siage_2000_trim_map = quadmesh_map(
 siage_2000_trim_map
 ```
 ```console
-(quadmesh_map) `save_as`: None
-(quadmesh_map) `lat_var`: latitude
-(quadmesh_map) `lon_var`: longitude
-(quadmesh_map) `diverging_cbar`: False
-(quadmesh_map) `cmin`: 0.0, `cmax`: 1324738304.0
+(plot_map) `save_as`: None
+(plot_map) `lat_var`: latitude
+(plot_map) `lon_var`: longitude
+(plot_map) `diverging_cbar`: False
+(plot_map) `cmin`: 0.0, `cmax`: 1324738304.0
 ```
 ![HadGEM3-GC31-MM_r1i1p1f1_CAA_2000-07_siage2.png](multi_year_ice-img/HadGEM3-GC31-MM_r1i1p1f1_CAA_2000-07_siage2.png)
 
@@ -181,9 +181,9 @@ from arctichoke.analysis import calc_siage
 
 siage_2000_xr = calc_siage(siage_2000_xr_trim)
 
-from arctichoke.plot.hvplots import quadmesh_map
+from arctichoke.plot import plot_map
 
-siage_2000_trim_map = quadmesh_map(
+siage_2000_trim_map = plot_map(
     siage_2000_xr.isel(time=6),
     'siage2',
     map_projection = 'Orthographic',
@@ -192,11 +192,11 @@ siage_2000_trim_map = quadmesh_map(
 siage_2000_trim_map
 ```
 ```console
-(quadmesh_map) `save_as`: None
-(quadmesh_map) `lat_var`: latitude
-(quadmesh_map) `lon_var`: longitude
-(quadmesh_map) `diverging_cbar`: False
-(quadmesh_map) `cmin`: 0.0, `cmax`: 42.00717544555664
+(plot_map) `save_as`: None
+(plot_map) `lat_var`: latitude
+(plot_map) `lon_var`: longitude
+(plot_map) `diverging_cbar`: False
+(plot_map) `cmin`: 0.0, `cmax`: 42.00717544555664
 ```
 ![HadGEM3-GC31-MM_r1i1p1f1_CAA_2000-07_siage.png](multi_year_ice-img/HadGEM3-GC31-MM_r1i1p1f1_CAA_2000-07_siage.png)
 

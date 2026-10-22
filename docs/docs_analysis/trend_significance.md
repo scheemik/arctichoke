@@ -744,10 +744,10 @@ Attributes: (12/51)
 
 I'll make a plot of the trends over time to get an idea of what the general trends are.
 ```python
-from arctichoke.plot import quadmesh_map 
+from arctichoke.plot import plot_map 
 from arctichoke.params import sea_ice_vars
 
-quadmesh_map(
+plot_map(
     trend_dataset,
     'sispeed_year_mean_trends',
     map_bbox = NS_BBOX,
@@ -803,9 +803,9 @@ Attributes: (12/51)
 
 Then, I'll make a map plot to show where the trends are significant.
 ```python
-from arctichoke.plot import quadmesh_map 
+from arctichoke.plot import plot_map 
 
-quadmesh_map(
+plot_map(
     trend_sig_dataset,
     'sispeed_year_mean_trends_sig',
     map_bbox = NS_BBOX,
@@ -829,7 +829,7 @@ from arctichoke.analysis import sum_by_year, trend_in_time, trend_in_time_scipy
 from arctichoke.dataset import select_months
 import arctichoke.params as sps
 from arctichoke.path import list_variable_files
-from arctichoke.plot import quadmesh_map 
+from arctichoke.plot import plot_map 
 from arctichoke.params import sea_ice_vars
 from arctichoke.analysis.significance import find_significance 
 
@@ -915,7 +915,7 @@ for this_variant_label in [
             time_dim = this_time_dim,
         )
 
-    this_map = quadmesh_map(
+    this_map = plot_map(
         trend_dataset,
         'silandfast_year_sum_trends',
         clims = sea_ice_vars['silandfast']['trend_clims'],
@@ -932,7 +932,7 @@ for this_variant_label in [
         verbose = set_verbose,
     )
 
-    this_map = quadmesh_map(
+    this_map = plot_map(
         trend_sig_dataset,
         'silandfast_year_sum_trends_sig',
         verbose = set_verbose,

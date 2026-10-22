@@ -100,9 +100,9 @@ EC_Earth3P_HR_hist_siconc_2000_xr_trim = trim_latlon(
     verbose = False,
 )
 
-from arctichoke.plot.hvplots import quadmesh_map
+from arctichoke.plot import plot_map
 
-EC_Earth3P_HR_hist_siconc_2000_trim_map = quadmesh_map(
+EC_Earth3P_HR_hist_siconc_2000_trim_map = plot_map(
     EC_Earth3P_HR_hist_siconc_2000_xr_trim.isel(time=3),
     'siconc',
     map_projection = 'Orthographic',
@@ -128,9 +128,9 @@ EC_Earth3P_HR_hist_sithick_2000_xr_trim = trim_latlon(
     verbose = False,
 )
 
-from arctichoke.plot.hvplots import quadmesh_map
+from arctichoke.plot import plot_map
 
-EC_Earth3P_HR_hist_sithick_2000_trim_map = quadmesh_map(
+EC_Earth3P_HR_hist_sithick_2000_trim_map = plot_map(
     EC_Earth3P_HR_hist_sithick_2000_xr_trim.isel(time=3),
     'sithick',
     map_projection = 'Orthographic',
@@ -156,9 +156,9 @@ EC_Earth3P_HR_hist_sivol_2000_xr_trim = trim_latlon(
     verbose = False,
 )
 
-from arctichoke.plot.hvplots import quadmesh_map
+from arctichoke.plot import plot_map
 
-EC_Earth3P_HR_hist_sivol_2000_trim_map = quadmesh_map(
+EC_Earth3P_HR_hist_sivol_2000_trim_map = plot_map(
     EC_Earth3P_HR_hist_sivol_2000_xr_trim.isel(time=3),
     'sivol',
     map_projection = 'Orthographic',
@@ -193,9 +193,9 @@ Below, I will calculate sea ice concentration from the `EC-Earth3P-HR` sea ice t
 EC_Earth3P_HR_hist_siconc2_2000_xr_trim = EC_Earth3P_HR_hist_siconc_2000_xr_trim.copy()
 EC_Earth3P_HR_hist_siconc2_2000_xr_trim['siconc'] = EC_Earth3P_HR_hist_sivol_2000_xr_trim['sivol'] / EC_Earth3P_HR_hist_sithick_2000_xr_trim['sithick'] * 100
 
-from arctichoke.plot.hvplots import quadmesh_map
+from arctichoke.plot import plot_map
 
-EC_Earth3P_HR_hist_siconc2_2000_trim_map = quadmesh_map(
+EC_Earth3P_HR_hist_siconc2_2000_trim_map = plot_map(
     EC_Earth3P_HR_hist_siconc2_2000_xr_trim.isel(time=3),
     'siconc',
     map_projection = 'Orthographic',
@@ -216,9 +216,9 @@ EC_Earth3P_HR_hist_siconc2_2000_xr_trim = calc_siconc(
     EC_Earth3P_HR_hist_sivol_2000_xr_trim,
 )
 
-from arctichoke.plot.hvplots import quadmesh_map
+from arctichoke.plot import plot_map
 
-EC_Earth3P_HR_hist_siconc2_2000_trim_map = quadmesh_map(
+EC_Earth3P_HR_hist_siconc2_2000_trim_map = plot_map(
     EC_Earth3P_HR_hist_siconc2_2000_xr_trim.isel(time=3),
     'siconc2',
     map_projection = 'Orthographic',
@@ -234,9 +234,9 @@ If I take the difference between the result from my `calc_siconc()` function and
 ```python
 EC_Earth3P_HR_hist_siconc2_2000_xr_trim['siconc_diff'] = EC_Earth3P_HR_hist_siconc_2000_xr_trim['siconc'] - EC_Earth3P_HR_hist_siconc2_2000_xr_trim['siconc2']
 
-from arctichoke.plot.hvplots import quadmesh_map
+from arctichoke.plot import plot_map
 
-EC_Earth3P_HR_hist_siconc_diff_2000_trim_map = quadmesh_map(
+EC_Earth3P_HR_hist_siconc_diff_2000_trim_map = plot_map(
     EC_Earth3P_HR_hist_siconc2_2000_xr_trim.isel(time=3),
     'siconc_diff',
     map_projection = 'Orthographic',
@@ -251,9 +251,9 @@ I can limit the colorbar to the range [-1, 1] to show more detail around differe
 ```python
 EC_Earth3P_HR_hist_siconc2_2000_xr_trim['siconc_diff'] = EC_Earth3P_HR_hist_siconc_2000_xr_trim['siconc'] - EC_Earth3P_HR_hist_siconc2_2000_xr_trim['siconc2']
 
-from arctichoke.plot.hvplots import quadmesh_map
+from arctichoke.plot import plot_map
 
-EC_Earth3P_HR_hist_siconc_diff_2000_trim_map = quadmesh_map(
+EC_Earth3P_HR_hist_siconc_diff_2000_trim_map = plot_map(
     EC_Earth3P_HR_hist_siconc2_2000_xr_trim.isel(time=3),
     'siconc_diff',
     map_projection = 'Orthographic',
@@ -472,9 +472,9 @@ HadGEM3_GC31_MM_hist_siconc_2000_xr_trim = trim_latlon(
     verbose = False,
 )
 
-from arctichoke.plot.hvplots import quadmesh_map
+from arctichoke.plot import plot_map
 
-HadGEM3_GC31_MM_hist_siconc_2000_trim_map = quadmesh_map(
+HadGEM3_GC31_MM_hist_siconc_2000_trim_map = plot_map(
     HadGEM3_GC31_MM_hist_siconc_2000_xr_trim.isel(time=3),
     'siconc',
     map_projection = 'Orthographic',
@@ -500,9 +500,9 @@ HadGEM3_GC31_MM_hist_sithick_2000_xr_trim = trim_latlon(
     verbose = False,
 )
 
-from arctichoke.plot.hvplots import quadmesh_map
+from arctichoke.plot import plot_map
 
-HadGEM3_GC31_MM_hist_sithick_2000_trim_map = quadmesh_map(
+HadGEM3_GC31_MM_hist_sithick_2000_trim_map = plot_map(
     HadGEM3_GC31_MM_hist_sithick_2000_xr_trim.isel(time=3),
     'sithick',
     map_projection = 'Orthographic',
@@ -526,9 +526,9 @@ HadGEM3_GC31_MM_hist_sivol_2000_xr_trim = trim_latlon(
     verbose = False,
 )
 
-from arctichoke.plot.hvplots import quadmesh_map
+from arctichoke.plot import plot_map
 
-HadGEM3_GC31_MM_hist_sivol_2000_trim_map = quadmesh_map(
+HadGEM3_GC31_MM_hist_sivol_2000_trim_map = plot_map(
     HadGEM3_GC31_MM_hist_sivol_2000_xr_trim.isel(time=3),
     'sivol',
     map_projection = 'Orthographic',
@@ -546,9 +546,9 @@ HadGEM3_GC31_MM_hist_siconc2_2000_xr_trim = calc_siconc(
     HadGEM3_GC31_MM_hist_sivol_2000_xr_trim,
 )
 
-from arctichoke.plot.hvplots import quadmesh_map
+from arctichoke.plot import plot_map
 
-HadGEM3_GC31_MM_hist_siconc2_2000_trim_map = quadmesh_map(
+HadGEM3_GC31_MM_hist_siconc2_2000_trim_map = plot_map(
     HadGEM3_GC31_MM_hist_siconc2_2000_xr_trim.isel(time=3),
     'siconc2',
     map_projection = 'Orthographic',
@@ -831,12 +831,12 @@ HadGEM3_GC31_HH_hist_sithick_2000_xr_trim = trim_latlon(
 
 import xarray as xr
 
-from arctichoke.plot.hvplots import quadmesh_map
+from arctichoke.plot import plot_map
 from arctichoke.params import sea_ice_vars
 
 si_var = 'sithick'
 
-HadGEM3_GC31_HH_hist_sithick_2000_trim_map = quadmesh_map(
+HadGEM3_GC31_HH_hist_sithick_2000_trim_map = plot_map(
     HadGEM3_GC31_HH_hist_sithick_2000_xr_trim.isel(time=3),
     si_var,
     map_projection = 'Orthographic',
@@ -862,12 +862,12 @@ HadGEM3_GC31_HH_hist_sivol_2000_xr_trim = trim_latlon(
 
 import xarray as xr
 
-from arctichoke.plot.hvplots import quadmesh_map
+from arctichoke.plot import plot_map
 from arctichoke.params import sea_ice_vars
 
 si_var = 'sivol'
 
-HadGEM3_GC31_HH_hist_sivol_2000_trim_map = quadmesh_map(
+HadGEM3_GC31_HH_hist_sivol_2000_trim_map = plot_map(
     HadGEM3_GC31_HH_hist_sivol_2000_xr_trim.isel(time=3),
     si_var,
     map_projection = 'Orthographic',
@@ -887,12 +887,12 @@ HadGEM3_GC31_HH_hist_siconc2_2000_xr_trim = calc_siconc(
     HadGEM3_GC31_HH_hist_sivol_2000_xr_trim,
 )
 
-from arctichoke.plot.hvplots import quadmesh_map
+from arctichoke.plot import plot_map
 from arctichoke.params import sea_ice_vars
 
 si_var = 'siconc2'
 
-HadGEM3_GC31_HH_hist_siconc2_2000_trim_map = quadmesh_map(
+HadGEM3_GC31_HH_hist_siconc2_2000_trim_map = plot_map(
     HadGEM3_GC31_HH_hist_siconc2_2000_xr_trim.isel(time=3),
     si_var,
     map_projection = 'Orthographic',

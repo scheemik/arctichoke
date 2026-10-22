@@ -5,30 +5,32 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 
-from arctichoke.dataset import  bound_lat, bound_lon, get_latlon_names, get_min_max
-import arctichoke.params as sps
+from arctichoke.dataset import  get_latlon_names
 from arctichoke.plot.cbar_limits import set_cbar_lims
 from arctichoke.plot.labels_and_titles import make_title, make_label
-from arctichoke.plot.limit_extent import get_limited_extent
 from arctichoke.plot.save_hvplots import save_hvplot
 
-def quadmesh_map(
+def make_quadmesh_map(
     xr_data: xr.Dataset,
     var: str, 
-    save_as: str = None,
-    map_projection: str = 'Orthographic',
-    map_bbox: [float, float, float, float] = sps.CAA_BBOX,
-    clims: [(int, float), (int, float)] = None,
+    cmin: (int, float),
+    cmax: (int, float),
+    map_projection: crs.CRS,
+    map_extent: (float, float, float, float),
+    map_bbox: (bool, [float, float, float, float]),
+    mark_bbox: (bool, [float, float, float, float]) = False,
     map_title: str = None,
     map_label: str = None,
-    mark_bbox: (bool, [float, float, float, float]) = False,
-    diverging_cbar: bool = False, 
+    this_cmap: str = 'viridis',
+    symmetric_cbar: bool = False, 
+    save_as: str = None,
     verbose: bool = False,
     **kwargs,
 ):
     """ Create an `hvplot` quadmesh map.
 
-        Plot a map of the given data using the `hvplot.quadmesh()` function. 
+        Plot a map of the given data using the `hvplot.quadmesh()` function.
+        This function is meant to be called by the wrapper function `arctichoke.plot.plot_map()` using `use_hvplot=True`. 
 
         Parameters
         ----------
@@ -36,41 +38,44 @@ def quadmesh_map(
             The dataset to plot.
         var : `str`
             The variable in `xr_data` to plot.
-        save_as : `str`, `None`, optional
-            The file name to pass to `arctichoke.plot.save_hvplots.save_hvplot()`.
-            Default is `None`, which doesn't save the plot to a file.
-        map_projection : `str`, optional
-            A string naming the map projection to use in the plot.
-            Must be one of the following: 'NorthPolarStereo', 'Orthographic'.
-            Default is 'Orthographic'.
+        cmin : `int`, `float`
+            The minimum value for the colorbar.
+        cmax : `int`, `float`
+            The maximum value for the colorbar.
+        map_projection : `cartopy.crs.CRS`
+            The map projection object to use for the plot.
+        map_extent : tuple of (int, float)
+            The extent to which the plot should be limited in the following format: 
+            `(x_min, x_max, y_min, y_max)`
         map_bbox : Array of `float`, optional
             An array of coordinates defining the bounding box of the map in the following format:
                 - [LAT_MAX, LAT_MIN, LON_MAX, LON_MIN]
                 
-            Default is `arctichoke.params.latlon_params.CAA_BBOX`.
-        clims : List or tuple of `int`, `float`, optional
-            The limits to use in the colorbar.
-            Note: This overrides the default method of limiting the colorbar range when `diverging_cbar=True`.
-            Default is `None`, which uses the minimum / maximum values present in the data.
+        mark_bbox : `None`, Array of `float`, optional
+            An array of coordinates defining a bounding box to mark on the map in the following format:
+                - [LAT_MAX, LAT_MIN, LON_MAX, LON_MIN]
+                
+            Default is `False` which adds no bounding box.
         map_title : `str`, optional
             Specify the title of the map or, if `None` is given, use the `make_title()` function to create the title.
             Default is `None`.
         map_label : `str`, optional
             Specify the label of the map's colorbar or, if `None` is given, use the `make_label()` function to create the label.
             Default is `None`.
-        mark_bbox : `bool`, Array of `float`, optional
-            If given an array of coordinates in the same format as `map_bbox`, a bounding box is marked on the map.
-            If given `True`, the bounding box given as `map_bbox` is marked on the map.
-            If given `False`, no bounding box is marked on the map. 
+        this_cmap : `str`, optional
+            The colormap to use for this plot.
+            Default is `viridis`.
+        symmetric_cbar : `bool`, optional
+            Whether to use a symmetric, diverging colormap on the colorbar.
             Default is `False`.
-        diverging_cbar : `bool`, optional
-            Whether to use a diverging colormap on the colorbar.
-            Default is `False`.
+        save_as : `str`, `None`, optional
+            The file name to pass to `arctichoke.plot.save_hvplots.save_hvplot()`.
+            Default is `None`, which doesn't save the plot to a file.
         verbose : `bool`, optional
             Whether to verbosely output information as the function executes.
             Default is `False`.
         **kwargs
-            Keyword arguments to pass to `bound_lat()`, `bound_lon`, `hvplot.quadmesh()`, `arctichoke.plot.limit_extent.get_limited_extent()`, and `make_title()`
+            Keyword arguments to pass to `make_title()`.
 
         Returns
         -------
@@ -80,116 +85,76 @@ def quadmesh_map(
         Examples
         --------
         >>> import xarray as xr
-        >>> this_plot = hvplots.quadmesh_map(xr.open_dataset("data/areacello_Ofx_EC-Earth3P-HR_highres-future_r2i1p2f1_gn.nc", 'areacello')
+        >>> from arctichoke.plot.plot_map import plot_map
+        >>> this_plot = plot_map(xr.open_dataset("data/areacello_Ofx_EC-Earth3P-HR_highres-future_r2i1p2f1_gn.nc", 'areacello', use_hvplot=True)
         >>> print(type(this_plot))
         <class 'holoviews.core.overlay.Overlay'>
     """
     # Verify input arguments
     if not isinstance(xr_data, xr.Dataset):
-        raise TypeError(f"(quadmesh_map) `xr_data` must be `xr.Dataset`. Got type: {type(xr_data)}")
+        raise TypeError(f"(make_quadmesh_map) `xr_data` must be `xr.Dataset`. Got type: {type(xr_data)}")
     if not isinstance(var, str):
-        raise TypeError(f"(quadmesh_map) `var` must be a string. Got type: {type(var)}")
+        raise TypeError(f"(make_quadmesh_map) `var` must be a string. Got type: {type(var)}")
     if var not in xr_data.data_vars:
-        raise ValueError(f"(quadmesh_map) Variable '{var}' not found in `xr_data`. Available variables are: {list(xr_data.data_vars)}")
-    if not isinstance(save_as, (str, type(None))):
-        raise TypeError(f"(quadmesh_map) `save_as` must be a string or `None`. Got type: {type(save_as)}")
-    if not isinstance(map_projection, (str, type(None))):
-        raise TypeError(f"(quadmesh_map) `map_projection` must be a string. Got type: {type(map_projection)}")
-    elif map_projection not in ['NorthPolarStereo', 'Orthographic']:
-        raise ValueError(f"(quadmesh_map) `map_projection` must be one of the following: 'NorthPolarStereo', 'Orthographic'. Got: {map_projection}")
+        raise ValueError(f"(make_quadmesh_map) Variable '{var}' not found in `xr_data`. Available variables are: {list(xr_data.data_vars)}")
+    if not isinstance(cmin, (int, float)):
+        raise TypeError(f"(make_quadmesh_map) `cmin` must be `int` or `float`. Got type: {type(cmin)}")
+    if not isinstance(cmax, (int, float)):
+        raise TypeError(f"(make_quadmesh_map) `cmax` must be `int` or `float`. Got type: {type(cmax)}")
+    if not isinstance(map_projection, (crs.CRS, type(None))):
+        raise TypeError(f"(make_quadmesh_map) `map_projection` must be `crs.CRS`. Got type: {type(map_projection)}")
+    if isinstance(map_extent, tuple):
+        if not len(map_extent) == 4:
+            raise ValueError(f"(make_quadmesh_map) `map_extent` must have a length of 4. Got length: {len(map_extent)}")
+        else: 
+            for i in range(len(map_extent)):
+                if not isinstance(map_extent[i], (int, float)):
+                    raise TypeError(f"(make_quadmesh_map) `map_extent[{i}]` must be a number. Got type: {type(map_extent[i])}")
+    elif not isinstance(map_extent, (type([]), type(None))):
+        raise TypeError(f"(make_quadmesh_map) `map_extent` must be a list or `None`. Got type: {type(map_extent)}")
     if isinstance(map_bbox, type([])):
         if not len(map_bbox) == 4:
-            raise ValueError(f"(quadmesh_map) `map_bbox` must have a length of 4. Got length: {len(map_bbox)}")
+            raise ValueError(f"(make_quadmesh_map) `map_bbox` must have a length of 4. Got length: {len(map_bbox)}")
         else: 
             for i in range(len(map_bbox)):
                 if not isinstance(map_bbox[i], (int, float)):
-                    raise TypeError(f"(quadmesh_map) `map_bbox[{i}]` must be a number. Got type: {type(map_bbox[i])}")
-    elif not isinstance(map_bbox, (type([]), type(None))):
-        raise TypeError(f"(quadmesh_map) `map_bbox` must be a list or `None`. Got type: {type(map_bbox)}")
-    if isinstance(clims, type([])):
-        clims = tuple(clims)
-    if not isinstance(clims, (tuple, type(None))):
-        raise TypeError(f"(quadmesh_map) `clims` must be a list, tuple, or `None`. Got type: {type(clims)}")
-    elif not isinstance(clims, type(None)) and len(clims) != 2:
-        raise TypeError(f"(quadmesh_map) `clims` must be a list or tuple of length 2. Got length: {len(clims)}")
-    if not isinstance(map_title, (str, type(None))):
-        raise TypeError(f"(quadmesh_map) `map_title` must be a string or `None`. Got type: {type(map_title)}")
-    if not isinstance(map_label, (str, type(None))):
-        raise TypeError(f"(quadmesh_map) `map_label` must be a string or `None`. Got type: {type(map_label)}")
+                    raise TypeError(f"(make_quadmesh_map) `map_bbox[{i}]` must be a number. Got type: {type(map_bbox[i])}")
+    elif not isinstance(map_bbox, type(None)):
+        raise TypeError(f"(make_quadmesh_map) `map_bbox` must be a list or `bool`. Got type: {type(map_bbox)}")
     if isinstance(mark_bbox, type([])):
         if not len(mark_bbox) == 4:
-            raise ValueError(f"(quadmesh_map) `mark_bbox` must have a length of 4. Got length: {len(mark_bbox)}")
+            raise ValueError(f"(make_quadmesh_map) `mark_bbox` must have a length of 4. Got length: {len(mark_bbox)}")
         else: 
             for i in range(len(mark_bbox)):
                 if not isinstance(mark_bbox[i], (int, float)):
-                    raise TypeError(f"(quadmesh_map) `mark_bbox[{i}]` must be a number. Got type: {type(mark_bbox[i])}")
+                    raise TypeError(f"(make_quadmesh_map) `mark_bbox[{i}]` must be a number. Got type: {type(mark_bbox[i])}")
     elif isinstance(mark_bbox, bool):
         if mark_bbox:
             mark_bbox = map_bbox
     else:
-        raise TypeError(f"(quadmesh_map) `mark_bbox` must be a list or `bool`. Got type: {type(mark_bbox)}")
-    if not isinstance(diverging_cbar, bool):
-        raise TypeError(f"(quadmesh_map) `diverging_cbar` must be a `bool`. Got type: {type(diverging_cbar)}")
+        raise TypeError(f"(make_quadmesh_map) `mark_bbox` must be a list or `bool`. Got type: {type(mark_bbox)}")
+    if not isinstance(map_title, (str, type(None))):
+        raise TypeError(f"(make_quadmesh_map) `map_title` must be a string or `None`. Got type: {type(map_title)}")
+    if not isinstance(map_label, (str, type(None))):
+        raise TypeError(f"(make_quadmesh_map) `map_label` must be a string or `None`. Got type: {type(map_label)}")
+    if not isinstance(this_cmap, str):
+        raise TypeError(f"(make_quadmesh_map) `this_cmap` must be a string. Got type: {type(this_cmap)}")
+    if not isinstance(symmetric_cbar, bool):
+        raise TypeError(f"(make_quadmesh_map) `symmetric_cbar` must be a `bool`. Got type: {type(symmetric_cbar)}")
+    if not isinstance(save_as, (str, type(None))):
+        raise TypeError(f"(make_quadmesh_map) `save_as` must be a string or `None`. Got type: {type(save_as)}")
     if not isinstance(verbose, bool):
-        raise TypeError(f"(quadmesh_map) `verbose` must be a `bool`. Got type: {type(verbose)}")
+        raise TypeError(f"(make_quadmesh_map) `verbose` must be a `bool`. Got type: {type(verbose)}")
     
     # Information to output
     if verbose:
-        print(f"(quadmesh_map) `save_as`: {save_as}")
-        print(f"(quadmesh_map) Given a value of `clims`:{clims}")
-
-    # Unpack the bounding box values
-    if not isinstance(map_bbox, type(None)):
-        box_lat_max = map_bbox[0]
-        box_lat_min = map_bbox[1]
-        box_lon_max = map_bbox[2]
-        box_lon_min = map_bbox[3]
-    else:
-        box_lat_min, box_lat_max = get_min_max(xr_data, 'latitude')
-        box_lon_min, box_lon_max = get_min_max(xr_data, 'longitude')
-        map_bbox = [box_lat_max, box_lat_min, box_lon_max, box_lon_min]
-    # Make sure the the coordinates aren't outside valid ranges
-    box_lat_max = bound_lat(box_lat_max, **kwargs)
-    box_lat_min = bound_lat(box_lat_min, **kwargs)
-    box_lon_max = bound_lon(box_lon_max, **kwargs)
-    box_lon_min = bound_lon(box_lon_min, **kwargs)
-    # Get the central latitude and longitude
-    box_lat_cent = (box_lat_max-box_lat_min)/2 + box_lat_min
-    box_lon_cent = (box_lon_max-box_lon_min)/2 + box_lon_min
-    if verbose:
-        print(f"(quadmesh_map) Central latitude: {box_lat_cent}, central longitude: {box_lon_cent}")
-    if map_projection == 'Orthographic':
-        # Define the projection for the plot
-        # box_lon_cent = -90
-        # box_lat_cent = 77
-        map_projection = crs.Orthographic(central_longitude = box_lon_cent, central_latitude = box_lat_cent)
-    elif map_projection == 'NorthPolarStereo':
-        # Define the projection for the plot
-        map_projection = crs.NorthPolarStereo(central_longitude = box_lon_cent)
-    # Get the extent to which to limit the map plot
-    map_extent = get_limited_extent(
-        map_projection, 
-        map_bbox,
-        verbose=verbose,
-        **kwargs,
-    )
-    if verbose:
-        print(f"(quadmesh_map) Map bounding box: {map_bbox}")
-        print(f"(quadmesh_map) Map extent: {map_extent}")
-
-    # Set colormap
-    if diverging_cbar == True:
-        this_cmap = 'bwr'
-        symmetric_cbar = True
-    else:
-        this_cmap = 'viridis'
-        symmetric_cbar = False
+        print(f"(make_quadmesh_map) `save_as`: {save_as}")
 
     # Get the latitude and longitude coordinate names
     lat_var, lon_var = get_latlon_names(xr_data)
     if verbose:
-        print(f"(quadmesh_map) `lat_var`: {lat_var}")
-        print(f"(quadmesh_map) `lon_var`: {lon_var}")
+        print(f"(make_quadmesh_map) `lat_var`: {lat_var}")
+        print(f"(make_quadmesh_map) `lon_var`: {lon_var}")
 
     # Make title, if necessary
     if isinstance(map_title, type(None)):
@@ -208,7 +173,7 @@ def quadmesh_map(
         title=map_title,
         clabel=map_label,
         cmap=this_cmap, 
-        clim=clims,
+        clim=(cmin,cmax),
         bgcolor='lightgray',
         symmetric=symmetric_cbar,
         coastline=True,
@@ -224,6 +189,8 @@ def quadmesh_map(
 
     # Add bounding box to the map
     if mark_bbox:
+        if verbose:
+            print(f"(make_quadmesh_map) Adding bounding box from `mark_bbox` to the map")
         # Set the corners of the bounding box
         bbox_df = pd.DataFrame({
             'lon': [mark_bbox[3], mark_bbox[2], mark_bbox[2], mark_bbox[3], mark_bbox[3]],
@@ -262,14 +229,6 @@ def quadmesh_map(
         qm_map_plot = qm_map_plot * shortest_path * straight_path * points
 
     # Set colorbar parameters
-    if isinstance(clims, type(None)):
-        cmin, cmax = get_min_max(xr_data, var)
-    else:
-        cmin = min(clims)
-        cmax = max(clims)
-    if verbose:
-        print(f"(quadmesh_map) `diverging_cbar`: {diverging_cbar}")
-        print(f"(quadmesh_map) `cmin`: {cmin}, `cmax`: {cmax}")
     if cmin != -cmax:
         qm_map_plot = set_cbar_lims(
             qm_map_plot,

@@ -79,9 +79,9 @@ EC_Earth3P_HR_hist_siconc_2000_xr_trim = trim_latlon(
     precise_trim = False,
 )
 
-from arctichoke.plot.hvplots import quadmesh_map
+from arctichoke.plot import plot_map
 
-EC_Earth3P_HR_hist_siconc_2000_trim_map = quadmesh_map(
+EC_Earth3P_HR_hist_siconc_2000_trim_map = plot_map(
     EC_Earth3P_HR_hist_siconc_2000_xr_trim.isel(time=month_index),
     'siconc',
     map_projection = 'Orthographic',
@@ -99,9 +99,9 @@ EC_Earth3P_HR_hist_sipacked_2000_xr_trim = find_packed_ice(
     packed_threshold = 85,
 )
 
-from arctichoke.plot.hvplots import quadmesh_map
+from arctichoke.plot import plot_map
 
-EC_Earth3P_HR_hist_sipacked_2000_trim_map = quadmesh_map(
+EC_Earth3P_HR_hist_sipacked_2000_trim_map = plot_map(
     EC_Earth3P_HR_hist_sipacked_2000_xr_trim.isel(time=month_index),
     'sipacked',
     map_projection = 'Orthographic',
@@ -128,9 +128,9 @@ EC_Earth3P_HR_hist_sispeed_2000_xr_trim = trim_latlon(
     precise_trim = False,
 )
 
-from arctichoke.plot.hvplots import quadmesh_map
+from arctichoke.plot import plot_map
 
-EC_Earth3P_HR_hist_sispeed_2000_trim_map = quadmesh_map(
+EC_Earth3P_HR_hist_sispeed_2000_trim_map = plot_map(
     EC_Earth3P_HR_hist_sispeed_2000_xr_trim.isel(time=month_index),
     'sispeed',
     map_projection = 'Orthographic',
@@ -148,9 +148,9 @@ EC_Earth3P_HR_hist_sislow_2000_xr_trim = find_slow_ice(
     slow_threshold = 0.01,
 )
 
-from arctichoke.plot.hvplots import quadmesh_map
+from arctichoke.plot import plot_map
 
-EC_Earth3P_HR_hist_sislow_2000_trim_map = quadmesh_map(
+EC_Earth3P_HR_hist_sislow_2000_trim_map = plot_map(
     EC_Earth3P_HR_hist_sislow_2000_xr_trim.isel(time=month_index),
     'sislow',
     map_projection = 'Orthographic',
@@ -175,9 +175,9 @@ EC_Earth3P_HR_hist_silandfast_2000_xr_trim = find_landfast_ice(
     sispeed_dataset = EC_Earth3P_HR_hist_sispeed_2000_xr_trim,
 )
 
-from arctichoke.plot.hvplots import quadmesh_map
+from arctichoke.plot import plot_map
 
-EC_Earth3P_HR_hist_silandfast_2000_trim_map = quadmesh_map(
+EC_Earth3P_HR_hist_silandfast_2000_trim_map = plot_map(
     EC_Earth3P_HR_hist_silandfast_2000_xr_trim.isel(time=month_index),
     'silandfast',
     map_projection = 'Orthographic',
@@ -190,9 +190,9 @@ Then, I'll take that dataset and get the mean over time, which can give me an id
 ```python
 EC_Earth3P_HR_hist_silandfast_2000_mean_xr_trim = EC_Earth3P_HR_hist_silandfast_2000_xr_trim.mean(dim='time', skipna=False)
 
-from arctichoke.plot.hvplots import quadmesh_map
+from arctichoke.plot import plot_map
 
-EC_Earth3P_HR_hist_silandfast_2000_mean_trim_map = quadmesh_map(
+EC_Earth3P_HR_hist_silandfast_2000_mean_trim_map = plot_map(
     EC_Earth3P_HR_hist_silandfast_2000_mean_xr_trim,
     'silandfast',
     map_projection = 'Orthographic',
@@ -248,9 +248,9 @@ import xarray as xr
 EC_Earth3P_HR_hist_silandfast_2000_CAA = '/arctichoke_data/bergybits/data/CMIP6/HighResMIP/EC-Earth-Consortium/EC-Earth3P-HR/hist-1950/r1i1p2f1/SImon/silandfast/gn/v20260617/trim_CAA_silandfast_SImon_EC-Earth3P-HR_hist-1950_r1i1p2f1_gn_200001-200012.nc'
 EC_Earth3P_HR_hist_silandfast_2000_CAA_xr = xr.open_dataset(EC_Earth3P_HR_hist_silandfast_2000_CAA)
 
-from arctichoke.plot.hvplots import quadmesh_map
+from arctichoke.plot import plot_map
 
-EC_Earth3P_HR_hist_silandfast_2000_CAA_map = quadmesh_map(
+EC_Earth3P_HR_hist_silandfast_2000_CAA_map = plot_map(
     EC_Earth3P_HR_hist_silandfast_2000_CAA_xr.isel(time=month_index),
     'silandfast',
     map_projection = 'Orthographic',

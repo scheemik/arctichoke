@@ -1,10 +1,13 @@
 import xarray as xr
 
 from arctichoke.analysis import sum_by_year, trend_in_time, trend_in_time_scipy
+from arctichoke.analysis.significance import find_significance 
 from arctichoke.dataset import select_months
+from arctichoke.dataset.interp_dataset import interp_to_reg_grid
 import arctichoke.params as sps
 from arctichoke.path import list_variable_files
-from arctichoke.plot.hvplots import quadmesh_map
+from arctichoke.plot.plot_map import plot_map
+from arctichoke.plot.stippling import add_hatches
 
 def make_trend_map(
     this_source_id: str,
@@ -17,6 +20,9 @@ def make_trend_map(
     call_sum_by_year: bool = True,
     find_mean: bool = False,
     map_projection: str = 'Orthographic',
+    use_hvplot: bool = False,
+    add_sig: bool = True,
+    re_trim_extent: bool = True,
     return_map: bool = False,
     verbose: bool = False,
     **kwargs,
@@ -59,6 +65,15 @@ def make_trend_map(
         map_projection : `str`, optional
             The map projection to use.
             Default is `'Orthographic'`.
+        use_hvplot : `bool`, optional
+            Whether to use `hvplot` or `cartopy` to make the map.
+            Default is `True` which uses `hvplot` and, if `False`, uses `cartopy` instead.
+        add_sig : `bool`, optional
+            Whether or not to add an overlay for the statisitcal significance of the trends.
+            Default is `True`.
+        re_trim_extent : `bool`, optional
+            Whether or not to reset the extent of the plot to avoid showing the full globe after adding a significance overlay.
+            Default is `True`.
         return_map : `bool`, optional
             Whether to return the map object or not.
             Default is `False`.
@@ -66,11 +81,11 @@ def make_trend_map(
             Whether to verbosely output information as the function executes.
             Default is `False`.
         **kwargs
-            Keyword arguments to pass to `list_variable_files()` and `quadmesh_map()`.
+            Keyword arguments to pass to `list_variable_files()` and `plot_map()`.
 
         Returns
         -------
-        sum_year_trend_map : `holoviews.core.overlay.Overlay`
+        trend_map_axis : `holoviews.core.overlay.Overlay`
             The map of the trends in time for the given variable.
         
         Examples
@@ -93,6 +108,12 @@ def make_trend_map(
         raise TypeError(f"(make_trend_map) `call_sum_by_year` must be a `bool` or `None`. Got type: {type(call_sum_by_year)}")
     if not isinstance(find_mean, (bool, type(None))):
         raise TypeError(f"(make_trend_map) `find_mean` must be a `bool` or `None`. Got type: {type(find_mean)}")
+    if not isinstance(use_hvplot, bool):
+        raise TypeError(f"(make_trend_map) `use_hvplot` must be a `bool`. Got type: {type(use_hvplot)}")
+    if not isinstance(add_sig, bool):
+        raise TypeError(f"(make_trend_map) `add_sig` must be a `bool`. Got type: {type(add_sig)}")
+    if not isinstance(re_trim_extent, bool):
+        raise TypeError(f"(make_trend_map) `re_trim_extent` must be a `bool`. Got type: {type(re_trim_extent)}")
     if not isinstance(return_map, bool):
         raise TypeError(f"(make_trend_map) `return_map` must be a `bool`. Got type: {type(return_map)}")
     if not isinstance(verbose, bool):
@@ -146,7 +167,7 @@ def make_trend_map(
         this_time_dim = 'time'
     # Take the trend across time
     if calc_pvals:
-        dataset = trend_in_time_scipy(
+        trend_dataset = trend_in_time_scipy(
             dataset = dataset,
             var = var_for_trend,
             mask_where_zero_across_time = False,
@@ -154,22 +175,67 @@ def make_trend_map(
             time_dim = this_time_dim,
         )
     else:
-        dataset = trend_in_time(
+        trend_dataset = trend_in_time(
             dataset = dataset,
             var = var_for_trend,
             mask_where_zero_across_time = mask_where_zero_across_time,
             verbose = verbose,
             time_dim = this_time_dim,
         )
+    # Find the trend significance and interpolate the data, if necessary
+    if use_hvplot == False:
+        # Find the significance of trends dataset
+        trend_dataset = find_significance(
+            dataset,
+            trend_dataset,
+            var_for_trend,
+            this_time_dim,
+            verbose = verbose,
+        )
+        # Interpolate these datasets
+        trend_dataset = interp_to_reg_grid(
+            dataset = trend_dataset,
+            targetgrid = 'data/target_grid_0-25_deg.nc',
+            verbose = verbose,
+            **kwargs,
+        )
     # Plot the trends on a map
-    sum_year_trend_map = quadmesh_map(
-        dataset,
+    trend_map_axis, plot_map_kwargs = plot_map(
+        trend_dataset,
         f'{var_for_trend}_trends',
         map_projection = map_projection,
         diverging_cbar = True,
+        use_hvplot = use_hvplot,
         verbose = verbose,
+        return_plot_map_kwargs = True,
         **kwargs,
     )
+    # Add trend significance to the map
+    if use_hvplot == False and add_sig == True:
+        # Add hatch lines
+        handles = add_hatches(
+            hatch_axis = trend_map_axis, 
+            dataset = trend_dataset,
+            var = f'{var_for_trend}_trends_sig',
+            hatch_label = 'significant',
+            verbose = verbose,
+            **kwargs,
+        )
+        # Add label for the hatches in the legend
+        trend_map_axis.legend(handles=handles, loc='upper right')
+        # Reset the map extent
+        if re_trim_extent:
+            map_extent = plot_map_kwargs['map_extent']
+            map_projection = plot_map_kwargs['map_projection']
+            if not isinstance(map_extent, type(None)):
+                trend_map_axis.set_extent(
+                    (map_extent[0], map_extent[1],
+                    map_extent[2], map_extent[3]),
+                    crs = map_projection,
+                )
+        # Set the axis title
+        trend_map_axis.set_title(plot_map_kwargs['map_title'])
+
     if return_map:
-        return sum_year_trend_map
-    sum_year_trend_map
+        return trend_map_axis
+    trend_map_axis

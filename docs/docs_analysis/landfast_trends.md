@@ -68,9 +68,9 @@ If the `time_bnds` variable is first removed, then the summing works just fine.
 ```python
 EC_Earth3P_HR_hist_silandfast_CAA_sum_2000_xr = EC_Earth3P_HR_hist_silandfast_2000_CAA_xr.drop(labels=['time_bnds']).sum(dim='time', min_count=1)
 
-from arctichoke.plot.hvplots import quadmesh_map
+from arctichoke.plot import plot_map
 
-EC_Earth3P_HR_hist_silandfast_sum_2000_CAA_map = quadmesh_map(
+EC_Earth3P_HR_hist_silandfast_sum_2000_CAA_map = plot_map(
     EC_Earth3P_HR_hist_silandfast_CAA_sum_2000_xr,
     'silandfast',
 )
@@ -90,9 +90,9 @@ EC_Earth3P_HR_hist_silandfast_CAA_sum_2000_xr = sum_by_year(
 )
 
 from arctichoke.params import CAA_BBOX
-from arctichoke.plot.hvplots import quadmesh_map
+from arctichoke.plot import plot_map
 
-EC_Earth3P_HR_hist_silandfast_sum_2000_CAA_map = quadmesh_map(
+EC_Earth3P_HR_hist_silandfast_sum_2000_CAA_map = plot_map(
     EC_Earth3P_HR_hist_silandfast_CAA_sum_2000_xr,
     'silandfast_year_sum',
 )
@@ -143,9 +143,9 @@ EC_Earth3P_HR_hist_silandfast_CAA_sum_2000_xr = sum_by_year(
 )
 
 from arctichoke.params import CAA_BBOX
-from arctichoke.plot import quadmesh_map
+from arctichoke.plot import plot_map
 
-EC_Earth3P_HR_hist_silandfast_sum_2000_CAA_map = quadmesh_map(
+EC_Earth3P_HR_hist_silandfast_sum_2000_CAA_map = plot_map(
     EC_Earth3P_HR_hist_silandfast_CAA_sum_2000_xr,
     'silandfast_year_sum',
 )
@@ -191,9 +191,9 @@ EC_Earth3P_HR_hist_silandfast_CAA_sum_xr = sum_by_year(
     verbose = True,
 )
 
-from arctichoke.plot.hvplots import quadmesh_map
+from arctichoke.plot import plot_map
 
-EC_Earth3P_HR_hist_silandfast_sum_CAA_map = quadmesh_map(
+EC_Earth3P_HR_hist_silandfast_sum_CAA_map = plot_map(
     EC_Earth3P_HR_hist_silandfast_CAA_sum_xr.sel(year=1950),
     'silandfast_year_sum',
 )
@@ -531,9 +531,9 @@ HadGEM3_GC31_HH_hist_CAA_silandfast_sum_by_year_trend = trend_in_time(
 )
 
 from arctichoke.params import sea_ice_vars
-from arctichoke.plot.hvplots import quadmesh_map
+from arctichoke.plot import plot_map
 
-HadGEM3_GC31_HH_hist_silandfast_trend_map = quadmesh_map(
+HadGEM3_GC31_HH_hist_silandfast_trend_map = plot_map(
     HadGEM3_GC31_HH_hist_CAA_silandfast_sum_by_year_trend,
     'silandfast_year_sum_trends',
     diverging_cbar = True,

@@ -353,3 +353,169 @@ def test_make_example_dataset():
     
     # Clean up the example dataset
     os.remove(test_filepath)
+
+def test_make_example_latlon_grid():
+    """Test the `make_example_latlon_grid` function."""
+    # Define test filepath
+    test_filepath = 'tests/test_dataset/delete_this_dataset.nc'
+    # Define test cases
+    test_cases = [
+        {
+            'actual': dataset.make_example_latlon_grid(),
+            'keys': ['test_var'],
+            'coords': ['lat', 'lon'],
+            'sizes': {
+                'lat': 721,
+                'lon': 1441,
+            },
+        },
+        {
+            'actual': dataset.make_example_latlon_grid(
+                save_as = test_filepath,
+            ),
+            'keys': ['test_var'],
+            'coords': ['lat', 'lon'],
+            'sizes': {
+                'lat': 721,
+                'lon': 1441,
+            },
+        },
+        {
+            'actual': dataset.make_example_latlon_grid(
+                lat_range = [-90, 90],
+                lon_range = [-180, 180],
+                lat_step = 0.5,
+                lon_step = 0.5,
+                test_var_name = 'different_var',
+            ),
+            'keys': ['different_var'],
+            'coords': ['lat', 'lon'],
+            'sizes': {
+                'lat': 361,
+                'lon': 721,
+            },
+        },
+    ]
+    for test_case in test_cases:
+        # Check the data variables
+        assert list(test_case['actual'].keys()) == test_case['keys'], f"`make_example_latlon_grid` created a dataset with the variables: {list(test_case['actual'].keys())}.\nExpected variables: {test_case['keys']}"
+        # Check the coordinates
+        assert list(test_case['actual'].coords) == test_case['coords'], f"`make_example_latlon_grid` created a dataset with the coordinates: {list(test_case['actual'].coords)}.\nExpected coordinates: {test_case['coords']}"
+        # Check the sizes
+        assert test_case['actual'].sizes == test_case['sizes'], f"`make_example_latlon_grid` created a dataset with the sizes: {test_case['actual'].sizes}.\nExpected sizes: {test_case['sizes']}"
+    
+    # Test setting overwrite to `False`
+    try:
+        actual = dataset.make_example_latlon_grid(
+            save_as=test_filepath,
+            overwrite = False,
+        )
+    except (FileExistsError) as e:
+        assert True, f"`make_example_latlon_grid` raised an exception when specifying overwrite=`False`: {e}"
+    else:
+        assert False, f"`make_example_latlon_grid` did not raise an exception when specifying overwrite=`False`"
+
+    # Define invalid test cases
+    # Test for `save_as`
+    invalid_values = [
+        'not_a_dataset.txt',
+        1234,
+        3.14,
+        [],
+        {},
+    ]
+    for invalid_value in invalid_values:
+        try:
+            actual = dataset.make_example_latlon_grid(
+                save_as = invalid_value,
+            )
+        except (TypeError, ValueError) as e:
+            assert True, f"`make_example_latlon_grid` raised an exception on invalid `save_as`: {e}"
+        else:
+            assert False, f"`make_example_latlon_grid` did not raise an exception on invalid `save_as` {invalid_value}"
+        
+    # Test coordinate ranges
+    invalid_values = [
+        'not_a_value',
+        1234,
+        3.14,
+        None,
+        [],
+        [1],
+        [1,2,3],
+        {},
+    ]
+    for invalid_value in invalid_values:
+        # Test for `lat_range`
+        if not isinstance(invalid_value, type(None)):
+            try:
+                actual = dataset.make_example_latlon_grid(
+                    lat_range=invalid_value,
+                )
+            except (TypeError, ValueError) as e:
+                assert True, f"`make_example_latlon_grid` raised an exception on invalid `lat_range`: {e}"
+            else:
+                assert False, f"`make_example_latlon_grid` did not raise an exception on invalid `lat_range` {invalid_value}"
+        # Test for `lon_range`
+        if not isinstance(invalid_value, type(None)):
+            try:
+                actual = dataset.make_example_latlon_grid(
+                    lon_range=invalid_value,
+                )
+            except (TypeError, ValueError) as e:
+                assert True, f"`make_example_latlon_grid` raised an exception on invalid `lon_range`: {e}"
+            else:
+                assert False, f"`make_example_latlon_grid` did not raise an exception on invalid `lon_range` {invalid_value}"
+        if not isinstance(invalid_value, (int, float)):
+            # Test for `lat_step`
+            if not isinstance(invalid_value, type(None)):
+                try:
+                    actual = dataset.make_example_latlon_grid(
+                        lat_step=invalid_value,
+                    )
+                except (TypeError, ValueError) as e:
+                    assert True, f"`make_example_latlon_grid` raised an exception on invalid `lat_step`: {e}"
+                else:
+                    assert False, f"`make_example_latlon_grid` did not raise an exception on invalid `lat_step` {invalid_value}"
+            # Test for `lon_step`
+            if not isinstance(invalid_value, type(None)):
+                try:
+                    actual = dataset.make_example_latlon_grid(
+                        lon_step=invalid_value,
+                    )
+                except (TypeError, ValueError) as e:
+                    assert True, f"`make_example_latlon_grid` raised an exception on invalid `lon_step`: {e}"
+                else:
+                    assert False, f"`make_example_latlon_grid` did not raise an exception on invalid `lon_step` {invalid_value}"
+        # Test for `overwrite`
+        try:
+            actual = dataset.make_example_latlon_grid(
+                save_as=test_filepath,
+                overwrite = invalid_value,
+            )
+        except (TypeError, ValueError) as e:
+            assert True, f"`make_example_latlon_grid` raised an exception on invalid `overwrite`: {e}"
+        else:
+            assert False, f"`make_example_latlon_grid` did not raise an exception on invalid `overwrite` {invalid_value}"
+    # Test for `test_var_name`
+    invalid_values = [
+        False,
+        3.14,
+        None,
+        [],
+        {},
+    ]
+    for invalid_value in invalid_values:
+        for invalid_value in invalid_values:
+            try:
+                actual = dataset.make_example_latlon_grid(
+                    save_as=test_filepath,
+                    test_var_name=invalid_value,
+                )
+            except (TypeError, ValueError) as e:
+                assert True, f"`make_example_latlon_grid` raised an exception on invalid `test_var_name`: {e}"
+            else:
+                assert False, f"`make_example_latlon_grid` did not raise an exception on invalid `test_var_name` {invalid_value}"
+    
+    # Clean up the example dataset
+    os.remove(test_filepath)

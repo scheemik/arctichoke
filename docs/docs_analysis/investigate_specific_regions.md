@@ -70,12 +70,13 @@ dataset = trim_latlon(
     precise_trim = True,
 )
 
-from arctichoke.plot import quadmesh_map
+from arctichoke.plot import plot_map
 
-quadmesh_map(
+plot_map(
     dataset.isel(time=0),
     'siconc',
-    mark_bbox = sps.NS_BBOX,
+    map_bbox = sps.NS_BBOX,
+    mark_bbox = True,
     clims = sps.sea_ice_vars['siconc']['plot_range'],
     add_region = False,
 )
@@ -105,12 +106,13 @@ dataset_clim = dataset_clim.mean(dim='month')
 # Adjust the `long_name` attribute to change the colorbar label
 dataset_clim[f'{this_si_var}_month_mean'].attrs['long_name'] = dataset_clim[f'{this_si_var}_month_mean'].attrs['long_name'].replace('onthly m', '')
 
-from arctichoke.plot import quadmesh_map
+from arctichoke.plot import plot_map
 
-quadmesh_map(
+plot_map(
     dataset_clim,
     f'{this_si_var}_month_mean',
-    mark_bbox = sps.NS_BBOX,
+    map_bbox = sps.NS_BBOX,
+    mark_bbox = True,
     clims = sps.sea_ice_vars[this_si_var]['plot_range'],
     add_region = False,
 )
@@ -144,9 +146,9 @@ dataset = trim_latlon(
     precise_trim = True,
 )
 
-from arctichoke.plot import quadmesh_map
+from arctichoke.plot import plot_map
 
-quadmesh_map(
+plot_map(
     dataset.isel(time=0),
     'siconc',
     map_bbox=sps.PC_BBOX,
@@ -180,9 +182,9 @@ dataset_clim = dataset_clim.mean(dim='month')
 # Adjust the `long_name` attribute to change the colorbar label
 dataset_clim[f'{this_si_var}_month_mean'].attrs['long_name'] = dataset_clim[f'{this_si_var}_month_mean'].attrs['long_name'].replace('onthly m', '')
 
-from arctichoke.plot import quadmesh_map
+from arctichoke.plot import plot_map
 
-quadmesh_map(
+plot_map(
     dataset_clim,
     f'{this_si_var}_month_mean',
     map_bbox = sps.PC_BBOX,
@@ -220,9 +222,9 @@ dataset = trim_latlon(
     precise_trim = True,
 )
 
-from arctichoke.plot import quadmesh_map
+from arctichoke.plot import plot_map
 
-this_map = quadmesh_map(
+this_map = plot_map(
     dataset.isel(time=0),
     'siconc',
     map_bbox = sps.QW_BBOX,
@@ -257,9 +259,9 @@ dataset_clim = dataset_clim.mean(dim='month')
 # Adjust the `long_name` attribute to change the colorbar label
 dataset_clim[f'{this_si_var}_month_mean'].attrs['long_name'] = dataset_clim[f'{this_si_var}_month_mean'].attrs['long_name'].replace('onthly m', '')
 
-from arctichoke.plot import quadmesh_map
+from arctichoke.plot import plot_map
 
-quadmesh_map(
+plot_map(
     dataset_clim,
     f'{this_si_var}_month_mean',
     map_bbox = sps.QW_BBOX,
@@ -292,9 +294,9 @@ dataset = trim_latlon(
     precise_trim = True,
 )
 
-from arctichoke.plot import quadmesh_map
+from arctichoke.plot import plot_map
 
-this_map = quadmesh_map(
+this_map = plot_map(
     dataset.isel(time=0),
     'siconc',
     map_bbox = sps.QE_BBOX,
@@ -329,9 +331,9 @@ dataset_clim = dataset_clim.mean(dim='month')
 # Adjust the `long_name` attribute to change the colorbar label
 dataset_clim[f'{this_si_var}_month_mean'].attrs['long_name'] = dataset_clim[f'{this_si_var}_month_mean'].attrs['long_name'].replace('onthly m', '')
 
-from arctichoke.plot import quadmesh_map
+from arctichoke.plot import plot_map
 
-quadmesh_map(
+plot_map(
     dataset_clim,
     f'{this_si_var}_month_mean',
     map_bbox = sps.QE_BBOX,
@@ -1391,9 +1393,9 @@ The resulting dataset automatically drops the unnecessary latitude and longitude
 As a sanity check, I will plot the Nares Strait data for a few selected time slices and compare them to the spatial averages for the same time slices.
 First, I'll plot January of 1950.
 ```python
-from arctichoke.plot import quadmesh_map
+from arctichoke.plot import plot_map
 
-quadmesh_map(
+plot_map(
     dataset.sel(time='1950-01-16'),
     'siconc',
     map_bbox = NS_BBOX,
@@ -1416,12 +1418,14 @@ A spatial average of 96.44% seems reasonable given the map plotted above.
 
 Now, I'll plot September of 2007, which was known to be a significant sea ice minimum.
 ```python
-from arctichoke.plot import quadmesh_map
+from arctichoke.plot import plot_map
 
-quadmesh_map(
+plot_map(
     dataset.sel(time='2007-09-16'),
     'siconc',
-    map_bbox = None,
+    map_bbox = NS_BBOX,
+    clims = sps.sea_ice_vars['siconc']['plot_range'],
+    add_region = False,
 )
 ```
 ![EC-Earth3P-HR_r1i1p2f1_siconc_NS_2007-09_map.png](investigate_specific_regions-img/EC-Earth3P-HR_r1i1p2f1_siconc_NS_2007-09_map.png)
@@ -1529,9 +1533,9 @@ Attributes: (12/48)
 As a sanity check, I will plot the QEI East data for a few selected time slices and compare them to the spatial averages for the same time slices.
 First, I'll plot June of 1950.
 ```python
-from arctichoke.plot import quadmesh_map
+from arctichoke.plot import plot_map
 
-quadmesh_map(
+plot_map(
     dataset.sel(time='1950-06-16'),
     'silandfast',
     map_bbox = sps.QE_BBOX,
@@ -1553,9 +1557,9 @@ That seems to match pretty well.
 
 Next, I'll take a look at `silandfast` in the QEI East in September of 2007.
 ```python
-from arctichoke.plot import quadmesh_map
+from arctichoke.plot import plot_map
 
-quadmesh_map(
+plot_map(
     dataset.sel(time='2007-09-16'),
     'silandfast',
     map_bbox = sps.QE_BBOX,

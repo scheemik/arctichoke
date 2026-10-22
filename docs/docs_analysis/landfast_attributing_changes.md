@@ -281,7 +281,7 @@ for this_variant in [
     'r2i1p2f1',
     'r3i1p2f1',
 ]:
-    make_trend_map(
+    this_map = make_trend_map(
         this_source_id = 'EC-Earth3P-HR',
         this_var = 'silandfast',
         this_variant_label = this_variant,
@@ -289,8 +289,10 @@ for this_variant in [
         version_id = 'with_siconc_clim',
         clims = sea_ice_vars['silandfast']['trend_clims'],
         select_summer = True,
+        return_map = True,
         verbose = False,
     )
+    display(this_map)
 ```
 ![EC-Earth3P-HR_r1i1p2f1_silandfast_CAA_JJASO_sum_trend_packed_clim_map.png](landfast_attributing_changes-img/EC-Earth3P-HR_r1i1p2f1_silandfast_CAA_JJASO_sum_trend_packed_clim_map.png)
 
