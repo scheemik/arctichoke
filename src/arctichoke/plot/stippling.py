@@ -3,7 +3,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import xarray as xr
 
-from arctichoke.params import hatch_red
+from arctichoke.params import hatch_grn
 
 def add_hatches(
     hatch_axis,
@@ -12,9 +12,9 @@ def add_hatches(
     hatch_label,
     hatch_levels = [0, 0.5, 1],
     mark_levels = [False, True, False],
-    hatch_style = '/',
-    hatch_density = 4,
-    hatch_color = hatch_red,
+    hatch_style = '.',
+    hatch_density = 2,
+    hatch_color = hatch_grn,
     contour_level = None,
     verbose = False,
     **kwargs,
@@ -46,14 +46,15 @@ def add_hatches(
             Default is `[False, True, False]` as would be needed to overlay a binary mask.
         hatch_style : `str`, optional
             The strings to indicate what style of hatching or stippling to use.
-            Default is `'/'`.
+            Ex: `'.'`, `'/'`.
+            Default is `'.'`.
         hatch_density : `int`, optional
             The density of the pattern of the overlay, with higher numbers giving more dense patterns.
-            Default is `4`.
+            Default is `2`.
         hatch_color : `tuple`, optional
             The color to use for the hatches.
             Must be a tuple of RGBA.
-            Default is `(1, .4, .4, 1.0)`.
+            Default is `(0, .6, 0, 0.9)`.
         contour_level : `None`, `int`, `float`, optional
             A value to mark with a contour on the axis.
             This can be used to frame an area of hatching.
