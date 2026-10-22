@@ -18,6 +18,7 @@ def plot_map(
     map_title: str = None,
     map_label: str = None,
     diverging_cbar: bool = False, 
+    return_plot_map_kwargs: bool = False,
     verbose: bool = False,
     **kwargs,
 ):
@@ -55,6 +56,9 @@ def plot_map(
             Default is `None`.
         diverging_cbar : `bool`, optional
             Whether to use a diverging colormap on the colorbar.
+            Default is `False`.
+        return_plot_map_kwargs : `bool`, optional
+            Whether to return `plot_map_kwargs` or not.
             Default is `False`.
         verbose : `bool`, optional
             Whether to verbosely output information as the function executes.
@@ -209,5 +213,14 @@ def plot_map(
             verbose = verbose,
             **kwargs,
         )
+    
+    if return_plot_map_kwargs:
+        # Assemble the keyword arguments to return
+        plot_map_kwargs = {
+            'map_projection': map_projection,
+            'map_extent': map_extent,
+        }
 
-    return map_plot
+        return map_plot, plot_map_kwargs
+    else:
+        return map_plot
