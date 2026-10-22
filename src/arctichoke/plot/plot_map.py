@@ -219,6 +219,7 @@ def plot_map(
         plot_map_kwargs = {
             'map_projection': map_projection,
             'map_extent': map_extent,
+            'map_title': map_title,
         }
 
         return map_plot, plot_map_kwargs

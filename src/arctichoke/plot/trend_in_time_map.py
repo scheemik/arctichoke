@@ -213,11 +213,13 @@ def make_trend_map(
         map_extent = plot_map_kwargs['map_extent']
         map_projection = plot_map_kwargs['map_projection']
         if not isinstance(map_extent, type(None)):
-            trend_map_axis = trend_map_axis.set_extent(
+            trend_map_axis.set_extent(
                 (map_extent[0], map_extent[1],
                 map_extent[2], map_extent[3]),
                 crs = map_projection,
             )
+        # Set the axis title
+        trend_map_axis.set_title(plot_map_kwargs['map_title'])
 
     if return_map:
         return trend_map_axis
