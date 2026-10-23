@@ -17,6 +17,7 @@ def plot_multi_time_series(
     call_sum_by_year: bool = True,
     find_mean: bool = None,
     mask_by_sithick: bool = False,
+    plt_title: str = None,
     verbose: bool = False,
     **kwargs,
 ):
@@ -54,6 +55,9 @@ def plot_multi_time_series(
         mask_by_sithick : `bool`, optional
             Whether to call `make_sithick_masked_climatology()` to mask the specified data to where sea ice thickness is greater than the default thickness (2 meters).
             Default is `False`.
+        plt_title : `str`, `None`, optional
+            The title to use for this multi-time series plot.
+            Default is `None` which uses `make_title()` to generate the plot title.
         verbose : `bool`, optional
             Whether to verbosely output information as the function executes.
             Default is `False`.
@@ -86,6 +90,8 @@ def plot_multi_time_series(
         raise TypeError(f"(plot_multi_time_series) `find_mean` must be a `bool` or `None`. Got type: {type(find_mean)}")
     if not isinstance(mask_by_sithick, bool):
         raise TypeError(f"(plot_multi_time_series) `mask_by_sithick` must be a `bool`. Got type: {type(mask_by_sithick)}")
+    if not isinstance(plt_title, (str, type(None))):
+        raise TypeError(f"(plot_multi_time_series) `plt_title` must be a string or `None`. Got type: {type(plt_title)}")
     if not isinstance(verbose, bool):
         raise TypeError(f"(plot_multi_time_series) `verbose` must be a `bool`. Got type: {type(verbose)}")
 
@@ -184,11 +190,12 @@ def plot_multi_time_series(
             dataset = dataset,
             verbose = verbose,
         )
-        # Get the plot title
-        this_plot_title = make_title(
-            dataset,
-            add_variant_label = False,
-        )
+        # Get the plot title, if necessary
+        if isinstance(plt_title, type(None)):
+            plt_title = make_title(
+                dataset,
+                add_variant_label = False,
+            )
         # Make the y-axis label
         this_y_axis_label = make_label(
             dataset, 
@@ -207,7 +214,7 @@ def plot_multi_time_series(
             add_regression = add_regression,
             lgd_label = this_variant_label,
             line_clr = sps.sb_clrs[i],
-            plt_title = this_plot_title,
+            plt_title = plt_title,
             y_ax_label = this_y_axis_label,
             verbose = verbose,
             **kwargs,
