@@ -124,9 +124,7 @@ def plot_time_series(
         reg_label = make_title(dataset)
     elif not isinstance(reg_label, str):
         raise TypeError(f"(plot_time_series) `reg_label` must be a string or `None`. Got type: {type(reg_label)}")
-    if isinstance(plt_title, type(None)):
-        plt_title = make_title(dataset)
-    elif not isinstance(plt_title, str):
+    if not isinstance(plt_title, (str, type(None))):
         raise TypeError(f"(plot_time_series) `plt_title` must be a string or `None`. Got type: {type(plt_title)}")
     if not isinstance(y_ax_label, (str, type(None))):
         raise TypeError(f"(plot_time_series) `y_ax_label` must be a string or `None`. Got type: {type(y_ax_label)}")
@@ -180,6 +178,10 @@ def plot_time_series(
         fig, axs = plt.subplots(1, 1, squeeze=False, figsize=[9, 6])
         # Select the only axis
         axis = axs[0,0]
+    
+    # Make title, if necessary
+    if isinstance(plt_title, type(None)):
+        plt_title = make_title(dataset, **kwargs)
     # Make label, if necessary
     if isinstance(y_ax_label, type(None)):
         y_ax_label = make_label(dataset, variable_id, verbose=verbose)
