@@ -257,11 +257,20 @@ def plot_time_series(
             linewidth = 3,
             label = reg_label,
         )
+        if include_legend:
+            axis.legend()
     # Modify the plot
     axis.set_title(plt_title)
     axis.set_ylabel(y_ax_label)
     axis.set_xlabel('')
-    if include_legend:
-        axis.legend()
+    # Add horizontal lines, if applicable
+    if 'siconc' in variable_id:
+        limit_line_val = sps.packed_threshold
+    elif 'sispeed' in variable_id:
+        limit_line_val = sps.slow_threshold
+    else:
+        limit_line_val = None
+    if not isinstance(limit_line_val, type(None)):
+        axis.axhline(y=limit_line_val, color=sps.hatch_red, linestyle='-', alpha=0.7, zorder=0.1)
 
     return time_series_axis
