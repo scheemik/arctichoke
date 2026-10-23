@@ -15,7 +15,7 @@ def plot_time_series(
     dataset: (str, xr.DataArray, xr.Dataset),
     variable_id: str = None,
     add_regression: bool = False,
-    reg_label: str = None,
+    lgd_label: str = None,
     plt_title: str = None,
     y_ax_label: str = None,
     xlims: [(str, datetime), (str, datetime)] = None,
@@ -23,6 +23,7 @@ def plot_time_series(
     line_clr: str = None,
     line_style: str = '--',
     include_legend: bool = True,
+    label_reg: bool = False,
     fig: Figure = None,
     axis: Axes = None,
     save_as: str = None,
@@ -43,7 +44,7 @@ def plot_time_series(
         add_regression : `bool`, optional
             Whether to add a linear regression line to the plot.
             Default is `False`.
-        reg_label : `str`, `None`, optional
+        lgd_label : `str`, `None`, optional
             The label to use for the regression line.
             Note that this has no effect when `add_regression` is `False`.
             Default is `None`, which uses a default label, the equation of the regression line.
@@ -73,6 +74,9 @@ def plot_time_series(
         include_legend : `bool`, optional
             Whether or not to add the legend to the axis.
             Default is `True`.
+        label_reg : `bool`, optional
+            Whether or not to add the regression equation to the legend.
+            Default is `False`.
         fig : `None`, `matplotlib.figure.Figure`, optional
             If not `None`, this is the pre-existing figure on which to plot the map.
             Default is `None` which creates a new figure with a new axis.
@@ -124,10 +128,10 @@ def plot_time_series(
             variable_id = dataset.name
     if not isinstance(add_regression, (type(True))):
         raise TypeError(f"(plot_time_series) `add_regression` must be a `bool`. Got type: {type(add_regression)}")
-    if isinstance(reg_label, type(None)):
-        reg_label = make_title(dataset)
-    elif not isinstance(reg_label, str):
-        raise TypeError(f"(plot_time_series) `reg_label` must be a string or `None`. Got type: {type(reg_label)}")
+    if isinstance(lgd_label, type(None)):
+        lgd_label = make_title(dataset)
+    elif not isinstance(lgd_label, str):
+        raise TypeError(f"(plot_time_series) `lgd_label` must be a string or `None`. Got type: {type(lgd_label)}")
     if not isinstance(plt_title, (str, type(None))):
         raise TypeError(f"(plot_time_series) `plt_title` must be a string or `None`. Got type: {type(plt_title)}")
     if not isinstance(y_ax_label, (str, type(None))):
@@ -155,19 +159,25 @@ def plot_time_series(
                     raise TypeError(f"(plot_time_series) `ylims[{i}]` must be a number. Got type: {type(ylims[i])}")
     elif not isinstance(ylims, type(None)):
         raise TypeError(f"(plot_time_series) `ylims` must be a list or `None`. Got type: {type(ylims)}")
+    if not isinstance(line_clr, (str, type(None))):
+        raise TypeError(f"(plot_time_series) `line_clr` must be a string or `None`. Got type: {type(line_clr)}")
+    if not isinstance(line_style, str):
+        raise TypeError(f"(plot_time_series) `line_style` must be a string. Got type: {type(line_style)}")
+    if not isinstance(include_legend, bool):
+        raise TypeError(f"(plot_time_series) `include_legend` must be a `bool`. Got type: {type(include_legend)}")
+    if not isinstance(label_reg, bool):
+        raise TypeError(f"(plot_time_series) `label_reg` must be a `bool`. Got type: {type(label_reg)}")
     if not isinstance(fig, (str, (type(None), Figure))):
         raise TypeError(f"(make_cartopy_map) `fig` must be `None` or `matplotlib.figure.Figure`. Got type: {type(fig)}")
     if not isinstance(axis, (str, (type(None), Axes))):
         raise TypeError(f"(make_cartopy_map) `axis` must be `None` or `matplotlib.axes._axes.Axes`. Got type: {type(axis)}")
     if not isinstance(save_as, (str, type(None))):
         raise TypeError(f"(plot_time_series) `save_as` must be a string or `None`. Got type: {type(save_as)}")
-    if not isinstance(line_clr, (str, type(None))):
-        raise TypeError(f"(plot_time_series) `line_clr` must be a string or `None`. Got type: {type(line_clr)}")
     elif isinstance(save_as, str) and not '.png' in save_as:
         raise TypeError(f"(plot_time_series) `save_as` must be a `.png` filepath. Got: {save_as}")
     if not isinstance(verbose, bool):
         raise TypeError(f"(plot_time_series) `verbose` must be a `bool`. Got type: {type(verbose)}")
-    if not isinstance(test, (type(True))):
+    if not isinstance(test, bool):
         raise TypeError(f"(plot_time_series) `test` must be a `bool`. Got type: {type(test)}")
     
     # Information to output
@@ -213,6 +223,7 @@ def plot_time_series(
         ylim = ylims,
         color = line_clr,
         linestyle = line_style,
+        label = lgd_label,
         **kwargs,
     )
 
@@ -246,9 +257,11 @@ def plot_time_series(
         print(f"(plot_time_series) Slope of `{variable_id}` regression line: {reg_m: .5e}")
         if verbose:
             print(f"(plot_time_series) Intercept of `{variable_id}` regression line: {reg_b: .5e}")
-        if isinstance(reg_label, type(None)):
+        if label_reg:
             # Format the label
             reg_label = f"{str(reg_m)[:6]}x+{str(reg_b)[:6]}"
+        else:
+            reg_label = None
         # Plot the regression line
         time_series_axis = axis.plot(
             dataset[x_var].values, 
@@ -257,8 +270,8 @@ def plot_time_series(
             linewidth = 3,
             label = reg_label,
         )
-        if include_legend:
-            axis.legend()
+    if include_legend:
+        axis.legend()
     # Modify the plot
     axis.set_title(plt_title)
     axis.set_ylabel(y_ax_label)

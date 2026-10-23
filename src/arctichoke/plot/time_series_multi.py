@@ -205,7 +205,7 @@ def plot_multi_time_series(
             dataset,
             var_for_trend,
             add_regression = add_regression,
-            reg_label = this_variant_label,
+            lgd_label = this_variant_label,
             line_clr = sps.sb_clrs[i],
             plt_title = this_plot_title,
             y_ax_label = this_y_axis_label,
