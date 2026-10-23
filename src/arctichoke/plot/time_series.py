@@ -21,7 +21,8 @@ def plot_time_series(
     xlims: [str, str] = None,
     ylims: [float, float] = None,
     line_clr: str = None,
-    line_style: str = ':',
+    line_style: str = '--',
+    include_legend: bool = True,
     fig: Figure = None,
     axis: Axes = None,
     save_as: str = None,
@@ -69,6 +70,9 @@ def plot_time_series(
         line_style : `str`, optional
             The style of line to use in the time series plot (not the regression line).
             Default is `:`. 
+        include_legend : `bool`, optional
+            Whether or not to add the legend to the axis.
+            Default is `True`.
         fig : `None`, `matplotlib.figure.Figure`, optional
             If not `None`, this is the pre-existing figure on which to plot the map.
             Default is `None` which creates a new figure with a new axis.
@@ -253,10 +257,10 @@ def plot_time_series(
             linewidth = 3,
             label = reg_label,
         )
-        axis.legend()
-
     # Modify the plot
     axis.set_title(plt_title)
     axis.set_ylabel(y_ax_label)
+    if include_legend:
+        axis.legend()
 
     return time_series_axis
