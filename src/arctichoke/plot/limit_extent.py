@@ -5,10 +5,11 @@ from arctichoke.dataset import bound_lat, bound_lon
 import arctichoke.params as sps
 
 def get_limited_extent(
-    map_projection : crs.CRS,
-    map_bbox : [float, float, float, float] = sps.CAA_BBOX,
-    n_samples : int = 100,
-    padding : (int, float) = 0.0,
+    map_projection: crs.CRS,
+    map_bbox: [float, float, float, float] = sps.CAA_BBOX,
+    zoom_out_bbox: bool = True,
+    n_samples: int = 100,
+    padding: (int, float) = 0.0,
     verbose: bool = False,
     **kwargs,
 ):
@@ -26,6 +27,9 @@ def get_limited_extent(
                 - [LAT_MAX, LAT_MIN, LON_MAX, LON_MIN]
                 
             Default is `arctichoke.params.latlon_params.CAA_BBOX`.
+        zoom_out_bbox : `bool`, optional
+            Whether or not to automatically zoom out slightly when specifying a bounding box for a particular region.
+            Default is `True`.
         n_sample : `int`, optional
             The number of samples to take along the edges of the bounding box.
             Use a larger number for larger bounding boxes to reduce clipping.
@@ -60,6 +64,8 @@ def get_limited_extent(
         for i in range(len(map_bbox)):
             if not isinstance(map_bbox[i], (int, float)):
                 raise TypeError(f"(get_limited_extent) `map_bbox[{i}]` must be a number. Got type: {type(map_bbox[i])}")
+    if not isinstance(zoom_out_bbox, bool):
+        raise TypeError(f"(get_limited_extent) `zoom_out_bbox` must be a `bool`. Got type: {type(zoom_out_bbox)}")
     if not isinstance(n_samples, int):
         raise TypeError(f"(get_limited_extent) `n_samples` must be an integer. Got type: {type(n_samples)}")
     if not isinstance(padding, (int, float)):
@@ -74,14 +80,29 @@ def get_limited_extent(
         print(f"(get_limited_extent) Caution: The full range of possibilities of longitude values have not been accounted for, if using longitude values near the limits of the valid range, `nan` values may occur in the returned `map_extent`.")
 
     # Get the map version of the bounding box, if applicable
-    # if map_bbox == sps.CAA_BBOX:
-    #     map_bbox = sps.CAAM_BBOX
-    #     if verbose:
-    #         print(f"(get_limited_extent) Given `map_bbox` of `CAA_BBOX`, so replacing with `CAAM_BBOX`.")
-    # elif map_bbox == sps.QW_BBOX:
-    #     map_bbox = sps.QWM_BBOX
-    #     if verbose:
-    #         print(f"(get_limited_extent) Given `map_bbox` of `QW_BBOX`, so replacing with `QWM_BBOX`.")
+    if zoom_out_bbox:
+        if verbose: 
+            print(f"(get_limited_extent) `zoom_out_bbox` is `True`, checking whether to zoom out the map extent to show more context.")
+        if map_bbox == sps.CAA_BBOX:
+            map_bbox = sps.CAAM_BBOX
+            if verbose:
+                print(f"(get_limited_extent) Given `map_bbox` of `CAA_BBOX`, so replacing with `CAAM_BBOX`.")
+        elif map_bbox == sps.NS_BBOX:
+            map_bbox = sps.NSM_BBOX
+            if verbose:
+                print(f"(get_limited_extent) Given `map_bbox` of `NS_BBOX`, so replacing with `NSM_BBOX`.")
+        elif map_bbox == sps.PC_BBOX:
+            map_bbox = sps.PCM_BBOX
+            if verbose:
+                print(f"(get_limited_extent) Given `map_bbox` of `PC_BBOX`, so replacing with `PCM_BBOX`.")
+        elif map_bbox == sps.QE_BBOX:
+            map_bbox = sps.QEM_BBOX
+            if verbose:
+                print(f"(get_limited_extent) Given `map_bbox` of `QE_BBOX`, so replacing with `QEM_BBOX`.")
+        elif map_bbox == sps.QW_BBOX:
+            map_bbox = sps.QWM_BBOX
+            if verbose:
+                print(f"(get_limited_extent) Given `map_bbox` of `QW_BBOX`, so replacing with `QWM_BBOX`.")
 
     # Unpack the bounding box values
     box_lat_max = map_bbox[0]
