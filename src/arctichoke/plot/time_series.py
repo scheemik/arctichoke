@@ -8,7 +8,7 @@ import xarray as xr
 from arctichoke.analysis import trend_in_time
 from arctichoke.dataset import get_epoch_times
 import arctichoke.params as sps
-from arctichoke.plot.labels_and_titles import make_title
+from arctichoke.plot.labels_and_titles import make_title, make_label
 from arctichoke.verify import verify_path
 
 def plot_time_series(
@@ -17,6 +17,7 @@ def plot_time_series(
     add_regression: bool = False,
     reg_label: str = None,
     plt_title: str = None,
+    y_ax_label: str = None,
     xlims: [str, str] = None,
     ylims: [float, float] = None,
     line_clr: str = None,
@@ -48,6 +49,9 @@ def plot_time_series(
         plt_title : `str`, `None`, optional
             The title to use for the plot.
             Default is `None`, which uses a default title for the plot.
+        y_ax_label : `str`, `None`, optional
+            Specify the label of the plot's y-axis, if `None` is given, use the `make_label()` function to create the label.
+            Default is `None`.
         xlims : List of `float`, optional
             The limits to use for the x-axis on the plot in the following format:
                 - [x_min, x_max]
@@ -124,6 +128,8 @@ def plot_time_series(
         plt_title = make_title(dataset)
     elif not isinstance(plt_title, str):
         raise TypeError(f"(plot_time_series) `plt_title` must be a string or `None`. Got type: {type(plt_title)}")
+    if not isinstance(y_ax_label, (str, type(None))):
+        raise TypeError(f"(plot_time_series) `y_ax_label` must be a string or `None`. Got type: {type(y_ax_label)}")
     if isinstance(xlims, type([])):
         if not len(xlims) == 2:
             raise ValueError(f"(plot_time_series) `xlims` must have a length of 2. Got length: {len(xlims)}")
@@ -174,6 +180,9 @@ def plot_time_series(
         fig, axs = plt.subplots(1, 1, squeeze=False, figsize=[9, 6])
         # Select the only axis
         axis = axs[0,0]
+    # Make label, if necessary
+    if isinstance(y_ax_label, type(None)):
+        y_ax_label = make_label(dataset, variable_id, verbose=verbose)
 
     # Get limits for the y-axis
     if isinstance(ylims, type(None)):
@@ -246,5 +255,6 @@ def plot_time_series(
 
     # Modify the plot
     axis.set_title(plt_title)
+    axis.set_ylabel(y_ax_label)
 
     return time_series_axis
