@@ -4,7 +4,7 @@ from arctichoke.analysis import make_sithick_masked_climatology, sum_by_year, tr
 from arctichoke.dataset import get_field_mean, select_months
 import arctichoke.params as sps
 from arctichoke.path import list_variable_files, list_variant_labels
-from arctichoke.plot.labels_and_titles import make_title
+from arctichoke.plot.labels_and_titles import make_title, make_label
 from arctichoke.plot.time_series import plot_time_series
 
 def plot_multi_time_series(
@@ -189,6 +189,17 @@ def plot_multi_time_series(
             dataset,
             add_variant_label = False,
         )
+        # Make the y-axis label
+        this_y_axis_label = make_label(
+            dataset, 
+            var_for_trend, 
+            verbose=verbose
+        )
+        # Add y-axis label prefix
+        if call_sum_by_year:
+            this_y_axis_label = f"Yearly {this_y_axis_label}"
+        else:
+            this_y_axis_label = f"Monthly {this_y_axis_label}"
         # Plot the time series
         time_series_axis = plot_time_series(
             dataset,
@@ -197,6 +208,7 @@ def plot_multi_time_series(
             reg_label = this_variant_label,
             line_clr = sps.sb_clrs[i],
             plt_title = this_plot_title,
+            y_ax_label = this_y_axis_label,
             verbose = verbose,
             **kwargs,
         )
