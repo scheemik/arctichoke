@@ -18,7 +18,7 @@ def plot_time_series(
     reg_label: str = None,
     plt_title: str = None,
     y_ax_label: str = None,
-    xlims: [str, str] = None,
+    xlims: [(str, datetime), (str, datetime)] = None,
     ylims: [float, float] = None,
     line_clr: str = None,
     line_style: str = '--',
@@ -53,11 +53,11 @@ def plot_time_series(
         y_ax_label : `str`, `None`, optional
             Specify the label of the plot's y-axis, if `None` is given, use the `make_label()` function to create the label.
             Default is `None`.
-        xlims : List of `float`, optional
+        xlims : `None`, List of `str` or `datetime.datetime`, optional
             The limits to use for the x-axis on the plot in the following format:
                 - [x_min, x_max]
 
-            where `x_min` and `x_max` are strings in the format `YYYY-MM-DD`
+            where `x_min` and `x_max` are strings in the format `YYYY-MM-DD`, or `datetime.datetime` values.
             Default is `None`, which expands the x-axis to include all the data.
         ylims : List of `float`, optional
             The limits to use for the y-axis on the plot in the following format:
@@ -137,13 +137,13 @@ def plot_time_series(
             raise ValueError(f"(plot_time_series) `xlims` must have a length of 2. Got length: {len(xlims)}")
         else: 
             for i in range(len(xlims)):
-                if not isinstance(xlims[i], (str)):
-                    raise TypeError(f"(plot_time_series) `xlims[{i}]` must be a string. Got type: {type(xlims[i])}")
-                else:
+                if isinstance(xlims[i], (str)):
                     try:
                         xlims[i] = datetime.strptime(xlims[i], "%Y-%m-%d")
                     except ValueError as e:
                         raise ValueError(f"(plot_time_series) `xlims[{i}]` must be a date in the format `YYYY-MM-DD`. Got: {xlims[i]}")
+                if not isinstance(xlims[i], datetime):
+                    raise TypeError(f"(plot_time_series) `xlims[{i}]` must be a `datetime.datetime` object. Got type: {type(xlims[i])}")
     elif not isinstance(xlims, type(None)):
         raise TypeError(f"(plot_time_series) `xlims` must be a list or `None`. Got type: {type(xlims)}")
     if isinstance(ylims, type([])):
