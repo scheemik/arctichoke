@@ -63,7 +63,7 @@ def make_cartopy_map(
         map_title : `str`, optional
             Specify the title of the map or, if `None` is given, use the `make_title()` function to create the title.
             Default is `None`.
-        map_label : `str`, optional
+        map_label : `str`, `None`, optional
             Specify the label of the map's colorbar or, if `None` is given, use the `make_label()` function to create the label.
             Default is `None`.
         this_cmap : `str`, optional
