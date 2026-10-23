@@ -260,6 +260,7 @@ def plot_time_series(
     # Modify the plot
     axis.set_title(plt_title)
     axis.set_ylabel(y_ax_label)
+    axis.set_xlabel('')
     if include_legend:
         axis.legend()
 
