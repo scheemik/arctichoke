@@ -1,5 +1,8 @@
 # Define parameters for the variables used in this project
 
+packed_threshold = 85
+slow_threshold = 0.01
+
 sea_ice_vars = {
     'test_var': {
         'plot_range': None,

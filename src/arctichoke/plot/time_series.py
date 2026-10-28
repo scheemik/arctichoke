@@ -1,23 +1,32 @@
+import cftime
 from datetime import datetime
+from matplotlib.axes._axes import Axes
+from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 import numpy as np
 import xarray as xr
 
 from arctichoke.analysis import trend_in_time
-from arctichoke.dataset import get_epoch_times
+from arctichoke.dataset import get_date_type, get_epoch_times
 import arctichoke.params as sps
-from arctichoke.plot.labels_and_titles import make_title
+from arctichoke.plot.labels_and_titles import make_title, make_label
 from arctichoke.verify import verify_path
 
 def plot_time_series(
     dataset: (str, xr.DataArray, xr.Dataset),
     variable_id: str = None,
     add_regression: bool = False,
-    reg_label: str = None,
+    lgd_label: str = None,
     plt_title: str = None,
-    xlims: [str, str] = None,
+    y_ax_label: str = None,
+    xlims: [(str, datetime, cftime.Datetime360Day), (str, datetime, cftime.Datetime360Day)] = None,
     ylims: [float, float] = None,
     line_clr: str = None,
+    line_style: str = '--',
+    include_legend: bool = True,
+    label_reg: bool = False,
+    fig: Figure = None,
+    axis: Axes = None,
     save_as: str = None,
     verbose: bool = False,
     test: bool = False,
@@ -36,18 +45,21 @@ def plot_time_series(
         add_regression : `bool`, optional
             Whether to add a linear regression line to the plot.
             Default is `False`.
-        reg_label : `str`, `None`, optional
+        lgd_label : `str`, `None`, optional
             The label to use for the regression line.
             Note that this has no effect when `add_regression` is `False`.
             Default is `None`, which uses a default label, the equation of the regression line.
         plt_title : `str`, `None`, optional
             The title to use for the plot.
             Default is `None`, which uses a default title for the plot.
-        xlims : List of `float`, optional
+        y_ax_label : `str`, `None`, optional
+            Specify the label of the plot's y-axis, if `None` is given, use the `make_label()` function to create the label.
+            Default is `None`.
+        xlims : `None`, List of `str`, `datetime.datetime`, or `cftime.Datetime360Day`, optional
             The limits to use for the x-axis on the plot in the following format:
                 - [x_min, x_max]
 
-            where `x_min` and `x_max` are strings in the format `YYYY-MM-DD`
+            where `x_min` and `x_max` are strings in the format `YYYY-MM-DD`, `datetime.datetime`, or `cftime.Datetime360Day` values.
             Default is `None`, which expands the x-axis to include all the data.
         ylims : List of `float`, optional
             The limits to use for the y-axis on the plot in the following format:
@@ -57,6 +69,21 @@ def plot_time_series(
         line_clr: `str`, `None`, optional
             The color of line to use in the plot. 
             Default is `None` which uses the default `matplotlib` colors. 
+        line_style : `str`, optional
+            The style of line to use in the time series plot (not the regression line).
+            Default is `:`. 
+        include_legend : `bool`, optional
+            Whether or not to add the legend to the axis.
+            Default is `True`.
+        label_reg : `bool`, optional
+            Whether or not to add the regression equation to the legend.
+            Default is `False`.
+        fig : `None`, `matplotlib.figure.Figure`, optional
+            If not `None`, this is the pre-existing figure on which to plot the map.
+            Default is `None` which creates a new figure with a new axis.
+        axis : `None`, `matplotlib.axes._axes.Axes`, optional
+            If not `None`, this is the pre-existing axis in `fig` on which to plot the map.
+            Default is `None` which creates a new figure with a new axis.
         save_as : `str`, `None`, optional
             The name of the file to which to save the plot.
             Default is `None`, which doesn't save the plot to a file.
@@ -72,9 +99,11 @@ def plot_time_series(
         Returns
         -------
         If `test` == `False`: 
-            `None`
+            time_series_axis : `matplotlib.axes._axes.Axes`
+                The axis on which the time series has been plotted. 
         If `test` == `True` : 
             dataset : `xarray.DataArray`
+                The dataset of the time series.
         
         Examples
         --------
@@ -100,26 +129,33 @@ def plot_time_series(
             variable_id = dataset.name
     if not isinstance(add_regression, (type(True))):
         raise TypeError(f"(plot_time_series) `add_regression` must be a `bool`. Got type: {type(add_regression)}")
-    if isinstance(reg_label, type(None)):
-        reg_label = make_title(dataset)
-    elif not isinstance(reg_label, str):
-        raise TypeError(f"(plot_time_series) `reg_label` must be a string or `None`. Got type: {type(reg_label)}")
-    if isinstance(plt_title, type(None)):
-        plt_title = make_title(dataset)
-    elif not isinstance(plt_title, str):
+    if isinstance(lgd_label, type(None)):
+        lgd_label = make_title(dataset)
+    elif not isinstance(lgd_label, str):
+        raise TypeError(f"(plot_time_series) `lgd_label` must be a string or `None`. Got type: {type(lgd_label)}")
+    if not isinstance(plt_title, (str, type(None))):
         raise TypeError(f"(plot_time_series) `plt_title` must be a string or `None`. Got type: {type(plt_title)}")
+    if not isinstance(y_ax_label, (str, type(None))):
+        raise TypeError(f"(plot_time_series) `y_ax_label` must be a string or `None`. Got type: {type(y_ax_label)}")
     if isinstance(xlims, type([])):
         if not len(xlims) == 2:
             raise ValueError(f"(plot_time_series) `xlims` must have a length of 2. Got length: {len(xlims)}")
         else: 
+            # Get date type
+            if 'time' in list(dataset.sizes.keys()):
+                date_dtype = get_date_type(dataset)
+            else:
+                date_dtype = None
             for i in range(len(xlims)):
-                if not isinstance(xlims[i], (str)):
-                    raise TypeError(f"(plot_time_series) `xlims[{i}]` must be a string. Got type: {type(xlims[i])}")
-                else:
+                if isinstance(xlims[i], (str)):
                     try:
                         xlims[i] = datetime.strptime(xlims[i], "%Y-%m-%d")
                     except ValueError as e:
                         raise ValueError(f"(plot_time_series) `xlims[{i}]` must be a date in the format `YYYY-MM-DD`. Got: {xlims[i]}")
+                    if date_dtype == 'cftime.Datetime360Day':
+                        xlims[i] = cftime.Datetime360Day(xlims[i].year, xlims[i].month, xlims[i].day, 0, 0, 0, 0, has_year_zero=True)
+                if not isinstance(xlims[i], (datetime, cftime.Datetime360Day)):
+                    raise TypeError(f"(plot_time_series) `xlims[{i}]` must be a `datetime.datetime` or `cftime.Datetime360Day` object. Got type: {type(xlims[i])}")
     elif not isinstance(xlims, type(None)):
         raise TypeError(f"(plot_time_series) `xlims` must be a list or `None`. Got type: {type(xlims)}")
     if isinstance(ylims, type([])):
@@ -131,20 +167,46 @@ def plot_time_series(
                     raise TypeError(f"(plot_time_series) `ylims[{i}]` must be a number. Got type: {type(ylims[i])}")
     elif not isinstance(ylims, type(None)):
         raise TypeError(f"(plot_time_series) `ylims` must be a list or `None`. Got type: {type(ylims)}")
-    if not isinstance(save_as, (str, type(None))):
-        raise TypeError(f"(plot_time_series) `save_as` must be a string or `None`. Got type: {type(save_as)}")
     if not isinstance(line_clr, (str, type(None))):
         raise TypeError(f"(plot_time_series) `line_clr` must be a string or `None`. Got type: {type(line_clr)}")
+    if not isinstance(line_style, str):
+        raise TypeError(f"(plot_time_series) `line_style` must be a string. Got type: {type(line_style)}")
+    if not isinstance(include_legend, bool):
+        raise TypeError(f"(plot_time_series) `include_legend` must be a `bool`. Got type: {type(include_legend)}")
+    if not isinstance(label_reg, bool):
+        raise TypeError(f"(plot_time_series) `label_reg` must be a `bool`. Got type: {type(label_reg)}")
+    if not isinstance(fig, (str, (type(None), Figure))):
+        raise TypeError(f"(make_cartopy_map) `fig` must be `None` or `matplotlib.figure.Figure`. Got type: {type(fig)}")
+    if not isinstance(axis, (str, (type(None), Axes))):
+        raise TypeError(f"(make_cartopy_map) `axis` must be `None` or `matplotlib.axes._axes.Axes`. Got type: {type(axis)}")
+    if not isinstance(save_as, (str, type(None))):
+        raise TypeError(f"(plot_time_series) `save_as` must be a string or `None`. Got type: {type(save_as)}")
     elif isinstance(save_as, str) and not '.png' in save_as:
         raise TypeError(f"(plot_time_series) `save_as` must be a `.png` filepath. Got: {save_as}")
     if not isinstance(verbose, bool):
         raise TypeError(f"(plot_time_series) `verbose` must be a `bool`. Got type: {type(verbose)}")
-    if not isinstance(test, (type(True))):
+    if not isinstance(test, bool):
         raise TypeError(f"(plot_time_series) `test` must be a `bool`. Got type: {type(test)}")
     
     # Information to output
     if verbose:
         print(f"(plot_time_series) `save_as`: {save_as}")
+
+    # Check whether an existing figure and axis have been given
+    if isinstance(fig, type(None)) or isinstance(axis, type(None)):
+        if verbose:
+            print(f"(plot_time_series) No pre-existing figure or axis given, creating new ones.")
+        # Set up figure
+        fig, axs = plt.subplots(1, 1, squeeze=False, figsize=[9, 6])
+        # Select the only axis
+        axis = axs[0,0]
+    
+    # Make title, if necessary
+    if isinstance(plt_title, type(None)):
+        plt_title = make_title(dataset, **kwargs)
+    # Make label, if necessary
+    if isinstance(y_ax_label, type(None)):
+        y_ax_label = make_label(dataset, variable_id, verbose=verbose)
 
     # Get limits for the y-axis
     if isinstance(ylims, type(None)):
@@ -163,10 +225,13 @@ def plot_time_series(
         return dataset
 
     # Plot the time series
-    dataset.plot(
+    time_series_axis = dataset.plot(
+        ax = axis,
         xlim = xlims,
         ylim = ylims,
         color = line_clr,
+        linestyle = line_style,
+        label = lgd_label,
         **kwargs,
     )
 
@@ -200,20 +265,33 @@ def plot_time_series(
         print(f"(plot_time_series) Slope of `{variable_id}` regression line: {reg_m: .5e}")
         if verbose:
             print(f"(plot_time_series) Intercept of `{variable_id}` regression line: {reg_b: .5e}")
-        if isinstance(reg_label, type(None)):
+        if label_reg:
             # Format the label
             reg_label = f"{str(reg_m)[:6]}x+{str(reg_b)[:6]}"
+        else:
+            reg_label = None
         # Plot the regression line
-        plt.plot(
+        time_series_axis = axis.plot(
             dataset[x_var].values, 
             x_vals * reg_m + reg_b, 
             color = line_clr,
             linewidth = 3,
-            label=reg_label,
+            label = reg_label,
         )
-        plt.legend()
-
+    if include_legend:
+        axis.legend()
     # Modify the plot
-    plt.title(plt_title)
+    axis.set_title(plt_title)
+    axis.set_ylabel(y_ax_label)
+    axis.set_xlabel('')
+    # Add horizontal lines, if applicable
+    if 'siconc' in variable_id:
+        limit_line_val = sps.packed_threshold
+    elif 'sispeed' in variable_id:
+        limit_line_val = sps.slow_threshold
+    else:
+        limit_line_val = None
+    if not isinstance(limit_line_val, type(None)):
+        axis.axhline(y=limit_line_val, color=sps.hatch_red, linestyle='-', alpha=0.7, zorder=0.1)
 
-    return None
+    return time_series_axis

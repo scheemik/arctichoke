@@ -17,7 +17,7 @@ from arctichoke.verify import verify_path
 
 def find_packed_ice(
     dataset: (str, [str], xr.DataArray, xr.Dataset),
-    packed_threshold: (int, float) = 85, 
+    packed_threshold: (int, float) = sps.packed_threshold, 
     siconc_var: str = 'siconc',
     save_as: str = None,
     verbose: bool = False,
@@ -157,7 +157,7 @@ def find_packed_ice(
 
 def find_slow_ice(
     dataset: (str, [str], xr.DataArray, xr.Dataset),
-    slow_threshold: (int, float) = 0.01, 
+    slow_threshold: (int, float) = sps.slow_threshold, 
     sispeed_var: str = 'sispeed',
     save_as: str = None,
     verbose: bool = False,
@@ -297,8 +297,8 @@ def find_slow_ice(
 def find_landfast_ice(
     siconc_dataset: (str, [str], xr.DataArray, xr.Dataset),
     sispeed_dataset: (str, [str], xr.DataArray, xr.Dataset),
-    packed_threshold: (int, float) = 85, 
-    slow_threshold: (int, float) = 0.01, 
+    packed_threshold: (int, float) = sps.packed_threshold, 
+    slow_threshold: (int, float) = sps.slow_threshold, 
     siconc_var: str = 'siconc',
     sispeed_var: str = 'sispeed',
     save_as: str = None,

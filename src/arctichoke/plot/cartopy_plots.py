@@ -63,7 +63,7 @@ def make_cartopy_map(
         map_title : `str`, optional
             Specify the title of the map or, if `None` is given, use the `make_title()` function to create the title.
             Default is `None`.
-        map_label : `str`, optional
+        map_label : `str`, `None`, optional
             Specify the label of the map's colorbar or, if `None` is given, use the `make_label()` function to create the label.
             Default is `None`.
         this_cmap : `str`, optional
@@ -245,6 +245,12 @@ def make_cartopy_map(
     #         verbose = verbose,
     #         # **kwargs,
     #     )
+    if not isinstance(map_extent, type(None)):
+        axis.set_extent(
+            (map_extent[0], map_extent[1],
+            map_extent[2], map_extent[3]),
+            crs = map_projection,
+        )
 
     # Save the plot, if applicable
     if not isinstance(save_as, type(None)):
