@@ -137,12 +137,15 @@ def plot_time_series(
         raise TypeError(f"(plot_time_series) `plt_title` must be a string or `None`. Got type: {type(plt_title)}")
     if not isinstance(y_ax_label, (str, type(None))):
         raise TypeError(f"(plot_time_series) `y_ax_label` must be a string or `None`. Got type: {type(y_ax_label)}")
-    # Get date type
-    date_dtype = get_date_type(dataset)
     if isinstance(xlims, type([])):
         if not len(xlims) == 2:
             raise ValueError(f"(plot_time_series) `xlims` must have a length of 2. Got length: {len(xlims)}")
         else: 
+            # Get date type
+            if 'time' in list(dataset.sizes.keys()):
+                date_dtype = get_date_type(dataset)
+            else:
+                date_dtype = None
             for i in range(len(xlims)):
                 if isinstance(xlims[i], (str)):
                     try:
