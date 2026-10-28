@@ -1,3 +1,4 @@
+import cftime
 from datetime import datetime
 from matplotlib.axes._axes import Axes
 from matplotlib.figure import Figure
@@ -6,7 +7,7 @@ import numpy as np
 import xarray as xr
 
 from arctichoke.analysis import trend_in_time
-from arctichoke.dataset import get_epoch_times
+from arctichoke.dataset import get_date_type, get_epoch_times
 import arctichoke.params as sps
 from arctichoke.plot.labels_and_titles import make_title, make_label
 from arctichoke.verify import verify_path
@@ -18,7 +19,7 @@ def plot_time_series(
     lgd_label: str = None,
     plt_title: str = None,
     y_ax_label: str = None,
-    xlims: [(str, datetime), (str, datetime)] = None,
+    xlims: [(str, datetime, cftime.Datetime360Day), (str, datetime, cftime.Datetime360Day)] = None,
     ylims: [float, float] = None,
     line_clr: str = None,
     line_style: str = '--',
@@ -54,11 +55,11 @@ def plot_time_series(
         y_ax_label : `str`, `None`, optional
             Specify the label of the plot's y-axis, if `None` is given, use the `make_label()` function to create the label.
             Default is `None`.
-        xlims : `None`, List of `str` or `datetime.datetime`, optional
+        xlims : `None`, List of `str`, `datetime.datetime`, or `cftime.Datetime360Day`, optional
             The limits to use for the x-axis on the plot in the following format:
                 - [x_min, x_max]
 
-            where `x_min` and `x_max` are strings in the format `YYYY-MM-DD`, or `datetime.datetime` values.
+            where `x_min` and `x_max` are strings in the format `YYYY-MM-DD`, `datetime.datetime`, or `cftime.Datetime360Day` values.
             Default is `None`, which expands the x-axis to include all the data.
         ylims : List of `float`, optional
             The limits to use for the y-axis on the plot in the following format:
@@ -136,6 +137,8 @@ def plot_time_series(
         raise TypeError(f"(plot_time_series) `plt_title` must be a string or `None`. Got type: {type(plt_title)}")
     if not isinstance(y_ax_label, (str, type(None))):
         raise TypeError(f"(plot_time_series) `y_ax_label` must be a string or `None`. Got type: {type(y_ax_label)}")
+    # Get date type
+    date_dtype = get_date_type(dataset)
     if isinstance(xlims, type([])):
         if not len(xlims) == 2:
             raise ValueError(f"(plot_time_series) `xlims` must have a length of 2. Got length: {len(xlims)}")
@@ -146,8 +149,10 @@ def plot_time_series(
                         xlims[i] = datetime.strptime(xlims[i], "%Y-%m-%d")
                     except ValueError as e:
                         raise ValueError(f"(plot_time_series) `xlims[{i}]` must be a date in the format `YYYY-MM-DD`. Got: {xlims[i]}")
-                if not isinstance(xlims[i], datetime):
-                    raise TypeError(f"(plot_time_series) `xlims[{i}]` must be a `datetime.datetime` object. Got type: {type(xlims[i])}")
+                    if date_dtype == 'cftime.Datetime360Day':
+                        xlims[i] = cftime.Datetime360Day(xlims[i].year, xlims[i].month, xlims[i].day, 0, 0, 0, 0, has_year_zero=True)
+                if not isinstance(xlims[i], (datetime, cftime.Datetime360Day)):
+                    raise TypeError(f"(plot_time_series) `xlims[{i}]` must be a `datetime.datetime` or `cftime.Datetime360Day` object. Got type: {type(xlims[i])}")
     elif not isinstance(xlims, type(None)):
         raise TypeError(f"(plot_time_series) `xlims` must be a list or `None`. Got type: {type(xlims)}")
     if isinstance(ylims, type([])):
