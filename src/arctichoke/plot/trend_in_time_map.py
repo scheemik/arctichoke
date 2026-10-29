@@ -2,7 +2,7 @@ import xarray as xr
 
 from arctichoke.analysis import sum_by_year, trend_in_time, trend_in_time_scipy
 from arctichoke.analysis.significance import find_significance 
-from arctichoke.dataset import select_months
+from arctichoke.dataset import make_mask, select_months
 from arctichoke.dataset.interp_dataset import interp_to_reg_grid
 import arctichoke.params as sps
 from arctichoke.path import list_variable_files
@@ -212,10 +212,20 @@ def make_trend_map(
     )
     # Add trend significance to the map
     if use_hvplot == False and add_sig == True:
+        # Re-interpolate the data for the significance of trends
+        sig_trend_dataset = make_mask(
+            trend_dataset,
+            f'{var_for_trend}_trends_sig',
+            mask_var_name = f'{var_for_trend}_trends_sig',
+            mask_this_range = [0.9, 1.1],
+            val_inside_range = 1,
+            val_outside_range = 0,
+            verbose = verbose,
+        )
         # Add hatch lines
         handles = add_hatches(
             hatch_axis = trend_map_axis, 
-            dataset = trend_dataset,
+            dataset = sig_trend_dataset,
             var = f'{var_for_trend}_trends_sig',
             hatch_label = 'significant',
             verbose = verbose,
