@@ -15,7 +15,7 @@ def add_hatches(
     hatch_style = '.',
     hatch_density = 2,
     hatch_color = hatch_grn,
-    contour_level = None,
+    contour_level = 0.5,
     verbose = False,
     **kwargs,
 ):
@@ -58,7 +58,7 @@ def add_hatches(
         contour_level : `None`, `int`, `float`, optional
             A value to mark with a contour on the axis.
             This can be used to frame an area of hatching.
-            Default is `None` which adds no contour.
+            Default is `0.5` to add a contour to show the edge of a binary mask.
         verbose : `bool`, optional
             Whether to verbosely output information as the function executes.
             Default is `False`.
