@@ -38,12 +38,12 @@ docs_data/siconc_from_sithick_and_sivol.md
 
 docs_analysis/landfast_ice.md
 docs_analysis/landfast_trends.md
-docs_analysis/trend_significance.md
 docs_analysis/multi_year_ice.md
 docs_analysis/climatologies.md
 docs_analysis/landfast_attributing_changes.md
 docs_analysis/investigate_specific_regions.md
 docs_analysis/mask_ice-free_areas.md
+docs_analysis/trend_significance.md
 ```
 
 ```{toctree}

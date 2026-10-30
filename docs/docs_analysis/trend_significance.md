@@ -13,6 +13,8 @@ This assumes you have already gone through {doc}`Trends in landfast ice over tim
     - [Standard error for multiple values](#standard-error-for-multiple-values)
     - [Trend significance for multiple values](#trend-significance-for-multiple-values)
 - [Trend significance test in Nares Strait](#trend-significance-test-in-nares-strait)
+    - [Interpolating onto a regular grid](#interpolating-onto-a-regular-grid)
+    - [Adding stippling to mark trend significance](#adding-stippling-to-mark-trend-significance)
 - [Trend significance test across the CAA](#trend-significance-test-across-the-caa)
 
 ---
@@ -747,13 +749,14 @@ I'll make a plot of the trends over time to get an idea of what the general tren
 from arctichoke.plot import plot_map 
 from arctichoke.params import sea_ice_vars
 
-plot_map(
+this_map = plot_map(
     trend_dataset,
     'sispeed_year_mean_trends',
     map_bbox = NS_BBOX,
     clims = sea_ice_vars['sispeed']['trend_clims'],
     diverging_cbar = True,
 )
+display(this_map)
 ```
 ![EC-Earth3P-HR_r1i1p2f1_sispeed_NS_trend_map.png](trend_significance-img/EC-Earth3P-HR_r1i1p2f1_sispeed_NS_trend_map.png)
 
@@ -815,98 +818,276 @@ plot_map(
 
 Here, I can see that the trends in the north of Nares Strait are significant and that regions where the trends are very close to zero tend to not be significant, as I would expect.
 
+### Interpolating onto a regular grid
+[back to top](#trend-significance)
+
+Most of the data I am dealing with is on an irregular grid which means that Matplotlib and Cartopy can't plot the data directly.
+So, up until this point, I have been using the `hvplot` library to plot the irregular data on a map directly, without needing to interpolate.
+However, `hvplot` doesn't have built-in functions to add certain things to plots such at stippling. 
+Therefore, I am going to interpolate the irregular grid data onto a regular grid so that I can use the built-in methods in Matplotlib and Cartopy to add stippling to my maps. 
+
+I can use my `get_grid_type()` function to confirm that the trend significance data from Nares Strait I was using above is on an irregular grid. 
+```python
+from arctichoke.dataset import get_grid_type 
+
+get_grid_type(trend_sig_dataset)
+```
+```console
+'irregular'
+```
+
+I added an argument to my `plot_map()` function called `use_hvplot`.
+If I set that to `False`, then the map will be made with Cartopy instead.
+However, if I try to plot a map of irregular data directly, nothing shows up.
+```python
+from arctichoke.plot import plot_map 
+
+plot_map(
+    trend_sig_dataset,
+    'sispeed_year_mean_trends_sig',
+    map_bbox = NS_BBOX,
+    use_hvplot = False,
+)
+```
+
+![EC-Earth3P-HR_r1i1p2f1_sispeed_NS_cartopy_irr_grid_bug.png](trend_significance-img/EC-Earth3P-HR_r1i1p2f1_sispeed_NS_cartopy_irr_grid_bug.png)
+
+In order to plot using Cartopy, I need to interpolate first.
+I'll use my `make_example_latlon_grid()` to define a grid on which to interpolate.
+I'll choose a 0.25 x 0.25 degree grid.
+```python
+from arctichoke.dataset import make_example_latlon_grid
+
+dataset = make_example_latlon_grid(
+    save_as = 'data/target_grid_0-25_deg.nc',
+    lat_step = 0.25,
+    lon_step = 0.25,
+)
+print(dataset)
+```
+```console
+<xarray.Dataset> Size: 8MB
+Dimensions:   (lat: 721, lon: 1441)
+Coordinates:
+  * lat       (lat) float64 6kB -90.0 -89.75 -89.5 -89.25 ... 89.5 89.75 90.0
+  * lon       (lon) float64 12kB -180.0 -179.8 -179.5 ... 179.5 179.8 180.0
+Data variables:
+    test_var  (lat, lon) float64 8MB 0.0 1.0 2.0 ... 1.039e+06 1.039e+06
+Attributes:
+    grid:     N216
+```
+
+Using that grid dataset, I can now interpolate the data from Nares Strait. 
+I can do this with the `interp_to_reg_grid()` function that I wrote.
+```python
+from arctichoke.dataset.interp_dataset import interp_to_reg_grid
+
+interp_trend_sig_dataset = interp_to_reg_grid(
+    dataset = trend_sig_dataset,
+    targetgrid = 'data/target_grid_0-25_deg.nc',
+)
+
+print(interp_trend_sig_dataset)
+```
+```console
+<xarray.Dataset> Size: 42MB
+Dimensions:                              (lat: 721, lon: 1441)
+Coordinates:
+  * lat                                  (lat) float64 6kB -90.0 -89.75 ... 90.0
+  * lon                                  (lon) float64 12kB -180.0 ... 180.0
+Data variables:
+    sispeed_year_mean_trends             (lat, lon) float64 8MB ...
+    sispeed_year_mean_intercepts         (lat, lon) float64 8MB ...
+    sispeed_year_mean_residuals          (lat, lon) float64 8MB ...
+    sispeed_year_mean_significance_test  (lat, lon) float64 8MB ...
+    sispeed_year_mean_trends_sig         (lat, lon) float64 8MB ...
+Attributes: (12/52)
+    CDI:                    Climate Data Interface version 2.5.1 (https://mpi...
+    Conventions:            CF-1.7 CMIP-6.2
+    source:                 EC-Earth3P-HR (2017): \naerosol: none\natmos: IFS...
+    institution:            AEMET, Spain; BSC, Spain; CNR-ISAC, Italy; DMI, D...
+    activity_id:            HighResMIP
+    branch_method:          none provided
+    ...                     ...
+    history:                Fri Oct 30 20:09:36 2026: cdo -O -s -f nc -remapb...
+    select_months:          [6, 7, 8, 9, 10]
+    original_variable:      sispeed_year_mean
+    trend_start:            1950
+    trend_end:              2014
+    CDO:                    Climate Data Operators version 2.5.1 (https://mpi...
+```
+
+I can see that this interpolated dataset now only has dimensions of `lat` and `lon`, instead of `j` and `i` as it did on an irregular grid. 
+I can double check that this new dataset is on a regular grid.
+```python
+from arctichoke.dataset import get_grid_type 
+
+get_grid_type(interp_trend_sig_dataset)
+```
+```console
+'regular'
+```
+
+Now, if I plot this dataset with Cartopy, data actually shows up on the map.
+```python
+import matplotlib.pyplot as plt
+
+# Set up Figure
+plt.rcParams["figure.figsize"] = [8, 6]
+rows = 1
+cols = 1
+fig, axs = plt.subplots(rows, cols, squeeze=False)
+
+from arctichoke.plot import plot_map 
+
+this_map = plot_map(
+    interp_trend_sig_dataset,
+    'sispeed_year_mean_trends_sig',
+    map_bbox = NS_BBOX,
+    fig = fig,
+    axis = axs[0,0],
+    use_hvplot = False,
+)
+plt.show()
+```
+
+![EC-Earth3P-HR_r1i1p2f1_sispeed_NS_cartopy_interp_to_reg_grid.png](trend_significance-img/EC-Earth3P-HR_r1i1p2f1_sispeed_NS_cartopy_interp_to_reg_grid.png)
+
+I'll note here that this interpolated regular grid is rotated almost 45 degrees compared to the original irregular grid.
+The mismatch between the alignment of the pixels between the two grids becomes evident at this smaller scale, whereas it wouldn't be all that obvious when looking at the scale of the entire CAA.
+
+### Adding stippling to mark trend significance
+[back to top](#trend-significance)
+
+Above, I interpolated the data from Nares Strait onto a regular grid.
+This allows me to plot a map with Cartopy which has built-in functionality to add stippling which I can use to show where trends are statistically significant.
+
+I've written a function `add_hatches()` which can be used to add either hatch marks or stippling to a plot.
+Below, I add red stippling to the plot of Nares Strait's trend significance.
+```python
+import matplotlib.pyplot as plt
+
+# Set up Figure
+plt.rcParams["figure.figsize"] = [8, 6]
+rows = 1
+cols = 1
+fig, axs = plt.subplots(rows, cols, squeeze=False)
+
+from arctichoke.plot import plot_map 
+
+this_map = plot_map(
+    interp_trend_sig_dataset,
+    'sispeed_year_mean_trends_sig',
+    map_bbox = NS_BBOX,
+    fig = fig,
+    axis = axs[0,0],
+    use_hvplot = False,
+)
+
+from arctichoke.plot.stippling import add_hatches
+
+# Add hatch lines
+handles = add_hatches(
+    this_map,
+    interp_trend_sig_dataset,
+    'sispeed_year_mean_trends_sig',
+    'significant',
+    hatch_density = 5,
+    hatch_color = (1, 0, 0, 0.9),
+)
+# Add label for the hatches in the legend
+this_map.legend(handles=handles, loc='upper right')
+
+plt.show()
+```
+
+![EC-Earth3P-HR_r1i1p2f1_sispeed_NS_cartopy_trend_sig_stippling.png](trend_significance-img/EC-Earth3P-HR_r1i1p2f1_sispeed_NS_cartopy_trend_sig_stippling.png)
+
 ---
 
 ## Trend significance test across the CAA
 [back to top](#trend-significance)
 
 Here, I'll do something similar to what I did for Nares Strait above, but across the entire CAA.
-Below, I'll plot the maps of the trends in landfast ice followed by maps of the significance of those trends for all three variants of `EC-Earth3P-HR`. 
+First, I'll plot the maps of the significance of the trends in sea ice thickness, speed, and concentration with the statistical significance marked for the second variant of `EC-Earth3P-HR`. 
 ```python
+from matplotlib import pyplot as plt
+import numpy as np
 import xarray as xr
 
-from arctichoke.analysis import sum_by_year, trend_in_time, trend_in_time_scipy
-from arctichoke.dataset import select_months
-import arctichoke.params as sps
-from arctichoke.path import list_variable_files
-from arctichoke.plot import plot_map 
-from arctichoke.params import sea_ice_vars
+from arctichoke.analysis import sum_by_year, trend_in_time
 from arctichoke.analysis.significance import find_significance 
+from arctichoke.dataset import make_mask, select_months
+from arctichoke.dataset.interp_dataset import interp_to_reg_grid
+import arctichoke.params as sps
+from arctichoke.params import sea_ice_vars
+from arctichoke.path import list_variable_files
+from arctichoke.plot.plot_map import plot_map
+from arctichoke.plot.stippling import add_hatches
+
+# Set up Figure
+plt.rcParams["figure.figsize"] = [6, 18]
+rows = 3
+cols = 1
+fig, axs = plt.subplots(rows, cols, squeeze=False)
 
 this_source_id = 'EC-Earth3P-HR'
-this_var = 'silandfast'
-this_version_id = 'v20260617'
+this_experiment = 'hist-1950'
 this_modification = 'trim_CAA_'
-calc_pvals = False 
+call_sum_by_year = True
+find_mean = True
 mask_where_zero_across_time = True
-select_summer = True 
-call_sum_by_year = None
-find_mean = False
 set_verbose = False
+use_hvplot = False
+add_sig = True
+re_trim_extent = True
 
-for this_variant_label in [
-    'r1i1p2f1',
+for variant_label in [
+    # 'r1i1p2f1',
     'r2i1p2f1',
-    'r3i1p2f1',
+    # 'r3i1p2f1',
 ]:
-    # Get the list of `this_var` files
-    filelist = list_variable_files(
-        source_id = this_source_id,
-        variable_id = this_var,
-        variant_label = this_variant_label,
-        version_id = this_version_id,
-        with_modification = this_modification,
-        verbose = set_verbose,
-        # **kwargs,
-    )
-    # Open those files into a multi-file dataset
-    if select_summer:
+    i = 0
+    for variable_id in [
+        'sithick',
+        'sispeed',
+        'siconc',
+    ]:
+        print(f'Now plotting {variable_id}')
+        # Select the correct axis
+        this_row = i//cols
+        this_col = i%cols
+        this_ax = axs[this_row, this_col]
+        # Get the list of `this_var` files
+        filelist = list_variable_files(
+            source_id = this_source_id,
+            variable_id = variable_id,
+            variant_label = variant_label,
+            with_modification = this_modification,
+            this_experiment = this_experiment,
+        )
+        # Open those files into a multi-file dataset
         dataset = select_months(
             filelist,
             verbose = set_verbose,
         )
-    else:
-        dataset = xr.open_mfdataset(
-            filelist,
-            data_vars = 'all'
-        )
-    # 
-    if isinstance(call_sum_by_year, type(None)):
-        # Check whether this variable is in the sea ice vars dictionary
-        if this_var in sps.sea_ice_vars.keys():
-            # Check whether this is a marker variable or not
-            if sps.sea_ice_vars[this_var]['marker_var']: 
-                call_sum_by_year = True 
+        # Sum the data across time
+        if call_sum_by_year:
+            ## Overwrite the `dataset` variable to reduce memory overhead
+            dataset = sum_by_year(
+                dataset,
+                find_mean = find_mean,
+                verbose = set_verbose,
+            )
+            if find_mean:
+                var_for_trend = f'{variable_id}_year_mean'
             else:
-                call_sum_by_year = False
-        if set_verbose:
-            print(f"(make_trend_map) `this_var` ({this_var}) is marker variable: {call_sum_by_year}")
-    # Sum the data across time
-    if call_sum_by_year:
-        ## Overwrite the `dataset` variable to reduce memory overhead
-        dataset = sum_by_year(
-            dataset,
-            find_mean = find_mean,
-            verbose = set_verbose,
-        )
-        if find_mean:
-            var_for_trend = f'{this_var}_year_mean'
+                var_for_trend = f'{variable_id}_year_sum'
+            this_time_dim = 'year'
         else:
-            var_for_trend = f'{this_var}_year_sum'
-        this_time_dim = 'year'
-    else:
-        var_for_trend = this_var
-        this_time_dim = 'time'
-    # Take the trend across time
-    if calc_pvals:
-        trend_dataset = trend_in_time_scipy(
-            dataset = dataset,
-            var = var_for_trend,
-            mask_where_zero_across_time = False,
-            verbose = set_verbose,
-            time_dim = this_time_dim,
-        )
-    else:
+            var_for_trend = variable_id
+            this_time_dim = 'time'
+        # Take the trend across time
         trend_dataset = trend_in_time(
             dataset = dataset,
             var = var_for_trend,
@@ -914,39 +1095,113 @@ for this_variant_label in [
             verbose = set_verbose,
             time_dim = this_time_dim,
         )
+        # Find the significance of trends dataset
+        trend_dataset = find_significance(
+            dataset,
+            trend_dataset,
+            var_for_trend,
+            this_time_dim,
+            verbose = set_verbose,
+        )
+        # Interpolate these datasets
+        trend_dataset = interp_to_reg_grid(
+            dataset = trend_dataset,
+            targetgrid = 'data/target_grid_0-25_deg.nc',
+            verbose = set_verbose,
+        )
+        # Plot the trends on a map
+        trend_map_axis, plot_map_kwargs = plot_map(
+            trend_dataset,
+            f'{var_for_trend}_trends_sig',
+            map_projection = 'Orthographic',
+            use_hvplot = use_hvplot,
+            verbose = set_verbose,
+            return_plot_map_kwargs = True,
+            fig = fig,
+            axis = this_ax,
+        )
+        i += 1
 
-    this_map = plot_map(
-        trend_dataset,
-        'silandfast_year_sum_trends',
-        clims = sea_ice_vars['silandfast']['trend_clims'],
-        diverging_cbar = True,
-        verbose = set_verbose,
-    )
-    display(this_map)
-
-    trend_sig_dataset = find_significance(
-        dataset,
-        trend_dataset, 
-        'silandfast_year_sum', 
-        'year',
-        verbose = set_verbose,
-    )
-
-    this_map = plot_map(
-        trend_sig_dataset,
-        'silandfast_year_sum_trends_sig',
-        verbose = set_verbose,
-    )
-    display(this_map)
+plt.show()
 ```
-![EC-Earth3P-HR_r1i1p2f1_silandfast_CAA_trend_map.png](trend_significance-img/EC-Earth3P-HR_r1i1p2f1_silandfast_CAA_trend_map.png)
+![EC-Earth3P-HR_r2i1p2f1_sithick-sispeed-siconc_CAA_trend_sig_maps.png](trend_significance-img/EC-Earth3P-HR_r2i1p2f1_sithick-sispeed-siconc_CAA_trend_sig_maps.png)
 
-![EC-Earth3P-HR_r1i1p2f1_silandfast_CAA_trend_sig_map.png](trend_significance-img/EC-Earth3P-HR_r1i1p2f1_silandfast_CAA_trend_sig_map.png)
+Next, I'll use my `make_trend_map()` function to make those same maps, but showing the trends in the colorbar and the significance as an overlay with stippling.
+```python
+from matplotlib import pyplot as plt
+import numpy as np
+import xarray as xr
 
-![EC-Earth3P-HR_r2i1p2f1_silandfast_CAA_trend_map.png](trend_significance-img/EC-Earth3P-HR_r2i1p2f1_silandfast_CAA_trend_map.png)
+from arctichoke.analysis import sum_by_year 
+from arctichoke.dataset import make_mask, select_months
+from arctichoke.dataset.clim_mask import make_clim_mask
+import arctichoke.params as sps
+from arctichoke.params import sea_ice_vars
+from arctichoke.path import list_variable_files
+from arctichoke.plot import make_trend_map
 
-![EC-Earth3P-HR_r2i1p2f1_silandfast_CAA_trend_sig_map.png](trend_significance-img/EC-Earth3P-HR_r2i1p2f1_silandfast_CAA_trend_sig_map.png)
+# Set up Figure
+plt.rcParams["figure.figsize"] = [6, 18]
+rows = 3
+cols = 1
+fig, axs = plt.subplots(rows, cols, squeeze=False)
 
-![EC-Earth3P-HR_r3i1p2f1_silandfast_CAA_trend_map.png](trend_significance-img/EC-Earth3P-HR_r3i1p2f1_silandfast_CAA_trend_map.png)
+this_model = 'EC-Earth3P-HR'
+this_experiment = 'hist-1950'
+this_modification = 'trim_CAA_'
+set_summer = True
+set_verbose = False
 
-![EC-Earth3P-HR_r3i1p2f1_silandfast_CAA_trend_sig_map.png](trend_significance-img/EC-Earth3P-HR_r3i1p2f1_silandfast_CAA_trend_sig_map.png)
+for variant_label in [
+    # 'r1i1p2f1',
+    'r2i1p2f1',
+    # 'r3i1p2f1',
+]:
+    # Create the sea ice mask
+    clim_mask_dataset = make_clim_mask(
+        this_source_id = this_model,
+        this_experiment = this_experiment,
+        this_var = 'siconc',
+        this_variant_label = variant_label,
+        this_modification = this_modification,
+        verbose = set_verbose
+    )
+    i = 0
+    for variable_id in [
+        'sithick',
+        'sispeed',
+        'siconc',
+    ]:
+        print(f'Now plotting {variable_id}')
+        # Select the correct axis
+        this_row = i//cols
+        this_col = i%cols
+        this_ax = axs[this_row, this_col]
+        # Plot the trend map
+        this_map = make_trend_map(
+            this_source_id = this_model,
+            this_var = variable_id,
+            this_variant_label = variant_label, 
+            this_modification = this_modification,
+            mask_where_zero_across_time = clim_mask_dataset['siconc_clim_mask'],
+            select_summer = set_summer,
+            call_sum_by_year = True,
+            use_hvplot = False,
+            zoom_out_bbox = False,
+            trim_to_bbox = sps.CAA_BBOX,
+            fig = fig,
+            axis = this_ax,
+            time_dim = 'time',
+            find_mean = True,
+            clims = sea_ice_vars[variable_id]['trend_clims'],
+            return_map = True,
+            verbose = set_verbose,
+        )
+        i += 1
+
+plt.show()
+```
+![EC-Earth3P-HR_r2i1p2f1_sithick-sispeed-siconc_CAA_trend_maps_stippling.png](trend_significance-img/EC-Earth3P-HR_r2i1p2f1_sithick-sispeed-siconc_CAA_trend_maps_stippling.png)
+
+Comparing these two figures, I can see that the trend significance regions line up with the stippling overlays.
+I notice that most regions where the trend is close to zero are not significant trends, which matches with what I would expect.
