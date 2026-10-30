@@ -214,7 +214,7 @@ def plot_time_series(
         if variable_id in sps.sea_ice_vars.keys():
             # Check whether that variable has a plot range defined
             if 'plot_range' in sps.sea_ice_vars[variable_id].keys():
-                ylims = sps.sea_ice_vars[variable_id]['plot_range']
+                ylims = sps.sea_ice_vars[variable_id]['series_range']
 
     # Get the data array to plot
     if isinstance(dataset, xr.Dataset):
