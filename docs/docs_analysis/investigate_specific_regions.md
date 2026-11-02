@@ -12,6 +12,7 @@ This assumes you have already gone through {doc}`Trimming data to the CAA region
 - [Trimming data to specific regions](#trimming-data-to-specific-regions)
     - [Trimming data to QEI West](#trimming-data-to-qei-west)
         - [Trimming EC-Earth3P-HR data to QEI West](#trimming-ec-earth3p-hr-data-to-qei-west)
+        - [Trimming HadGEM3-GC31-MM data to QEI West](#trimming-hadgem3-gc31-mm-data-to-qei-west)
     - [Trimming data to QEI East](#trimming-data-to-qei-east)
         - [Trimming EC-Earth3P-HR data to QEI East](#trimming-ec-earth3p-hr-data-to-qei-east)
     - [Trimming data to Parry Channel](#trimming-data-to-parry-channel)
@@ -635,6 +636,135 @@ this_map = make_trend_map(
 display(this_map)
 ```
 ![EC-Earth3P-HR_r1i1p2f1_siconc_QW_JJASO_trend_map.png](investigate_specific_regions-img/EC-Earth3P-HR_r1i1p2f1_siconc_QW_JJASO_trend_map.png)
+
+#### Trimming HadGEM3-GC31-MM data to QEI West
+[back to top](#investigating-specific-regions)
+
+I can trim the data for `HadGEM3-GC31-MM` to the QEI West region.
+This takes about 40 minutes to complete.
+```python
+import xarray as xr
+
+from arctichoke.dataset import trim_files
+from arctichoke.params import QW_BBOX
+from arctichoke.path import list_variable_files
+
+this_model = 'HadGEM3-GC31-MM'
+this_experiment = 'hist-1950'
+
+for this_variant_label in [
+    'r1i1p1f1', 
+    'r1i2p1f1', 
+    'r1i3p1f1',
+]:
+    for si_var in [
+        'sispeed',
+        'sithick',
+    ]:
+        for this_experiment in ['hist-1950']:
+            sivar_list = list_variable_files(
+                source_id = this_model,
+                variable_id = si_var,
+                experiment_id = this_experiment,
+                variant_label = this_variant_label,
+            )
+            trim_files(
+                files_to_trim = sivar_list,
+                name_prefix = 'trim_QW_',
+                map_bbox = QW_BBOX,
+                precise_trim = True,
+            )
+```
+```console
+(trim_files) `name_prefix`: trim_QW_
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i1p1f1/SImon/sispeed/gn/v20170928/trim_QW_sispeed_SImon_HadGEM3-GC31-MM_hist-1950_r1i1p1f1_gn_195001-195012.nc`.
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i1p1f1/SImon/sispeed/gn/v20170928/trim_QW_sispeed_SImon_HadGEM3-GC31-MM_hist-1950_r1i1p1f1_gn_195101-195112.nc`.
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i1p1f1/SImon/sispeed/gn/v20170928/trim_QW_sispeed_SImon_HadGEM3-GC31-MM_hist-1950_r1i1p1f1_gn_195201-195212.nc`.
+...
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i3p1f1/SImon/sithick/gn/v20190710/trim_QW_sithick_SImon_HadGEM3-GC31-MM_hist-1950_r1i3p1f1_gn_201201-201212.nc`.
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i3p1f1/SImon/sithick/gn/v20190710/trim_QW_sithick_SImon_HadGEM3-GC31-MM_hist-1950_r1i3p1f1_gn_201301-201312.nc`.
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i3p1f1/SImon/sithick/gn/v20190710/trim_QW_sithick_SImon_HadGEM3-GC31-MM_hist-1950_r1i3p1f1_gn_201401-201412.nc`.
+```
+
+When trimming `siconc2` and the marker variables, I specify `with_modification` to be `trim_CAA_` as I only calculated `siconc2`, `sislow`, `sipacked`, and `silandfast` over the CAA.
+```python
+import xarray as xr
+
+from arctichoke.dataset import trim_files
+from arctichoke.params import QW_BBOX
+from arctichoke.path import list_variable_files
+
+this_model = 'HadGEM3-GC31-MM'
+this_experiment = 'hist-1950'
+this_modification = 'trim_CAA_'
+
+for this_variant_label in [
+    'r1i1p1f1', 
+    'r1i2p1f1', 
+    'r1i3p1f1',
+]:
+    for si_var in [
+        'siconc2',
+        'sislow',
+        'sipacked',
+        'silandfast',
+    ]:
+        sivar_list = list_variable_files(
+            source_id = this_model,
+            variable_id = si_var,
+            experiment_id = this_experiment,
+            variant_label = this_variant_label,
+            with_modification = this_modification,
+        )
+        trim_files(
+            files_to_trim = sivar_list,
+            name_prefix = 'trim_QW_',
+            replace_prefix = this_modification,
+            map_bbox = QW_BBOX,
+            precise_trim = True,
+        )
+```
+```console
+(trim_files) `name_prefix`: trim_QW_
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i1p1f1/SImon/siconc2/gn/v20170928/trim_QW_siconc2_SImon_HadGEM3-GC31-MM_hist-1950_r1i1p1f1_gn_195001-195012.nc`.
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i1p1f1/SImon/siconc2/gn/v20170928/trim_QW_siconc2_SImon_HadGEM3-GC31-MM_hist-1950_r1i1p1f1_gn_195101-195112.nc`.
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i1p1f1/SImon/siconc2/gn/v20170928/trim_QW_siconc2_SImon_HadGEM3-GC31-MM_hist-1950_r1i1p1f1_gn_195201-195212.nc`.
+...
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i3p1f1/SImon/silandfast/gn/with_sispeed_clim/trim_QW_silandfast_SImon_HadGEM3-GC31-MM_hist-1950_r1i3p1f1_gn_201201-201212.nc`.
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i3p1f1/SImon/silandfast/gn/with_sispeed_clim/trim_QW_silandfast_SImon_HadGEM3-GC31-MM_hist-1950_r1i3p1f1_gn_201301-201312.nc`.
+	(trim_files) Writing file `/arctichoke_data/bergybits/data/CMIP6/HighResMIP/MOHC/HadGEM3-GC31-MM/hist-1950/r1i3p1f1/SImon/silandfast/gn/with_sispeed_clim/trim_QW_silandfast_SImon_HadGEM3-GC31-MM_hist-1950_r1i3p1f1_gn_201401-201412.nc`.
+```
+
+I can use my `list_available_variables()` function to confirm how many trimmed files were created for each variable.
+```python
+from arctichoke.path import list_available_variables
+
+list_available_variables(
+    source_id = 'EC-Earth3P-HR',
+    experiment_id = 'hist-1950',
+    list_var_mods = True,
+)
+```
+```console
+{'EC-Earth-Consortium/EC-Earth3P-HR': {'hist-1950': {'r1i1p2f1': {'SImon': {'siu': {'': 65},
+     'siv': {'': 65},
+     'sithick': {'': 455,
+      'trim_CAA_': 65,
+      'trim_QW_': 65},
+     'siage': {'': 65},
+     'siconc': {'': 455,
+      'trim_CAA_': 65,
+      'trim_QW_': 65},
+     'sispeed': {'': 455,
+      'trim_CAA_': 65,
+      'trim_QW_': 65,
+...
+     'silandfast_month_mean': {'trim_CAA_': 1},
+     'sipacked_month_mean': {'trim_CAA_': 1},
+     'sislow_month_mean': {'trim_CAA_': 1},
+     'simultiyear_month_mean': {'trim_CAA_': 1},
+     'siconc_si2mthick_month_mean': {'trim_CAA_': 1}}}}}}
+```
 
 ### Trimming data to QEI East
 [back to top](#investigating-specific-regions)
