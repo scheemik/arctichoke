@@ -581,7 +581,7 @@ I wrote the above `find_significance()` function into the module `arctichoke.ana
 ## Trend significance test in Nares Strait
 [back to top](#trend-significance)
 
-As introduced in {doc}`Investigating specific regions <../docs_analysis/Investigate specific regions>`, I defined the Nares Strait region.
+As introduced in {doc}`Investigating specific regions <../docs_analysis/investigate_specific_regions>`, I defined the Nares Strait region.
 ```python
 from arctichoke.params import NS_BBOX
 # Define the boundaries of the Nares Strait region
