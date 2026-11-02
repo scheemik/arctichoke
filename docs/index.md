@@ -48,6 +48,14 @@ docs_analysis/trend_significance.md
 
 ```{toctree}
 :maxdepth: 1
+:hidden:
+:caption: Results
+
+docs_results/main_figures.md
+```
+
+```{toctree}
+:maxdepth: 1
 :caption: Reference
 
 autoapi/index
