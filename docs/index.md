@@ -52,6 +52,7 @@ docs_analysis/trend_significance.md
 :caption: Results
 
 docs_results/main_figures.md
+docs_results/supplementary_figures.md
 ```
 
 ```{toctree}
