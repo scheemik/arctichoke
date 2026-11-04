@@ -22,7 +22,7 @@ For details on how each of the plotting functions used were developed, see the A
 
 ---
 
-# Preparation
+## Preparation
 [back to top](#supplementary-figures)
 
 Just as is for the {doc}`Main text figures  <../docs_results/main_figures>`, most of the plots below rely on interpolating onto a pre-existing target grid file. 
