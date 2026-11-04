@@ -1,6 +1,6 @@
 [project]
 name = "arctichoke"
-version = "0.1.0"
+version = "0.1.1"
 description = "Investigate sea ice choke points in the Canadian Arctic Archipelago using high-resolution models."
 authors = [
     { name = "Mikhail Schee", email = "mikhail.schee@alumni.utoronto.ca" }
